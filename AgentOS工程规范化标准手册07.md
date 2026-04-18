@@ -1,11 +1,11 @@
-# AgentOS 工程规范化标准手册 v7.0.0
+# AgentOS 工程规范化标准手册 v8.0.0
 
-> **版本**: 7.0.0-真实验证+桩函数清零+文档体系重建版
+> **版本**: 8.0.0-真实验证+桩函数发现+SEC-017严重违规修正版
 > **日期**: 2026-04-18
-> **状态**: ✅ **生产级标准已建立** + **SEC-011~017全部合规** + **CI自动化扫描就绪**
-> **核心理念**: 一切以成功编译、成功运行为最高目标！**严禁任何桩函数！**
+> **状态**: ⚠️ **生产级标准已建立** + **❌ SEC-017桩函数严重违规(68+处)** + **CI扫描规则需扩展**
+> **核心理念**: 一切以成功编译、成功运行为最高目标！**严禁任何桩函数！扫描必须覆盖全项目！**
 > **适用范围**: AgentOS 项目所有源代码（C/Python/Go/Rust/TypeScript）
-> **关联文档**: [主报告v13.0](./AgentOS全面修复与改进报告.md) | [详细问题清单v8.0](./AgentOS详细问题清单.md) | [看板v7.0](./AgentOS三团队任务进度看板.md)
+> **关联文档**: [主报告v15.0](./AgentOS全面修复与改进报告07.md) | [详细问题清单v9.0](./AgentOS详细问题清单07.md) | [看板v8.0](./AgentOS三团队任务进度看板07.md)
 
 ---
 
@@ -501,19 +501,40 @@ agentos_error_t agentos_sys_task_submit(task_t* task) {
 }
 ```
 
-#### CI 强制检测
+#### CI 强制检测（v8.0 扩展版 - 必须覆盖所有模式！）
+
+**⚠️ 警告：v7.0版本的扫描命令是错误的！只扫描了3个目录！**
 
 ```bash
-# 检测命令1: 搜索桩函数关键词
-grep -ri "stub\|STUB\|not implemented\|桩实现\|桩函数\|stub mode\|STUB模式\|malloc(1)" \
+# ❌ 错误的扫描命令（v7.0版本 - 已废弃）：
+grep -ri "stub\|STUB\|not implemented\|malloc(1)" \
      cupolas/ daemon/ gateway/ --include="*.c"
+# → 漏扫了memoryrovol/coreloopthree/commons/！
+
+# ✅ 正确的完整扫描命令（v8.0版本 - 必须使用）：
+
+# 检测命令1: 搜索桩函数关键词（覆盖全项目）
+grep -ri "stub\|STUB\|not implemented\|桩实现\|桩函数\|stub mode\|STUB模式\|malloc(1)" \
+     agentos/ --include="*.c" --include="*.h"
 # → 必须返回空（0匹配）✅
 
-# 检测命令2: 搜索简化的空实现
-grep -rn "return.*SUCCESS.*;" daemon/ gateway/ --include="*.c" | grep -v "// "
-# → 人工审查每个结果是否真的是桩函数
+# 检测命令2: 搜索桩头文件（新增！）
+find agentos/ -name "*stub*.h" -o -name "*_stub.h"
+# → 必须返回空（不应有任何stub头文件）✅
 
-# 检测命令3: 编译时检查
+# 检测命令3: 搜索PHASE2-IMPLEMENTED标记（新增！）
+grep -rn "PHASE.*IMPLEMENTED\|placeholder\|占位符" agentos/ --include="*.c"
+# → 必须返回空（不应有未完成的功能）✅
+
+# 检测命令4: 搜索degraded mode/simplified version（新增！）
+grep -rn "degraded mode\|simplified version\|简化实现\|降级模式" agentos/ --include="*.c"
+# → 人工审查每个结果是否真的是桩（允许真正的优雅降级，但禁止假SUCCESS）
+
+# 检测命令5: 搜索(void)参数忽略模式（新增！）
+grep -rn "(void).*unused\|(void).*未使用" agentos/ --include="*.c"
+# → 人工审查是否是假实现（忽略所有参数）
+
+# 检测命令6: 编译时检查
 cmake --build . -j$(nproc) 2>&1 | grep -c "error:"
 # → 必须返回 0 ✅
 ```
@@ -527,23 +548,36 @@ cmake --build . -j$(nproc) 2>&1 | grep -c "error:"
 | 代码审计时 | **紧急修复** | 24小时内必须修复，否则回滚 |
 | 生产环境发现 | **P0事故** | 立即回滚，根因分析，责任人记录 |
 
-#### 当前合规状态（2026-04-18）
+#### 当前合规状态（2026-04-18 14:00 全模块扫描后）
 
 ```
-✅✅✅ SEC-017 完全合规 ✅✅✅
+❌❌❌ SEC-017 严重违规！❌❌❌
 
-生产代码桩函数数量: 0
-CI扫描结果: 0违规
-最后验证时间: 2026-04-18 Round 17
+生产代码桩函数数量: 68+ (新增发现，之前v7.0声称0是错误的)
+CI扫描结果(旧命令): 0违规 (假阴性！因为扫描范围不完整)
+CI扫描结果(新命令): 68+违规 (真实验证)
+最后验证时间: 2026-04-18 Round 18 (全模块穷尽扫描)
 
-清除历史:
+已清除历史(daemon/gateway/cupolas):
 - daemon_security.c:      10 个 STUB → 真实安全引擎 ✅
 - syscall_router.c:       18 个桩 → 完整运行时管理器 ✅
 - executor.c:             1 个 stub → 真实进程执行器 ✅
 - gateway_api.c:          1 个假JSON → 真实统计系统 ✅
 - ml_based.c:             1 个 malloc(1) → 335行ML模型 ✅
 ─────────────────────────────────────
-总计清除: 30 个致命桩函数
+已清除小计: 30 个致命桩函数 (daemon/gateway范围)
+
+🔴🔴🔴 新发现的违规(团队A负责的memoryrovol/coreloopthree/commons):
+- curl_stub.h:            25 个假CURL函数     ← STUB-01 P0致命
+- sqlite3_stub.h:         30+个假SQLite3函数   ← STUB-02 P0致命
+- ml_planner.c:           PHASE2-IMPLEMENTED   ← STUB-03 P0致命
+- llm_client.c:           12处degraded mode   ← STUB-04 P1高
+- config_service.c:       1处simplified ver.  ← STUB-05 P1高
+─────────────────────────────────────
+新发现小计: 68+ 处桩函数待清除
+
+总计: 30(已清除) + 68+(待清除) = 98+ 处历史桩函数
+当前剩余: 68+ 处 ❌❌❌
 ```
 
 ---
@@ -731,9 +765,11 @@ cmake --build build -j$(nproc)
 # 4. 测试运行
 ctest --test-dir build --output-on-failure
 
-# 5. 桩函数扫描
-grep -ri "stub\|STUB\|not implemented\|malloc(1)" modified_files/
-# → 必须返回空
+# 5. 桩函数全模块扫描（v8.0扩展版）
+grep -ri "stub\|STUB\|not implemented\|malloc(1)" modified_files/ --include="*.c" --include="*.h"
+find modified_files/ -name "*stub*.h"
+grep -rn "PHASE.*IMPLEMENTED\|placeholder" modified_files/ --include="*.c"
+# → 必须全部返回空
 ```
 
 ### 7.2 Review 检查项
@@ -798,13 +834,28 @@ jobs:
             exit 1
           fi
           
-      - name: SEC-017 桩函数扫描
+      - name: SEC-017 桩函数全模块扫描（v8.0扩展版）
         run: |
+          # 必须覆盖所有目录和模式！
           STUBS=$(grep -ri "stub\|STUB\|not implemented\|malloc(1)" \
-                  cupolas/ daemon/ gateway/ --include="*.c" | wc -l)
+                    agentos/ --include="*.c" --include="*.h" | wc -l)
           if [ "$STUBS" -ne 0 ]; then
             echo "::error::SEC-017 violation: $STUBS stub functions found"
             exit 1
+          fi
+          
+          # 检查桩头文件
+          STUB_HEADERS=$(find agentos/ -name "*stub*.h" | wc -l)
+          if [ "$STUB_HEADERS" -ne 0 ]; then
+            echo "::error::SEC-017 violation: $STUB_HEADERS stub header files found"
+            exit 1
+          fi
+          
+          # 检查PHASE2-IMPLEMENTED标记
+          PLACEHOLDERS=$(grep -rn "PHASE.*IMPLEMENTED\|placeholder" agentos/ --include="*.c" | wc -l)
+          if [ "$PLACEHOLDERS" -ne 0 ]; then
+            echo "::warning::SEC-017: $PLACEHOLDERS placeholder implementations found (review required)"
+            # 警告但不阻塞：允许真正的优雅降级，但需要人工审查
           fi
           
       - name: 单元测试
