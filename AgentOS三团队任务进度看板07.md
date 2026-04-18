@@ -1,914 +1,606 @@
-# AgentOS 三团队任务进度看板 v8.0.0
+# AgentOS 三团队任务进度看板 v13.0.0
 
-> **版本**: 8.0.0-真实验证+桩函数发现+SEC-017严重违规修正版
-> **日期**: 2026-04-18
-> **状态**: ⚠️ **团队A 100%编译通过** + **❌ 发现68+处桩函数违规(SEC-017)** + **团队C编译链接双零** + **Round 18全模块穷尽扫描完成**
-> **目标**: 确保三个团队**真正并行**工作，实现全面修复，达到生产级标准
-> **最高要求**: 成功编译 ✅ **100%达成** + 成功运行 ⚠️ **待桩函数清除后验证** + 长期稳定运行 + Windows/Linux/Mac三平台统一部署
-> **核心理念**: 绝对流于形式！一切以成功编译、成功运行为最高目标！**严禁任何桩函数！扫描必须覆盖全项目！**
-> **关联文档**: [规范手册v8.0](./AgentOS工程规范化标准手册07.md) | [主报告v15.0](./AgentOS全面修复与改进报告07.md) | [详细问题清单v9.0](./AgentOS详细问题清单07.md) | [桩函数报告](./AgentOS桩函数穷尽检查报告.md)
-> **更新频率**: 每日更新（工作日17:00同步会议后）
-> **终极目标**: 行业基础设施水平（对标Linux/PostgreSQL，评级≥9/10）
-> **关键更新（v8.0）**: 🔴🔴🔴 **全模块穷尽扫描发现团队A负责模块有68+处桩函数违规！之前声称"0桩函数"是错误的！**
+> **版本**: 13.0.0-生产级团队分工与进度追踪版
+> **日期**: 2026-04-19
+> **核心理念**: 三团队分工明确、不流于形式、不工作冲突、高效协同推进生产级目标
+> **关联文档**: [主报告v22.0](./AgentOS全面修复与改进报告07.md) | [问题清单v13.0](./AgentOS详细问题清单07.md) | [规范手册v12.0](./AgentOS工程规范化标准手册07.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
 
 ---
 
-## 📊 总体进度仪表板
+## 📋 目录
 
-### 🎯 核心指标总览（2026-04-18 14:00 全模块扫描后修正）
-
-| 指标 | 目标 | 当前值 | 达成率 | 状态 |
-|------|------|--------|--------|------|
-| **整体编译成功率** | 100% | **100%** | 100% | ✅ 达成 |
-| **致命问题数** | 0 | **0** | 100% | ✅ 达成 |
-| **生产级桩函数数** | 0 | **68+** | **0%** | ❌ **严重违规(SEC-017)** |
-| **安全漏洞数** | 0 (已修复) | **0** | 100% | ✅ 达成 |
-| **单元测试覆盖率** | ≥80% | **~75%** | 94% | 🟡 接近 |
-| **代码风格合规率** | ≥95% | **~90%** | 95% | 🟡 接近 |
-| **整体项目评级** | ≥9/10 | **6.5/10** | 72% | 🔶 **进行中(因桩函数降级)** |
-
-### 📈 趋势图（最近7天 - 修正后真实数据）
-
-```
-评级趋势:
-2.8 ──► 3.2 ──► 5.5 ──► 6.8 ──► 7.2 ──► 7.5 ──► 6.5 ← 降级！
- │       │       │       │       │       │       │
-Round1  Round5  Round10 Round15 Round16 Round17 现在
-                                    ↑
-                              发现68+桩函数，评级从7.5降至6.5
-```
+1. [看板总览](#看板总览)
+2. [三团队职责边界与分工原则](#三团队职责边界与分工原则)
+3. [团队A: 核心内核组](#团队a-核心内核组)
+4. [团队B: 安全与服务组](#团队b-安全与服务组)
+5. [团队C: 守护进程与网关组](#团队c-守护进程与网关组)
+6. [全团队协同任务](#全团队协同任务)
+7. [三阶段实施路线图](#三阶段实施路线图)
+8. [甘特图](#甘特图)
+9. [团队间依赖与协作点](#团队间依赖与协作点)
+10. [风险与缓解措施](#风险与缓解措施)
+11. [里程碑与验收标准](#里程碑与验收标准)
+12. [技术借鉴融合任务](#技术借鉴融合任务)
+13. [双思考系统与记忆卷载实施任务](#双思考系统与记忆卷载实施任务)
+14. [SEC-017合规追踪](#sec-017合规追踪)
+15. [每日站会与周报模板](#每日站会与周报模板)
 
 ---
 
-## 👥 团队A - 核心内核组
+## 看板总览
 
-### 🏆 团队评级: **7.5/10 ⚠️ 降级**（原9.5/10，因发现68+桩函数违规扣2.0分）
+### 📊 三团队工作量与进度总览
 
-#### 职责范围
-```
-agentos/atoms/corekern        (29文件)  - 微内核核心 ✅
-agentos/atoms/coreloopthree   (53文件)  - 认知循环三层 ⚠️ 发现STUB-03
-agentos/atoms/memoryrovol     (76文件)  - 四层记忆系统 ⚠️ 发现STUB-01/02/04
-agentos/commons               (-)       - 统一基础库 ⚠️ 发现STUB-05
-agentos/atoms/syscall         (18文件)  - 系统调用层 ✅
-─────────────────────────────────────────────────────
-总计: 176+ 文件, 编译100%通过, 但发现68+桩函数违规
-```
+| 团队 | 负责问题数 | 总工时 | 当前进度 | 当前评级 | 关键阻塞 |
+|------|-----------|--------|----------|----------|----------|
+| **团队A(核心内核)** | 20 | ~560h (14周) | 0% | 7.5/10 | 68+桩函数+Phase 2-4缺失 |
+| **团队B(安全服务)** | 9 | ~284h (7周) | 5% | 8.0/10 | PROTO-003依赖团队A |
+| **团队C(守护网关)** | 4 | ~132h (3.5周) | 85% | 9.3/10 | 无致命阻塞 |
+| **全团队协同** | 7 | ~156h (4周) | 2% | - | 测试覆盖率0% |
 
-#### 当前状态: 🔴 **发现严重桩函数违规，需要立即修复（P0紧急）**
+### 📊 问题状态汇总（36个问题）
 
-##### 🔴🔴🔰 新发现的严重问题（2026-04-18 全模块穷尽扫描）
+| 状态 | 数量 | 占比 | 问题ID |
+|------|------|------|--------|
+| ❌ 待修复 | 34 | 94% | 几乎全部 |
+| 🔶 进行中 | 0 | 0% | - |
+| ✅ 已修复 | 2 | 6% | HIST-001(部分), HIST-002(部分) |
 
-| 问题ID | 文件 | 桩函数类型 | 数量 | 严重程度 | 状态 |
-|--------|------|-----------|------|----------|------|
-| **STUB-01** | memoryrovol/include/curl_stub.h | 完整假CURL API头文件 | 25 | P0 致命 | ❌ 待清除 |
-| **STUB-02** | memoryrovol/include/sqlite3_stub.h | 完整假SQLite3 API头文件 | 30+ | P0 致命 | ❌ 待清除 |
-| **STUB-03** | coreloopthree/src/cognition/planner/ml_planner.c | PHASE2-IMPLEMENTED ML推理管道 | 1处(多行) | P0 致命 | ❌ 待实现 |
-| **STUB-04** | memoryrovol/src/llm_client.c | degraded mode返回假SUCCESS+假数据 | 12处 | P1 高 | ❌ 待修复 |
-| **STUB-05** | commons/utils/config_unified/src/config_service.c | simplified version硬编码字符串 | 1处 | P1 高 | ❌ 待实现 |
+### 📊 三阶段目标
 
-##### 已完成的工作成果（Round 1-17）
-
-| Round | 完成内容 | 问题修复 | 验证结果 |
-|-------|----------|----------|----------|
-| **Round 1-5** | coreloopthree 初始审查 | 11 致命问题 | ✅ 全部修复 |
-| **Round 6-10** | memoryrovol + 安全加固 | 3 致命 + 6 安全漏洞 | ✅ 全部修复 |
-| **Round 11-15** | corekern + syscall 深度审计 | 0 新问题 | ✅ 代码质量优秀 |
-| **Round 16** | cJSON #define 全局扫描 | 3 文件同类 bug | ✅ engine.c/task.c/rate_limiter.c |
-| **Round 17** | STRDUP 最终全扫描 | 1 处遗漏(file.c:121) | ✅ 30处调用100%有NULL保护 |
-
-##### Round 17 详细报告（2026-04-18）
-
-**任务**: STRDUP 全量扫描（30处调用逐一验证）
-
-**扫描范围**:
-```bash
-grep -rn "strdup(" agentos/atoms/corekern/ \
-              agentos/atoms/coreloopthree/ \
-              agentos/atoms/memoryrovol/ \
-              agentos/atoms/syscall/ \
-              --include="*.c"
-# → 发现 30 处 strdup() 调用
-```
-
-**验证结果**:
-| 文件 | 调用次数 | NULL保护状态 | 结论 |
-|------|----------|--------------|------|
-| corekern/*.c | 5 | ✅ 全部有 | 合规 |
-| coreloopthree/*.c | 12 | ✅ 11有，1遗漏 | 已修复 |
-| memoryrovol/*.c | 8 | ✅ 全部有 | 合规 |
-| syscall/*.c | 5 | ✅ 全部有 | 合规 |
-
-**发现并修复的问题**:
-
-```c
-// file.c:121 - Round 17 发现的遗漏 ✅ 已修复
-// ❌ 修复前：
-char* abs_path = realpath(path, NULL);
-// 直接使用 abs_path，缺少 NULL 检查！
-
-// ✅ 修复后：
-char* abs_path = realpath(path, NULL);
-if (!abs_path) {  // ← 新增 NULL 保护
-    return AGENTOS_ERR_INVALID_PARAM;
-}
-```
-
-**结论**: 
-> **团队A STRDUP检查率达成100%**
-> 
-> 5大模块全覆盖审计完成：
-> - corekern: 29文件 → 质量优秀(仅sync.c #if 0低优先级死代码)
-> - coreloopthree: 53文件 → 92非致命问题待优化
-> - memoryrovol: 76文件 → 40非致命问题待优化
-> - commons: 基础库 → 0问题
-> - syscall: 18文件 → 参数验证完善，资源管理规范
-
-##### 技术亮点
-
-```c
-// 1. cJSON #define 语法bug修复（Round 16）
-// 原始问题：宏定义语法错误导致条件编译失效
-#define cJSON_AddStringToObject(object, name, string) \
-    cJSON_CreateString(string) ? cJSON_AddItemToObject(object, name, cJSON_CreateString(string)) : NULL
-
-// 2. 多层防御性编程模式
-int safe_operation(input_t* in, output_t* out) {
-    // 第一层：参数验证
-    if (!in || !out) return ERR_INVALID_PARAM;
-    
-    // 第二层：资源分配 + NULL检查
-    resource_t* res = allocate();
-    if (!res) return ERR_NO_MEMORY;
-    
-    // 第三层：业务逻辑 + 错误处理
-    int ret = do_work(res, in);
-    if (ret != SUCCESS) {
-        cleanup(res);  // 错误路径也要清理
-        return translate_error(ret);
-    }
-    
-    // 第四层：结果输出
-    copy_result(out, res);
-    
-    // 第五层：资源释放
-    cleanup(res);
-    
-    return SUCCESS;
-}
-```
-
-#### 待办事项（维护阶段）
-
-| 任务ID | 描述 | 优先级 | 预计时间 | 状态 |
-|--------|------|--------|----------|------|
-| A-TODO-01 | coreloopthree 92个非致命问题优化 | P2-P3 | 2周 | ⏳ 排队 |
-| A-TODO-02 | memoryrovol 40个非致命问题优化 | P2-P3 | 1周 | ⏳ 排队 |
-| A-TODO-03 | sync.c 死代码清理 | P3 | 0.5h | ⏳ 低优先级 |
-| A-TODO-04 | 性能基准测试建立 | P1 | 1周 | ⏳ 下Sprint |
+| 阶段 | 时间 | 团队A目标 | 团队B目标 | 团队C目标 | 全团队目标 |
+|------|------|----------|----------|----------|-----------|
+| **第一阶段** | 第1-4周 | STUB-01~05清除 | HIST-002协助 | 集成测试框架 | 测试≥50% |
+| **第二阶段** | 第5-10周 | DS-001~003/006/007, MR-001/002/004 | PROTO-001/003/004, HIST-003 | LangChain/AutoGen适配器 | 核心功能可用 |
+| **第三阶段** | 第11-16周 | DS-004/005/008, MR-003/005/006/007 | PROTO-002/005, HIST-004/006/007 | daemon非致命清零 | 生产级就绪 |
 
 ---
 
-## 🛡️ 团队B - 安全与服务组
+## 三团队职责边界与分工原则
 
-### 🛡️ 团队评级: **8.0/10** ⭐⭐⭐⭐
+### 职责边界定义
 
-#### 职责范围
 ```
-agentos/cupolas/      (82文件)  - 安全穹顶 ✅
-agentos/heapstore/    (~30文件) - 运行时数据存储 ✅
-agentos/toolkit/      (~100文件)- 多语言SDK工具 ✅
-agentos/protocols/    (-)       - 行业协议适配 ✅
-agentos/interfaces/   (-)       - 统一接口定义 ✅
-─────────────────────────────────────────────────────
-总计: ~212 文件, 主要功能完成
-```
-
-#### 当前状态: 🔄 **主要功能完成，待安全验证**
-
-##### 已完成的工作成果
-
-| 组件 | 状态 | 完成度 | 说明 |
-|------|------|--------|------|
-| **cupolas 安全框架** | ✅ 完成 | 100% | SEC-011~017 全部实现 |
-| **heapstore 存储** | ✅ 完成 | 95% | 运行时数据管理完善 |
-| **Python SDK** | ✅ 完成 | 100% | 清洁无问题，PyPI 发布就绪 |
-| **Go SDK** | ✅ 完成 | 90% | vendor 排除，基本功能完整 |
-| **Rust SDK** | ✅ 完成 | 85% | target 排除，核心API 实现 |
-| **TypeScript SDK** | ✅ 完成 | 88% | node_modules 排除，类型定义完整 |
-| **协议适配器** | ⚠️ 进行中 | 75% | LangChain/AutoGen <50% |
-
-##### 技术亮点
-
-###### Gateway 协议桥接器（核心成就）
-
-**文件**: `gateway_protocol_bridge.c`
-
-**支持的7种协议**:
-```c
-typedef enum {
-    GW_PROTOCOL_JSONRPC = 0,    // JSON-RPC 2.0
-    GW_PROTOCOL_MCP,            // Model Context Protocol
-    GW_PROTOCOL_A2A,            // Agent-to-Agent
-    GW_PROTOCOL_OPENAI,         // OpenAI API 兼容
-    GW_PROTOCOL_OPENJIUWEN,     // OpenJiuwen 深度集成 ⭐
-    GW_PROTOCOL_OPENCLAW,       // OpenClaw 协议
-    GW_PROTOCOL_CLAUDE          // Claude API 兼容
-} gw_protocol_type_e;
-
-static const char* type_names[] = {
-    "jsonrpc", "mcp", "a2a", "openai", "openjiuwen", "openclaw", "claude"
-};
+┌─────────────────────────────────────────────────────────────────┐
+│                     AgentOS 项目模块归属                         │
+├─────────────┬───────────────────────────────────────────────────┤
+│  团队A      │  corekern/ coreloopthree/ memoryrovol/ syscall/   │
+│  核心内核   │  commons/ (config_unified等)                       │
+│             │  → 所有"原子"层(atoms)代码                         │
+├─────────────┼───────────────────────────────────────────────────┤
+│  团队B      │  cupolas/ heapstore/ toolkit/ protocols/          │
+│  安全服务   │  interfaces/ SDK/                                 │
+│             │  → 安全+存储+协议+SDK                              │
+├─────────────┼───────────────────────────────────────────────────┤
+│  团队C      │  daemon/ gateway/                                 │
+│  守护网关   │  → 守护进程+统一网关                               │
+├─────────────┼───────────────────────────────────────────────────┤
+│  全团队     │  测试/ 文档/ CI/CD/ 构建系统/                      │
+│  协同       │  → 跨模块集成与质量保证                             │
+└─────────────┴───────────────────────────────────────────────────┘
 ```
 
-**自动检测机制**:
-```c
-int gw_protocol_bridge_detect_type(
-    const gw_incoming_request_t* incoming,
-    gw_protocol_type_t* out_type,
-    float* confidence  // 输出置信度评分
-) {
-    // 基于内容特征自动识别协议类型
-    // 支持多协议混合请求
-    // 返回置信度评分用于日志和监控
-    
-    *confidence = 0.95f;  // 高置信度
-    return GW_SUCCESS;
-}
-```
+### 分工原则（防止流于形式和工作冲突）
 
-**OpenJiuwen 深度集成特性**:
-- ✅ 双向协议转换（AgentOS ↔ OpenJiuwen）
-- ✅ 语义保持（确保转换后含义不变）
-- ✅ 性能优化（批量处理减少延迟）
-- ✅ 错误映射（统一错误码到双方格式）
+| 原则 | 描述 | 执行方式 |
+|------|------|----------|
+| **1. 模块独占** | 每个模块只由一个团队负责修改 | Git分支权限控制 |
+| **2. 接口契约** | 跨团队依赖通过接口定义(.h文件)解耦 | 接口变更需双方review |
+| **3. 依赖显式** | 所有跨团队依赖必须在看板中标注 | 依赖列必须填写 |
+| **4. 无重叠** | 同一问题ID只分配给一个团队 | 问题清单中团队唯一 |
+| **5. 同步节奏** | 每周一全团队同步会 | 周报+看板更新 |
+| **6. 阻塞升级** | 阻塞超过2天必须升级 | 站会中标记红色 |
 
-##### 待完成任务
+### 跨团队协作规则
 
-| 任务ID | 描述 | 优先级 | 预计时间 | 状态 |
-|--------|------|--------|----------|------|
-| B-TODO-01 | LangChain 适配器完善（<50%→>90%） | P1 | 16h | 🔄 开发中 |
-| B-TODO-02 | AutoGen 适配器完善（<50%→>90%） | P1 | 16h | 🔄 开发中 |
-| B-TODO-03 | 安全渗透测试独立验证 | P0 | 40h | ⏳ 待安排 |
-| B-TODO-04 | 性能基准测试套件 | P1 | 20h | ⏳ 下Sprint |
-| B-TODO-05 | heapstore 20个问题修复 | P2 | 8h | ⏳ 排队 |
+| 场景 | 规则 | 示例 |
+|------|------|------|
+| 团队A需要团队B的接口 | 团队A先定义接口，团队B实现 | DS-001需要PROTO-003的LLM后端 |
+| 团队B需要团队A的数据 | 团队A提供数据结构定义 | PROTO-003需要llm_client的返回结构 |
+| 团队C需要团队A/B的功能 | 通过daemon服务调用 | llm_d需要llm_client |
+| 共同修改同一文件 | 禁止！必须拆分或指定一方 | config_service.c只由团队A修改 |
 
 ---
 
-## ⚡ 团队C - 守护进程与网关组
+## 团队A: 核心内核组
 
-### ⚡ 团队评级: **9.3/10** ⭐⭐⭐⭐⭐
+### 团队信息
 
-#### 职责范围
-```
-agentos/daemon/         (150+文件)- 用户态服务（6个子服务）✅
-agentos/gateway/        (~20文件) - 统一网关 ✅
-─────────────────────────────────────────────────────
-总计: ~170 文件, BUILD_DAEMON=ON 完全达成
-```
+| 属性 | 值 |
+|------|-----|
+| **负责模块** | corekern, coreloopthree, memoryrovol, syscall, commons |
+| **负责问题数** | 20个 |
+| **总工时** | ~560小时 (~14周) |
+| **当前评级** | 7.5/10 |
+| **核心挑战** | 68+桩函数清除 + 双思考系统Phase 2-4实现 + MemoryRovol增强 |
 
-#### 当前状态: 🎉 **Phase 2完成，进入集成测试阶段**
+### 第一阶段任务 (第1-4周): 桩函数清除
 
-##### 历史性突破时间线
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W1 | STUB-01 | 安装libcurl-dev，删除curl_stub.h | 8h | 无 | curl_stub.h删除，AGENTOS_HAS_CURL=1 | ❌ |
+| W1 | STUB-02 | 安装sqlite3-dev，删除sqlite3_stub.h | 8h | 无 | sqlite3_stub.h删除，AGENTOS_HAS_SQLITE3=1 | ❌ |
+| W1 | STUB-05 | 实现config_version_diff() | 8h | 无 | 真实SemVer比较 | ❌ |
+| W2 | STUB-04 | 修复llm_client.c degraded mode | 16h | STUB-01 | 无libcurl时返回ERR_NOT_AVAILABLE | ❌ |
+| W2 | STUB-04a | 安装cjson-dev，清除cJSON桩 | 4h | 无 | AGENTOS_HAS_CJSON=1 | ❌ |
+| W3-4 | STUB-03 | 实现ml_planner.c真实ML推理 | 40h | STUB-01 | ML推理管道可用 | ❌ |
 
-```
-2026-04-17 20:40 ──► 🎉 BUILD_DAEMON=ON 完全达成
-                   │   编译 0错误 + 链接 0未定义引用
-                   │   6个子模块全部100%通过
-                   │
-2026-04-17 21:30 ──► 🔥🔥🔥 SEC-017 桩函数清除里程碑
-                   │   30个致命桩函数全部替换为真实实现
-                   │   生产代码 0 桩函数
-                   │
-2026-04-17 23:00 ──► 🚀 生产级深度加固 Phase 2 完成
-                   │   P0内存安全审计完成
-                   │   P1线程安全加固（pthread_mutex×6）
-                   │   guard_core.c 注释修复
-                   │
-2026-04-18 现在 ──► 📝 进入集成测试准备阶段
-```
+**第一阶段交付标准**:
+- `find agentos/ -name "*stub*.h"` 返回0
+- `cmake --build . -j$(nproc)` 编译0错误
+- llm_client_create() 返回真正可用的LLM服务
+- ml_planner_inference() 不再总是走fallback
 
-##### BUILD_DAEMON=ON 完整达成报告
+### 第二阶段任务 (第5-10周): 双思考系统核心
 
-**编译验证结果**:
-```bash
-$ cmake -DBUILD_DAEMON=ON ..          # 启用守护进程构建
-$ cmake --build . -j$(nproc)
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W5 | DS-001-PoC | 流式批判循环PoC验证 | 16h | STUB-01/04 | 方案C可行性验证报告 | ❌ |
+| W5-6 | MR-001 | 因果链编码增强(多元因果) | 40h | 无 | binder.c支持A+B→C | ❌ |
+| W6-7 | DS-001 | 流式批判循环实现(方案C) | 64h | DS-001-PoC | streaming_critique.c | ❌ |
+| W7 | MR-002 | 规则注入机制 | 24h | MR-001 | L4→S1/S2提示词转换 | ❌ |
+| W7-8 | DS-006 | dual_model.c重写 | 40h | STUB-01 | 真正交叉验证+辩论 | ❌ |
+| W8 | DS-007 | intent_parser.c增强 | 24h | STUB-01 | LLM驱动语义理解 | ❌ |
+| W8-9 | DS-002 | 审计委员会实现 | 40h | DS-001 | audit_committee.c | ❌ |
+| W9 | DS-003 | 任务漂移检测 | 24h | MR-001 | 语义相似度+漂移告警 | ❌ |
+| W9-10 | MR-004 | 分时推理与记忆交换 | 60h | MR-001/002 | memory_exchange.c | ❌ |
 
-[ 10%] Built target agentos-cupolas
-[ 25%] Built target agentos-commons
-[ 40%] Built target agentos-atoms
-[ 55%] Built target agentos-heapstore
-[ 70%] Built target agentos-monit-d      ✅
-[ 80%] Built target agentos-llm-d        ✅
-[ 85%] Built target agentos-tool-d       ✅
-[ 90%] Built target agentos-gateway-d    ✅
-[ 95%] Built target agentos-market-d     ✅
-[100%] Built target agentos-sched-d      ✅
+**第二阶段交付标准**:
+- 双思考系统Phase 0-3基本可用
+- 流式批判循环能拦截明显错误
+- 审计委员会能对子任务结果交叉验证
+- MemoryRovol L3因果链+L4规则注入可用
+- 分时推理机制PoC通过
 
-$ grep "error:" build.log                # → 空（0个编译错误）✅
-$ grep "undefined reference" build.log    # → 空（0个链接错误）✅
-```
+### 第三阶段任务 (第11-16周): 完善与集成
 
-**修复的子模块清单**:
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W11 | DS-004 | 目标对齐检查 | 24h | DS-001/MR-004 | alignment_check() | ❌ |
+| W11 | DS-005 | 定期进度摘要 | 16h | DS-001 | progress_summary() | ❌ |
+| W11-12 | DS-008 | orchestrator流程编排器 | 60h | DS-001~007 | orchestrator.c | ❌ |
+| W12 | MR-003 | 规则质量保证 | 16h | MR-002 | 规则权限+效果追踪 | ❌ |
+| W13 | MR-005 | 动态索引更新 | 8h | 无 | L2索引实时更新 | ❌ |
+| W13 | MR-006 | 图查询优化 | 16h | MR-001 | 因果链检索<100ms | ❌ |
+| W14 | MR-007 | 分片存储优化 | 8h | 无 | L1大规模分片 | ❌ |
+| W15-16 | 集成测试 | 端到端集成验证 | 40h | 全部 | 全流程可用 | ❌ |
 
-| 子模块 | 原问题 | 修复方案 | 文件变更 |
-|--------|--------|----------|----------|
-| **monit_d** | 监控服务初始化不完整 | 补充完整配置加载逻辑 | 3 files |
-| **llm_d** | LLM客户端连接池缺失 | 实现连接池管理器 | 5 files |
-| **tool_d** | 工具注册表线程不安全 | 添加读写锁保护 | 4 files |
-| **gateway_d** | 请求路由性能瓶颈 | 实现高效路由表 | 6 files |
-| **market_d** | 服务发现机制缺失 | 实现市场服务框架 | 8 files |
-| **sched_d** | 调度算法未实现 | 实现优先级调度器 | 7 files |
-
-**修改文件总数**: **50+ 个源文件/CMakeLists.txt**
-
-##### 🔥🔥🔥 SEC-017 桩函数清除详细报告
-
-**清除前状态** (2026-04-17 21:00):
-```
-生产代码桩函数数量: 30 个
-├── daemon_security.c:     10 个 STUB 函数
-├── syscall_router.c:      18 个 agentos_sys_* 桩
-├── executor.c:            1 个 "stub mode" 桩
-└── gateway_api.c:         1 个假 JSON 统计
-```
-
-**清除后状态** (2026-04-17 21:30):
-```
-生产代码桩函数数量: 0 个 ✅✅✅
-CI 扫描结果: 0 违规 ✅✅✅
-```
-
-**具体替换详情**:
-
-###### 1. daemon_security.c (10个STUB → 真实安全引擎)
-
-```c
-// ❌ 原始桩函数示例
-security_result_t security_check_command(const char* cmd) {
-    // TODO: Implement real security check
-    return SECURITY_RESULT_OK;  // 假装通过！
-}
-
-// ✅ 替换为真实实现（300+行完整安全引擎）
-security_result_t security_check_command(const char* cmd) {
-    // 1. 输入验证 (SEC-011: 命令注入防护)
-    if (!cmd || strlen(cmd) == 0) {
-        return SECURITY_RESULT_INVALID_INPUT;
-    }
-    
-    // 2. 白名单过滤
-    for (size_t i = 0; cmd[i]; i++) {
-        if (!isalnum(cmd[i]) && !strchr(ALLOWED_CHARS, cmd[i])) {
-            log_security_event("BLOCKED_ILLEGAL_CHAR", cmd);
-            return SECURITY_RESULT_REJECTED;
-        }
-    }
-    
-    // 3. 命令名黑名单检查
-    if (is_blacklisted_command(cmd)) {
-        log_security_event("BLOCKED_BLACKLISTED_CMD", cmd);
-        return SECURITY_RESULT_REJECTED;
-    }
-    
-    // 4. ACL 权限验证 (SEC-013: 认证授权)
-    if (!acl_check_permission(current_subject(), cmd, "execute")) {
-        log_security_event("DENIED_PERMISSION", cmd);
-        return SECURITY_RESULT_DENIED;
-    }
-    
-    // 5. 审计日志记录 (SEC-014: 审计追踪)
-    audit_log(AUDIT_SECURITY_CHECK, cmd, SECURITY_RESULT_OK);
-    
-    return SECURITY_RESULT_OK;
-}
-```
-
-**新增安全功能清单**:
-- ✅ 命令注入防护 (正则表达式 + 白名单)
-- ✅ ACL 权限引擎 (基于能力的访问控制)
-- ✅ 文件审计日志 (不可篡改的安全日志)
-- ✅ 内存凭证存储 (加密的凭据管理)
-- ✅ 安全事件实时告警
-
-###### 2. syscall_router.c (18个桩 → 完整运行时管理器)
-
-```c
-// ❌ 原始桩函数示例
-agentos_error_t agentos_sys_task_submit(task_t* task) {
-    return AGENTOS_SUCCESS;  // 什么都不做！
-}
-
-// ✅ 替换为完整运行时管理器（500+行）
-struct runtime_manager_s {
-    task_queue_t tasks;           // 256 任务队列
-    memory_record_t* records;    // 1024 内存记录
-    session_store_t sessions;    // 64 会话
-    agent_registry_t agents;     // 128 Agent 注册表
-    telemetry_metrics_t metrics; // 性能指标
-    pthread_mutex_t lock;        // 线程安全锁
-};
-
-agentos_error_t agentos_sys_task_submit(task_t* task) {
-    // 完整实现包含：
-    // 1. 参数验证 (E-1: NULL安全)
-    // 2. 资源限制检查 (C-2: 资源上限)
-    // 3. 并发保护 (E-4: mutex锁)
-    // 4. 任务入队 (真实队列操作)
-    // 5. 日志记录 (E-5: 可观测性)
-    // 6. 指标更新 (E-6: telemetry)
-    // ... 详见规范手册 E-1~E-8 原则应用
-}
-```
-
-###### 3. executor.c (1个stub → 真实进程执行器)
-
-```c
-// ❌ 原始 stub mode
-#ifdef STUB_MODE
-int executor_run(command_t* cmd) {
-    return 0;  // Stub mode - not implemented
-}
-#endif
-
-// ✅ 替换为真实进程执行器（200+行）
-int executor_run(command_t* cmd) {
-    // 使用 popen/pclose 实现真实的进程执行
-    FILE* pipe = popen(cmd->command, "r");
-    if (!pipe) {
-        return EXECUTOR_ERR_FORK_FAILED;
-    }
-    
-    // 动态输出缓冲（自适应大小）
-    dynamic_buffer_t output;
-    dynamic_buffer_init(&output, INITIAL_BUFFER_SIZE);
-    
-    char buffer[BLOCK_SIZE];
-    size_t bytes_read;
-    while ((bytes_read = fread(buffer, 1, sizeof(buffer), pipe)) > 0) {
-        dynamic_buffer_append(&output, buffer, bytes_read);
-        
-        // 超时检查 (C-3: 超时机制)
-        if (elapsed_time(start_time) > cmd->timeout) {
-            pclose(pipe);
-            return EXECUTOR_ERR_TIMEOUT;
-        }
-    }
-    
-    int exit_status = pclose(pipe);
-    
-    // 完整退出状态分析
-    cmd->exit_code = WEXITSTATUS(exit_status);
-    cmd->output = dynamic_buffer_finalize(&output);
-    cmd->duration = elapsed_time(start_time);
-    
-    return EXECUTOR_SUCCESS;
-}
-```
-
-###### 4. gateway_api.c (1个假JSON → 真实统计系统)
-
-```c
-// ❌ 原始假数据
-int gateway_api_get_stats(char* json_output, size_t len) {
-    snprintf(json_output, len, "{\"status\":\"ok\"}");
-    return 0;
-}
-
-// ✅ 替换为真实统计系统（150+行）
-int gateway_api_get_stats(char* json_output, size_t len) {
-    // 构建真实的统计信息
-    cJSON* root = cJSON_CreateObject();
-    
-    // 运行时间统计
-    cJSON_AddNumberToObject(root, "uptime_seconds", 
-                            time(NULL) - g_gateway.start_time);
-    
-    // 连接计数器
-    cJSON_AddNumberToObject(root, "active_connections",
-                            atomic_load(&g_gateway.conn_count));
-    cJSON_AddNumberToObject(root, "total_requests",
-                            atomic_load(&g_gateway.total_requests));
-    
-    // 协议分布
-    cJSON* protocols = cJSON_CreateObject();
-    for (int i = 0; i < GW_PROTOCOL_COUNT; i++) {
-        cJSON_AddNumberToObject(protocols, type_names[i],
-                                g_gateway.protocol_counts[i]);
-    }
-    cJSON_AddItemToObject(root, "protocol_distribution", protocols);
-    
-    // 错误统计
-    cJSON* errors = cJSON_CreateObject();
-    cJSON_AddNumberToObject(errors, "auth_failures",
-                            g_gateway.stats.auth_failures);
-    cJSON_AddNumberToObject(errors, "rate_limit_exceeded",
-                            g_gateway.stats.rate_limits);
-    cJSON_AddItemToObject(root, "error_stats", errors);
-    
-    // 序列化为 JSON
-    char* rendered = cJSON_PrintUnformatted(root);
-    strncpy(json_output, rendered, len - 1);
-    json_output[len - 1] = '\0';
-    
-    free(rendered);
-    cJSON_Delete(root);
-    
-    return GATEWAY_SUCCESS;
-}
-```
-
-###### 5. ml_based.c (1个malloc(1) → 335行ML模型)
-
-```c
-// ❌ 原始 malloc(1) 桩
-ml_model_t* create_ml_model() {
-    return (ml_model_t*)malloc(1);  // 1字节！
-}
-
-// ✅ 替换为完整的 ML 模型（335行）
-ml_model_t* create_ml_model() {
-    ml_model_t* model = calloc(1, sizeof(ml_model_t));
-    if (!model) return NULL;
-    
-    // 特征工程器
-    model->feature_engineer = feature_engineer_create(FEATURE_DIMENSION);
-    if (!model->feature_engineer) goto cleanup;
-    
-    // 预测器（含历史记录追踪）
-    model->predictor = predictor_create(PREDICTOR_TYPE_NEURAL);
-    if (!model->predictor) goto cleanup;
-    
-    // MAE 追踪器（平均绝对误差监控）
-    model->mae_tracker = mae_tracker_create(WINDOW_SIZE);
-    if (!model->mae_tracker) goto cleanup;
-    
-    // 配置默认超参数
-    model->learning_rate = DEFAULT_LEARNING_RATE;
-    model->max_iterations = MAX_ITERATIONS;
-    model->convergence_threshold = CONVERGENCE_THRESHOLD;
-    
-    // 初始化历史记录数组
-    model->history_capacity = HISTORY_CAPACITY;
-    model->history_count = 0;
-    model->prediction_history = calloc(HISTORY_CAPACITY, sizeof(prediction_record_t));
-    if (!model->prediction_history) goto cleanup;
-    
-    LOG_INFO("ML model created successfully");
-    return model;
-
-cleanup:
-    destroy_ml_model(model);  // 完善的错误路径清理
-    return NULL;
-}
-```
-
-##### 🚀 生产级深度加固报告（Phase 2）
-
-**P0 内存安全审计**:
-```c
-// ml_based.c 完整审查结果
-├── malloc/calloc 调用: 74 处
-│   ├── 有 NULL 检查: 74 处 (100%) ✅
-│   └── 无 NULL 检查: 0 处
-├── free 调用: 68 处
-│   ├── 配对正确: 68 处 (100%) ✅
-│   └── 内存泄漏: 0 处
-└── 结论: 内存安全管理完全符合 SEC-016 规范
-```
-
-**P1 线程安全加固**:
-```c
-// syscall_router.c 新增的 pthread_mutex 保护
-struct runtime_manager_s {
-    // ... 其他字段 ...
-    pthread_mutex_t lock;  // 全局互斥锁
-};
-
-// 受保护的共享状态修改操作：
-void protected_task_submit(runtime_mgr_t* mgr, task_t* task) {
-    pthread_mutex_lock(&mgr->lock);  // 加锁
-    
-    // 以下 6 处共享状态修改现在都是安全的：
-    task_queue_push(&mgr->tasks, task);           // 1. 任务队列
-    memory_record_add(&mgr->records, record);      // 2. 内存记录
-    session_create(&mgr->sessions, session_id);    // 3. 会话创建
-    agent_spawn(&mgr->agents, agent_config);       // 4. Agent注册
-    update_telemetry(&mgr->metrics, event);        // 5. 遥测指标
-    increment_counter(&mgr->stats);                // 6. 统计计数器
-    
-    pthread_mutex_unlock(&mgr->lock);  // 解锁
-}
-```
-
-**guard_core.c 注释修复**:
-```c
-// ❌ 修复前：
-/* 简化实现 */
-
-// ✅ 修复后：
-/* 生产级实现：异步包装同步版本(单线程确定性执行模型) */
-```
-
-##### 最终验证命令序列（4轮确认）
-
-```bash
-# 第1轮：编译验证
-$ cmake --build . -j$(nproc)
-# ✅ [100%] Built target agentos-tool-d (最后1个目标)
-
-# 第2轮：编译错误扫描
-$ grep -c "error:" build.log
-# → 0 ✅
-
-# 第3轮：链接错误扫描
-$ grep -c "undefined reference" build.log
-# → 0 ✅
-
-# 第4轮：SEC-017 桩函数扫描
-$ grep -ri "桩实现\|桩函数\|stub mode\|STUB模式\|malloc(1)" \
-         cupolas/ daemon/ gateway/ --include="*.c"
-# → 团队C范围生产代码 **0 桩函数 + 0 malloc(1)** 🎯
-```
-
-**结论**: 
-> **团队C评级提升轨迹**: 2.8/10 → 8.5/10 → **9.3/10**
-> 
-> 关键成就:
-> - ✅ SEC-017 完全合规（0桩函数）
-> - ✅ 编译链接双零（0错误+0未定义引用）
-> - ✅ 真实生产级实现（30个桩→真实代码）
-> - ✅ P0内存安全审计通过
-> - ✅ P1线程安全加固完成
-
-##### 待办事项（集成测试阶段）
-
-| 任务ID | 描述 | 优先级 | 预计时间 | 状态 |
-|--------|------|--------|----------|------|
-| C-TODO-01 | 集成测试套件建立 | P0 | 40h | ⏳ 本周开始 |
-| C-TODO-02 | svc_common.c 25处NULL检查 | P1 | 8h | ⏳ 排队 |
-| C-TODO-03 | daemon ~130个非致命问题 | P2 | 60h | ⏳ 分批处理 |
-| C-TODO-04 | 性能压力测试 | P1 | 20h | ⏳ 下Sprint |
-| C-TODO-05 | Windows平台交叉编译 | P0 | 16h | ⏳ 待安排 |
+**第三阶段交付标准**:
+- 双思考系统Phase 0-4完整可用
+- orchestrator串联Phase 0-4
+- MemoryRovol四层+分时推理完整
+- 端到端测试：用户指令→Phase 0→1→2→3→4→输出
 
 ---
 
-## ⚡ 并行甘特图（3周计划，基于真·穷尽全模块审查）
+## 团队B: 安全与服务组
 
-```
-时间轴 →     Day 1 (Mon)     Day 2 (Tue)     Day 3 (Wed)     Day 4-5 (Thu-Fri)    Week 2 (Mon-Fri)      Week 3 (Mon-Fri)
-           ────────────    ────────────    ────────────    ────────────────    ─────────────────     ─────────────────
+### 团队信息
 
-团队A ████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-(核心内核) █ Round 17完成█ 维护模式█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-           ├─STRDUP全扫┤├─零遗漏确认┤                                                           │
-           └─5模块审计┘└─进入维护┘                                                            │
+| 属性 | 值 |
+|------|-----|
+| **负责模块** | cupolas, heapstore, toolkit, protocols, interfaces, SDK |
+| **负责问题数** | 9个 (5 PROTO + 4 HIST) |
+| **总工时** | ~284小时 (~7周) |
+| **当前评级** | 8.0/10 |
+| **核心挑战** | 协议系统增强 + 智能体团队组建 + 自然语言界面 |
 
-团队B ████████████████████████░░░░░░░░░░░░███████████████████████████████████████████████████████████
-(安全服务) █ 主要功能完成█░░░░░░░░░░█ 渗透测试+SDK完善+协议适配器 █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░│
-           ├─ cupolas  ├─ heapstore├─ toolkit ├─ security audit ├─ LangChain/AutoGen ├─ performance  │
-           └─ 100%     └─ 95%      └─ 90%    └─ P0 complete    └─ <50%→>90%      └─ benchmarking │
+### 第一阶段任务 (第1-4周): 安全加固与基础
 
-团队C ████████████████████████████████████████████████████████████████████████░░░░░░░░░░░░░░░░░░░░░░
-(守护进程) █ Phase 1 █ Phase 2 █ 集成测试 █ 部署准备 █                                           │
-           ├─BUILD_DAEMON├─SEC-017清零├─ P0/P1加固├─ integration├─ cross-platform                 │
-           └─ 0 error     └─ 0 stubs   └─ mutex×6  ├─ test suite  ├─ Win/Mac build               │
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W1-2 | HIST-002 | 不安全字符串函数修复(协助团队A) | 20h | 无 | 197→<50个不安全调用 | 🔶 |
+| W2-3 | TGT-001 | 准确率目标文档调整 | 4h | 无 | 设计文档目标修正 | ❌ |
+| W2-3 | TGT-002 | 成本目标文档调整 | 4h | 无 | 设计文档目标修正 | ❌ |
+| W2-3 | TGT-003 | 工期目标文档调整 | 4h | 无 | 设计文档目标修正 | ❌ |
+| W3-4 | PROTO-004 | 持久连接池实现 | 16h | 无 | 连接复用+池化管理 | ❌ |
 
-里程碑     ★ M1            ★ M2             ★ M3                  ★ M4                    ★ M5
-           编译突破        桩函数清零        安全加固              集成测试完成             生产部署就绪
-```
+### 第二阶段任务 (第5-10周): 协议增强与服务
 
-### 里程碑定义
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W5-6 | PROTO-001 | OpenJiuwen WebSocket传输 | 16h | 无 | ws://传输层 | ❌ |
+| W6-7 | PROTO-003 | OpenAI真实LLM后端 | 24h | STUB-01(团队A) | 真实LLM响应 | ❌ |
+| W7-9 | HIST-003 | 智能体团队组建自动化 | 40h | 无 | 自动匹配+解散+同步 | ❌ |
+| W9-10 | cupolas优化 | vault_manager密钥轮换等 | 16h | 无 | CUP-2~12修复 | ❌ |
 
-| 里程碑 | 目标描述 | 验收标准 | 计划时间 | 实际状态 |
-|--------|----------|----------|----------|----------|
-| **M1** | 编译突破 | 所有模块 0 错误编译 | Week 1 Day 3 | ✅ **提前达成** (Day 2) |
-| **M2** | 桩函数清零 | SEC-017 100% 合规 | Week 1 Day 5 | ✅ **提前达成** (Day 3) |
-| **M3** | 安全加固 | P0/P1安全问题修复 | Week 2 Day 3 | ✅ **提前达成** (Week 1 Day 4) |
-| **M4** | 集成测试完成 | 测试覆盖率 >80% | Week 3 Day 3 | ⏳ **进行中** |
-| **M5** | 生产部署就绪 | 三平台编译+文档齐全 | Week 3 Day 5 | ⏳ **待开始** |
+### 第三阶段任务 (第11-16周): 完善与扩展
 
----
-
-## 📊 团队对比总览（2026-04-18 14:00 修正后）
-
-| 维度 | 团队A | 团队B | 团队C |
-|------|-------|-------|-------|
-| **当前评级** | **7.5/10** ⚠️ 降级 | **8.0/10** ⭐ | **9.5/10** ⭐ |
-| **初始评级** | 8.5/10 | 7.0/10 | 2.8/10 |
-| **提升幅度** | -1.0 (桩函数扣分) | +1.0 | +6.5 🎉 |
-| **负责文件数** | 176+ | ~212 | ~170 |
-| **致命问题修复** | 14 | 6 | 28 |
-| **桩函数清除(已完成)** | 0 (本来就没有) | 0 (本来就没有) | **30** 🔥 |
-| **🔴新发现桩函数(待清除)** | **68+** ❌❌❌ | 0 | 0 |
-| **编译状态** | ✅ 100% (连续17轮) | ✅ 100% | ✅ 100% (BUILD_DAEMON=ON) |
-| **SEC-017合规** | ❌ **严重违规(68+)** | ✅ 100% | ✅ 100% |
-| **主要优势** | 编译稳定、代码质量基础好 | SDK生态完善 | **进步最快、桩函数已清零(daemon范围)** |
-| **主要挑战** | 🔴 **68+桩函数必须立即清除** | 适配器完成度 | 集成测试待建 |
-| **下一步重点** | **P0: 清除STUB-01~05** | 安全渗透验证 | 集成测试套件 |
-
-### ⚠️ 关键发现
-
-**团队A的桩函数问题是最严重的**：
-- 团队A负责的memoryrovol/coreloopthree/commons是项目的核心模块
-- 这些模块中的桩函数会导致核心功能(LLM、向量存储、ML规划)完全不可用
-- 但因为使用了条件编译(#ifdef)，代码仍然能"编译通过"
-- 这就是为什么**编译通过 ≠ 功能正常**
-
-**教训**: 必须对每个团队的**所有代码**进行全量扫描，不能只扫描daemon/gateway
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W11-13 | HIST-004 | 自然语言交互界面 | 60h | DS-007(团队A) | NL界面原型 | ❌ |
+| W11-12 | HIST-006 | 设备驱动层扩充 | 40h | 无 | ≥5个设备驱动 | ❌ |
+| W13-14 | HIST-007 | 开发者工具链 | 40h | 无 | IDE插件+调试器 | ❌ |
+| W14-15 | PROTO-002 | A2A真实分布式共识 | 40h | 无 | Raft/PBFT实现 | ❌ |
+| W15-16 | PROTO-005 | 统计持久化 | 8h | 无 | SQLite指标存储 | ❌ |
 
 ---
 
-## 🎯 今日重点任务（2026-04-18）
+## 团队C: 守护进程与网关组
 
-### 必须完成（P0）
+### 团队信息
 
-| 任务ID | 描述 | 负责人 | 截止时间 | 状态 |
-|--------|------|--------|----------|------|
-| DOC-REBUILD-01 | 重建主报告 v13.0 | 文档组 | 今天 | ✅ **已完成** |
-| DOC-REBUILD-02 | 重建详细问题清单 v8.0 | 文档组 | 今天 | ✅ **已完成** |
-| DOC-REBUILD-03 | 重建规范手册 v7.0 | 文档组 | 今天 | ✅ **已完成** |
-| DOC-REBUILD-04 | 重建看板 v7.0 (本文档) | 文档组 | 今天 | ✅ **进行中** |
+| 属性 | 值 |
+|------|-----|
+| **负责模块** | daemon, gateway |
+| **负责问题数** | 4个 (非核心) |
+| **总工时** | ~132小时 (~3.5周) |
+| **当前评级** | 9.3/10 🎉 |
+| **核心挑战** | daemon非致命问题清理 + 适配器完善 |
 
-### 应该完成（P1）
+### 第一阶段任务 (第1-4周): 测试与质量
 
-| 任务ID | 描述 | 负责人 | 截止时间 | 状态 |
-|--------|------|--------|----------|------|
-| INTEGRATION-01 | 建立集成测试框架 | 团队C | 本周 | ⏳ 待开始 |
-| VERIFY-01 | 全量编译验证（含daemon_security.c修复后） | 全团队 | 明天 | ⏳ 待执行 |
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W1-3 | 集成测试 | 建立端到端测试框架 | 40h | 无 | CTest+Criterion框架 | ❌ |
+| W3-4 | daemon质量 | svc_common.c NULL检查等 | 30h | 无 | ~50个问题修复 | ❌ |
 
-### 可以完成（P2）
+### 第二阶段任务 (第5-10周): 适配器完善
 
-| 任务ID | 描述 | 负责人 | 截止时间 | 状态 |
-|--------|------|--------|----------|------|
-| OPTIMIZE-01 | coreloopthree 92问题优化 | 团队A | 下周 | ⏳ 排队 |
-| ADAPTER-01 | LangChain 适配器推进 | 团队B | 下周 | 🔄 开发中 |
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W5-6 | GW-1 | LangChain适配器→>90% | 16h | 无 | 完整LangChain支持 | ❌ |
+| W6-7 | GW-2 | AutoGen适配器→>90% | 16h | 无 | 完整AutoGen支持 | ❌ |
+| W7-8 | daemon质量 | 其余daemon非致命问题 | 30h | 无 | ~80个问题修复 | ❌ |
+
+### 第三阶段任务 (第11-16周): 清零与优化
+
+| 周次 | 任务ID | 描述 | 工时 | 依赖 | 交付物 | 状态 |
+|------|--------|------|------|------|--------|------|
+| W11-12 | gateway优化 | 连接池+路由效率 | 8h | 无 | GW-3~8修复 | ❌ |
+| W13-14 | daemon清零 | 所有非致命问题清零 | 8h | 无 | daemon零已知问题 | ❌ |
+| W15-16 | 压力测试 | 高并发+长时间运行测试 | 16h | 全部 | 性能基准报告 | ❌ |
 
 ---
 
-## 📈 关键数据追踪
+## 全团队协同任务
 
-### 编译成功率趋势
+### 第一阶段 (第1-4周): 基础设施
 
-```
-100% ┤                                          ████
-     │                                     ████
- 95% ┤                                ████
-     │                           ████
- 90% ┤                      ████
-     │                 ████
- 80% ┤            ████
-     │       ████
- 65% ┤  ████
-     └──┬──┬──┬──┬──┬──┬──┬──→
-       R1 R3 R5 R7 R9 R11 R13 R15 R17 现在
-       
-       注: R=Round (审查轮次)
-       当前: 95% (daemon_security.c修复后需重新验证)
-```
+| 周次 | 任务ID | 描述 | 工时 | 负责方 | 交付物 | 状态 |
+|------|--------|------|------|--------|--------|------|
+| W1-2 | HIST-005-P1 | 测试框架搭建+核心模块测试 | 40h | 团队C主导 | 覆盖率≥30% | ❌ |
+| W2-3 | HIST-002 | 不安全字符串函数修复 | 40h | 团队A主+团队B辅 | 197→<50 | 🔶 |
+| W3-4 | HIST-005-P2 | 扩展测试到所有模块 | 40h | 全团队 | 覆盖率≥50% | ❌ |
+| W4 | HIST-001 | TODO/FIXME分类清理 | 8h | 全团队 | 777→<100 | 🔶 |
 
-### 桩函数数量趋势
+### 第二阶段 (第5-10周): 核心功能验证
 
-```
-30 ┤ ●●●●●●●●●●●●●●●●●●●●●●●●●●●●
-    │                              ╮
-25 ┤                              │
-    │                              │
-20 ┤                              │
-    │                              │
-15 ┤                              │ 清除
-    │                              │
-10 ┤                              │
-    │                              │
- 5 ┤                              │
-    │                              │
- 0 ┤──────────────────────────────╯ ← 当前
-    └──┬──┬──┬──┬──┬──┬──┬──┬──→
-      4/15 4/16 4/17上午 4/17晚上 4/18
-```
+| 周次 | 任务ID | 描述 | 工时 | 负责方 | 交付物 | 状态 |
+|------|--------|------|------|--------|--------|------|
+| W5-6 | 集成测试-DS | 双思考系统集成测试 | 24h | 团队A+团队C | DS测试套件 | ❌ |
+| W7-8 | 集成测试-MR | MemoryRovol集成测试 | 24h | 团队A+团队C | MR测试套件 | ❌ |
+| W9-10 | HIST-005-P3 | 测试覆盖率提升 | 24h | 全团队 | 覆盖率≥70% | ❌ |
 
-### 团队评级趋势
+### 第三阶段 (第11-16周): 生产级就绪
+
+| 周次 | 任务ID | 描述 | 工时 | 负责方 | 交付物 | 状态 |
+|------|--------|------|------|--------|--------|------|
+| W11-12 | 端到端测试 | 全流程端到端测试 | 24h | 全团队 | E2E测试套件 | ❌ |
+| W13-14 | 性能基准 | 性能基准测试+优化 | 24h | 全团队 | 性能报告 | ❌ |
+| W15-16 | HIST-005-P4 | 测试覆盖率最终冲刺 | 16h | 全团队 | 覆盖率≥80% | ❌ |
+
+---
+
+## 三阶段实施路线图
+
+### 阶段定义
 
 ```
-10 ┤                                  ┌─ A: 9.5
-   │                             ┌────┤
- 9 ┤                        ┌────┤    └─ C: 9.3
-   │                   ┌────┤    │
- 8 ┤              ┌────┤    │    └─ B: 8.0
-   │         ┌────┤    │    │
- 7 ┤    ┌────┤    │    │    │
-   │    │    │    │    │    │
- 6 ┤────┤    │    │    │    │
-   │    │    │    │    │    │
- 5 ┤    │    │    │    │    │
-   │    │    │    │    │    │
- 4 ┤    │    │    │    │    │
-   │    │    │    │    │    │
- 3 ┤────┤    │    │    │    │
-   │    │    │    │    │    │
- 2.8 ┤    │    │    │    │    │
-   └────┴────┴────┴────┴────┴────→
-       R1   R5   R10  R15  R17  现在
+第一阶段: 桩函数清除 + 基础设施 (第1-4周)
+├── 目标: 项目可编译+可运行+测试≥50%
+├── 团队A: STUB-01~05清除 (80h)
+├── 团队B: 安全加固+目标调整 (48h)
+├── 团队C: 测试框架+daemon质量 (70h)
+└── 全团队: 测试+TODO清理 (88h)
+
+第二阶段: 核心功能实现 (第5-10周)
+├── 目标: 双思考系统Phase 0-3可用 + MemoryRovol增强
+├── 团队A: DS-001~003/006/007 + MR-001/002/004 (352h)
+├── 团队B: PROTO-001/003/004 + HIST-003 (96h)
+├── 团队C: 适配器+daemon质量 (62h)
+└── 全团队: 集成测试 (72h)
+
+第三阶段: 完善与生产级 (第11-16周)
+├── 目标: 双思考系统Phase 0-4完整 + 生产级就绪
+├── 团队A: DS-004/005/008 + MR-003/005/006/007 (172h)
+├── 团队B: PROTO-002/005 + HIST-004/006/007 (148h)
+├── 团队C: gateway优化+压力测试 (24h)
+└── 全团队: 端到端测试+性能基准 (64h)
+
+注: 看板16周(4个月)为核心问题修复周期，主报告9-12个月为含生产级优化的完整周期
 ```
 
 ---
 
-## ⚠️ 注意事项与风险提示
-
-### 当前风险项（2026-04-18 14:00 更新）
-
-| 风险ID | 描述 | 可能影响 | 缓解措施 | 责任人 | 状态 |
-|--------|------|----------|----------|--------|------|
-| **RISK-STUB-01** | **🔴 团队A 68+桩函数违规** | 核心功能(LLM/向量存储/ML)完全不可用 | 本周内必须清除STUB-01~05 | 团队A | 🔴 P0最高优先级 |
-| RISK-02 | daemon_security.c修复后未重新验证编译 | 编译可能仍有问题 | 立即执行全量编译 | 团队C | 🟠 中等 |
-| RISK-03 | 集成测试缺失可能导致回归 | 已修复问题复发 | 尽快建立测试套件 | 团队C | 🟠 中等 |
-| RISK-04 | LangChain/AutoGen适配器<50% | Agent兼容性不足 | 增加人力投入 | 团队B | 🟡 低 |
-| RISK-05 | 文档体系刚重建，可能存在信息不同步 | 决策基于过时信息 | 每日同步验证 | 文档组 | 🟢 已控制 |
-
-### 历史教训（必须避免重犯 - 2026-04-18 更新）
-
-1. **❌❌❌ 扫描范围不完整（最严重教训）**
-   - v7.0声称"0桩函数"，实际只扫描了cupolas/daemon/gateway/3个目录
-   - 漏扫了memoryrovol/coreloopthree/commons/
-   - 结果：遗漏了团队A负责模块中的68+处桩函数
-   - **修正**: CI扫描命令必须覆盖agentos/全目录，不能列举子集
-   
-2. **❌ 虚假声明**: 团队C曾声称"0错误"但实际有18个编译错误
-   - **教训**: 必须独立验证，不能轻信声明
-   
-3. **❌ 数据矛盾**: 看板文件曾出现编译35%中断 vs 100%成功的矛盾
-   - **教训**: 以实际编译结果为准，及时同步数据
-   
-4. **❌ 接口矛盾**: daemon_security.c禁用cupolas但调用其函数
-   - **教训**: 模块间依赖需要更严格的规范和自动化检查
-
-5. **⚠️ 新增: 编译通过 ≠ 功能正常**
-   - 桩函数让代码能编译但不能工作
-   - curl_stub.h/sqlite3_stub.h让LLM和向量存储"假装可用"
-   - **必须建立运行时功能测试**
-
----
-
-## 📞 联系方式与支持
-
-### 团队负责人
-
-| 团队 | 负责人 | 联系方式 | 备注 |
-|------|--------|----------|------|
-| 团队A | 核心内核组 | 即时通讯群组 | 9-18点在线 |
-| 团队B | 安全与服务组 | 即时通讯群组 | 9-18点在线 |
-| 团队C | 守护进程组 | 即时通讯群组 | 9-18点在线 |
-| 文档组 | 项目协调 | 即时通讯群组 | 全天响应紧急问题 |
-
-### 紧急情况处理流程
+## 甘特图
 
 ```
-发现P0问题
-    ↓
-立即在即时通讯群组通知
-    ↓
-15分钟内响应
-    ↓
-1小时内给出临时解决方案
-    ↓
-24小时内彻底修复
-    ↓
-更新本文档和相关文档
+2026年4月-7月 三团队并行甘特图
+
+团队A (核心内核) ──────────────────────────────────────────────
+W1  ██ STUB-01/02 ██ STUB-05
+W2  ████ STUB-04 ████ STUB-04a
+W3  ████████████████████ STUB-03
+W4  ████████████████████ STUB-03(续)
+W5  ████ DS-001-PoC ████ MR-001
+W6  ████████████████ MR-001(续) ████ DS-001
+W7  ████████████████ DS-001(续) ████ MR-002
+W8  ████████████████ DS-006 ████ DS-007
+W9  ████████████████ DS-002 ████ DS-003
+W10 ████████████████████████████████ MR-004
+W11 ████ DS-004 ████ DS-005
+W12 ████████████████████████████████ DS-008
+W13 ████ MR-003 ████ MR-005 ████ MR-006
+W14 ████████████████████████████████ MR-007
+W15 ████████████████████████████████ 集成测试
+W16 ████████████████████████████████ 集成测试(续)
+
+团队B (安全服务) ──────────────────────────────────────────────
+W1  ████████████████████████████████ HIST-002
+W2  ████████████████████████████████ HIST-002(续)
+W3  ██ TGT-001/002/003 ████ PROTO-004
+W4  ████████████████████████████████ PROTO-004(续)
+W5  ████████████████ PROTO-001
+W6  ████████████████ PROTO-001(续) ████ PROTO-003
+W7  ████████████████████████████████ HIST-003
+W8  ████████████████████████████████ HIST-003(续)
+W9  ████████████████████████████████ HIST-003(续)
+W10 ████████████████ cupolas优化
+W11 ████████████████████████████████ HIST-004
+W12 ████████████████████████████████ HIST-006
+W13 ████████████████████████████████ HIST-007
+W14 ████████████████ PROTO-002
+W15 ████████████████ PROTO-002(续) ████ PROTO-005
+W16 ████ PROTO-005(续)
+
+团队C (守护网关) ──────────────────────────────────────────────
+W1  ████████████████████████████████ 集成测试框架
+W2  ████████████████████████████████ 集成测试框架(续)
+W3  ████████████████████████████████ daemon质量
+W4  ████████████████████████████████ daemon质量(续)
+W5  ████████████████ LangChain适配器
+W6  ████████████████ LangChain(续) ████ AutoGen
+W7  ████████████████ AutoGen(续)
+W8  ████████████████████████████████ daemon质量(续)
+W9  ████████████████████████████████ daemon质量(续)
+W10 (团队C第二阶段完成，进入维护模式)
+W11 ████████████████ gateway优化
+W12 ████████████████ daemon清零
+W13-14 (维护模式)
+W15 ████████████████████████████████ 压力测试
+W16 ████████████████████████████████ 压力测试(续)
 ```
 
 ---
 
-## 📝 版本历史
+## 团队间依赖与协作点
 
-| 版本 | 日期 | 主要变更 | 作者 |
-|------|------|----------|------|
-| **v7.0.0** | 2026-04-18 | **文档体系重建版**：在 Docs-closed 路径下重新建立完整看板 | 文档组 |
-| v6.6.0 | 2026-04-18 | Round 17 STRDUP全扫描+清零版 | 团队A |
-| v6.5.0 | 2026-04-18 | Round 16核心内核+syscall深度审计版 | 团队A |
-| v6.0.0 | 2026-04-17 | 真实验证+桩函数清除紧急版 | 文档组 |
-| v5.4.0 | 2026-04-17 | 团队ARound16核心内核深度审计版 | 团队A |
-| v4.2.0 | 2026-04-17 | 全面同步验证版（解决内部不一致） | 文档组 |
-| v4.1.0 | 2026-04-17 | 初版建立 | 文档组 |
-| ... | ... | ... | ... |
+### 依赖关系矩阵
+
+| 依赖方 | 提供方 | 依赖内容 | 阻塞任务 | 预计解除时间 |
+|--------|--------|----------|----------|-------------|
+| 团队A(DS-001) | 团队A(STUB-01) | 真实LLM调用能力 | 流式批判循环 | W1完成 |
+| 团队A(DS-001) | 团队A(STUB-04) | LLM返回真实数据 | 流式批判循环 | W2完成 |
+| 团队A(DS-003) | 团队A(MR-001) | 因果链编码 | 漂移检测 | W6完成 |
+| 团队A(DS-008) | 团队A(DS-001~007) | 所有Phase基础实现 | orchestrator | W11完成 |
+| 团队B(PROTO-003) | 团队A(STUB-01) | 真实LLM后端 | OpenAI真实响应 | W1完成 |
+| 团队B(HIST-004) | 团队A(DS-007) | LLM驱动语义理解 | NL界面 | W8完成 |
+| 团队A(MR-004) | 团队A(MR-001/002) | 因果链+规则注入 | 分时推理 | W7完成 |
+
+### 协作点（非阻塞但需同步）
+
+| 协作点 | 涉及团队 | 同步内容 | 频率 |
+|--------|----------|----------|------|
+| LLM客户端接口 | A+B | llm_service_t结构定义 | 需求变更时 |
+| 协议适配器接口 | A+B | protocol_adapter_t接口定义 | 需求变更时 |
+| daemon服务调用 | A+C | daemon如何调用atoms层功能 | 每周 |
+| 测试框架 | A+B+C | 测试用例规范和覆盖率统计 | 每周 |
+| 构建系统 | A+B+C | CMake配置和依赖管理 | 需求变更时 |
+
+### 冲突避免规则
+
+| 规则 | 描述 | 执行方式 |
+|------|------|----------|
+| **文件独占** | 每个源文件只由一个团队修改 | Git CODEOWNERS |
+| **接口先行** | 跨团队依赖先定义.h接口 | 接口review后才能实现 |
+| **分支隔离** | 团队A/B/C各自开发分支 | team-a/dev, team-b/dev, team-c/dev |
+| **集成窗口** | 每周五合并到main | CI全量测试通过才能合并 |
+| **冲突仲裁** | 冲突由项目lead裁决 | 24小时内解决 |
 
 ---
 
-## 🎯 下次更新计划
+## 风险与缓解措施
 
-**计划更新时间**: 2026-04-19 (Round 18完成后或重大事件触发时)
+### 🔴 高风险项
 
-**预期更新内容**:
-- [ ] daemon_security.c修复后的全量编译验证结果
-- [ ] 集成测试框架建立进展
-- [ ] 各团队新一天的工作成果
-- [ ] 风险项状态变化
-- [ ] 里程碑 M4 进展
+| 风险ID | 风险描述 | 影响 | 概率 | 缓解措施 | 负责人 |
+|--------|----------|------|------|----------|--------|
+| R-01 | STUB-01/02清除后编译失败 | 阻塞所有后续任务 | 中 | 预先在CI中验证libcurl/sqlite3可用性 | 团队A |
+| R-02 | DS-001流式批判延迟过高 | 用户体验差 | 高 | 方案C(混合检查)降低延迟 | 团队A |
+| R-03 | 本地7B模型资源不足 | S1无法本地运行 | 中 | 备选方案A(异步流水线) | 团队A |
+| R-04 | 团队A工作量过大(560h) | 可能延期 | 高 | 优先P0任务，P3可延后 | 项目lead |
+
+### 🟡 中等风险项
+
+| 风险ID | 风险描述 | 影响 | 概率 | 缓解措施 | 负责人 |
+|--------|----------|------|------|----------|--------|
+| R-05 | PROTO-003依赖团队A进度 | 团队B阻塞 | 中 | 团队A W1完成STUB-01即可解除 | 团队B |
+| R-06 | 测试覆盖率目标过高 | 可能无法达到80% | 中 | 分阶段目标：50%→70%→80% | 全团队 |
+| R-07 | MemoryRovol L4规则质量 | 有害规则注入 | 低 | 人工审核+权限控制(MR-003) | 团队A |
 
 ---
 
-> **看板维护说明**: 本文档位于 `/home/spharx/SpharxWorks/OpenAirymax/Docs-closed/` 目录下，属于本地开发指导文档，**不应纳入 Git 版本控制**。
+## 里程碑与验收标准
+
+### M1: 桩函数清零 (第4周末)
+
+| 验收项 | 标准 | 验证方式 |
+|--------|------|----------|
+| stub文件数 | 0 | `find agentos/ -name "*stub*.h" \| wc -l` = 0 |
+| 编译 | 0错误0警告 | `cmake --build . 2>&1 \| grep -c "error:"` = 0 |
+| LLM可用 | 真实响应 | `llm_client_chat()` 返回非degraded数据 |
+| 向量存储可用 | CRUD成功 | `vector_store_put/get` 端到端通过 |
+| 测试覆盖率 | ≥50% | `gcovr -r .` 报告 |
+
+### M2: 双思考系统核心可用 (第10周末)
+
+| 验收项 | 标准 | 验证方式 |
+|--------|------|----------|
+| Phase 0-3 | 基本可用 | orchestrator能串联Phase 0-3 |
+| 流式批判 | 能拦截错误 | S2生成错误token→S1检测→S2修正 |
+| 审计委员会 | 交叉验证 | 两个模型独立验证→辩论→仲裁 |
+| 因果链 | 多元因果 | A+B→C类型关系可编码 |
+| 规则注入 | L4→S1/S2 | 规则自动转换为提示词 |
+| 分时推理 | PoC通过 | 2个子任务间记忆交换成功 |
+
+### M3: 生产级就绪 (第16周末)
+
+| 验收项 | 标准 | 验证方式 |
+|--------|------|----------|
+| Phase 0-4 | 完整可用 | 端到端：指令→拆解→规划→批判→审计→对齐 |
+| orchestrator | 完整调度 | Phase转换+错误恢复+重新规划 |
+| 测试覆盖率 | ≥80% | `gcovr -r .` 报告 |
+| 性能基准 | 达标 | 延迟<2s，吞吐>10 req/min |
+| 安全审计 | 通过 | 无新漏洞 |
+| 文档完整 | 100% | API文档+架构文档+用户手册 |
+
+---
+
+## 技术借鉴融合任务
+
+> **来源**: [AgentOS_战略实施方案：全行业兼容与 openJiuwen 技术借鉴](./历史档案/改进计划/AgentOS_战略实施方案：全行业兼容与%20openJiuwen%20技术借鉴.md) + [10次-AgentOS务实开发计划](./历史档案/改进计划/20260411-10次-AgentOS务实开发计划.md)
+
+### 8项核心技术借鉴融合任务
+
+| 技术ID | 技术名称 | 融入模块 | 负责团队 | 阶段 | 与现有问题关联 |
+|--------|---------|----------|----------|------|---------------|
+| **TECH-01** | UnifiedProtocol(统一协议) | protocols/ | 团队B | 第二阶段 | PROTO-001/003 |
+| **TECH-02** | UnifiedChannel(统一通道) | gateway/ | 团队C | 第二阶段 | GW-1/2 |
+| **TECH-03** | CognitiveEvolution(认知进化) | coreloopthree/ | 团队A | 第二阶段 | DS-001/006 |
+| **TECH-04** | TaskFlow(任务流) | coreloopthree/execution/ | 团队A | 第二阶段 | DS-008 |
+| **TECH-05** | SafetyGuard(安全守护) | cupolas/ | 团队B | 第二阶段 | CUP-2~12 |
+| **TECH-06** | FileSanitizer(文件净化) | daemon/tool_d/ | 团队C | 第一阶段 | daemon质量 |
+| **TECH-07** | DualLoop(双循环) | coreloopthree/cognition/ | 团队A | 第二阶段 | DS-001~008 |
+| **TECH-08** | ToolkitExtensions(工具扩展) | toolkit/ | 团队B | 第三阶段 | HIST-004 |
+
+### 融合原则
+
+1. **不破坏现有架构**: 所有借鉴技术必须适配五维正交架构(SV/KV/CV/EV/DA)
+2. **渐进式引入**: 先PoC验证→再模块集成→最后全项目融合
+3. **接口兼容**: 新技术必须通过现有接口暴露，不创建新的调用路径
+4. **性能不退化**: 融合后性能基准不低于融合前
+
+---
+
+## 双思考系统与记忆卷载实施任务
+
+> **来源**: [双思考系统全方位设计01.md](../../.vscode/双思考系统全方位设计01.md) + [突破长上下文瓶颈.md](../../.vscode/突破长上下文瓶颈.md) + [emoryRovol独立突破上下文窗口限制的可行性.md](../../.vscode/emoryRovol独立突破上下文窗口限制的可行性.md) + [三大设计文档深度推理分析报告](./AgentOS三大设计文档深度推理分析报告.md) + [三大设计文档全面可行性评估报告](./AgentOS三大设计文档全面可行性评估报告.md)
+
+### 双思考系统实施路线
+
+| 阶段 | Phase | 关键实现 | 对应问题 | 验收标准 |
+|------|-------|---------|----------|----------|
+| **第一阶段** | Phase 0-1增强 | intent_parser LLM化 + dual_model交叉验证 | DS-006/007 | 意图准确率>85%，交叉验证冲突检测 |
+| **第二阶段** | Phase 2-3实现 | 流式批判循环 + 审计委员会 + 漂移检测 | DS-001/002/003 | S1能拦截S2错误，审计能发现子任务问题 |
+| **第三阶段** | Phase 4 + 编排 | 目标对齐 + 进度摘要 + orchestrator | DS-004/005/008 | 全流程端到端可用 |
+
+### 记忆卷载实施路线
+
+| 阶段 | Layer | 关键实现 | 对应问题 | 验收标准 |
+|------|-------|---------|----------|----------|
+| **第一阶段** | L1-L2完善 | 动态索引更新 + 分片存储优化 | MR-005/007 | 检索延迟<50ms |
+| **第二阶段** | L3-L4增强 | 多元因果链 + 规则注入 + 分时推理 | MR-001/002/004 | 因果链可编码，规则可注入 |
+| **第三阶段** | 质量保证 | 规则质量保证 + 图查询优化 | MR-003/006 | 规则无害，查询<100ms |
+
+### 双思考×记忆卷载交互点
+
+```
+Phase 2(流式批判) ←→ L4(规则注入):
+  S1验证时使用L4挖掘的规则
+  规则触发条件匹配S2生成的token模式
+
+Phase 3(审计委员会) ←→ L3(因果链):
+  审计时追溯因果链验证逻辑一致性
+  漂移检测使用因果链编码的目标追溯
+
+Phase 4(目标对齐) ←→ 分时推理:
+  目标对齐检查触发记忆交换
+  进度摘要写入L2供下次子任务使用
+
+Phase 0(指令拆解) ←→ L2(语义检索):
+  意图解析时检索相似历史意图
+  上下文感知的多轮对话
+```
+
+---
+
+## SEC-017合规追踪
+
+### 当前状态
+
+| 模块 | 桩函数数 | 状态 | 负责团队 | 目标 |
+|------|---------|------|----------|------|
+| corekern | 0 | ✅ 清零 | 团队A | 维持 |
+| coreloopthree | 1(STUB-03) | ❌ 待清除 | 团队A | W4清零 |
+| memoryrovol | 67(STUB-01/02/04) | ❌ 待清除 | 团队A | W2清零 |
+| syscall | 0 | ✅ 清零 | 团队A | 维持 |
+| commons | 1(STUB-05) | ❌ 待清除 | 团队A | W1清零 |
+| cupolas | 0 | ✅ 清零 | 团队B | 维持 |
+| heapstore | 0 | ✅ 清零 | 团队B | 维持 |
+| daemon | 0 | ✅ 清零 | 团队C | 维持 |
+| gateway | 0 | ✅ 清零 | 团队C | 维持 |
+| **总计** | **69** | **❌** | **团队A** | **W4清零** |
+
+### SEC-017清除时间线
+
+```
+W1: STUB-01(25) + STUB-02(30+) + STUB-05(1) = ~56个桩函数清除
+W2: STUB-04(12) = 12个桩函数清除
+W4: STUB-03(1) = 1个桩函数清除
+──────────────────────────────────────────────
+W4末: 69→0 桩函数全部清零 ✅
+```
+
+---
+
+## 每日站会与周报模板
+
+### 每日站会 (15分钟)
+
+```
+1. 昨天完成了什么？(具体到问题ID)
+2. 今天计划做什么？(具体到问题ID)
+3. 有什么阻塞？(标注依赖团队)
+```
+
+### 周报模板
+
+```markdown
+## 团队[X] 周报 W[N]
+
+### 本周完成
+- [问题ID] 描述 (工时)
+
+### 下周计划
+- [问题ID] 描述 (预估工时)
+
+### 阻塞项
+- [问题ID] 阻塞原因 → 需要团队[Y]在W[N]前完成[依赖内容]
+
+### 风险
+- [风险描述] → 缓解措施
+
+### 度量
+- 测试覆盖率: X%
+- 桩函数数: X
+- 编译错误: X
+```
+
+---
+
+> **维护说明**: 本看板是AgentOS项目三团队的**任务分配与进度追踪**核心文档。所有任务必须关联到问题清单中的具体问题ID，确保可追溯、不遗漏、不冲突。
 >
-> **更新责任**: 每日 17:00 同步会议后由文档组统一更新，确保三个团队的数据一致性和准确性。
+> **最后更新**: 2026-04-19 (v13.0.0 生产级团队分工与进度追踪版)
 >
-> **数据真实性保证**: 所有数据必须来自实际编译结果、CI扫描报告、代码审查记录，严禁凭空捏造或夸大进度。**一切以成功编译、成功运行为最高目标！**
+> **下次计划更新**: 每周五例行更新，或重大事件触发时立即更新
