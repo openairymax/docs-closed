@@ -1,53 +1,352 @@
-# AgentOS 详细问题清单 v8.0.0
+# AgentOS 详细问题清单 v9.0.0
 
-> **版本**: 8.0.0-真实验证+桩函数清零+文档体系重建版
+> **版本**: 9.0.0-真实验证+桩函数发现+SEC-017严重违规修正版
 > **日期**: 2026-04-18
-> **状态**: ✅ **致命问题已清零(0个)** + **生产级桩函数已清除(0个)** + **编译成功率95%**
-> **核心理念**: 穷尽式逐文件审查，绝不流于形式！
-> **关联文档**: [主报告v13.0](./AgentOS全面修复与改进报告.md) | [规范手册v7.0](./AgentOS工程规范化标准手册.md) | [看板v7.0](./AgentOS三团队任务进度看板.md)
+> **状态**: ⚠️ **致命问题已清零(0个)** + **❌ 发现新桩函数违规(68+处)** + **编译成功率100%**
+> **核心理念**: 穷尽式逐文件审查，绝不流于形式！**扫描范围必须覆盖全项目！**
+> **关联文档**: [主报告v15.0](./AgentOS全面修复与改进报告07.md) | [规范手册v8.0](./AgentOS工程规范化标准手册07.md) | [看板v8.0](./AgentOS三团队任务进度看板07.md) | [桩函数报告](./AgentOS桩函数穷尽检查报告.md)
 
 ---
 
 ## 📋 目录
 
 1. [问题总览](#问题总览)
-2. [模块A: corekern (微内核核心)](#模块a-corekern)
-3. [模块B: coreloopthree (认知循环三层)](#模块b-coreloopthree)
-4. [模块C: memoryrovol (四层记忆系统)](#模块c-memoryrovol)
-5. [模块D: syscall (系统调用层)](#模块d-syscall)
-6. [模块E: cupolas (安全穹顶)](#模块e-cupolas)
-7. [模块F: daemon (守护进程服务)](#模块f-daemon)
-8. [模块G: gateway (统一网关)](#模块g-gateway)
-9. [模块H: heapstore (运行时数据存储)](#模块h-heapstore)
-10. [模块I: toolkit/protocols/interfaces (SDK与协议)](#模块i-toolkitprotocolsinterfaces)
-11. [安全漏洞清单](#安全漏洞清单)
-12. [修复历史记录](#修复历史记录)
+2. [🔴🔴🔴 新发现的桩函数违规（全模块穷尽扫描）](#新发现的桩函数违规)
+3. [模块A: corekern (微内核核心)](#模块a-corekern)
+4. [模块B: coreloopthree (认知循环三层)](#模块b-coreloopthree)
+5. [模块C: memoryrovol (四层记忆系统)](#模块c-memoryrovol)
+6. [模块D: syscall (系统调用层)](#模块d-syscall)
+7. [模块E: cupolas (安全穹顶)](#模块e-cupolas)
+8. [模块F: daemon (守护进程服务)](#模块f-daemon)
+9. [模块G: gateway (统一网关)](#模块g-gateway)
+10. [模块H: heapstore (运行时数据存储)](#模块h-heapstore)
+11. [模块I: toolkit/protocols/interfaces (SDK与协议)](#模块i-toolkitprotocolsinterfaces)
+12. [安全漏洞清单](#安全漏洞清单)
+13. [修复历史记录](#修复历史记录)
 
 ---
 
 ## 问题总览
 
-### 📊 统计摘要（截至2026-04-18）
+### 📊 统计摘要（截至2026-04-18 全模块穷尽扫描后）
 
 | 类别 | 总数 | 致命(P0) | 高(P1) | 中(P2) | 低(P3) | 已修复 |
 |------|------|----------|--------|--------|--------|--------|
 | **编译错误** | 18 | 18 | 0 | 0 | 0 | ✅ 18/18 |
-| **桩函数违规** | 30 | 30 | 0 | 0 | 0 | ✅ 30/30 |
+| **桩函数违规(daemon/gateway)** | 30 | 30 | 0 | 0 | 0 | ✅ 30/30 |
+| **🔴新发现桩函数违规(团队A)** | **68+** | **55+** | **13** | 0 | 0 | ❌ **0/68+** |
 | **内存安全问题** | 45 | 0 | 15 | 20 | 10 | 🔶 5/45 |
 | **线程安全问题** | 25 | 0 | 10 | 10 | 5 | 🔶 3/25 |
 | **API不匹配** | 35 | 0 | 8 | 17 | 10 | 🔶 10/35 |
 | **代码风格** | 120 | 0 | 0 | 40 | 80 | ⏳ 待处理 |
 | **注释/文档** | 79 | 0 | 0 | 29 | 50 | ⏳ 待处理 |
-| **总计** | **~352** | **48** | **33** | **116** | **155** | **✅ 66/352 (18.7%)** |
+| **总计** | **~420+** | **103+** | **46** | **116** | **155** | **✅ 66/420 (15.7%)** |
 
-### 🎯 关键成就
+### 🎯 关键成就与问题
 
 ```
-✅ 致命问题清零: 48 → 0 (100%修复)
-✅ 桩函数清零:   30 → 0 (100%替换为真实实现)
+✅ 致命问题清零(daemon/gateway): 48 → 0 (100%修复)
+✅ 桩函数清零(daemon/gateway):   30 → 0 (100%替换为真实实现)
 ✅ 编译阻塞消除: daemon_security.c 18错误 → 0错误
-✅ SEC-017合规:   生产代码 0 桩函数 + 0 malloc(1)
+
+🔴🔴🔴 新发现桩函数违规(团队A负责模块):
+   STUB-01: curl_stub.h           - 25个假CURL函数    (P0致命)
+   STUB-02: sqlite3_stub.h        - 30+个假SQLite3函数 (P0致命)
+   STUB-03: ml_planner.c          - PHASE2-IMPLEMENTED (P0致命)
+   STUB-04: llm_client.c          - degraded mode假数据 (P1高)
+   STUB-05: config_service.c      - simplified version  (P1高)
+   ────────────────────────────────────────────────
+   总计: 68+处桩函数待清除
+
+⚠️ SEC-017合规状态: 从"完全合规"降级为"严重违规"
+⚠️ 整体评级: 从7.5/10降至6.5/10
 ```
+
+---
+
+## 🔴🔴🔴 新发现的桩函数违规（全模块穷尽扫描 - 2026-04-18）
+
+### 扫描背景
+
+**⚠️ 警告**: 之前v8.0版本的桩函数统计是**错误的**！
+
+**原因**: 
+- v8.0只统计了daemon/gateway/cupolas中的30个桩函数（已清除）
+- **漏扫了memoryrovol/coreloopthree/commons三个核心模块**
+- 这些模块属于**团队A**职责范围
+
+**正确扫描方式**:
+```bash
+# 必须覆盖所有目录，不能只列举3个子目录！
+find agentos/ -name "*stub*.h"
+grep -rn "PHASE.*IMPLEMENTED\|placeholder\|degraded mode\|simplified version" agentos/ --include="*.c"
+```
+
+### STUB-01: curl_stub.h - 完整假libcurl API头文件
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/atoms/memoryrovol/include/curl_stub.h` |
+| **桩函数数量** | 25个 |
+| **严重程度** | P0 致命级 |
+| **负责团队** | 团队A (memoryrovol) |
+| **影响功能** | LLM客户端(llm_client.c)完全不可用 |
+
+#### 详细内容
+```c
+/* curl_stub.h - 完整的假libcurl API */
+typedef void CURL;                                    // 假类型定义
+typedef int CURLcode;                                 // 假类型定义
+typedef struct curl_slist { } curl_slist_t;            // 空结构体
+
+// 所有函数都返回NULL或错误码：
+static inline CURL* curl_easy_init(void) { return NULL; }
+static inline CURLcode curl_easy_setopt(CURL *curl, ...) { return CURLE_FAILED_INIT; }
+static inline CURLcode curl_easy_perform(CURL *curl) { return CURLE_FAILED_INIT; }
+static inline void curl_easy_cleanup(CURL *curl) { }  // 空操作
+static inline char* curl_easy_strerror(CURLcode code) { return "stub error"; }
+// ... 还有20个类似的假函数
+```
+
+#### 影响链路
+```
+llm_client.c 初始化时:
+  #ifdef AGENTOS_HAS_CURL
+    #include <curl/curl.h>     // ← 真实libcurl
+  #else
+    #include "curl_stub.h"     // ← 假API！(当系统没装libcurl时走这里)
+  #endif
+  
+结果:
+  curl = curl_easy_init();     // 返回 NULL (来自stub)
+  if (!curl) {
+    // 进入"degraded mode"(STUB-04)
+    service->initialized = 1; // 标记为已初始化！
+    *out_service = service;   // 返回成功！
+    return AGENTOS_SUCCESS;   // 但实际上什么都没做！
+  }
+```
+
+#### 清除方案
+- **方案A**: 安装libcurl开发包，确保`AGENTOS_HAS_CURL`被定义，使用真实API
+- **方案B**: 如果不需要LLM功能，移除整个llm_client.c及相关依赖
+- **禁止**: 保留curl_stub.h作为生产代码
+
+---
+
+### STUB-02: sqlite3_stub.h - 完整假SQLite3 API头文件
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/atoms/memoryrovol/include/sqlite3_stub.h` |
+| **桩函数数量** | 30+个 |
+| **严重程度** | P0 致命级 |
+| **负责团队** | 团队A (memoryrovol) |
+| **影响功能** | 向量存储(vector_store.c)完全不可用 |
+
+#### 详细内容
+```c
+/* sqlite3_stub.h - 完整的假SQLite3 API */
+typedef struct sqlite3 sqlite3;
+
+// 所有函数都返回错误码：
+static inline int sqlite3_open(const char *filename, sqlite3 **ppDb) { 
+    return SQLITE_NOMEM;  // 永远内存不足
+}
+static inline int sqlite3_exec(sqlite3*, const char*, ...) { 
+    return SQLITE_ERROR;  // 永远执行失败
+}
+static inline int sqlite3_close(sqlite3*) { return SQLITE_OK; }  // 假装成功
+static inline const char* sqlite3_errmsg(sqlite3*) { return "stub error"; }
+// ... 还有26+个类似的假函数
+```
+
+#### 影响链路
+```
+vector_store.c 使用向量数据库时:
+  #ifdef AGENTOS_HAS_SQLITE3
+    #include <sqlite3.h>         // ← 真实SQLite3
+  #else
+    #include "sqlite3_stub.h"    // ← 假API！(当系统没装SQLite3时走这里)
+  #endif
+
+结果:
+  rc = sqlite3_open(db_path, &db);  // 返回 SQLITE_NOMEM (来自stub)
+  // 向量存储功能完全不可用，但可能被上层静默忽略
+```
+
+#### 清除方案
+- **方案A**: 安装SQLite3开发包，使用真实API
+- **方案B**: 如果不需要持久化向量存储，改用纯内存实现
+- **禁止**: 保留sqlite3_stub.h作为生产代码
+
+---
+
+### STUB-03: ml_planner.c - PHASE2-IMPLEMENTED ML推理管道
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/atoms/coreloopthree/src/cognition/planner/ml_planner.c` |
+| **涉及行号** | 68-88, 184-197 |
+| **桩函数数量** | 1处(多行逻辑) |
+| **严重程度** | P0 致命级 |
+| **负责团队** | 团队A (coreloopthree) |
+| **影响功能** | ML规划器永远无法进行真实ML推理 |
+
+#### 详细内容
+```c
+/* ml_planner.c:68-88 - 模型初始化 */
+static agentos_error_t ml_planner_init(ml_planner_t* planner, const config_t* cfg) {
+    ml_planner_data_t* data = calloc(1, sizeof(ml_planner_data_t));
+    if (!data) return AGENTOS_ERR_NO_MEMORY;
+    
+    /* PHASE2-IMPLEMENTED: ML model initialization with placeholder */
+    data->model = NULL;              // ← 模型永远不被加载！
+    data->fallback_mode = true;       // ← 永远标记为fallback模式！
+    
+    planner->data = data;
+    return AGENTOS_SUCCESS;           // 返回成功，但模型是空的
+}
+
+/* ml_planner.c:184-194 - 推理管道 */
+static agentos_error_t ml_planner_inference(ml_planner_t* planner, ...) {
+    ml_planner_data_t* data = planner->data;
+    
+    if (data->model && !data->fallback_mode) {
+        /* PHASE2-IMPLEMENTED: ML inference pipeline stub */
+        AGENTOS_LOG_DEBUG("ML planner: executing inference pipeline (placeholder)");
+        // ← 就这一行日志？没有真正的ML推理算法！
+    }
+    
+    // 总是走到这里
+    return ml_planner_fallback_plan(intent, out_plan);  // ← 永远用启发式替代
+}
+```
+
+#### 问题分析
+- `data->model` 永远是NULL（初始化时就设为NULL）
+- `data->fallback_mode` 永远是true
+- 所以if条件永远不进入真正的ML推理分支
+- 整个ML规划器的"ML"部分是假的，实际只是启发式规则引擎
+
+#### 清除方案
+- **必须实现真实的ML模型加载代码**
+- 加载预训练模型文件或连接到ML服务
+- 实现真实的推理管道（特征提取→模型推理→输出解码）
+- 或者：如果暂时不需要ML功能，移除PHASE2-IMPLEMENTED标记，明确标注为"P1待实现"
+
+---
+
+### STUB-04: llm_client.c - Degraded Mode返回假数据
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/atoms/memoryrovol/src/llm_client.c` |
+| **涉及行号** | 149-158, 185-201 |
+| **桩函数数量** | 12处 |
+| **严重程度** | P1 高级 |
+| **负责团队** | 团队A (memoryrovol) |
+| **影响功能** | LLM客户端在无libcurl时假装成功 |
+
+#### 详细内容
+```c
+/* llm_client.c:149-158 - 初始化时的degraded mode */
+agentos_error_t llm_client_create(/* ... */) {
+    llm_service_t* service = calloc(1, sizeof(llm_service_t));
+    if (!service) return AGENTOS_ERR_NO_MEMORY;
+    
+    CURL* curl = curl_easy_init();  // 来自curl_stub.h，返回NULL
+    
+    if (!curl) {  // ← 总是进入这个分支（因为stub返回NULL）
+        // ❌ 违规：标记为已初始化但实际无用
+        service->initialized = 1;     // 假装初始化成功
+        *out_service = service;       // 返回service对象
+        return AGENTOS_SUCCESS;       // 返回成功！（但实际上LLM功能不可用）
+    }
+    // ... 真实初始化代码永远不会执行
+}
+
+/* llm_client.c:185-201 - 调用LLM时的degraded mode */
+agentos_error_t llm_client_chat(llm_service_t* svc, const chat_request_t* req, chat_response_t* resp) {
+    if (!svc || !svc->initialized) {
+        return AGENTOS_ERR_INVALID_PARAM;
+    }
+    
+    if (!svc->curl_handle) {  // ← 总是true（来自stub）
+        // ❌ 违规：返回假数据而不是错误
+        resp->text = AGENTOS_STRDUP("LLM service unavailable (degraded mode)");
+        resp->status = 200;     // 假HTTP状态码
+        resp->finish_reason = "stop";
+        return AGENTOS_SUCCESS;  // 返回成功！但数据是假的
+    }
+    // ... 真实LLM调用代码永远不会执行
+}
+```
+
+#### 问题分析
+- 返回`AGENTOS_SUCCESS`但实际没有完成任何有用工作
+- 返回假的数据字符串"LLM service unavailable (degraded mode)"
+- 上层调用者会认为操作成功，基于假数据进行后续处理
+- 这违反了SEC-017类型1（固定返回值）和类型4（注释承认未实现）
+
+#### 清除方案
+- **当libcurl不可用时，应返回明确的错误码**如`AGENTOS_ERR_NOT_AVAILABLE`
+- 不应标记`initialized=1`
+- 不应返回假SUCCESS
+- 要么完整实现LLM功能，要么明确告知调用者功能不可用
+
+---
+
+### STUB-05: config_service.c - Simplified Version硬编码字符串
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/commons/utils/config_unified/src/config_service.c` |
+| **涉及行号** | 900-916 |
+| **桩函数数量** | 1处 |
+| **严重程度** | P1 高级 |
+| **负责团队** | 团队A (commons) |
+| **影响功能** | 配置版本比较功能不可用 |
+
+#### 详细内容
+```c
+/* config_service.c:900-916 - config_version_diff() */
+agentos_error_t config_version_diff(
+    config_manager_t* manager,
+    const char* version1,
+    const char* version2,
+    char* diff,
+    size_t len
+) {
+    // ❌ 违规：忽略所有输入参数
+    (void)manager;      // 未使用
+    (void)version1;     // 未使用
+    (void)version2;     // 未使用
+    
+    // 返回固定的硬编码字符串
+    const char* msg = "Version diff not implemented in simplified version";
+    size_t msg_len = strlen(msg);
+    
+    if (msg_len >= len) {
+        return AGENTOS_ERR_BUFFER_TOO_SMALL;
+    }
+    
+    memcpy(diff, msg, msg_len + 1);  // 复制假数据
+    return AGENTOS_SUCCESS;           // 返回成功
+}
+```
+
+#### 问题分析
+- 函数名暗示会比较两个配置版本并返回差异
+- 实际上忽略所有参数，返回固定字符串
+- 这是典型的"simplified implementation"桩函数模式
+- 调用者无法获得任何有用的版本差异信息
+
+#### 清除方案
+- **实现真实的版本比较逻辑**（语义化版本解析、字段级别diff等）
+- 或：如果该功能暂不需要，移除此函数并返回`AGENTOS_ERR_NOT_IMPLEMENTED`
+
+---
 
 ---
 
@@ -77,7 +376,15 @@
 
 ## 模块B: coreloopthree (认知循环三层)
 
-**文件数**: 53 | **初始问题**: 103 | **当前问题**: 92 | **致命问题**: 0 (原11个已全部修复) | **负责团队**: 团队A ✅
+**文件数**: 53 | **初始问题**: 103 | **当前问题**: 92+**1桩函数** | **致命问题**: 0 (原11个已全部修复) | **负责团队**: 团队A ⚠️ **发现STUB-03**
+
+### 🔴🔴🔴 致命级桩函数违规（本模块 - 必须立即修复）
+
+| 问题ID | 文件 | 行号 | 桩函数类型 | 严重程度 | 状态 |
+|--------|------|------|-----------|----------|------|
+| **CLT-STUB-03** | cognition/planner/ml_planner.c | 68-88,184-197 | PHASE2-IMPLEMENTED ML推理管道(假) | P0 致命 | ❌ 待实现 |
+
+**详细说明见上方"新发现的桩函数违规"章节 STUB-03**
 
 ### 🔴 已修复的致命问题（11个）
 
@@ -152,7 +459,17 @@ if (!abs_path) {  // ← 新增 NULL 保护
 
 ## 模块C: memoryrovol (四层记忆系统)
 
-**文件数**: 76 | **初始问题**: 43 | **当前问题**: 40 | **致命问题**: 0 (原3个已全部修复) | **负责团队**: 团队A ✅
+**文件数**: 76 | **初始问题**: 43 | **当前问题**: 40+**68+桩函数** | **致命问题**: 0 (原3个已全部修复) | **负责团队**: 团队A ⚠️ **发现STUB-01/02/04**
+
+### 🔴🔴🔴 致命级桩函数违规（本模块 - 必须立即修复）
+
+| 问题ID | 文件 | 行号 | 桩函数类型 | 数量 | 严重程度 | 状态 |
+|--------|------|------|-----------|------|----------|------|
+| **MEM-STUB-01** | include/curl_stub.h | 全文 | 完整假libcurl API头文件 | 25 | P0 致命 | ❌ 待清除 |
+| **MEM-STUB-02** | include/sqlite3_stub.h | 全文 | 完整假SQLite3 API头文件 | 30+ | P0 致命 | ❌ 待清除 |
+| **MEM-STUB-04** | src/llm_client.c | 149-158,185-201 | degraded mode返回假SUCCESS+假数据 | 12 | P1 高 | ❌ 待修复 |
+
+**详细说明见上方"新发现的桩函数违规"章节 STUB-01/02/04**
 
 ### 🔴 已修复的致命问题（3个）
 
@@ -486,33 +803,46 @@ int gw_protocol_bridge_detect_type(
                │   - 发现file.c:121遗漏并修复
                │   - 团队A STRDUP检查率100%
                │
-04-18 现在 ──► 📝 文档体系重建：在Docs-closed路径下重新建立
-               │   - 主报告 v13.0.0
-               │   - 详细问题清单 v8.0.0 （本文档）
-               │   - 规范手册 v7.0.0
-               │   - 看板 v7.0.0
+04-18 14:00 ──► 🔴🔴🔴 全模块穷尽扫描发现新桩函数违规！
+               │   ❌ 发现团队A负责模块有68+处桩函数：
+               │      STUB-01: curl_stub.h (25个假CURL函数)
+               │      STUB-02: sqlite3_stub.h (30+个假SQLite3函数)
+               │      STUB-03: ml_planner.c PHASE2-IMPLEMENTED (假ML推理)
+               │      STUB-04: llm_client.c degraded mode (12处假数据)
+               │      STUB-05: config_service.c simplified version (1处)
+               │   ⚠️ 原因：之前只扫描了cupolas/daemon/gateway/，漏扫了memoryrovol/coreloopthree/commons/
+               │   ⚠️ SEC-017合规状态从"完全合规"降级为"严重违规"
+               │   ⚠️ 整体评级从7.5/10降至6.5/10
 ```
 
-### 量化成果
+### 量化成果（修正后真实数据）
 
-| 指标 | 初始值 | 当前值 | 改善幅度 |
-|------|--------|--------|----------|
-| 致命问题数 | 48 | 0 | **-100%** ✅ |
-| 桩函数数量 | 30 | 0 | **-100%** ✅ |
-| 编译错误数 | 18 | 0 | **-100%** ✅ |
-| 安全漏洞数 | 6 | 0 (已修复) | **-100%** ✅ |
-| 编译成功率 | ~65% | **95%** | **+30%** 🎉 |
-| 团队C评级 | 2.8/10 | **9.3/10** | **+6.5** 🎉 |
-| 整体评级 | 2.8/10 | **7.5/10** | **+4.7** 🎉 |
+| 指标 | 初始值 | 当前值(修正后) | 改善幅度 |
+|------|--------|----------------|----------|
+| 致命问题数(daemon/gateway) | 48 | **0** | **-100%** ✅ |
+| 桩函数数量(daemon/gateway) | 30 | **0** | **-100%** ✅ |
+| **🔴新发现桩函数(团队A)** | **0** | **68+** | **❌ 新增** |
+| 编译错误数 | 18 | **0** | **-100%** ✅ |
+| 安全漏洞数 | 6 | **0** (已修复) | **-100%** ✅ |
+| 编译成功率 | ~65% | **100%** | **+35%** 🎉 |
+| 团队C评级 | 2.8/10 | **9.5/10** | **+6.7** 🎉 |
+| **团队A评级** | 8.5/10 | **7.5/10** | **⚠️ -1.0** (桩函数扣分) |
+| 整体评级 | 2.8/10 | **6.5/10** | **+3.7** 📉 (比v8.0的7.5低) |
 
 ---
 
 ## 📊 附录：问题优先级矩阵
 
-### P0 - 致命（必须立即修复）- 已清零 ✅
+### P0 - 致命（必须立即修复） - ❌ 发现新违规！
 
 ```
-[空] - 所有P0问题已于2026-04-17 23:00前修复完成
+⚠️ 警告：2026-04-18 14:00 全模块穷尽扫描发现新P0问题！
+
+STUB-01: curl_stub.h           - 25个假CURL函数    - 团队A - memoryrovol - 待清除
+STUB-02: sqlite3_stub.h        - 30+个假SQLite3函数 - 团队A - memoryrovol - 待清除
+STUB-03: ml_planner.c          - PHASE2-IMPLEMENTED - 团队A - coreloopthree - 待实现
+
+以上3项为P0致命级，必须在本周内清除！
 ```
 
 ### P1 - 高（本周内修复）
