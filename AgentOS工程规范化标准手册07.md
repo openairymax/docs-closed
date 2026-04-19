@@ -1,6 +1,6 @@
 # AgentOS 工程规范化标准手册 v13.0.0
 
-> **版本**: 13.0.0-生产级标准全面规划版（含源码-产物分离规范BUILD-01~05）
+> **版本**: 13.0.0-生产级标准全面规划版（含源码-产物分离规范BUILD-01~06+Git子模块管理）
 > **日期**: 2026-04-19 16:35 (Out-of-Source Build验证通过后更新)
 > **状态**: ⚠️ **生产级标准已建立** + **✅ Round 18-20架构重构完成** + **✅ Out-of-Source Build强制实施** + **✅ Include路径标准化完成**
 > **核心理念**: 规范先行，质量为本！一切开发活动必须遵循本手册标准！
@@ -22,7 +22,7 @@
 9. [错误处理规范 (ERR-01 ~ ERR-04)](#9-错误处理规范)
 10. [性能优化规范 (PERF-01 ~ PERF-04)](#10-性能优化规范)
 11. [部署规范 (DEPLOY-01 ~ DEPLOY-03)](#11-部署规范)
-12. [🆕 源码-产物分离规范 (BUILD-01 ~ BUILD-05)](#12--源码-产物分离规范-build-01--build-05)
+12. [🆕 源码-产物分离规范 (BUILD-01 ~ BUILD-06)](#12--源码-产物分离规范-build-01--build-06)
 13. [附录](#13-附录)
 
 ---
@@ -945,6 +945,123 @@ Settings → Build, Execution, Deployment → CMake:
 | **🟠 严重** | 必须在合并前修复 | 源码目录有.o文件 | 清理并添加.gitignore规则 |
 | **🟡 中等** | 应在下个Sprint修复 | IDE配置未指向AgentOS-build | 更新settings.json |
 | **🟢 轻微** | 记录但不阻塞 | 文档中使用了旧路径 | 更新文档 |
+
+---
+
+### BUILD-06: Git子模块管理规范 🆕
+
+> **建立时间**: 2026-04-19 (Round 18-20之后)
+> **适用范围**: OpenAirymax主仓库及所有子模块
+> **核心理念**: 模块独立开发，统一版本管理
+
+#### 12.6.1 子模块架构
+
+```
+OpenAirymax/ (主仓库)
+├── AgentOS/          (核心源码 - 独立Git仓库)
+├── Desktop/          (桌面客户端 - Git子模块) 🆕
+├── Docker/           (容器化部署 - Git子模块) 🆕
+├── Docs/             (文档中心 - Git子模块) 🆕
+├── Docs-closed/      (内部文档 - 主仓库管理)
+└── .gitmodules       (子模块配置文件)
+```
+
+#### 12.6.2 子模块配置标准
+
+**`.gitmodules` 文件格式**:
+```ini
+[submodule "Desktop"]
+	path = Desktop
+	url = git@atomgit.com:openairymax/desktop.git
+
+[submodule "Docker"]
+	path = Docker
+	url = git@atomgit.com:openairymax/docker.git
+
+[submodule "Docs"]
+	path = Docs
+	url = git@atomgit.com:openairymax/docs.git
+```
+
+#### 12.6.3 子模块操作规范
+
+**初始化子模块** (首次克隆后):
+```bash
+cd OpenAirymax
+git submodule update --init --recursive
+# 或克隆时自动初始化:
+git clone --recursive git@atomgit.com:openairymax/OpenAirymax.git
+```
+
+**更新子模块**:
+```bash
+# 更新所有子模块到最新版本
+git submodule update --remote
+
+# 更新指定子模块
+cd Desktop
+git pull origin main
+cd ..
+git add Desktop
+git commit -m "update Desktop submodule to latest"
+```
+
+**在子模块中工作**:
+```bash
+cd Desktop
+# 进行修改...
+git commit -m "feature: new desktop functionality"
+git push origin main
+
+# 回到主仓库记录子模块变更
+cd ..
+git add Desktop
+git commit -m "update Desktop to abc1234"
+```
+
+#### 12.6.4 路径迁移记录
+
+| 模块 | 原路径 (已废弃) | 新路径 (当前) | 变更时间 |
+|------|----------------|--------------|----------|
+| **Desktop** | `AgentOS/scripts/desktop-client` → `AgentOS/desktop` | `OpenAirymax/Desktop` | 2026-04-19 |
+| **Docker** | `AgentOS/docker` | `OpenAirymax/Docker` | 2026-04-19 |
+| **Docs** | `AgentOS/docs` | `OpenAirymax/Docs` | 2026-04-19 |
+
+**⚠️ 重要提示**:
+- 所有文档和代码中的旧路径引用必须更新为新路径
+- TeamC负责Docker部署文档的路径更新
+- 所有团队负责文档引用路径的更新
+
+#### 12.6.5 子模块依赖关系
+
+```
+主仓库 (OpenAirymax)
+    │
+    ├── AgentOS (核心) ← 无依赖，被其他模块依赖
+    │
+    ├── Desktop (桌面客户端)
+    │   └── 依赖: AgentOS库文件 + Docs/API文档
+    │
+    ├── Docker (容器化)
+    │   └── 依赖: AgentOS构建产物 + Desktop可执行文件
+    │
+    └── Docs (文档)
+        └── 依赖: 无 (独立维护)
+```
+
+#### 12.6.6 版本同步策略
+
+| 场景 | 操作 | Commit Message格式 |
+|------|------|-------------------|
+| **发布主版本** | 更新所有子模块到稳定版 | `release: v1.0.0 sync submodules` |
+| **功能开发** | 仅更新相关子模块 | `feat: update Desktop for new UI` |
+| **Bug修复** | 修复特定子模块 | `fix: security patch in Docker` |
+| **文档更新** | 更新Docs子模块 | `docs: API documentation update` |
+
+**⚠️ 禁止事项**:
+- ❌ 在主仓库中直接修改子模块文件（必须在子模块目录内操作）
+- ❌ 提交子模块的未提交更改（必须先在子模块中commit）
+- ❌ 忽略子模块更新（定期执行 `git submodule status` 检查）
 
 ---
 
