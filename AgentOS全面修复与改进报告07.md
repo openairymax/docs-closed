@@ -820,10 +820,94 @@ agentos/gateway/       (~30文件)  - 网关服务 ✅
 2. **🟡 P2: 网关性能优化** - 预计25h
 3. **🟢 P3: CI/CD流水线搭建** - 预计40h
 4. **🟢 P3: 生产环境部署文档** - 预计15h
+5. **🟢 P3: .github模块整合 (合并.gitcode→.github)** - 预计2h
 
 **Round 18-20贡献**:
 - 修复daemon/和gateway/的所有Include路径 (45+处)
 - 修复gateway_protocol_handler的类型名称问题
+
+### 6.5 .github模块整合任务 ✅
+
+> **任务来源**: 用户指令 (2026-04-19)
+> **执行方式**: 用户手动执行 (系统权限限制)
+> **负责团队**: TeamC (集成组)
+> **任务状态**: ✅ 已完成
+
+**任务内容**:
+将 `.gitcode/` 目录整合并入 `.github/` 目录，整个 AgentOS 只保留一个 `.github` 模块。
+
+**操作清单**:
+| 步骤 | 操作 | 源 → 目标 | 状态 |
+|------|------|-----------|------|
+| 1 | 合并workflows | `.gitcode/workflows/*.yml` → `.github/workflows/` | ✅ 已完成 |
+| 2 | 复制ISSUE模板 | `.gitcode/ISSUE_TEMPLATE/*` → `.github/ISSUE_TEMPLATE/` | ✅ 已完成 |
+| 3 | 复制CODEOWNERS | `.gitcode/CODEOWNERS` → `.github/CODEOWNERS` | ✅ 已完成 |
+| 4 | 复制PR模板 | `.gitcode/PULL_REQUEST_TEMPLATE.md` → `.github/` | ✅ 已完成 |
+| 5 | 删除.gitcode | `rm -rf .gitcode/` | ✅ 已完成 |
+
+**工程意义**:
+- ✅ 统一CI/CD平台（GitHub Actions标准）
+- ✅ 消除平台冗余（.gitcode为GitCode专用，.github为行业标准）
+- ✅ 简化项目维护成本（一套工作流模板）
+- ✅ 符合开源项目最佳实践
+
+---
+
+### 6.6 Docker模块开发任务
+
+> **模块路径**: `OpenAirymax/Docker/` (独立Git仓库, 远程: git@atomgit.com:openairymax/docker.git)
+> **负责团队**: TeamC (集成组)
+> **任务状态**: 📋 规划中 (第7轮次Week 2启动)
+
+**Docker模块当前结构**:
+```
+Docker/
+├── Dockerfile.daemon        (6.7KB)   - AgentOS守护进程容器
+├── Dockerfile.kernel        (7.5KB)   - 内核级容器
+├── Dockerfile.openlab       (4.2KB)   - OpenLab实验环境容器
+├── docker-compose.yml       (22KB)    - 开发环境编排
+├── docker-compose.prod.yml  (29KB)    - 生产环境编排
+├── .env.example             (7.3KB)   - 开发环境变量模板
+├── .env.production.example  (9.0KB)   - 生产环境变量模板
+├── .dockerignore            (1.6KB)   - 构建排除文件
+├── .gitignore               (2.9KB)   - Git忽略文件
+├── README.md                (73KB)    - 完整文档
+├── config/
+│   ├── nginx/
+│   │   └── openlab.conf     - Nginx反向代理配置
+│   ├── gateway.yaml         - 网关配置
+│   ├── seccomp-profile.json - 安全配置
+│   └── supervisor/
+│       └── supervisord.conf - 进程管理器配置
+├── monitoring/              - 监控体系 (4个组件)
+└── scripts/                 - 辅助脚本 (2个脚本)
+```
+
+**TeamC 开发任务清单**:
+
+| 优先级 | 任务 | 预计工时 | 周次 | 说明 |
+|--------|------|----------|------|------|
+| **P1** | 审查并修复Dockerfile安全漏洞 | 8h | Week 2 | 镜像层安全扫描，消除CVE漏洞 |
+| **P1** | 优化镜像大小 (当前 >500MB) | 6h | Week 2 | 多阶段构建优化，目标 <200MB |
+| **P1** | 验证docker-compose.yml可用性 | 4h | Week 2 | 确保一键启动所有服务 |
+| **P2** | 生产环境部署验证 | 10h | Week 2 | 基于docker-compose.prod.yml |
+| **P2** | 容器健康检查与自愈机制 | 8h | Week 3 | HEALTHCHECK + restart policies |
+| **P2** | 监控体系集成 | 12h | Week 3 | Prometheus + Grafana 容器化 |
+| **P3** | 镜像自动构建流水线 | 15h | Week 3 | GitHub Actions自动构建镜像 |
+| **P3** | 多架构支持 (amd64/arm64) | 20h | Week 4 | 交叉编译+多平台manifest |
+
+**第7轮次目标**:
+- [ ] 镜像安全扫描: **0 high/critical CVE**
+- [ ] 镜像大小: **<200MB** (当前 >500MB)
+- [ ] 一键启动成功率: **100%**
+- [ ] 生产环境部署文档: **完整**
+- [ ] 容器健康检查: **全覆盖**
+
+**工程意义**:
+- ✅ 标准化部署流程（Docker Compose一键部署）
+- ✅ 开发/测试/生产环境一致性（Dockerfile + docker-compose）
+- ✅ 快速部署验证（无需手动安装依赖）
+- ✅ 监控运维基础设施（Prometheus + Grafana）
 
 ---
 

@@ -1,8 +1,8 @@
 # AgentOS 详细问题清单 v14.0.0
 
-> **版本**: 14.0.0-生产级穷尽问题追踪与团队分工版（含Round 18-20架构重构成果+Out-of-Source Build验证+Include路径全面修复）
+> **版本**: 14.2-生产级穷尽问题追踪与团队分工版（含Round 18-20架构重构成果+Out-of-Source Build验证+Include路径全面修复+.github模块整合）
 > **日期**: 2026-04-19 16:32 (Out-of-Source Build首次验证通过)
-> **状态**: ⚠️ **68+处桩函数待清除** + **✅ 架构重构完成(ARCH-001~004已解决)** + **✅ Build配置完善(BUILD-001~002已解决)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%** + **❌ 双思考系统仅40-50%**
+> **状态**: ⚠️ **68+处桩函数待清除** + **✅ 架构重构完成(ARCH-001~005已解决)** + **📋 Docker模块开发任务(ARCH-006规划中)** + **✅ Build配置完善(BUILD-001~002已解决)** + **✅ .github模块整合(ARCH-005已解决)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%** + **❌ 双思考系统仅40-50%**
 > **核心理念**: 穷尽式逐文件审查，绝不流于形式！**扫描范围必须覆盖全项目！严禁任何桩函数！**
 > **关联文档**: [主报告v23.1](./AgentOS全面修复与改进报告07.md) | [规范手册v13.0](./AgentOS工程规范化标准手册07.md) | [看板v14.0](./AgentOS三团队任务进度看板07.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
 
@@ -17,9 +17,9 @@
 5. [HIST类: 历史遗留问题 (8个)](#hist类-历史遗留问题)
 6. [TGT类: 设计目标偏差 (3个)](#tgt类-设计目标偏差)
 7. [PROTO类: 协议系统限制 (5个)](#proto类-协议系统限制)
-8. [ARCH类: 架构优化 ✅ 已解决 (4个)](#arch类-架构优化-已解决)
+8. [ARCH类: 架构优化 ✅ 部分已解决 (6个)](#arch类-架构优化-部分已解决)
 9. [TYPE类: 类型冲突 🆕 新增 (3个)](#type类-类型冲突-新增)
-10. [BUILD类: 构建配置 ✅ 已解决 (2个)](#build类-构建配置-已解决)
+10. [BUILD类: 构建配置 🆕 部分已解决 (5个)](#build类-构建配置-部分已解决)
 11. [问题追踪矩阵](#问题追踪矩阵)
 12. [附录: 问题发现方法与验证流程](#附录-问题发现方法与验证流程)
 
@@ -30,42 +30,43 @@
 ### 1.1 问题分布饼图
 
 ```
-STUB:  ████████████░░░░ 11% (5/44)   🔴 致命
-DS:    ██████████████░░ 18% (8/44)   🟠 严重
-MR:    ██████████░░░░░░ 16% (7/44)   🟠 严重
-HIST:  ██████████████░░ 18% (8/44)   🟡 中等
-TGT:   ████░░░░░░░░░░░░░  7% (3/44)   🟡 中等
-PROTO:██████░░░░░░░░░░░░ 11% (5/44)   🟡 中等
-ARCH:  ████░░░░░░░░░░░░░  9% (4/44)   ✅ 已解决
-TYPE:  ███░░░░░░░░░░░░░░  7% (3/44)   🟡 中等(新增)
-BUILD: ██░░░░░░░░░░░░░░░  5% (2/44)   ✅ 已解决
+STUB:  ████████████░░░░ 10% (5/49)   🔴 致命
+DS:    ██████████████░░ 16% (8/49)   🟠 严重
+MR:    ██████████░░░░░░ 14% (7/49)   🟠 严重
+HIST:  ██████████████░░ 16% (8/49)   🟡 中等
+TGT:   ████░░░░░░░░░░░░░  6% (3/49)   🟡 中等
+PROTO:█████░░░░░░░░░░░░░ 10% (5/49)   🟡 中等
+ARCH:  ██████░░░░░░░░░░░ 12% (6/49)   ⚠️ 部分已解决
+TYPE:  ██░░░░░░░░░░░░░░░  6% (3/49)   🟡 中等
+BUILD: █████░░░░░░░░░░░░ 10% (5/49)   ⚠️ 部分已解决
 ```
 
 ### 1.2 严重程度统计
 
 | 严重程度 | 数量 | 占比 | 状态 |
 |----------|------|------|------|
-| 🔴 **P0 致命** | 6 | 13.6% | ❌ 全部待解决 |
-| 🟠 **P1 严重** | 12 | 27.3% | ❌ 全部待解决 |
-| 🟡 **P2 中等** | 18 | 40.9% | ⚠️ 部分进行中 |
-| 🟢 **P3 低** | 8 | 18.2% | ✅ 大部分可延后 |
+| 🔴 **P0 致命** | 6 | 12.8% | ❌ 全部待解决 |
+| 🟠 **P1 严重** | 15 | 31.9% | ❌ 全部待解决 |
+| 🟡 **P2 中等** | 18 | 38.3% | ⚠️ 部分进行中 |
+| 🟢 **P3 低** | 8 | 17.0% | ✅ 大部分可延后 |
 
 ### 1.3 解决状态统计
 
 | 状态 | 数量 | 占比 | 说明 |
 |------|------|------|------|
-| ✅ **已解决** | 9 | 20.5% | ARCH(4) + BUILD(2) + HIST(3) |
+| ✅ **已解决** | 10 | 20.4% | ARCH(5) + BUILD(2) + HIST(3) |
+| 📋 **规划中** | 1 | 2.0% | ARCH(1)-Docker模块开发 |
 | 🔧 **进行中** | 0 | 0% | - |
-| ⏳ **待处理** | 35 | 79.5% | STUB(5) + DS(8) + MR(7) + HIST(5) + TGT(3) + PROTO(5) + TYPE(3) |
+| ⏳ **待处理** | 38 | 77.6% | STUB(5) + DS(8) + MR(7) + HIST(5) + TGT(3) + PROTO(5) + TYPE(3) + BUILD(3) |
 
 ### 1.4 团队责任分配
 
-| 团队 | 负责问题数 | P0 | P1 | P2 | P3 | 主要类别 |
+| **团队** | 负责问题数 | P0 | P1 | P2 | P3 | 主要类别 |
 |------|-----------|----|----|----|----|----------|
 | **TeamA** | 23 | 5 | 9 | 6 | 3 | STUB, DS, MR, TYPE(部分) |
 | **TeamB** | 13 | 0 | 0 | 10 | 3 | PROTO, HIST(部分), TYPE(部分) |
-| **TeamC** | 8 | 1 | 3 | 2 | 2 | HIST(部分), TGT |
-| **全团队协作** | 5 | 0 | 0 | 3 | 2 | ARCH, BUILD, HIST(跨团队) |
+| **TeamC** | 10 | 1 | 3 | 2 | 4 | HIST(部分), TGT, BUILD-004/005, ARCH-005(.github), **ARCH-006(Docker)** |
+| **全团队协作** | 4 | 0 | 0 | 3 | 1 | ARCH(部分), BUILD, HIST(跨团队) |
 
 ---
 
@@ -414,6 +415,64 @@ sleep(config->network_timeout_ms);
 Git追踪文件:    +21无用 → -21 (精简) ↓
 ```
 
+### ARCH-005: .gitcode 整合并入 .github ✅
+
+| 属性 | 详情 |
+|------|------|
+| **执行时间** | 2026-04-19 (用户指令) |
+| **操作内容** | 将 `.gitcode/` 目录所有内容整合并入 `.github/` 目录，删除 `.gitcode/`，统一使用 GitHub Actions 标准 |
+| **关键变更** | - 合并13个workflows: `.gitcode/workflows/*.yml` → `.github/workflows/`<br>- 复制ISSUE模板: 3个文件<br>- 复制CODEOWNERS: 8.9KB<br>- 复制PR模板: 17KB<br>- 删除 `.gitcode/` 整个目录 |
+| **负责团队** | TeamC (集成组) |
+| **执行方式** | 用户手动执行 (系统权限限制) |
+| **效果** | 1. 统一CI/CD平台，符合行业标准<br>2. 消除平台冗余（GitCode→GitHub）<br>3. 简化维护成本（一套工作流模板） |
+| **验证**: - `.github/` 目录结构完整<br>- 包含14个workflows + ISSUE模板 + CODEOWNERS + PR模板 |
+
+### ARCH-006: Docker模块开发任务规划 📋
+
+| 属性 | 详情 |
+|------|------|
+| **模块路径** | `OpenAirymax/Docker/` (独立Git仓库) |
+| **远程仓库** | git@atomgit.com:openairymax/docker.git |
+| **负责团队** | TeamC (集成组) |
+| **规划时间** | 第7轮次Week 2-4 (04-27 ~ 05-17) |
+| **任务状态** | 📋 规划中 (未开始) |
+
+**Docker模块当前内容**:
+```
+Docker/
+├── Dockerfile.daemon        (6.7KB)   - 守护进程容器
+├── Dockerfile.kernel        (7.5KB)   - 内核级容器
+├── Dockerfile.openlab       (4.2KB)   - OpenLab环境容器
+├── docker-compose.yml       (22KB)    - 开发环境编排
+├── docker-compose.prod.yml  (29KB)    - 生产环境编排
+├── .env.example             (7.3KB)   - 开发环境变量
+├── .env.production.example  (9.0KB)   - 生产环境变量
+├── README.md                (73KB)    - 完整文档
+├── config/                  - 配置目录 (nginx/gateway/seccomp/supervisor)
+├── monitoring/              - 监控体系 (4个组件)
+└── scripts/                 - 辅助脚本
+```
+
+**开发任务清单**:
+| ID | 优先级 | 任务 | 工时 | 周次 |
+|----|--------|------|------|------|
+| ARCH-006-P1 | P1 | 安全漏洞修复 (CVE扫描) | 8h | Week 2 |
+| ARCH-006-P1 | P1 | 镜像优化 (>500MB→<200MB) | 6h | Week 2 |
+| ARCH-006-P1 | P1 | docker-compose可用性验证 | 4h | Week 2 |
+| ARCH-006-P2 | P2 | 生产环境部署验证 | 10h | Week 2 |
+| ARCH-006-P2 | P2 | 容器健康检查机制 | 8h | Week 3 |
+| ARCH-006-P2 | P2 | 监控集成(Prometheus+Grafana) | 12h | Week 3 |
+| ARCH-006-P3 | P3 | CI自动构建流水线 | 15h | Week 3 |
+| ARCH-006-P3 | P3 | 多架构支持(amd64/arm64) | 20h | Week 4 |
+
+**总计工时**: 83h  
+**第7轮次目标**:
+- [ ] 镜像安全: 0 high/critical CVE
+- [ ] 镜像大小: <200MB
+- [ ] 启动成功率: 100%
+- [ ] 部署文档: 完整
+- [ ] 健康检查: 全覆盖
+
 ---
 
 ## 9. TYPE类: 类型冲突 🆕 **新增**
@@ -490,10 +549,10 @@ typedef enum { ... } sanitize_level_t;
 
 ---
 
-## 10. BUILD类: 构建配置 ✅ **全部已解决**
+## 10. BUILD类: 构建配置 ⚠️ **部分已解决**
 
-> **Round 18-20 + Out-of-Source Build验证 成果**
-> **解决时间**: 2026-04-19 15:48-16:32
+> **Round 18-20 + Out-of-Source Build验证 成果 + 第7轮次新增**
+> **解决时间**: 2026-04-19 15:48-16:32 (BUILD-001~002) + 2026-04-19 诊断 (BUILD-003~005)
 
 ### BUILD-001: In-Source Build混乱 ✅
 
@@ -521,6 +580,56 @@ typedef enum { ... } sanitize_level_t;
 | 跨模块可见性 | 低 | **高(全局+PUBLIC双重)** | 显著↑ |
 | 维护成本 | 高 | **低(根目录统一配)** | 降低↓ |
 
+### BUILD-003: cupolas/workbench Include路径缺失 🆕
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/cupolas/src/workbench/workbench_container.c` |
+| **错误信息** | `'utils/cupolas_utils.h' file not found` |
+| **缺失头文件** | `utils/cupolas_utils.h` |
+| **根本原因** | CMakeLists.txt中cupolas模块的include路径不完整，缺少utils子目录 |
+| **影响** | workbench模块编译失败 |
+| **负责团队** | TeamA (核心组) |
+| **预计工时** | 1h |
+| **优先级** | 🟠 P1 (阻塞编译通过率) |
+| **修复方案** | 在cupolas/CMakeLists.txt中添加 `utils/` 的include路径 |
+
+---
+
+### BUILD-004: daemon/tool_d Include路径缺失 🆕
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/daemon/tool_d/src/executor.c` |
+| **错误信息** | `'tool_service.h' file not found` |
+| **缺失头文件** | `tool_service.h` (以及级联的20+个错误) |
+| **根本原因** | CMakeLists.txt中daemon模块的include路径不完整 |
+| **级联错误** | - 类型未定义: `agentos_mutex_t`, `uint64_t`, `tool_metadata_t`, `tool_result_t`<br>- 函数未声明: `agentos_mutex_init`, `SVC_LOG_INFO`, `agentos_mutex_lock`<br>- 宏未定义: `AGENTOS_ERR_INVALID_PARAM`, `AGENTOS_ERR_OUT_OF_MEMORY` |
+| **影响** | daemon/tool_d模块完全无法编译 |
+| **负责团队** | TeamC (集成组) |
+| **预计工时** | 2h |
+| **优先级** | 🟠 P1 (阻塞编译通过率) |
+| **修复方案** | 在daemon/CMakeLists.txt中添加tool_service头文件所在目录的include路径 |
+
+---
+
+### BUILD-005: gateway Include路径缺失 🆕
+
+| 属性 | 值 |
+|------|-----|
+| **文件路径** | `agentos/gateway/src/gateway/gateway_protocol_bridge.c` |
+| **错误信息** | `'gateway_protocol_bridge.h' file not found` |
+| **缺失头文件** | `gateway_protocol_bridge.h` (同级目录头文件) |
+| **根本原因** | gateway模块的CMakeLists.txt配置中，src/gateway目录未被添加到include路径 |
+| **级联错误** | - 类型未定义: `gw_protocol_bridge_config_t`, `protocol_router_handle_t`, `protocol_registry_t`, `proto_ext_framework_t`, `gw_bridge_stats_t`<br>- 宏未定义: `GW_PROTO_COUNT`<br>- 函数未声明: `protocol_router_create`, `proto_registry_create` 等<br>- 缺少 `<stdbool.h>` (bool/true/false未定义) |
+| **影响** | gateway协议桥接模块完全无法编译 |
+| **负责团队** | TeamC (集成组) |
+| **预计工时** | 2h |
+| **优先级** | 🟠 P1 (阻塞编译通过率) |
+| **修复方案** | 在gateway/CMakeLists.txt中添加 `src/gateway/` 的include路径，确保同级头文件可访问 |
+
+**BUILD类修复优先级**: 🔴 **必须在第7轮次Week 1 Day 1-2内完成**，与TYPE-001~003并列最高优先级，否则编译通过率无法达到100%。
+
 ---
 
 ## 11. 问题追踪矩阵
@@ -529,7 +638,7 @@ typedef enum { ... } sanitize_level_t;
 
 | Week | TeamA重点任务 | TeamB重点任务 | TeamC重点任务 | 里程碑 |
 |------|--------------|--------------|--------------|--------|
-| **W1** | TYPE-003 (3h) + SEC-017开始 (20h) | TYPE-001/002 (5h) + L-001~003 (15h) | 全量编译验证 | 100%编译通过 |
+| **W1** | TYPE-003 (3h) + SEC-017开始 (20h) + BUILD-003 (1h) | TYPE-001/002 (5h) + L-001~003 (15h) | 全量编译验证 + BUILD-004/005 (4h) | 100%编译通过 |
 | **W2** | SEC-017继续 (20h) + DS-001~004 (25h) | AutoGen适配器 (12h) + heapstore (20h) | CI/CD搭建 (20h) | 桩函数=0, CI可用 |
 | **W3** | DS-005~008 (20h) + MR-001~003 (25h) | 渗透测试 (25h) + SDK文档 (15h) | 性能优化 (20h) | 双思考85%, 测试20% |
 | **W4** | 回归测试 (25h) + 基准测试 (20h) | 安全审计 (20h) + 用户文档 (15h) | 生产部署演练 (25h) | 发布RC版本 |
@@ -622,12 +731,13 @@ grep -rn "return.*OK\|return.*0\|// TODO\|// FIXME\|stub\|placeholder" \
 
 ## 📊 文档修订历史
 
-| 版本 | 日期 | 作者 | 主要变更 |
+| **版本** | 日期 | 作者 | 主要变更 |
 |------|------|------|----------|
 | v1.0 | 2026-04-15 | System | 初版创建 (基于Round 1-10) |
 | v10.0 | 2026-04-17 | System | 加入Round 11-17问题 |
 | v13.0 | 2026-04-19 09:00 | System | Round 18-20前的问题梳理 |
 | **v14.0** | 2026-04-19 16:32 | System | **含Build验证成果+TYPE新增+ARCH/BUILD已解决** |
+| **v14.3** | 2026-04-19 | System | **新增ARCH-006(Docker模块开发规划)，ARCH共6个(5已解决+1规划中)，总数49** |
 
 ---
 
@@ -650,4 +760,4 @@ grep -rn "return.*OK\|return.*0\|// TODO\|// FIXME\|stub\|placeholder" \
 
 ---
 
-*问题清单结束。共收录44个问题，其中9个已解决，35个待处理。*
+*问题清单结束。共收录47个问题，其中9个已解决，38个待处理。*
