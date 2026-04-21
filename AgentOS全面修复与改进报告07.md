@@ -1,11 +1,11 @@
-# AgentOS 全面修复与改进报告 v25.0.0
+# AgentOS 全面修复与改进报告 v25.3.0
 
-> **版本**: 25.0.0-**🔴 编译诊断紧急版**（含Round 18-20架构重构+Out-of-Source Build验证通过+Include路径302+处全面修复+Desktop/Docs模块任务规划+BUILD-006 In-Source Build严重复发修复+双思维系统三组件架构升级方案+**🆕 GetDiagnostics全面诊断: COMPILER-001~006(14文件330+错误)**）
-> **日期**: 2026-04-21 10:00 (**GetDiagnostics全面诊断完成**)
-> **状态**: 🔴 **🆕 COMPILER-001~006: 14个源文件330+编译错误(阻塞coreloopthree/memoryrovol两大核心模块)** + **✅ 架构重构完成(Round 18-20)** + **✅ Out-of-Source Build规范已建立** + **✅ Include路径302+处全部修复** + **✅ 模块独立与子模块化完成** + **❌ SEC-017桩函数严重违规(68+处)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%** + **双思维系统待从dual_model升级为triple_coordinator**
-> **核心理念**: 绝对流于形式！一切以成功编译、成功运行为最高目标！**严禁任何桩函数！严禁任何简化实现！****🆕 编译错误=当前最大障碍！必须立即修复！**
+> **版本**: 25.3.0-**🟢 技术改进策略增强集成版**（含**技术改进策略v2.0全面融入+关键实施代码示例**+Round 18-20架构重构+Out-of-Source Build验证通过+Include路径302+处全面修复+Desktop/Docs模块任务规划+BUILD-006 In-Source Build严重复发修复+双思维系统三组件架构升级方案+**🆕 GetDiagnostics全面诊断: COMPILER-001~006(14文件330+错误)**+**🆕 十大改进方案与三阶段路线图整合**+**🆕 三大参考项目核心借鉴实证分析**+**🆕 P0级改进方案详细代码示例实现(守护进程并发/MCP协议栈/API错误恢复)**）
+> **日期**: 2026-04-21 16:45 (**技术改进策略v2.0全面融入+三大参考项目核心借鉴实证分析+P0级改进方案详细代码示例实现**)
+> **状态**: 🔴 **🆕 COMPILER-001~006: 14个源文件330+编译错误(阻塞coreloopthree/memoryrovol两大核心模块)** + **✅ 架构重构完成(Round 18-20)** + **✅ Out-of-Source Build规范已建立** + **✅ Include路径302+处全部修复** + **✅ 模块独立与子模块化完成** + **❌ SEC-017桩函数严重违规(68+处)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%** + **双思维系统待从dual_model升级为triple_coordinator** + **🆕 技术改进策略: 10大改进方案与三阶段路线图对齐** + **🆕 P0级改进方案: 守护进程并发/MCP协议栈/API错误恢复详细代码示例与验证标准已实现**
+> **核心理念**: 绝对流于形式！一切以成功编译、成功运行为最高目标！**严禁任何桩函数！严禁任何简化实现！****🆕 编译错误=当前最大障碍！必须立即修复！****🆕 技术改进策略=生产级落地指南！**
 > **终极目标**: 行业基础设施水平（对标Linux/PostgreSQL，评级≥9/10）
-> **关联文档**: [规范手册v13.0](./AgentOS工程规范化标准手册07.md) | [详细问题清单**v16.0**](./AgentOS详细问题清单07.md) | [看板v14.1](./AgentOS三团队任务进度看板07.md) | [可行性评估报告](./AgentOS三大设计文档全面可行性评估报告.md) | [深度推理分析](./AgentOS三大设计文档深度推理分析报告.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
+> **关联文档**: [规范手册v13.4](./AgentOS工程规范化标准手册07.md) | [详细问题清单**v16.4**](./AgentOS详细问题清单07.md) | [看板v15.2](./AgentOS三团队任务进度看板07.md) | [**技术改进策略v2.0**](./技术借鉴与改进/第02版-AgentOS技术改进策略和详细方案.md) | [可行性评估报告](./AgentOS三大设计文档全面可行性评估报告.md) | [深度推理分析](./AgentOS三大设计文档深度推理分析报告.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
 
 ---
 
@@ -13,25 +13,31 @@
 
 1. [项目概述](#项目概述)
 2. [当前状态总览](#当前状态总览)
-3. [Round 18-20 架构重构成果](#round-18-20-架构重构成果)
-   - 3.1 [P0: 构建目录分离](#p0-构建目录分离)
-   - 3.2 [P1-a: include/整合进commons](#p1-a--include整合进commons)
-   - 3.3 [P1-b: interfaces/合并入protocols](#p1-b--interfaces合并入protocols)
-   - 3.4 [验证结果](#验证结果)
-4. [Out-of-Source Build 首次验证报告](#out-of-source-build-首次验证报告)
-   - 4.1 [验证目标与方法](#验证目标与方法)
-   - 4.2 [发现的问题与修复过程](#发现的问题与修复过程)
-   - 4.3 [最终编译结果](#最终编译结果)
-   - 4.4 [关键改善指标](#关键改善指标)
-5. [Include路径全面修复记录](#include路径全面修复记录)
-   - 5.1 [问题根源分析](#问题根源分析)
-   - 5.2 [修复批次统计](#修复批次统计)
-   - 5.3 [CMake配置增强](#cmake配置增强)
-6. [三大团队任务分工](#三大团队任务分工)
-7. [**🆕 GetDiagnostics编译诊断报告**](#getdiagnostics编译诊断报告) **🔴 新增**
-8. [详细问题清单总览](#详细问题清单总览)
-9. [第7轮次执行路线图](#第7轮次执行路线图)
-10. [附录](#附录)
+3. [**🆕 技术改进策略v2.0实证评估与核心借鉴**](#技术改进策略v20实证评估与核心借鉴)
+   - 3.1 [AgentOS现状实证评估](#agentos现状实证评估)
+   - 3.2 [三大参考项目核心借鉴](#三大参考项目核心借鉴)
+   - 3.3 [核心改进策略总览](#核心改进策略总览)
+   - 3.4 [**🆕 关键实施代码示例与技术实现细节**](#关键实施代码示例与技术实现细节)
+4. [Round 18-20 架构重构成果](#round-18-20-架构重构成果)
+   - 4.1 [P0: 构建目录分离](#p0-构建目录分离)
+   - 4.2 [P1-a: include/整合进commons](#p1-a--include整合进commons)
+   - 4.3 [P1-b: interfaces/合并入protocols](#p1-b--interfaces合并入protocols)
+   - 4.4 [验证结果](#验证结果)
+5. [Out-of-Source Build 首次验证报告](#out-of-source-build-首次验证报告)
+   - 5.1 [验证目标与方法](#验证目标与方法)
+   - 5.2 [发现的问题与修复过程](#发现的问题与修复过程)
+   - 5.3 [最终编译结果](#最终编译结果)
+   - 5.4 [关键改善指标](#关键改善指标)
+6. [Include路径全面修复记录](#include路径全面修复记录)
+   - 6.1 [问题根源分析](#问题根源分析)
+   - 6.2 [修复批次统计](#修复批次统计)
+   - 6.3 [CMake配置增强](#cmake配置增强)
+7. [三大团队任务分工](#三大团队任务分工)
+8. [**🆕 GetDiagnostics编译诊断报告**](#getdiagnostics编译诊断报告) **🔴 新增**
+9. [详细问题清单总览](#详细问题清单总览)
+10. [双思维系统三组件架构升级方案 🆕](#双思维系统三组件架构升级方案)
+11. [**🆕 第7轮次执行路线图（技术改进策略整合版）**](#第7轮次执行路线图技术改进策略整合版)
+12. [附录](#附录)
 
 ---
 
@@ -115,7 +121,298 @@
 
 ---
 
-## 3. Round 18-20 架构重构成果
+## 3. 技术改进策略v2.0实证评估与核心借鉴 🆕
+
+> **技术来源**: [第02版-AgentOS技术改进策略和详细方案.md](./技术借鉴与改进/第02版-AgentOS技术改进策略和详细方案.md) v2.0
+> **评估方法**: 基于全部源代码的实证分析 + 三大参考项目深度源码研究
+> **核心目标**: 通过可实际落地的操作和改进，使AgentOS成为AI Agent生态的互操作基础设施
+
+### 3.1 AgentOS现状实证评估
+
+#### 3.1.1 关键指标仪表盘 (基于v2.0实证分析)
+
+```
+          编译成功率
+             48% ★★★★☆
+                │
+   代码质量    ──┼─  架构清晰度
+    65%         │      85%
+  ★★★☆☆       │     ★★★★☆
+                │
+测试覆盖率 ────┼─── 安全性
+    0%         │     70%
+  ☆☆☆☆☆      │    ★★★☆☆
+                │
+           桩函数清除
+              0/68
+            ☆☆☆☆☆
+```
+
+#### 3.1.2 模块完成度实证 (v2.0修正评估)
+
+| 模块 | 完成度 | 关键短板 | v1.0误判 |
+|------|--------|---------|----------|
+| atoms/corekern | 85% | sync.c部分禁用；IPC结构体冲突 | - |
+| atoms/coreloopthree | 80% | 主循环忙等待；双思维仅45% | - |
+| atoms/memoryrovol | 90% | LLM客户端待验证 | - |
+| atoms/taskflow | 70% | 缺少与执行引擎集成 | v1.0标"待实施"，实际已有原型 |
+| cupolas | 88% | 异步守卫为同步包装 | v1.0描述为"四层防护"，实际远超 |
+| daemon/gateway_d | 90% | 协议栈默认未启用 | - |
+| daemon/llm_d | 88% | 单线程同步处理 | - |
+| daemon/tool_d | 92% | 单线程；缺少沙箱隔离 | - |
+| daemon/monit_d | 85% | 缺少Prometheus导出 | - |
+| daemon/sched_d | 75% | ML策略未实现；测试最少 | - |
+| daemon/market_d | 82% | 远程仓库未启用 | - |
+| SDK/Python | 65% | 架构不一致；测试极度不足 | v1.0标"v3.0.0"，实际残缺 |
+| SDK/TypeScript | 85% | 版本号1.0.0 vs 3.0.0不一致 | v1.0标"v3.0.0"，实际1.0.0 |
+
+#### 3.1.3 v1.0八大改进方案实证核查
+
+| 方案 | v1.0状态 | 实际状态 | 差异说明 |
+|------|---------|---------|---------|
+| UnifiedProtocol | P0待实施 | **已大幅实现** | protocols/目录已有MCP/A2A/OpenAI适配器，但gateway_d未启用 |
+| SafetyGuard | P0待实施 | **已完整实现** | cupolas/include/safety_guard.h已有完整API，9种事件+8种守卫 |
+| FileSanitizer | P0待实施 | **方向不同** | 现有sanitizer做输入净化，非文件操作安全 |
+| TaskFlow | P1待实施 | **已大幅实现** | atoms/taskflow/已有Pregel引擎+图引擎+工作流模式 |
+| CognitiveEvolution | P2待实施 | **已有接口** | coreloopthree/include/cognitive_evolution.h已有完整API |
+| UnifiedChannel | P1待实施 | **未实现** | 无channel_d守护进程 |
+| ToolkitExtensions | P1待实施 | **未实现** | toolkit/仅含SDK代码 |
+| DualLoop | P2待实施 | **未实现** | 无dual_loop相关代码 |
+
+### 3.2 三大参考项目核心借鉴
+
+#### 3.2.1 hermes-agent：全栈Agent工程典范 (55+内置工具、20+平台适配)
+
+| 借鉴方向 | hermes实现 | AgentOS化命名 | 优先级 | 当前差距 |
+|---------|-----------|-------------|--------|---------|
+| 工具并行执行 | 静态分类+路径冲突检测 | ParallelToolDispatcher | P1 | 执行单元仅8种，无并行 |
+| 智能模型路由 | 简单任务廉价模型 | SmartModelRouter | P1 | 无模型路由 |
+| 上下文压缩交接 | 结构化摘要+活跃任务追踪 | ContextHandoff | P1 | 无压缩机制 |
+| 多凭证池故障转移 | 同Provider多凭证轮转 | CredentialPool | P0 | 无凭证池 |
+| API错误分类恢复 | 6种错误×恢复策略 | ErrorRecovery | P0 | 仅简单重试 |
+| 子Agent委派 | 并行子Agent+受限工具集 | SubAgentDelegation | P1 | 无子Agent |
+| MCP协议集成 | Stdio+HTTP+自动重连 | MCPClient | P0 | 协议栈未启用 |
+
+#### 3.2.2 openclaw：多通道网关架构标杆 (25+消息通道、Plugin SDK)
+
+| 借鉴方向 | openclaw实现 | AgentOS化命名 | 优先级 | 当前差距 |
+|---------|-------------|-------------|--------|---------|
+| 多通道统一收件箱 | 25+通道ChannelPlugin抽象 | UnifiedChannel | P1 | 仅CLI/Web |
+| Plugin SDK | 100+子路径导出+Proxy懒加载 | PluginSDK | P1 | 无插件框架 |
+| ACP协议桥接 | IDE Agent到Gateway翻译 | ACPServer | P2 | 无ACP支持 |
+| 跨平台守护进程 | launchd/systemd/schtasks | DaemonManager | P0 | 部分实现 |
+
+#### 3.2.3 openJiuwen：工业级执行引擎标杆 (华为开源Pregel BSP图执行引擎)
+
+| 借鉴方向 | openJiuwen实现 | AgentOS化命名 | 优先级 | 当前差距 |
+|---------|---------------|-------------|--------|---------|
+| Pregel图执行 | BSP超步+Channel+Router | TaskFlow（已有原型） | P1 | 原型70%，缺集成 |
+| 流批一体能力 | INVOKE/STREAM/COLLECT/TRANSFORM | StreamCapability | P1 | 无流批一体 |
+| 中断-恢复 | Checkpointer+GraphInterrupt | WorkflowCheckpoint | P1 | 无中断恢复 |
+| Agent自演进 | Operator-Optimizer+RL训练 | CognitiveEvolution（已有接口） | P2 | 接口已有，实施待完善 |
+| 上下文处理器链 | 可插拔处理器+装饰器注册 | ContextProcessor | P1 | 无处理器链 |
+| 安全护栏 | Guardrail风险评估+数据修正 | SafetyGuard（已实现） | P0 | 已实现，需启用 |
+
+### 3.3 核心改进策略总览
+
+#### 3.3.1 战略定位与四项核心原则
+
+**战略定位**: AgentOS的终极定位是**AI Agent生态的互操作基础设施**——所有Agent项目都能通过AgentOS实现无缝协作。
+
+**实现路径**:
+```
+第一阶段：先入生态（MCP/A2A兼容）→ 获得"入场券"
+第二阶段：再建壁垒（微内核+MemoryRovol+双思维）→ 差异化优势
+第三阶段：标准制定（从兼容者跃迁为标准贡献者）→ 行业领导力
+```
+
+**四项核心原则**:
+| 原则 | 说明 | 约束 |
+|------|------|------|
+| **理论保持** | 体系并行论+五维正交+CoreLoopThree+MemoryRovol不动摇 | 不改理论框架 |
+| **工程借鉴** | 从参考项目借鉴工程实践，形成AgentOS自己的命名 | 不照搬代码 |
+| **标准优先** | 协议兼容优先于功能扩展 | 先MCP/A2A再新功能 |
+| **内核不变** | atoms层接口签名不变，扩展通过新增文件和配置实现 | 不改公共API |
+
+#### 3.3.2 十大改进方案与优先级 (P0-P2)
+
+| 编号 | 方案 | 优先级 | 状态 | 实施位置 | 预计工时 | 第7轮次对齐 |
+|------|------|--------|------|---------|---------|-------------|
+| 1 | 守护进程并发升级 | P0 | 待实施 | daemon/common/ | 40h | Week 2-4 (TeamB) |
+| 2 | MCP协议栈激活 | P0 | 进行中 | gateway_d/protocol/ | 60h | Week 3-4 (TeamB) |
+| 3 | API错误恢复系统 | P0 | 待实施 | llm_d/ | 30h | Week 4 (TeamA) |
+| 4 | 双思维系统落地 | P0 | 进行中 | coreloopthree/cognition/ | 80h | Week 1-4 (TeamA) |
+| 5 | TaskFlow集成完善 | P1 | 进行中 | atoms/taskflow/ | 50h | Phase 2 (后续) |
+| 6 | 上下文处理器链 | P1 | 待实施 | coreloopthree/cognition/ | 40h | Phase 2 (后续) |
+| 7 | 工具并行执行引擎 | P1 | 待实施 | coreloopthree/execution/ | 35h | Phase 2 (后续) |
+| 8 | UnifiedChannel统一通道层 | P1 | 待实施 | gateway_d/channel/ | 80h | Phase 3 (后续) |
+| 9 | CognitiveEvolution完善 | P2 | 接口已有 | coreloopthree/cognition/ | 60h | Phase 3 (后续) |
+| 10 | PluginSDK插件框架 | P2 | 待实施 | toolkit/ | 70h | Phase 3 (后续) |
+
+### 3.4 关键实施代码示例与技术实现细节 🆕
+
+> **来源**: [第02版-AgentOS技术改进策略和详细方案.md](./技术借鉴与改进/第02版-AgentOS技术改进策略和详细方案.md) v2.0
+> **目标**: 为P0级改进方案提供具体可落地的代码实现参考，确保生产级质量
+> **验证原则**: 所有代码示例需通过编译验证、单元测试和性能基准测试
+
+#### 3.4.1 守护进程并发升级实现 (IMP-01)
+
+**问题**: 6个daemon的main循环为单线程同步accept-handle，无法处理并发请求。
+
+**解决方案**: 引入事件驱动+线程池混合模型
+
+**实施位置**: `agentos/daemon/common/` 新增 `daemon_event_loop.c/h`
+
+**核心数据结构**:
+
+```c
+typedef struct daemon_event_loop {
+    int epoll_fd;
+    agentos_thread_pool_t* worker_pool;
+    int max_connections;
+    int backlog_size;
+    agentos_atomic_int active_connections;
+} daemon_event_loop_t;
+
+AGENTOS_API agentos_error_t agentos_daemon_event_loop_create(
+    int max_connections,
+    int worker_threads,
+    daemon_event_loop_t** out_loop);
+
+AGENTOS_API agentos_error_t agentos_daemon_event_loop_run(
+    daemon_event_loop_t* loop,
+    int server_fd);
+
+AGENTOS_API void agentos_daemon_event_loop_stop(
+    daemon_event_loop_t* loop);
+```
+
+**改造步骤**:
+1. 新增`daemon_event_loop.c/h`（`daemon/common/`）
+2. 改造`llm_d/main.c`主循环（最简单，先验证）
+3. 改造`tool_d/main.c`
+4. 改造`gateway_d/main.c`
+5. 改造`monit_d/sched_d/market_d`
+
+**验证标准**: 每个daemon改造后，使用`ab -n 1000 -c 100`压测，QPS提升10倍以上。
+
+#### 3.4.2 MCP协议栈激活实现 (IMP-02)
+
+**问题**: gateway_d中MCP/A2A/OpenAI协议栈受`AGENTOS_HAS_PROTOCOLS`宏控制，默认未启用。protocols/目录已有完整适配器代码，但未与gateway_d连接。
+
+**解决方案**: 激活现有协议代码，新增协议路由器
+
+**实施位置**: `agentos/daemon/gateway_d/src/` 新增 `protocol/` 目录
+
+**目录结构**:
+```
+gateway_d/src/protocol/
+├── mcp_server.c/h          /* MCP v1.0 服务端（复用protocols/standards/mcp/） */
+├── mcp_transport_stdio.c/h /* STDIO传输适配器 */
+├── mcp_transport_http.c/h  /* HTTP传输适配器 */
+├── a2a_handler.c/h         /* A2A v0.3.0 处理器 */
+├── openai_compat.c/h       /* OpenAI API兼容层 */
+└── protocol_router.c/h     /* 协议路由器 */
+```
+
+**核心数据结构**:
+
+```c
+typedef struct protocol_router {
+    mcp_server_t* mcp;
+    a2a_handler_t* a2a;
+    openai_compat_t* openai;
+    daemon_event_loop_t* event_loop;
+} protocol_router_t;
+
+AGENTOS_API agentos_error_t agentos_protocol_router_create(
+    protocol_router_t** out_router);
+
+AGENTOS_API agentos_error_t agentos_protocol_route_request(
+    protocol_router_t* router,
+    const char* protocol,
+    const cJSON* request,
+    cJSON** out_response);
+```
+
+**CMake配置**:
+
+```cmake
+option(AGENTOS_ENABLE_PROTOCOLS "Enable MCP/A2A/OpenAI protocol stack" ON)
+
+if(AGENTOS_ENABLE_PROTOCOLS)
+    target_compile_definitions(agentos_gateway_d PRIVATE AGENTOS_HAS_PROTOCOLS=1)
+    target_link_libraries(agentos_gateway_d PRIVATE agentos_protocols)
+    target_sources(agentos_gateway_d PRIVATE
+        src/protocol/mcp_server.c
+        src/protocol/mcp_transport_stdio.c
+        src/protocol/mcp_transport_http.c
+        src/protocol/a2a_handler.c
+        src/protocol/openai_compat.c
+        src/protocol/protocol_router.c
+    )
+endif()
+```
+
+**验证标准**: 外部MCP客户端可连接gateway_d并调用tool_d注册的工具。
+
+#### 3.4.3 API错误恢复系统实现 (IMP-03)
+
+**问题**: llm_d仅简单重试，无结构化错误分类和恢复策略。
+
+**解决方案**: 借鉴hermes-agent的error_classifier，实现6种错误×恢复策略
+
+**实施位置**: `agentos/daemon/llm_d/src/` 新增 `error_recovery.c/h` 和 `credential_pool.c/h`
+
+**错误分类枚举**:
+
+```c
+typedef enum agentos_failover_reason {
+    AGENTOS_FAILOVER_AUTH = 0,            /* 401/403 */
+    AGENTOS_FAILOVER_BILLING,             /* 402 */
+    AGENTOS_FAILOVER_RATE_LIMIT,          /* 429 */
+    AGENTOS_FAILOVER_OVERLOADED,          /* 503/529 */
+    AGENTOS_FAILOVER_CONTEXT_OVERFLOW,    /* 上下文过大 */
+    AGENTOS_FAILOVER_MODEL_NOT_FOUND,     /* 404 */
+    AGENTOS_FAILOVER_TIMEOUT,             /* 超时 */
+    AGENTOS_FAILOVER_NETWORK_ERROR,       /* 网络错误 */
+} agentos_failover_reason_t;
+
+AGENTOS_API agentos_failover_reason_t agentos_classify_api_error(
+    int http_status,
+    const char* error_body);
+
+AGENTOS_API agentos_error_t agentos_error_recovery_execute(
+    agentos_error_recovery_t* recovery,
+    agentos_failover_reason_t reason,
+    agentos_llm_request_t* request);
+```
+
+**多凭证池实现**:
+
+```c
+typedef struct agentos_credential_pool {
+    char* provider;
+    agentos_credential_t* creds;
+    size_t cred_count;
+    size_t current_index;
+    agentos_mutex_t lock;
+} agentos_credential_pool_t;
+
+AGENTOS_API agentos_error_t agentos_credential_pool_get_next(
+    agentos_credential_pool_t* pool,
+    agentos_credential_t** out_cred);
+
+AGENTOS_API agentos_error_t agentos_credential_pool_mark_exhausted(
+    agentos_credential_pool_t* pool,
+    const char* cred_id);
+```
+
+**验证标准**: 模拟各类API错误，系统应自动切换凭证或降级处理，成功率>95%。
+
+----
+
+## 4. Round 18-20 架构重构成果
 
 > **执行时间**: 2026-04-19
 > **执行命令**: "立即执行：构建→AgentOS-build分离；include/整合进commons；删除interfaces/(内容移入protocols)。放弃：多仓库拆分。"
@@ -295,7 +592,7 @@ endif()
 rm -rf agentos/interfaces/  # 3个文件全部清除
 ```
 
-### 3.4 验证结果
+### 4.4 验证结果
 
 #### 删除的文件统计
 
@@ -342,7 +639,7 @@ git status --short
 
 ---
 
-## 4. Out-of-Source Build 首次验证报告
+## 5. Out-of-Source Build 首次验证报告
 
 > **验证时间**: 2026-04-19 15:48 - 16:32
 > **验证目标**: 确认Round 18-20架构重构后的项目能够通过标准CMake Out-of-Source Build流程成功编译
@@ -805,7 +1102,7 @@ target_include_directories(my_lib PUBLIC
 
 ---
 
-## 6. 三大团队任务分工
+## 7. 三大团队任务分工
 
 ### 6.1 团队职责边界
 
@@ -1003,7 +1300,7 @@ Docker/
 
 ---
 
-## 7. **🆕 GetDiagnostics编译诊断报告** 🔴 **紧急**
+## 8. **🆕 GetDiagnostics编译诊断报告** 🔴 **紧急**
 
 > **诊断时间**: 2026-04-21 10:00
 > **诊断工具**: VS Code Language Server (clang)
@@ -1248,7 +1545,7 @@ cppcheck --enable=all agentos/atoms/coreloopthree/ agentos/atoms/memoryrovol/
 
 ---
 
-## 8. 详细问题清单总览
+## 9. 详细问题清单总览
 
 ### 8.1 问题分类统计
 
@@ -1354,7 +1651,7 @@ cppcheck --enable=all agentos/atoms/coreloopthree/ agentos/atoms/memoryrovol/
 
 ---
 
-## 9. 双思维系统三组件架构升级方案 🆕
+## 10. 双思维系统三组件架构升级方案 🆕
 
 > **技术来源**: [第01版-AgentOS双思维模型详细落地方案](./技术借鉴与改进/第01版-AgentOS双思维模型详细落地方案.md)
 > **提出时间**: 2026-04-20
@@ -1638,31 +1935,87 @@ test_memory_overflow_scenario.sh   # 内存溢出场景
 | **DS-R3** | MemoryRovol同步开销大 | 低 | 中 | 批量写入+后台异步同步 |
 | **DS-R4** | 团队理解偏差 | 中 | 高 | 详细文档+代码示例+Code Review |
 
-### 8. 第7轮次执行路线图
+## 11. 第7轮次执行路线图（技术改进策略整合版）
+
+#### 11.0 基于技术改进策略的全面升级方案
+
+**技术改进策略概述**：基于《第02版-AgentOS技术改进策略和详细方案.md》（v2.0）的实证分析，本报告将10大改进方案和6个月实施路线图全面融入第7轮次执行计划，目标是从当前**48%编译通过率**的“能编译”状态，通过**Phase 1: 生产就绪基线**达到**100%编译通过率**，再通过**Phase 2: 核心能力深化**实现**双思维系统85%完成度**，最终通过**Phase 3: 生态基础设施**建立**AI Agent生态互操作基础设施**。
+
+**十大改进方案与优先级**：
+
+| 改进ID | 方案名称 | 优先级 | 预计工时 | 当前状态 | 第7轮次对齐 |
+|--------|----------|--------|----------|----------|-------------|
+| **IMP-01** | 守护进程并发升级 | P0 | 40h | 🔴 未开始 | Week 2-4 (TeamB) |
+| **IMP-02** | MCP协议栈激活 | P0 | 60h | 🔴 未开始 | Week 3-4 (TeamB) |
+| **IMP-03** | API错误恢复系统 | P0 | 30h | 🔴 未开始 | Week 4 (TeamA) |
+| **IMP-04** | 双思维系统落地 | P0 | 80h | 🟡 45% | Week 1-4 (TeamA) |
+| **IMP-05** | TaskFlow集成完善 | P1 | 50h | 🔴 未开始 | Phase 2 (后续) |
+| **IMP-06** | 上下文处理器链 | P1 | 40h | 🔴 未开始 | Phase 2 (后续) |
+| **IMP-07** | 工具并行执行引擎 | P1 | 35h | 🔴 未开始 | Phase 2 (后续) |
+| **IMP-08** | UnifiedChannel统一通道层 | P1 | 80h | 🔴 未开始 | Phase 3 (后续) |
+| **IMP-09** | CognitiveEvolution完善 | P2 | 60h | 🔴 未开始 | Phase 3 (后续) |
+| **IMP-10** | PluginSDK插件框架 | P2 | 70h | 🔴 未开始 | Phase 3 (后续) |
+
+**三阶段路线图整合**：
+
+| 阶段 | 时间窗口 | 目标 | 关键交付物 | 与第7轮次对应关系 |
+|------|----------|------|------------|-------------------|
+| **Phase 1: 生产就绪基线** | 04-20 ~ 05-03 (2周) | 100%编译通过率、CI/CD基础流水线、桩函数清零、基础测试框架 | 可编译、可测试的AgentOS基础版本 | **第7轮次 Week 1-2** |
+| **Phase 2: 核心能力深化** | 05-04 ~ 05-31 (4周) | 双思维系统85%完成度、TaskFlow集成、上下文处理器链、工具并行引擎 | 具备核心推理能力的生产可用版本 | **第7轮次 Week 3-4 + 后续扩展** |
+| **Phase 3: 生态基础设施** | 06-01 ~ 07-31 (2个月) | UnifiedChannel统一通道层、CognitiveEvolution完善、PluginSDK插件框架 | 支持多Agent互操作的生态基础设施 | **后续轮次 (第8-10轮次)** |
+
+**与当前第7轮次对齐**：
+- **Week 1-2** 全面对应 **Phase 1** 目标，聚焦编译修复、桩函数清除、CI/CD搭建
+- **Week 3-4** 启动 **Phase 2** 核心功能，重点实现双思维系统三组件架构升级
+- **Phase 3** 作为长期规划，将在第7轮次结束后启动，确保项目从“能运行”升级为“能生态运行”
 
 ### 8.1 第7轮次目标
 
-**总体目标**: 从当前的**48%编译通过率**提升至**100%**，并启动Phase 2-4的核心功能实现。
+**总体目标**: 从当前的**48%编译通过率**提升至**100%**，完成**Phase 1: 生产就绪基线**，并启动**Phase 2: 核心能力深化**的核心功能实现。
 
 **具体指标**:
-- [ ] 编译通过率: 48% → **100%** (修复TYPE-001~003)
+- [ ] 编译通过率: 48% → **100%** (修复COMPILER-001~006 + TYPE-001~003)
 - [ ] 桩函数清除: 68+ → **0** (SEC-017)
-- [ ] 双思考系统: 40-50% → **90%+** (DS-001~008)
+- [ ] 双思考系统: 40-50% → **85%** (DS-001~008 + 三组件架构升级)
 - [ ] 测试覆盖率: 0% → **30%** (建立基础测试框架)
-- [ ] 文档完整性: 60% → **80%** (补充API文档)
+- [ ] 文档完整性: 60% → **80%** (补充API文档 + 技术策略整合)
 
-### 8.2 时间规划（建议4周）
+### 8.2 三阶段路线图详细计划
+
+#### Phase 1: 生产就绪基线 (04-20 ~ 05-03) - 对应第7轮次 Week 1-2
+**核心任务**:
+1. **COMPILER类错误全面修复** (COMPILER-001~006, 14文件330+错误) - TeamA, 15-23h
+2. **桩函数清零行动** (SEC-017, 68+处) - TeamA, 40h
+3. **CI/CD基础流水线搭建** - TeamC, 20h
+4. **基础测试框架建立** (测试覆盖率0%→30%) - TeamC, 20h
+5. **MCP协议栈激活准备** (IMP-02) - TeamB, 前期调研
+
+#### Phase 2: 核心能力深化 (05-04 ~ 05-31) - 对应第7轮次 Week 3-4 + 扩展
+**核心任务**:
+1. **双思维系统三组件架构完整实现** (IMP-04) - TeamA, 80h
+2. **守护进程并发升级** (IMP-01) - TeamB, 40h
+3. **API错误恢复系统** (IMP-03) - TeamA, 30h
+4. **TaskFlow集成准备** (IMP-05) - TeamB, 前期设计
+
+#### Phase 3: 生态基础设施 (06-01 ~ 07-31) - 后续轮次规划
+**核心任务**:
+1. **UnifiedChannel统一通道层** (IMP-08) - TeamB, 80h
+2. **PluginSDK插件框架** (IMP-10) - TeamC, 70h
+3. **CognitiveEvolution完善** (IMP-09) - TeamA, 60h
+4. **生态互操作性验证** - 三团队联合
+
+### 8.3 四周详细时间规划
 
 #### Week 1 (2026-04-20 ~ 04-26): 编译修复周
 
 | 天数 | TeamA任务 | TeamB任务 | TeamC任务 |
 |------|----------|----------|----------|
-| Day 1-2 | 修复TYPE-003 (3h) | 修复TYPE-001/002 (5h) | 验证全量编译 |
+| Day 1-2 | 修复COMPILER-005 (stdint.h/time.h) (2h) + TYPE-003 (3h) | 修复TYPE-001/002 (5h) | 验证全量编译 |
 | Day 3-5 | 开始SEC-017桩函数清除 (20h) | 协议限制L-001~L-003 (15h) | Daemon集成测试准备 |
 | Day 6-7 | 继续桩函数清除 (20h) | LangChain适配器 (12h) | 网关性能基准测试 |
 
 **Week 1里程碑**:
-- ✅ 编译通过率: **100%**
+- ✅ 编译通过率: **100%** (COMPILER-005修复)
 - ✅ 桩函数减少: 68→**30**
 - ✅ TYPE冲突: **全部解决**
 
@@ -1707,21 +2060,23 @@ test_memory_overflow_scenario.sh   # 内存溢出场景
 - ✅ 文档: **80%+**
 - ✅ 评级提升: **7.5/10 → 8.5/10**
 
-### 10.3 关键风险与应对
+### 8.4 关键风险与应对
 
 | 风险 | 可能性 | 影响 | 应对措施 |
 |------|--------|------|----------|
 | **R1: 桩函数清除引入新Bug** | 高 | 高 | 每清除一批立即编译验证 |
-| **R2: 双思考系统复杂度超预期** | 中 | 中 | 降低目标至80%，分阶段交付 |
+| **R2: 双思维系统复杂度超预期** | 中 | 中 | 降低目标至80%，分阶段交付 |
 | **R3: 团队协作冲突** | 低 | 中 | 每日站会，明确接口责任人 |
 | **R4: CI/CD环境不稳定** | 中 | 中 | 使用Docker容器化构建 |
 | **🆕 R5: COMPILER类错误修复暴露深层问题** | 高 | 低 | 这是好消息，继续迭代修复 |
+| **🆕 R6: Phase 2-3 依赖外部技术栈** | 中 | 高 | 提前技术验证，准备备选方案 |
+| **🆕 R7: 生态互操作性标准未统一** | 低 | 高 | 参与社区标准制定，保持架构灵活性 |
 
 ---
 
-## 11. 附录
+## 12. 附录
 
-### 11.1 重要文件索引
+### 12.1 重要文件索引
 
 | 文件 | 路径 | 用途 |
 |------|------|------|
@@ -1733,7 +2088,7 @@ test_memory_overflow_scenario.sh   # 内存溢出场景
 | **gateway_protocol_handler** | `agentos/gateway/src/utils/gateway_protocol_handler.{h,c}` | 网关协议处理器 (已修复类型) |
 | **protocol_router.h** | `agentos/protocols/include/protocol_router.h` | 协议路由器 (已修复类型名) |
 
-### 11.2 常用命令速查
+### 12.2 常用命令速查
 
 ```bash
 # === Out-of-Source Build 标准流程 ===
@@ -1772,7 +2127,7 @@ find AgentOS -name "*.o" -o -name "CMakeFiles"
 # 应返回空
 ```
 
-### 11.3 Round 18-20 成果总结 + 🆕 GetDiagnostics诊断成果
+### 12.3 Round 18-20 成果总结 + 🆕 GetDiagnostics诊断成果
 
 **Round 18-20 量化指标**:
 - 🗂️ **删除文件**: 21个 (include/ 18个 + interfaces/ 3个)
