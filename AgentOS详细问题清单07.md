@@ -1,9 +1,9 @@
-# AgentOS 详细问题清单 v16.0.0
+# AgentOS 详细问题清单 v16.1.0
 
-> **版本**: 16.0.0-编译诊断紧急版（含Round 21-30团队A修复成果+**🆕 COMPILER-001~006编译错误全面诊断(14文件200+错误)**+SEC-017清零+DS/MR实现+GC系统+注意力分配）
-> **日期**: 2026-04-21 10:00 (**GetDiagnostics全面诊断**)
-> **状态**: 🔴 **🆕 COMPILER-001~006: 14个源文件200+编译错误(阻塞所有模块编译)** + ✅ TeamA SEC-017桩函数清零 + ✅ STUB-001~004已修复 + ✅ DS-001~008完整实现(50+19 API) + ✅ MR-001~007完整实现(178 API) + ✅ 垃圾回收系统(6核心API) + ✅ 注意力分配(5新API) + ✅ TYPE-003统一修复
-> **核心理念**: 穷尽式逐文件审查，绝不流于形式！**扫描范围必须覆盖全项目！严禁任何桩函数！****🆕 编译通过率=最高优先级！200+错误必须立即修复！**
+> **版本**: 16.1.0-编译诊断紧急版（含Round 21-30团队A修复成果+**🆕 COMPILER-001~006(14文件330+错误)**+**🆕 BUILD-006(tests目录缺失)**+**🆕 MEM-BUG-001(内存递归死循环)**+SEC-017清零+DS/MR实现+GC系统+注意力分配）
+> **日期**: 2026-04-21 11:00 (**新增BUILD-006和MEM-BUG-001**)
+> **状态**: 🔴 **🆕 COMPILER-001~006: 14个源文件330+编译错误(阻塞coreloopthree/memoryrovol)** + **🆕 BUILD-006: tests目录CMakeLists.txt缺失** + **🆕 MEM-BUG-001: memory_alloc递归死循环(栈溢出)** + ✅ TeamA SEC-017桩函数清零 + ✅ STUB-001~004已修复 + ✅ DS-001~008完整实现(50+19 API) + ✅ MR-001~007完整实现(178 API)
+> **核心理念**: 穷尽式逐文件审查，绝不流于形式！**扫描范围必须覆盖全项目！严禁任何桩函数！****🆕 编译错误+内存Bug=最高优先级！**
 > **关联文档**: [主报告v25.0](./AgentOS全面修复与改进报告07.md) | [规范手册v13.0](./AgentOS工程规范化标准手册07.md) | [看板v14.1](./AgentOS三团队任务进度看板07.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
 
 ---
@@ -19,10 +19,11 @@
 7. [PROTO类: 协议系统限制 (5个)](#proto类-协议系统限制)
 8. [ARCH类: 架构优化 ✅ 部分已解决 (6个)](#arch类-架构优化-部分已解决)
 9. [TYPE类: 类型冲突 🆕 新增 (3个)](#type类-类型冲突-新增)
-10. [BUILD类: 构建配置 🆕 部分已解决 (5个)](#build类-构建配置-部分已解决)
+10. [BUILD类: 构建配置 🆕 部分已解决 (6个)](#build类-构建配置-部分已解决)
 11. [**🆕 COMPILER类: 编译错误 (6个)**](#compiler类-编译错误-6个) **🔴 新增**
-12. [问题追踪矩阵](#问题追踪矩阵)
-13. [附录: 问题发现方法与验证流程](#附录-问题发现方法与验证流程)
+12. [**🆕 MEM-BUG类: 内存管理Bug (1个)**](#mem-bug类-内存管理bug-1个新增) **🔴 新增**
+13. [问题追踪矩阵](#问题追踪矩阵)
+14. [附录: 问题发现方法与验证流程](#附录-问题发现方法与验证流程)
 
 ---
 
@@ -31,36 +32,37 @@
 ### 1.1 问题分布饼图
 
 ```
-STUB:    ████████████░░░░  9% (5/55)   🔴 致命
-DS:      ██████████████░░ 15% (8/55)   🟠 严重
-MR:      ██████████░░░░░░ 13% (7/55)   🟠 严重
-HIST:    ██████████████░░ 15% (8/55)   🟡 中等
-TGT:     ████░░░░░░░░░░░░░  5% (3/55)   🟡 中等
-PROTO:  █████░░░░░░░░░░░░  9% (5/55)   🟡 中等
-ARCH:    ██████░░░░░░░░░░░ 11% (6/55)   ⚠️ 部分已解决
-TYPE:    ██░░░░░░░░░░░░░░░  5% (3/55)   🟡 中等
-BUILD:   ████░░░░░░░░░░░░░  9% (5/55)   ⚠️ 部分已解决
-COMPILER:█████████████████🔴 **11% (6/55)**   🔴 **🆕 致命(新增)**
+STUB:    █████████░░░░░░░  9% (5/57)   🔴 致命
+DS:      █████████████░░░░ 14% (8/57)   🟠 严重
+MR:      ██████████░░░░░░ 12% (7/57)   🟠 严重
+HIST:    █████████████░░░ 14% (8/57)   🟡 中等
+TGT:     ███░░░░░░░░░░░░  5% (3/57)   🟡 中等
+PROTO:  ████░░░░░░░░░░░  9% (5/57)   🟡 中等
+ARCH:    █████░░░░░░░░░░ 11% (6/57)   ⚠️ 部分已解决
+TYPE:    ██░░░░░░░░░░░░░  5% (3/57)   🟡 中等
+BUILD:   █████░░░░░░░░░░ 11% (6/57)   ⚠️ 部分已解决
+COMPILER:█████████████████ 11% (6/57)   🔴 🆕 致命(新增)
+MEM-BUG: ██░░░░░░░░░░░░░  2% (1/57)   🔴 🆕 致命(新增)
 ```
 
 ### 1.2 严重程度统计
 
 | 严重程度 | 数量 | 占比 | 状态 |
 |----------|------|------|------|
-| 🔴 **P0 致命** | **12** | **21.8%** | ✅ **5/12已解决** (STUB-001~004) + 🔴 **🆕 COMPILER-001~006新增(6个)** + STUB-005 |
-| 🟠 **P1 严重** | 15 | 27.3% | ✅ **15/15已解决** (DS-001~008, MR-001~007) |
-| 🟡 **P2 中等** | 18 | 32.7% | ⚠️ **10/18已解决** (TYPE-003, HIST部分) |
-| 🟢 **P3 低** | 8 | 14.5% | ✅ 7/8已解决 |
-| **总计** | **55** | **100%** | **✅ 37已解决 / 🔴 6新增COMPILER / ⏳ 12待处理** |
+| 🔴 **P0 致命** | **14** | **24.6%** | ✅ **5/14已解决** (STUB-001~004) + 🔴 **🆕 COMPILER-001~006(6个)** + 🔴 **🆕 MEM-BUG-001(1个)** + STUB-005 |
+| 🟠 **P1 严重** | 15 | 26.3% | ✅ **15/15已解决** (DS-001~008, MR-001~007) |
+| 🟡 **P2 中等** | 18 | 31.6% | ⚠️ **10/18已解决** (TYPE-003, HIST部分) |
+| 🟢 **P3 低** | 8 | 14.0% | ✅ 7/8已解决 |
+| **总计** | **57** | **100%** | **✅ 37已解决 / 🔴 7新增(C+MB) / ⏳ 13待处理** |
 
 ### 1.3 解决状态统计
 
 | 状态 | 数量 | 占比 | 说明 |
 |------|------|------|------|
-| ✅ **已解决(TeamA)** | 31 | 56.4% | STUB(4) + DS(8) + MR(7) + TYPE(1) + HIST(11) |
-| ⏳ **待处理(TeamB)** | 13 | 23.6% | STUB-005 + PROTO(5) + TYPE(2) + BUILD(3) |
-| 🔒 **阻塞中** | 5 | 9.1% | BUILD(3) + TGT(2) - 被TeamB protocols模块阻塞 |
-| 🔴 **🆕 新增(COMPILER)** | **6** | **10.9%** | **COMPILER-001~006: 14文件200+错误，必须立即修复** |
+| ✅ **已解决(TeamA)** | 31 | 54.4% | STUB(4) + DS(8) + MR(7) + TYPE(1) + HIST(11) |
+| ⏳ **待处理(TeamB)** | 13 | 22.8% | STUB-005 + PROTO(5) + TYPE(2) + BUILD(3) |
+| 🔒 **阻塞中** | 6 | 10.5% | BUILD(3) + TGT(2) + BUILD-006(1) - 被各种问题阻塞 |
+| 🔴 **🆕 新增** | **7** | **12.3%** | **COMPILER-001~006(6个)** + **MEM-BUG-001(1个)** |
 
 ---
 
@@ -676,10 +678,168 @@ typedef enum { ... } sanitize_level_t;
 | **修复方案** | 在gateway/CMakeLists.txt中添加 `src/gateway/` 的include路径，确保同级头文件可访问 |
 | **当前状态** | 🔒 被TeamB protocols模块编译错误阻塞，无法验证 |
 
-**BUILD类修复进度**: 
+**BUILD类修复进度**:
 - ✅ 已解决: BUILD-001, BUILD-002
 - 🔒 阻塞中: BUILD-003, BUILD-004, BUILD-005 (均被TeamB protocols模块编译错误阻塞)
 - **验证状态**: TeamA核心目标(3/16)可独立编译: agentos_common ✅, agentos_core ✅, gateway_lib_obj ✅
+
+---
+
+### BUILD-006: tests目录CMakeLists.txt缺失 🆕
+
+| 属性 | 值 |
+|------|-----|
+| **错误信息** | `add_subdirectory given source "tests" which is not an existing directory` |
+| **影响位置** | `atoms/corekern/CMakeLists.txt:75` 和 `atoms/memoryrovol/CMakeLists.txt:134` |
+| **触发条件** | 开启 `-DBUILD_TESTS=ON` 构建时 |
+| **根本原因** | 开启测试构建选项但tests/目录不存在或缺少CMakeLists.txt |
+| **影响** | cmake配置阶段直接失败，无法进行任何构建 |
+| **负责团队** | **TeamC (集成组)** |
+| **预计工时** | 3-5h (需创建测试框架+至少一个示例测试) |
+| **优先级** | 🟠 **P1 严重** (阻塞所有测试构建) |
+
+**错误触发路径**:
+```
+cmake -DBUILD_TESTS=ON
+    ↓
+add_subdirectory(tests)  ← CMake Error: tests目录不存在
+    ↓
+配置失败，无法生成Makefile
+```
+
+**修复方案**:
+1. 创建 `atoms/corekern/tests/CMakeLists.txt`
+2. 创建 `atoms/memoryrovol/tests/CMakeLists.txt`
+3. 至少添加一个简单的示例测试用例
+4. 使用条件判断处理CUnit不存在的情况:
+   ```cmake
+   if(BUILD_TESTS AND CUNIT_FOUND)
+       enable_testing()
+       add_subdirectory(tests)
+   endif()
+   ```
+
+---
+
+## 12. **🆕 MEM-BUG类: 内存管理Bug (1个新增)** 🔴 **致命**
+
+> **发现时间**: 2026-04-21 (代码审查)
+> **来源**: 用户报告 + 代码审查
+> **严重程度**: 🔴 **P0 致命级** - 导致栈溢出崩溃
+> **影响**: 所有未初始化状态下的内存分配操作
+> **核心理念**: 底层分配器必须与wrapper层完全分离！
+
+### MEM-BUG-001: memory_alloc 递归死循环 🆕
+
+| 属性 | 值 |
+|------|-----|
+| **错误代码** | `memory_alloc()` 函数在 `g_state.initialized == false` 时调用 `AGENTOS_MALLOC` |
+| **问题本质** | `AGENTOS_MALLOC` 宏展开后调用 `memory_alloc()`，形成直接递归 |
+| **崩溃方式** | 栈溢出 (Stack Overflow) - 无限递归直到栈耗尽 |
+| **影响函数** | memory_alloc, memory_free, memory_realloc, memory_calloc (全部4个) |
+| **影响场景** | 模块未初始化状态下的所有内存操作 |
+| **负责团队** | **TeamA (核心组)** |
+| **预计工时** | 2-3h |
+| **优先级** | 🔴 **P0 致命** (必须立即修复) |
+
+**递归调用链**:
+```c
+memory_alloc(size, tag)
+    ↓ (g_state.initialized == false)
+AGENTOS_MALLOC(size)  // 宏展开
+    ↓
+memory_alloc(size, NULL)  // 递归调用自己！
+    ↓
+AGENTOS_MALLOC(size)
+    ↓
+memory_alloc(size, NULL)
+    ↓
+... 无限递归 → Stack Overflow崩溃
+```
+
+**受影响代码模式** (所有4个函数):
+```c
+// ❌ 错误实现 - 会触发递归死循环
+void* memory_alloc(size_t size, const char* tag) {
+    if (!g_state.initialized) {
+        return AGENTOS_MALLOC(size);  // ← 递归入口！
+    }
+    // ...
+}
+
+void memory_free(void* ptr) {
+    if (!g_state.initialized) {
+        AGENTOS_FREE(ptr);  // ← 同样递归！
+    }
+    // ...
+}
+```
+
+**修复方案**:
+```c
+// ✅ 正确实现 - 使用标准库原始分配器，绕过wrapper
+void* memory_alloc(size_t size, const char* tag) {
+    if (!g_state.initialized) {
+        // 直接使用标准库malloc，绕过所有wrapper
+        void* ptr = malloc(size);  // ← 不经过任何AGENTOS_*宏
+        if (ptr != NULL) {
+            memset(ptr, 0, size);
+        }
+        return ptr;
+    }
+    // 正常初始化后的逻辑...
+    return internal_pool_alloc(size, tag);
+}
+
+void memory_free(void* ptr) {
+    if (!g_state.initialized) {
+        free(ptr);  // ← 直接用标准库free
+        return;
+    }
+    // ...
+}
+
+void* memory_realloc(void* ptr, size_t size) {
+    if (!g_state.initialized) {
+        void* new_ptr = realloc(ptr, size);  // ← 直接用标准库
+        return new_ptr;
+    }
+    // ...
+}
+
+void* memory_calloc(size_t nmemb, size_t size) {
+    if (!g_state.initialized) {
+        void* ptr = calloc(nmemb, size);  // ← 直接用标准库
+        return ptr;
+    }
+    // ...
+}
+```
+
+**修复要点**:
+1. **底层分配器选择**: 使用 `malloc/calloc/realloc/free` 标准库函数
+2. **绝对禁止**: 在未初始化分支中使用任何 `AGENTOS_*` 宏
+3. **分离关注点**:
+   - 底层: `malloc/free` = 原始系统分配
+   - 上层: `memory_alloc/memory_free` = 池化+追踪+统计
+
+**验证方法**:
+```c
+// 测试代码 - 必须在模块未初始化时调用
+void test_uninitialized_alloc(void) {
+    g_state.initialized = false;  // 确保未初始化
+    
+    void* ptr = memory_alloc(1024, "test");
+    assert(ptr != NULL);  // 不应崩溃
+    memory_free(ptr);  // 同样不能崩溃
+    
+    g_state.initialized = true;  // 恢复状态
+}
+```
+
+**MEM-BUG类修复优先级**: 🔴 **必须立即修复**，否则任何模块未初始化状态下的内存操作都会导致程序崩溃。
+
+---
 
 ---
 
@@ -1072,29 +1232,38 @@ find AgentOS -name "*.o" -o -name "CMakeFiles" | wc -l
 | **v14.3** | 2026-04-19 | System | **新增ARCH-006(Docker模块开发规划)，ARCH共6个(5已解决+1规划中)，总数49** |
 | **v15.0** | 2026-04-20 18:00 | System | **Round 21-30团队A修复成果: SEC-017清零+STUB-001~004+DS-001~008+MR-001~007+GC系统+注意力分配+TYPE-003** |
 | **v16.0** | 2026-04-21 10:00 | System | **🆕 GetDiagnostics全面诊断: 新增COMPILER-001~006(14文件330+错误)，问题总数从49增至55，P0致命从6增至12** |
+| **v16.1** | 2026-04-21 11:00 | System | **🆕 新增BUILD-006(tests目录CMakeLists.txt缺失)+MEM-BUG-001(memory_alloc递归死循环)，问题总数55增至57** |
 
 ---
 
 ## 🎯 下一步行动
 
-### 🔴 **紧急: COMPILER类修复 (用户确认后立即启动)**
+### 🔴 **紧急: COMPILER类+BUILD-006+MEM-BUG-001修复 (用户确认后立即启动)**
 
-1. **TeamA最高优先级任务 - 预计15-23h总工时**:
+1. **TeamA最高优先级任务 - 预计17-26h总工时**:
    - [ ] **COMPILER-005**: 添加标准库头文件 (1-2h) ← **最先开始，最简单**
    - [ ] **COMPILER-001**: 修复agentos.h路径 (8-12h) ← **核心任务**
    - [ ] **COMPILER-002**: 定位/重建memory_compat.h (3-5h) ← **可与001并行**
    - [ ] **COMPILER-006**: 修复内部模块头文件路径 (2-4h) ← **可与001并行**
    - [ ] **COMPILER-003/004**: 自动解决 (依赖001/002)
+   - [ ] **MEM-BUG-001**: 修复memory_alloc递归死循环 (2-3h) ← **🆕 新增，立即修复**
 
-2. **验证标准**:
+2. **TeamC任务 - BUILD-006修复 (3-5h)**:
+   - [ ] 创建 `atoms/corekern/tests/CMakeLists.txt`
+   - [ ] 创建 `atoms/memoryrovol/tests/CMakeLists.txt`
+   - [ ] 添加至少一个示例测试用例
+   - [ ] 处理CUnit不存在的条件判断
+
+3. **验证标准**:
    ```bash
    # 修复后运行全量编译验证
-   cmake --build AgentOS-build --config Release -j$(nproc)
+   cmake -DBUILD_TESTS=ON ..  # 验证BUILD-006修复
+   cmake --build AgentOS-build --config Release -j$(nproc)  # 验证COMPILER修复
    # 目标: coreloopthree和memoryrovol模块编译通过，错误数从330+降至0
    ```
 
-3. **预期里程碑**:
-   - Day 1 (2h): COMPILER-005完成 ✅
+4. **预期里程碑**:
+   - Day 1 (2h): COMPILER-005完成 ✅ + MEM-BUG-001完成 ✅
    - Day 2-4 (12-20h): COMPILER-001/002/006完成 ✅
    - Day 4结束时: **14文件330+错误全部消除，编译通过率48%→75%+**
 
