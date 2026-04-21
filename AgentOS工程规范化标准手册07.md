@@ -1,8 +1,8 @@
-# AgentOS 工程规范化标准手册 v13.0.0
+# AgentOS 工程规范化标准手册 v13.2.0
 
-> **版本**: 13.0.0-生产级标准全面规划版（含源码-产物分离规范BUILD-01~06+Git子模块管理）
-> **日期**: 2026-04-19 16:35 (Out-of-Source Build验证通过后更新)
-> **状态**: ⚠️ **生产级标准已建立** + **✅ Round 18-20架构重构完成** + **✅ Out-of-Source Build强制实施** + **✅ Include路径标准化完成**
+> **版本**: 13.2.0-生产级标准全面规划版（含源码-产物分离规范BUILD-01~06+Git子模块管理+Desktop/Docs模块路径确认+BUILD-006违规案例强化）
+> **日期**: 2026-04-20 15:30 (BUILD-006问题发现并紧急修复)
+> **状态**: 🔴 **BUILD-006 In-Source Build严重复发(550+污染物)** + **✅ 生产级标准已建立** + **✅ Round 18-20架构重构完成** + **✅ Out-of-Source Build强制实施** + **✅ Include路径标准化完成** + **✅ 模块独立与子模块化完成**
 > **核心理念**: 规范先行，质量为本！一切开发活动必须遵循本手册标准！
 > **适用范围**: AgentOS项目所有开发人员、CI/CD系统、代码审查者
 > **关联文档**: [主报告v23.1](./AgentOS全面修复与改进报告07.md) | [问题清单v14.0](./AgentOS详细问题清单07.md) | [看板v14.0](./AgentOS三团队任务进度看板07.md)
@@ -620,7 +620,60 @@ cd AgentOS && make
 
 # 4. 将AgentOS-build/加入Git追踪
 git add AgentOS-build/  # ❌ 错误！
+
+# 5. 在agentos/内创建build_*目录进行构建
+cd agentos && mkdir build_main && cd build_main && cmake ..  # ❌ 严禁！
+cd agentos && mkdir build_heapstore && cd build_heapstore && cmake ..  # ❌ 严禁！
 ```
+
+#### 12.1.4 🚨 BUILD-006 真实违规案例 (2026-04-20)
+
+> **事件**: 第7轮次Day 1中午,发现严重In-Source Build违规
+> **影响**: 三团队被迫全面停工
+> **教训**: 规范必须严格执行,不能仅停留在文档层面
+
+**违规现场**:
+```
+AgentOS/agentos/build_main/        ← In-Source Build违规目录(14MB)
+├── CMakeCache.txt                 ← 2026-04-20 12:32创建
+├── 380个.o文件                    ← 目标文件
+├── 20个.a静态库                   ← 库文件
+├── 55个CMakeFiles目录             ← CMake中间文件
+├── 55个Makefile                   ← CMake生成
+└── compile_commands.json          ← 77KB
+
+AgentOS/agentos/build_heapstore/   ← In-Source Build违规目录(13MB)
+├── CMakeCache.txt                 ← 2026-04-20 11:57创建
+├── 构建产物                       ← atoms/commons/cupolas/heapstore/protocols
+└── lib/                           ← 静态库
+```
+
+**统计数据**:
+- 总污染物: **550+个非预期构建产物**
+- 总占用空间: **27MB+**
+- 影响范围: **全团队停工**
+
+**根因分析**:
+1. 团队成员未阅读/理解BUILD-01 Out-of-Source Build规范
+2. 习惯性地在源码目录内创建build_*/目录进行构建
+3. 缺乏自动化检测机制
+
+**纠正措施**:
+```bash
+# 立即清理
+rm -rf agentos/build_main/
+rm -rf agentos/build_heapstore/
+
+# 正确做法 - 使用Out-of-Source Build
+cd /home/spharx/SpharxWorks/OpenAirymax
+cmake -S AgentOS -B AgentOS-build -DBUILD_DAEMON=ON
+cmake --build AgentOS-build --config Release
+```
+
+**预防机制**:
+- ✅ 添加.gitignore规则: `agentos/build_*/`
+- ✅ CI检测脚本: `scripts/check_in_source_build.sh`
+- ✅ 全员培训: 每日构建前确认使用AgentOS-build/目录
 
 ---
 
@@ -1021,16 +1074,17 @@ git commit -m "update Desktop to abc1234"
 
 #### 12.6.4 路径迁移记录
 
-| 模块 | 原路径 (已废弃) | 新路径 (当前) | 变更时间 |
-|------|----------------|--------------|----------|
-| **Desktop** | `AgentOS/scripts/desktop-client` → `AgentOS/desktop` | `OpenAirymax/Desktop` | 2026-04-19 |
-| **Docker** | `AgentOS/docker` | `OpenAirymax/Docker` | 2026-04-19 |
-| **Docs** | `AgentOS/docs` | `OpenAirymax/Docs` | 2026-04-19 |
+| 模块 | 原路径 (已废弃) | 新路径 (当前) | 远程仓库 | 变更时间 |
+|------|----------------|--------------|----------|----------|
+| **Desktop** | `AgentOS/scripts/desktop-client` → `AgentOS/desktop` | `OpenAirymax/Desktop` | git@atomgit.com:openairymax/desktop.git | 2026-04-19 |
+| **Docker** | `AgentOS/docker` | `OpenAirymax/Docker` | git@atomgit.com:openairymax/docker.git | 2026-04-19 |
+| **Docs** | `AgentOS/docs` | `OpenAirymax/Docs` | git@atomgit.com:openairymax/docs.git | 2026-04-19 |
 
 **⚠️ 重要提示**:
 - 所有文档和代码中的旧路径引用必须更新为新路径
 - TeamC负责Docker部署文档的路径更新
 - 所有团队负责文档引用路径的更新
+- 三个模块均已推送至远程仓库并可正常克隆
 
 #### 12.6.5 子模块依赖关系
 
@@ -1135,6 +1189,255 @@ cmake -S AgentOS -B AgentOS-build -DBUILD_DAEMON=ON  # 重新配置
 
 ---
 
+## 14. 双思维系统三组件架构规范 🆕
+
+> **来源**: [第01版-AgentOS双思维模型详细落地方案](./技术借鉴与改进/第01版-AgentOS双思维模型详细落地方案.md)
+> **适用模块**: atoms/coreloopthree (cognition子目录)
+> **强制实施时间**: Week 2-4
+
+### 14.1 架构设计原则
+
+#### DS-PRIN-1: 三组件协同原则
+
+**规则**: 所有双思考系统必须采用t2/t1-f/t1-p三组件架构，禁止使用旧的dual_model双组件架构。
+
+```c
+// ✅ 正确: 使用triple_coordinator
+triple_coordinator_t* tc = triple_coordinator_create();
+triple_coordinator_set_t2(tc, llm_model);
+triple_coordinator_set_t1f(tc, fast_thinker);
+triple_coordinator_set_t1p(tc, professional_thinker);
+triple_coordinator_run(tc, input, &output);
+
+// ❌ 错误: 使用旧的dual_model
+dual_model_t* dm = dual_model_create();  // 已废弃
+dual_model_run(dm, input, &output);      // 禁止使用
+```
+
+#### DS-PRIN-2: 流式处理原则
+
+**规则**: t1-f必须以流式方式处理t2的token输出，不能等待完整响应。
+
+```c
+// ✅ 正确: 流式处理
+while (t2_has_next_token(t2)) {
+    token_t tok = t2_get_next_token(t2);
+    semantic_unit_feed_token(detector, &tok);
+    
+    if (semantic_unit_is_complete(detector)) {
+        // 立即处理完成的语义单元
+        process_semantic_unit(semantic_unit_get_current(detector));
+    }
+}
+
+// ❌ 错误: 批量处理
+char* full_output = t2_generate_complete(t2, input);  // 禁止
+t1_validate(t1, full_output);                           // 太晚了
+```
+
+#### DS-PRIN-3: MemoryRovol同步原则
+
+**规则**: 每个语义单元处理后必须立即同步到MemoryRovol L1 Cache。
+
+```c
+// ✅ 正确: 实时同步
+process_result_t result = process_semantic_unit(unit);
+memoryrovol_write_l1(memory, &unit, &result);  // 立即写入
+
+// ❌ 错误: 延迟同步
+cache_results.push_back(result);               // 缓存到内存
+// ... 很久之后 ...
+memoryrovol_batch_write_l1(memory, cache_results);  // 禁止
+```
+
+### 14.2 API命名规范
+
+#### DS-API-1: 语义单元检测API
+
+| 函数名 | 用途 | 返回值 |
+|--------|------|--------|
+| `semantic_unit_init()` | 初始化检测器 | agentos_error_t |
+| `semantic_unit_feed_token()` | 喂入token | agentos_error_t |
+| `semantic_unit_is_complete()` | 检测是否完成 | bool |
+| `semantic_unit_get_current()` | 获取当前单元 | semantic_unit_t* |
+| `semantic_unit_destroy()` | 销毁检测器 | void |
+
+**前缀规则**: 所有函数必须以`semantic_unit_`开头。
+
+#### DS-API-2: 三组件协调API
+
+| 函数名 | 用途 | 返回值 |
+|--------|------|--------|
+| `triple_coordinator_init()` | 初始化协调器 | agentos_error_t |
+| `triple_coordinator_set_t2()` | 设置主思考器 | agentos_error_t |
+| `triple_coordinator_set_t1f()` | 设置快思考器 | agentos_error_t |
+| `triple_coordinator_set_t1p()` | 设置专业思考器 | agentos_error_t |
+| `triple_coordinator_run()` | 运行协调流程 | agentos_error_t |
+| `triple_coordinator_destroy()` | 销毁协调器 | void |
+
+**前缀规则**: 所有函数必须以`triple_coordinator_`开头。
+
+### 14.3 性能要求
+
+#### DS-PERF-1: 延迟要求
+
+| 组件 | 最大延迟 | 测试方法 |
+|------|----------|----------|
+| **t1-f边界检测** | <10ms per token | benchmark_latency |
+| **首个语义单元** | <150ms from start | benchmark_first_unit |
+| **t1-p仲裁决策** | <500ms per request | benchmark_arbitration |
+| **MemoryRovol L1写入** | <1ms per unit | benchmark_l1_write |
+
+**违规后果**: 超过延迟要求的实现必须优化或回退。
+
+#### DS-PERF-2: 吞吐量要求
+
+| 指标 | 最小值 | 目标值 |
+|------|--------|--------|
+| 语义单元检测吞吐 | >1000 units/s | >2000 units/s |
+| 协调器整体吞吐 | >50 complete responses/min | >100/min |
+| L1缓存读写QPS | >10000 ops/s | >50000 ops/s |
+
+### 14.4 安全要求
+
+#### DS-SEC-1: t1-f安全策略
+
+**规则**: t1-f必须实现以下安全检查:
+
+1. **注入检测**: 检测SQL注入、XSS、命令注入等攻击模式
+2. **长度限制**: 单个语义单元最大长度 < 10KB
+3. **格式验证**: JSON/XML/代码块格式合法性检查
+4. **敏感词过滤**: 检测违禁词汇和敏感信息泄露
+
+```c
+// 安全检查示例
+validation_result_t t1f_validate(semantic_unit_t* unit) {
+    validation_result_t result = {0};
+    
+    // 1. 注入检测
+    if (contains_injection_pattern(unit->content)) {
+        result.is_valid = false;
+        result.reason = "SECURITY: Injection pattern detected";
+        return result;
+    }
+    
+    // 2. 长度限制
+    if (strlen(unit->content) > MAX_UNIT_SIZE) {
+        result.is_valid = false;
+        result.reason = "SIZE: Unit exceeds maximum length";
+        return result;
+    }
+    
+    // 3. 格式验证 (根据unit类型)
+    if (!validate_format(unit)) {
+        result.is_valid = false;
+        result.reason = "FORMAT: Invalid format";
+        return result;
+    }
+    
+    result.is_valid = true;
+    return result;
+}
+```
+
+#### DS-SEC-2: t1-p仲裁协议
+
+**规则**: t1-p仲裁必须遵循以下协议:
+
+1. **请求格式**: 必须包含完整的语义单元+验证结果+上下文
+2. **响应类型**: APPROVE / REJECT / MODIFY
+3. **修改指令**: 如果是MODIFY，必须包含具体的修改建议
+4. **日志记录**: 所有仲裁决策必须记录到审计日志
+
+```c
+typedef enum {
+    ARBITRATION_APPROVE,   // 通过
+    ARBITRATION_REJECT,    // 拒绝
+    ARBITRATION_MODIFY     // 需要修改
+} arbitration_decision_t;
+
+typedef struct {
+    semantic_unit_t* unit;           // 待仲裁的语义单元
+    validation_result_t* t1f_result; // t1-f的验证结果
+    memoryrovol_context_t* context;  // 从L1加载的上下文
+} arbitration_request_t;
+
+typedef struct {
+    arbitration_decision_t decision; // 仲裁决定
+    char* reason;                     // 决策原因
+    char* modification;               // 修改建议(如果是MODIFY)
+    uint64_t timestamp;              // 决策时间戳
+} arbitration_response_t;
+```
+
+### 14.5 测试要求
+
+#### DS-TEST-1: 单元测试覆盖率
+
+| 模块 | 最低覆盖率 | 目标覆盖率 |
+|------|-----------|-----------|
+| semantic_unit.c | ≥90% | ≥95% |
+| triple_coordinator.c | ≥85% | ≥90% |
+| stream_validator.c | ≥80% | ≥85% |
+
+**强制要求**: 所有新增代码必须有对应的单元测试。
+
+#### DS-TEST-2: 集成测试场景
+
+必须覆盖以下场景:
+
+1. **正常流程**: t2→t1-f→t1-p→MemoryRovol 完整链路
+2. **错误拦截**: t1-f检测到注入攻击并触发t1-p仲裁
+3. **长对话**: >20轮对话的MemoryRovol L1/L2/L3分级存储
+4. **并发压力**: 多个协调器实例同时运行
+5. **错误恢复**: t2输出中断后的优雅降级
+
+### 14.6 文档要求
+
+#### DS-DOC-1: API文档
+
+所有新增API必须包含Doxygen注释:
+
+```c
+/**
+ * @brief 初始化语义单元检测器
+ * 
+ * 创建一个新的语义单元检测器实例。检测器会维护内部状态机
+ * 用于识别token流中的语义单元边界。
+ * 
+ * @param[out] detector 指向待初始化的检测器指针
+ * @return AGENTOS_SUCCESS 成功
+ * @return AGENTOS_ENOMEM 内存分配失败
+ * @return AGENTOS_EINVAL 参数无效
+ * 
+ * @note 检测器必须在使用后调用 semantic_unit_destroy() 销毁
+ * @see semantic_unit_destroy()
+ * @since v1.0.0 (双思维系统升级)
+ * 
+ * 示例用法:
+ * @code
+ * semantic_unit_detector_t detector;
+ * agentos_error_t err = semantic_unit_init(&detector);
+ * if (err == AGENTOS_SUCCESS) {
+ *     // 使用检测器...
+ *     semantic_unit_destroy(&detector);
+ * }
+ * @endcode
+ */
+agentos_error_t semantic_unit_init(semantic_unit_detector_t* detector);
+```
+
+#### DS-DOC-2: 设计文档
+
+必须提供以下设计文档:
+
+1. **架构图**: 三组件交互序列图(Mermaid/PlantUML)
+2. **状态机图**: 语义单元检测状态转换图
+3. **数据流图**: token流→语义单元→验证→仲裁→MemoryRovol
+4. **性能基准**: 各组件延迟/吞吐量基线数据
+
+---
+
 ## 📊 文档修订历史
 
 | 版本 | 日期 | 作者 | 主要变更 |
@@ -1142,13 +1445,14 @@ cmake -S AgentOS -B AgentOS-build -DBUILD_DAEMON=ON  # 重新配置
 | v1.0 | 2026-04-15 | System | 初版创建 |
 | v10.0 | 2026-04-17 | System | 加入CI/CD和安全规范 |
 | v12.0 | 2026-04-19 09:00 | System | 全面生产级标准 |
-| **v13.0** | 2026-04-19 16:35 | System | **🆕 新增Ch12源码-产物分离规范(BUILD-01~05)** |
+| v13.0 | 2026-04-19 16:35 | System | 🆕 新增Ch12源码-产物分离规范(BUILD-01~05) |
+| **v13.1** | 2026-04-20 09:00 | System | **🆕 BUILD-06子模块规范完善 + 路径迁移表增加远程仓库信息 + 第7轮次正式启动** |
 
 ---
 
 **🎯 下一步行动**:
 1. ✅ **将本文档分发给三团队所有成员**
-2. 🚀 **TeamA/B/C Leader组织团队学习BUILD-01~05规范**
+2. 🚀 **TeamA/B/C Leader组织团队学习BUILD-01~06规范**
 3. ⚠️ **Week 1 Day 1: 全员首次使用Out-of-Source Build验证环境**
 4. 📝 **建立反馈机制**: 收集规范执行中的问题和改进建议
 
