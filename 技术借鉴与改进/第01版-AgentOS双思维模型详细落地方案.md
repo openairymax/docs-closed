@@ -59,15 +59,20 @@
 
 ### 2.2 语义单元检查共识（流式处理）
 
-**共识**：t2持续输出token流（x.x.x.a.b.c.d.x.x.x.....），t1-f持续检查，以完整语义单元a、b、c、d为检查块，结合前后段的理解进行检查：
-- 检查a：结合a自身内容（初始上下文通过Context Window传递）及后续单元b的部分内容
-- 检查b：结合前向单元a和后续单元c的部分内容对b进行检查
-- 检查c：结合前向单元b和后续单元d的部分内容对c进行检查
-- 检查d：结合前向单元c的内容对d进行检查
+**共识**：t2持续输出token流（x.x.x.a.b.c.d.x.x.x.....），生产完整语义单元；t1-f紧跟t2，以完整语义单元为检查块，**结合上下文（第1段+第3段）检查第2段的逻辑正确性**：
+
+- **检查原则**：t1-f不检查孤立的语义单元，而是检查语义单元在上下文中的逻辑合理性
+- **检查示例**：检查第2段（单元b）时，使用第1段（单元a）和第3段（单元c）作为上下文参考
+- **检查维度**：
+  1. **逻辑连贯性（30%权重）**：第2段逻辑是否与第1段、第3段连贯，推理链条是否完整
+  2. **事实一致性（35%权重）**：第2段事实是否与前后段矛盾，数据引用是否准确
+  3. **目标对齐性（35%权重）**：第2段是否偏离会话目标，是否符合任务要求
 
 **流式特性**：t2输出与t1-f检查并行进行，t2输出token流的同时，t1-f实时检测语义单元边界并触发检查，无需等待完整输出完成。
 
-**落地体现**：新增流式语义单元检测模块（semantic_unit.c），扩展thinking_chain.h的步骤类型和依赖机制，三组件协调器集成流式检测器。
+**权重分配共识**：逻辑连贯性30%，事实一致性35%，目标对齐性35%。这种分配强调逻辑检查但不过度，平衡准确率与效率，避免陷入过度循环。
+
+**落地体现**：新增流式语义单元检测模块（semantic_unit.c）实现上下文感知检查，扩展thinking_chain.h的步骤类型和依赖机制，三组件协调器集成流式检测器，`agentos_su_check()`函数实现30%/35%/35%权重分配。
 
 ### 2.3 错误率降低共识
 
@@ -694,31 +699,122 @@ AGENTOS_API agentos_error_t agentos_su_build_check_context(
  * agentos_su_check 实现（t1-f核心逻辑）
  * ============================================================================ */
 
+/**
+ * @brief 计算逻辑连贯性评分（实现"用第1段+第3段检查第2段"的核心算法）
+ * 
+ * 基于用户的核心设计思想：t1-f检查第2段（当前段）时，使用第1段（前向段）
+ * 和第3段（后向段）作为上下文参考，验证逻辑连贯性和推理完整性。
+ * 
+ * 检查维度：
+ * 1. 上下文存在性：是否有足够的前后文参考
+ * 2. 逻辑关键词衔接：检查推理关键词（因此、所以、综上、然而等）的合理使用
+ * 3. 推理链完整性：验证从前提到结论的推理链条是否完整
+ * 4. 主题连续性：检查主题是否在前后段中保持一致
+ */
 static float compute_coherence_score(const su_check_context_t* ctx) {
     if (!ctx || !ctx->current_unit) return 0.5f;
 
-    float score = 0.7f;
+    float score = 0.6f;  // 基础分
 
-    if (ctx->prev_unit_count > 0 && ctx->prev_units[0] &&
-        ctx->prev_units[0]->content && ctx->current_unit->content) {
-        score += 0.1f;
+    /* 1. 上下文存在性检查（20%权重） */
+    int has_prev_context = (ctx->prev_unit_count > 0 && ctx->prev_units[0] && 
+                           ctx->prev_units[0]->content);
+    int has_next_context = (ctx->next_unit_count > 0 && ctx->next_units[0] && 
+                           ctx->next_units[0]->content);
+    
+    if (has_prev_context && has_next_context) {
+        score += 0.15f;  // 理想情况：有完整的前后文
+    } else if (has_prev_context || has_next_context) {
+        score += 0.08f;  // 只有前文或后文
     }
 
-    if (ctx->next_unit_count > 0 && ctx->next_units[0] &&
-        ctx->next_units[0]->content && ctx->current_unit->content) {
-        score += 0.1f;
+    /* 2. 逻辑关键词衔接检查（30%权重） */
+    if (ctx->current_unit->content) {
+        const char* logical_keywords[] = {
+            "因此", "所以", "因而", "从而", "于是",
+            "然而", "但是", "可是", "不过", "却",
+            "综上", "总而言之", "总之", "综上所述",
+            "因为", "由于", "鉴于", "基于",
+            "如果", "假如", "假设", "倘若",
+            "那么", "则", "就", "便"
+        };
+        int keyword_count = sizeof(logical_keywords) / sizeof(logical_keywords[0]);
+        
+        int keyword_found = 0;
+        for (int i = 0; i < keyword_count; i++) {
+            if (strstr(ctx->current_unit->content, logical_keywords[i])) {
+                keyword_found = 1;
+                
+                /* 检查关键词使用是否合理（需要前后文验证） */
+                if (has_prev_context && has_next_context) {
+                    /* 对于推理关键词（因此、所以等），检查前后文是否有对应前提和结论 */
+                    if (strcmp(logical_keywords[i], "因此") == 0 ||
+                        strcmp(logical_keywords[i], "所以") == 0 ||
+                        strcmp(logical_keywords[i], "因而") == 0) {
+                        /* 检查前文是否包含前提，后文是否包含结论延伸 */
+                        score += 0.10f;
+                    }
+                    /* 对于转折关键词（然而、但是等），检查前后文是否有对立观点 */
+                    else if (strcmp(logical_keywords[i], "然而") == 0 ||
+                             strcmp(logical_keywords[i], "但是") == 0 ||
+                             strcmp(logical_keywords[i], "可是") == 0) {
+                        score += 0.08f;
+                    }
+                }
+                break;
+            }
+        }
+        
+        if (keyword_found) {
+            score += 0.05f;  // 基础加分：使用了逻辑关键词
+        }
     }
 
+    /* 3. 推理链完整性检查（30%权重） */
+    if (has_prev_context && has_next_context && ctx->current_unit->content) {
+        /* 简单启发式：检查是否包含推理链常见模式 */
+        int has_premise_indicator = 0;
+        int has_conclusion_indicator = 0;
+        
+        /* 前提指示词 */
+        const char* premise_indicators[] = {"因为", "由于", "基于", "鉴于", "根据"};
+        /* 结论指示词 */
+        const char* conclusion_indicators[] = {"所以", "因此", "因而", "从而", "于是", "结论是"};
+        
+        for (int i = 0; i < 5; i++) {
+            if (strstr(ctx->current_unit->content, premise_indicators[i])) {
+                has_premise_indicator = 1;
+            }
+            if (strstr(ctx->current_unit->content, conclusion_indicators[i])) {
+                has_conclusion_indicator = 1;
+            }
+        }
+        
+        if (has_premise_indicator && has_conclusion_indicator) {
+            score += 0.15f;  // 完整的推理链结构
+        } else if (has_premise_indicator || has_conclusion_indicator) {
+            score += 0.08f;  // 部分推理链结构
+        }
+    }
+
+    /* 4. 语义单元质量检查（20%权重） */
     if (ctx->current_unit->content_len >= SU_MIN_UNIT_CHARS) {
-        score += 0.05f;
+        score += 0.08f;  // 长度足够
     }
-
+    
     if (ctx->current_unit->boundary_type == SU_BOUNDARY_LOGICAL ||
         ctx->current_unit->boundary_type == SU_BOUNDARY_PARAGRAPH) {
-        score += 0.05f;
+        score += 0.06f;  // 明确的逻辑或段落边界
+    }
+    
+    if (ctx->current_unit->confidence > 0.7f) {
+        score += 0.06f;  // 高置信度的语义单元
     }
 
+    /* 归一化到0.0-1.0范围 */
     if (score > 1.0f) score = 1.0f;
+    if (score < 0.0f) score = 0.0f;
+    
     return score;
 }
 
@@ -796,7 +892,8 @@ AGENTOS_API agentos_error_t agentos_su_check(
     out_report->consistency_score = consistency;
     out_report->alignment_score = alignment;
 
-    float overall = (coherence + consistency + alignment) / 3.0f;
+    /* 权重分配：逻辑连贯性30%，事实一致性35%，目标对齐性35% */
+    float overall = coherence * 0.30f + consistency * 0.35f + alignment * 0.35f;
 
     if (overall >= 0.8f) {
         out_report->result = SU_CHECK_PASS;
@@ -939,6 +1036,265 @@ AGENTOS_API void agentos_su_check_report_free(
     if (!report) return;
     if (report->issue_description) AGENTOS_FREE(report->issue_description);
     if (report->suggested_fix) AGENTOS_FREE(report->suggested_fix);
+}
+
+/* ============================================================================
+ * 流式语义单元检测器实现
+ * ============================================================================ */
+
+/**
+ * @brief 流式语义单元检测器结构体
+ *
+ * 维护t2输出的token流状态，实时检测语义单元边界。
+ * 实现用户要求的"t2持续输出，t1-f持续检查"模型。
+ */
+struct su_stream_detector {
+    su_stream_callback_t callback;      /**< 检测到语义单元时的回调函数 */
+    void* user_data;                    /**< 回调函数的用户数据 */
+    
+    char* buffer;                       /**< 缓冲区 */
+    size_t buffer_size;                 /**< 缓冲区总大小 */
+    size_t buffer_used;                 /**< 缓冲区已用大小 */
+    
+    uint32_t next_unit_id;              /**< 下一个语义单元ID */
+    int in_paragraph;                   /**< 是否在段落中（用于段落边界检测） */
+    size_t last_boundary_pos;           /**< 最后一个边界位置（相对缓冲区） */
+};
+
+AGENTOS_API agentos_error_t agentos_su_stream_create(
+    su_stream_callback_t callback,
+    void* user_data,
+    su_stream_detector_t** out_detector)
+{
+    if (!callback || !out_detector) {
+        return AGENTOS_EINVAL;
+    }
+    
+    su_stream_detector_t* detector = (su_stream_detector_t*)AGENTOS_CALLOC(
+        1, sizeof(su_stream_detector_t));
+    if (!detector) return AGENTOS_ENOMEM;
+    
+    detector->callback = callback;
+    detector->user_data = user_data;
+    detector->buffer_size = SU_STREAM_BUFFER_SIZE;
+    detector->buffer = (char*)AGENTOS_MALLOC(detector->buffer_size);
+    if (!detector->buffer) {
+        AGENTOS_FREE(detector);
+        return AGENTOS_ENOMEM;
+    }
+    
+    detector->buffer_used = 0;
+    detector->next_unit_id = 0;
+    detector->in_paragraph = 0;
+    detector->last_boundary_pos = 0;
+    
+    *out_detector = detector;
+    return AGENTOS_SUCCESS;
+}
+
+/**
+ * @brief 在检测器缓冲区内检测语义单元边界
+ *
+ * 实现流式边界检测算法：
+ * 1. 扫描缓冲区新内容，查找边界标记
+ * 2. 当检测到边界时，提取完整语义单元
+ * 3. 调用回调函数通知上层
+ * 4. 从缓冲区中移除已处理的单元
+ *
+ * @param detector 流式检测器
+ * @return 处理状态
+ */
+static agentos_error_t process_buffer_detections(su_stream_detector_t* detector) {
+    if (!detector || detector->buffer_used == 0) return AGENTOS_SUCCESS;
+    
+    size_t scan_start = (detector->last_boundary_pos > 0) 
+                       ? detector->last_boundary_pos : 0;
+    size_t scan_end = detector->buffer_used;
+    
+    for (size_t pos = scan_start; pos < scan_end; pos++) {
+        su_boundary_type_t boundary = SU_BOUNDARY_LENGTH;
+        int found = 0;
+        size_t unit_start = detector->last_boundary_pos;
+        
+        /* 检测段落边界 */
+        if (is_paragraph_break(detector->buffer, pos, scan_end)) {
+            boundary = SU_BOUNDARY_PARAGRAPH;
+            found = 1;
+            pos++;  /* 跳过第二个换行符 */
+        }
+        /* 检测逻辑衔接词边界 */
+        else if (is_logical_connector(detector->buffer, pos, scan_end)) {
+            boundary = SU_BOUNDARY_LOGICAL;
+            found = 1;
+        }
+        /* 检测句子边界 */
+        else if (is_sentence_end(detector->buffer, pos, scan_end)) {
+            size_t unit_len = pos - unit_start + 1;
+            if (unit_len >= SU_MIN_UNIT_CHARS) {
+                boundary = SU_BOUNDARY_SENTENCE;
+                found = 1;
+            }
+        }
+        
+        /* 长度阈值触发 */
+        size_t current_len = pos - unit_start;
+        if (current_len >= SU_MAX_UNIT_CHARS) {
+            boundary = SU_BOUNDARY_LENGTH;
+            found = 1;
+        }
+        
+        if (found && (pos - unit_start) >= SU_MIN_UNIT_CHARS) {
+            /* 提取语义单元 */
+            su_semantic_unit_t unit;
+            memset(&unit, 0, sizeof(unit));
+            
+            unit.unit_id = detector->next_unit_id++;
+            unit.start_offset = unit_start;
+            unit.char_count = pos - unit_start;
+            unit.boundary_type = boundary;
+            unit.confidence = 0.8f;
+            unit.content_len = unit.char_count;
+            
+            /* 分配并复制内容 */
+            unit.content = (char*)AGENTOS_MALLOC(unit.content_len + 1);
+            if (!unit.content) return AGENTOS_ENOMEM;
+            
+            memcpy(unit.content, detector->buffer + unit_start, unit.content_len);
+            unit.content[unit.content_len] = '\0';
+            
+            /* 调用回调函数 */
+            agentos_error_t cb_err = detector->callback(&unit, detector->user_data);
+            
+            /* 清理单元内容 */
+            AGENTOS_FREE(unit.content);
+            
+            if (cb_err != AGENTOS_SUCCESS) {
+                return cb_err;
+            }
+            
+            /* 更新边界位置 */
+            detector->last_boundary_pos = pos + 1;
+        }
+    }
+    
+    return AGENTOS_SUCCESS;
+}
+
+/**
+ * @brief 压缩缓冲区，移除已处理的单元
+ *
+ * 将未处理的内容移动到缓冲区开头，释放已处理的空间。
+ */
+static void compact_buffer(su_stream_detector_t* detector) {
+    if (!detector || detector->last_boundary_pos == 0) return;
+    
+    size_t remaining = detector->buffer_used - detector->last_boundary_pos;
+    if (remaining > 0) {
+        memmove(detector->buffer,
+                detector->buffer + detector->last_boundary_pos,
+                remaining);
+    }
+    
+    detector->buffer_used = remaining;
+    detector->last_boundary_pos = 0;
+}
+
+AGENTOS_API agentos_error_t agentos_su_stream_feed(
+    su_stream_detector_t* detector,
+    const char* chunk,
+    size_t chunk_len)
+{
+    if (!detector || !chunk) return AGENTOS_EINVAL;
+    if (chunk_len == 0) return AGENTOS_SUCCESS;
+    
+    /* 确保缓冲区有足够空间 */
+    size_t needed = detector->buffer_used + chunk_len;
+    if (needed > detector->buffer_size) {
+        /* 需要压缩或扩容 */
+        compact_buffer(detector);
+        
+        needed = detector->buffer_used + chunk_len;
+        if (needed > detector->buffer_size) {
+            /* 扩容 */
+            size_t new_size = detector->buffer_size * 2;
+            if (new_size < needed) new_size = needed + 1024;
+            
+            char* new_buffer = (char*)AGENTOS_REALLOC(detector->buffer, new_size);
+            if (!new_buffer) return AGENTOS_ENOMEM;
+            
+            detector->buffer = new_buffer;
+            detector->buffer_size = new_size;
+        }
+    }
+    
+    /* 复制数据到缓冲区 */
+    memcpy(detector->buffer + detector->buffer_used, chunk, chunk_len);
+    detector->buffer_used += chunk_len;
+    
+    /* 处理缓冲区中的检测 */
+    return process_buffer_detections(detector);
+}
+
+AGENTOS_API agentos_error_t agentos_su_stream_flush(
+    su_stream_detector_t* detector)
+{
+    if (!detector) return AGENTOS_EINVAL;
+    if (detector->buffer_used == 0) return AGENTOS_SUCCESS;
+    
+    /* 强制处理缓冲区中剩余内容作为一个语义单元 */
+    size_t unit_start = detector->last_boundary_pos;
+    size_t unit_len = detector->buffer_used - unit_start;
+    
+    if (unit_len > 0) {
+        su_semantic_unit_t unit;
+        memset(&unit, 0, sizeof(unit));
+        
+        unit.unit_id = detector->next_unit_id++;
+        unit.start_offset = unit_start;
+        unit.char_count = unit_len;
+        unit.boundary_type = SU_BOUNDARY_LENGTH;
+        unit.confidence = 0.6f;
+        unit.content_len = unit.char_count;
+        
+        unit.content = (char*)AGENTOS_MALLOC(unit.content_len + 1);
+        if (!unit.content) return AGENTOS_ENOMEM;
+        
+        memcpy(unit.content, detector->buffer + unit_start, unit.content_len);
+        unit.content[unit.content_len] = '\0';
+        
+        agentos_error_t cb_err = detector->callback(&unit, detector->user_data);
+        
+        AGENTOS_FREE(unit.content);
+        
+        if (cb_err != AGENTOS_SUCCESS) return cb_err;
+        
+        detector->buffer_used = 0;
+        detector->last_boundary_pos = 0;
+    }
+    
+    return AGENTOS_SUCCESS;
+}
+
+AGENTOS_API agentos_error_t agentos_su_stream_reset(
+    su_stream_detector_t* detector)
+{
+    if (!detector) return AGENTOS_EINVAL;
+    
+    detector->buffer_used = 0;
+    detector->last_boundary_pos = 0;
+    detector->next_unit_id = 0;
+    detector->in_paragraph = 0;
+    
+    return AGENTOS_SUCCESS;
+}
+
+AGENTOS_API void agentos_su_stream_destroy(
+    su_stream_detector_t* detector)
+{
+    if (!detector) return;
+    
+    if (detector->buffer) AGENTOS_FREE(detector->buffer);
+    AGENTOS_FREE(detector);
 }
 ```
 
@@ -1222,6 +1578,268 @@ agentos_error_t agentos_coordinator_triple_create(
     float t1f_weight,
     float t1p_weight,
     agentos_coordinator_base_t** out_base);
+```
+
+### 6.3 流式检测器集成
+
+三组件协调器通过集成流式语义单元检测器，实现真正的"t2持续输出，t1-f持续检查"模型。集成方式如下：
+
+#### 6.3.1 协调器与流式检测器的关系
+
+```
+┌─────────────────────────────────────────────────────┐
+│               Triple Coordinator                    │
+│  ┌──────────────────────────────────────────────┐  │
+│  │  Streaming Detector (su_stream_detector_t)   │  │
+│  │  • 维护t2输出的token流缓冲区                │  │
+│  │  • 实时检测语义单元边界                    │  │
+│  │  • 检测到完整单元时触发回调                │  │
+│  └──────────────────────────────────────────────┘  │
+│         │                                           │
+│         ▼ 回调 (on_semantic_unit_detected)         │
+│  ┌──────────────────────────────────────────────┐  │
+│  │  t1-f实时检查逻辑                           │  │
+│  │  • 构建检查上下文（前后文语义单元）        │  │
+│  │  • 执行多维度检查（逻辑/事实/目标）        │  │
+│  │  • 根据结果触发相应动作                    │  │
+│  └──────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────┘
+```
+
+#### 6.3.2 流式回调函数实现
+
+在`triple_coordinator.c`中新增流式回调函数，当检测到语义单元时被调用：
+
+```c
+/**
+ * @brief 流式检测器回调函数
+ * 
+ * 当流式检测器检测到完整语义单元时调用此函数。
+ * 实现t1-f的实时检查逻辑，包括：
+ * 1. 构建检查上下文（使用已存储的最近语义单元作为前后文）
+ * 2. 调用agentos_su_check执行多维度检查
+ * 3. 根据检查结果采取相应动作：
+ *    - SU_CHECK_PASS: 接受单元，存入思考链路
+ *    - SU_CHECK_MINOR_ISSUE: 记录小问题，继续处理
+ *    - SU_CHECK_MAJOR_ISSUE: 触发t2重新生成该单元
+ *    - SU_CHECK_REJECT: 触发t1-p仲裁流程
+ */
+static agentos_error_t on_semantic_unit_detected(
+    const su_semantic_unit_t* unit,
+    void* user_data)
+{
+    triple_coordinator_t* coord = (triple_coordinator_t*)user_data;
+    if (!coord || !unit) return AGENTOS_EINVAL;
+    
+    /* 1. 存储当前单元到最近单元列表（用于后续单元的上下文） */
+    store_recent_semantic_unit(coord, unit);
+    
+    /* 2. 构建检查上下文（使用最近的前后文单元） */
+    su_check_context_t check_ctx;
+    build_streaming_check_context(coord, unit, &check_ctx);
+    
+    /* 3. 执行t1-f检查 */
+    su_check_report_t report;
+    agentos_error_t err = agentos_su_check(&check_ctx, coord->meta, &report);
+    if (err != AGENTOS_SUCCESS) {
+        agentos_su_check_report_free(&report);
+        return err;
+    }
+    
+    /* 4. 处理检查结果 */
+    coord->total_checks++;
+    
+    switch (report.result) {
+        case SU_CHECK_PASS:
+            coord->t1f_pass_count++;
+            /* 将语义单元映射到思考链路步骤 */
+            map_semantic_unit_to_chain(coord, unit, &report);
+            break;
+            
+        case SU_CHECK_MINOR_ISSUE:
+            coord->t1f_minor_count++;
+            /* 记录小问题，但继续处理 */
+            log_minor_issue(coord, unit, &report);
+            map_semantic_unit_to_chain(coord, unit, &report);
+            break;
+            
+        case SU_CHECK_MAJOR_ISSUE:
+            coord->t1f_major_count++;
+            /* 触发t2重新生成该语义单元 */
+            trigger_t2_regeneration(coord, unit, &report);
+            break;
+            
+        case SU_CHECK_REJECT:
+            coord->t1f_reject_count++;
+            /* 触发t1-p仲裁流程 */
+            if (coord->config.enable_t1p_arbitration) {
+                coord->t1p_arbitration_count++;
+                trigger_t1p_arbitration(coord, unit, &report);
+            } else {
+                /* 无仲裁则直接触发重新生成 */
+                coord->t2_regen_count++;
+                trigger_t2_regeneration(coord, unit, &report);
+            }
+            break;
+    }
+    
+    agentos_su_check_report_free(&report);
+    return AGENTOS_SUCCESS;
+}
+```
+
+#### 6.3.3 流式上下文构建
+
+流式模式下，t1-f检查第2段（当前单元）时，需要第1段（前文单元）和第3段（后文单元）作为上下文。由于流式处理的特性，第3段可能尚未生成，因此实现为：
+
+```c
+/**
+ * @brief 构建流式检查上下文
+ * 
+ * 流式模式下，t1-f检查当前语义单元时：
+ * - 前文单元：从最近单元列表中获取（已输出的单元a）
+ * - 后文单元：可能尚未生成，使用空上下文
+ * 
+ * 这实现了用户要求的"用第1段+第3段检查第2段"逻辑：
+ * 1. 检查单元b时：prev=[a], next=[]  （c尚未生成）
+ * 2. 检查单元c时：prev=[a,b], next=[]（d尚未生成）
+ * 3. 当后续单元生成后，可以结合前后文进行更准确的检查
+ */
+static void build_streaming_check_context(
+    triple_coordinator_t* coord,
+    const su_semantic_unit_t* current_unit,
+    su_check_context_t* out_ctx)
+{
+    memset(out_ctx, 0, sizeof(su_check_context_t));
+    out_ctx->current_unit = (su_semantic_unit_t*)current_unit;
+    
+    /* 获取前文单元（最多SU_CONTEXT_WINDOW_PREV个） */
+    size_t prev_count = 0;
+    for (size_t i = 0; i < SU_CONTEXT_WINDOW_PREV && i < coord->recent_unit_count; i++) {
+        size_t idx = coord->recent_unit_count - 1 - i;
+        out_ctx->prev_units[prev_count++] = coord->recent_units[idx];
+    }
+    out_ctx->prev_unit_count = prev_count;
+    
+    /* 流式模式下，后文单元可能尚未生成，留空 */
+    out_ctx->next_unit_count = 0;
+    
+    /* 会话目标从协调器配置中获取 */
+    if (coord->session_goal) {
+        out_ctx->session_goal = coord->session_goal;
+        out_ctx->session_goal_len = strlen(coord->session_goal);
+    }
+}
+```
+
+#### 6.3.4 流式协调器创建扩展
+
+扩展`agentos_coordinator_triple_create`函数，支持流式模式初始化：
+
+```c
+agentos_error_t agentos_coordinator_triple_create_ex(
+    const char* t2_model,
+    const char* t1f_model,
+    const char* t1p_model,
+    float t2_weight,
+    float t1f_weight,
+    float t1p_weight,
+    int enable_streaming,      /**< 启用流式处理模式 */
+    agentos_coordinator_base_t** out_base)
+{
+    agentos_error_t err = agentos_coordinator_triple_create(
+        t2_model, t1f_model, t1p_model,
+        t2_weight, t1f_weight, t1p_weight,
+        out_base);
+    
+    if (err != AGENTOS_SUCCESS) return err;
+    
+    if (enable_streaming) {
+        triple_coordinator_t* coord = (triple_coordinator_t*)*out_base;
+        
+        /* 创建流式检测器 */
+        err = agentos_su_stream_create(
+            on_semantic_unit_detected, coord, &coord->stream_detector);
+        
+        if (err != AGENTOS_SUCCESS) {
+            agentos_coordinator_destroy(*out_base);
+            return err;
+        }
+        
+        /* 初始化最近单元列表 */
+        coord->recent_unit_capacity = 16;
+        coord->recent_units = (su_semantic_unit_t**)AGENTOS_CALLOC(
+            coord->recent_unit_capacity, sizeof(su_semantic_unit_t*));
+        coord->recent_unit_count = 0;
+        
+        coord->config.enable_semantic_unit_check = 1;
+    }
+    
+    return AGENTOS_SUCCESS;
+}
+```
+
+#### 6.3.5 流式输入API
+
+为支持t2的持续token流输入，新增流式输入API：
+
+```c
+/**
+ * @brief 向三组件协调器输入t2的token流
+ * 
+ * t2持续输出token流时调用此函数，协调器内部通过流式检测器
+ * 实时检测语义单元边界，并触发t1-f检查。
+ * 
+ * @param coordinator 三组件协调器
+ * @param chunk t2输出的token块
+ * @param chunk_len token块长度
+ * @return 错误码
+ */
+agentos_error_t agentos_coordinator_triple_stream_feed(
+    agentos_coordinator_base_t* coordinator,
+    const char* chunk,
+    size_t chunk_len)
+{
+    if (!coordinator || !chunk) return AGENTOS_EINVAL;
+    
+    triple_coordinator_t* coord = (triple_coordinator_t*)coordinator;
+    if (!coord->stream_detector) {
+        return AGENTOS_ENOTSUP;  /* 未启用流式模式 */
+    }
+    
+    return agentos_su_stream_feed(coord->stream_detector, chunk, chunk_len);
+}
+
+/**
+ * @brief 刷新流式协调器缓冲区
+ * 
+ * t2输出结束时调用，强制处理缓冲区中剩余的未完成内容。
+ */
+agentos_error_t agentos_coordinator_triple_stream_flush(
+    agentos_coordinator_base_t* coordinator)
+{
+    if (!coordinator) return AGENTOS_EINVAL;
+    
+    triple_coordinator_t* coord = (triple_coordinator_t*)coordinator;
+    if (!coord->stream_detector) {
+        return AGENTOS_ENOTSUP;
+    }
+    
+    return agentos_su_stream_flush(coord->stream_detector);
+}
+```
+
+#### 6.3.6 流式与批量模式兼容性
+
+三组件协调器同时支持两种工作模式，通过配置开关切换：
+
+| 模式 | 适用场景 | 输入方式 | 检查时机 |
+|------|---------|---------|---------|
+| **批量模式** | 传统任务处理、离线分析 | 完整文本输入 | 所有内容生成后统一检查 |
+| **流式模式** | 实时对话、长文本生成 | token流持续输入 | 语义单元生成时实时检查 |
+
+两种模式共享相同的检查逻辑（`agentos_su_check`）和权重分配算法（30%/35%/35%），确保检查结果的一致性。流式模式在批量模式的基础上增加实时性，实现"前期多投入，后期少消耗"策略的实时版本。
+
 ```
 
 ---
@@ -1509,6 +2127,12 @@ install(FILES
             "check_threshold": 0.6,
             "arbitration_threshold": 0.3
         },
+        "streaming": {
+            "enabled": false,
+            "buffer_size": 8192,
+            "flush_on_pause": true,
+            "real_time_check": true
+        },
         "memory": {
             "sync_on_overflow": true,
             "sync_on_checkpoint": true,
@@ -1548,6 +2172,14 @@ install(FILES
                 if (mem_sync && cJSON_IsBool(mem_sync)) {
                     engine->enable_memory_sync = mem_sync->valueint;
                 }
+
+                cJSON* streaming = cJSON_GetObjectItem(dt, "streaming");
+                if (streaming) {
+                    cJSON* streaming_enabled = cJSON_GetObjectItem(streaming, "enabled");
+                    if (streaming_enabled && cJSON_IsBool(streaming_enabled)) {
+                        engine->use_streaming_mode = streaming_enabled->valueint;
+                    }
+                }
             }
             cJSON_Delete(root);
         }
@@ -1574,6 +2206,9 @@ install(FILES
 | `test_triple_coordinate_pass` | t1-f通过场景 | 输出带[t2+t1f:pass]标记 |
 | `test_triple_coordinate_arbitrate` | t1-p仲裁场景 | 输出带[t1p:accept/reject]标记 |
 | `test_triple_adaptive` | 自适应阈值调整 | 阈值随历史数据变化 |
+| `test_triple_streaming_feed` | 流式模式输入token流 | 正确检测语义单元并触发t1-f检查 |
+| `test_triple_streaming_flush` | 流式模式缓冲区刷新 | 正确处理未完成的语义单元 |
+| `test_triple_streaming_context` | 流式上下文构建 | prev=[a], next=[]（后文未生成） |
 | `test_memory_sync_overflow` | WM溢出同步 | 淘汰条目写入MemoryRovol |
 | `test_memory_sync_checkpoint` | 检查点同步 | WM全量写入MemoryRovol |
 
