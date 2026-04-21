@@ -1,11 +1,11 @@
-# AgentOS 全面修复与改进报告 v23.1.0
+# AgentOS 全面修复与改进报告 v25.0.0
 
-> **版本**: 23.1.0-生产级全面指南版（含Round 18-20架构重构+Out-of-Source Build验证通过+Include路径302+处全面修复）
-> **日期**: 2026-04-19 16:32 (Out-of-Source Build首次验证通过)
-> **状态**: ⚠️ **编译48%+成功(4核心库)** + **✅ 架构重构完成(Round 18-20)** + **✅ Out-of-Source Build验证通过** + **✅ Include路径302+处全部修复** + **❌ SEC-017桩函数严重违规(68+处)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%**
-> **核心理念**: 绝对流于形式！一切以成功编译、成功运行为最高目标！**严禁任何桩函数！严禁任何简化实现！**
+> **版本**: 25.0.0-**🔴 编译诊断紧急版**（含Round 18-20架构重构+Out-of-Source Build验证通过+Include路径302+处全面修复+Desktop/Docs模块任务规划+BUILD-006 In-Source Build严重复发修复+双思维系统三组件架构升级方案+**🆕 GetDiagnostics全面诊断: COMPILER-001~006(14文件330+错误)**）
+> **日期**: 2026-04-21 10:00 (**GetDiagnostics全面诊断完成**)
+> **状态**: 🔴 **🆕 COMPILER-001~006: 14个源文件330+编译错误(阻塞coreloopthree/memoryrovol两大核心模块)** + **✅ 架构重构完成(Round 18-20)** + **✅ Out-of-Source Build规范已建立** + **✅ Include路径302+处全部修复** + **✅ 模块独立与子模块化完成** + **❌ SEC-017桩函数严重违规(68+处)** + **❌ Phase 2-4完全缺失** + **❌ 测试覆盖率0%** + **双思维系统待从dual_model升级为triple_coordinator**
+> **核心理念**: 绝对流于形式！一切以成功编译、成功运行为最高目标！**严禁任何桩函数！严禁任何简化实现！****🆕 编译错误=当前最大障碍！必须立即修复！**
 > **终极目标**: 行业基础设施水平（对标Linux/PostgreSQL，评级≥9/10）
-> **关联文档**: [规范手册v13.0](./AgentOS工程规范化标准手册07.md) | [详细问题清单v14.0](./AgentOS详细问题清单07.md) | [看板v14.0](./AgentOS三团队任务进度看板07.md) | [可行性评估报告](./AgentOS三大设计文档全面可行性评估报告.md) | [深度推理分析](./AgentOS三大设计文档深度推理分析报告.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
+> **关联文档**: [规范手册v13.0](./AgentOS工程规范化标准手册07.md) | [详细问题清单**v16.0**](./AgentOS详细问题清单07.md) | [看板v14.1](./AgentOS三团队任务进度看板07.md) | [可行性评估报告](./AgentOS三大设计文档全面可行性评估报告.md) | [深度推理分析](./AgentOS三大设计文档深度推理分析报告.md) | [桩函数穷尽检查报告](./AgentOS桩函数穷尽检查报告.md)
 
 ---
 
@@ -28,9 +28,10 @@
    - 5.2 [修复批次统计](#修复批次统计)
    - 5.3 [CMake配置增强](#cmake配置增强)
 6. [三大团队任务分工](#三大团队任务分工)
-7. [详细问题清单总览](#详细问题清单总览)
-8. [第7轮次执行路线图](#第7轮次执行路线图)
-9. [附录](#附录)
+7. [**🆕 GetDiagnostics编译诊断报告**](#getdiagnostics编译诊断报告) **🔴 新增**
+8. [详细问题清单总览](#详细问题清单总览)
+9. [第7轮次执行路线图](#第7轮次执行路线图)
+10. [附录](#附录)
 
 ---
 
@@ -618,7 +619,98 @@ error: 'AGENTOS_PLATFORM_NAME' undeclared
 
 ---
 
-## 5. Include路径全面修复记录
+## 5. BUILD-006 In-Source Build 严重复发诊断报告
+
+> **发现时间**: 2026-04-20 15:00 (第7轮次Day 1中午)
+> **严重程度**: 🔴 **致命级** - 三团队被迫停工
+> **总体评估**: 🔴 **严重违规** - 违反BUILD-01 Out-of-Source Build强制要求
+
+### 5.1 问题发现
+
+**触发条件**: 三个团队在第7轮次Day 1开始工作后,发现源码目录出现大量构建产物
+
+**现象**:
+```
+AgentOS/agentos/build_main/        ← In-Source Build违规目录(14MB)
+AgentOS/agentos/build_heapstore/   ← In-Source Build违规目录(13MB)
+```
+
+**影响**: 三团队被迫全面停工等待清理
+
+### 5.2 全面统计结果
+
+| 污染物类型 | 数量 | 位置 |
+|------------|------|------|
+| **.o目标文件** | 380个 | build_main/, build_heapstore/ |
+| **.a静态库** | 20个 | build_main/lib/, build_heapstore/lib/ |
+| **CMakeFiles目录** | 55个 | build_main/, build_heapstore/ |
+| **Makefile(CMake生成)** | 55个 | build_main/, build_heapstore/ |
+| **cmake_install.cmake** | 55个 | build_main/, build_heapstore/ |
+| **compile_commands.json** | 3个 | build_main/, build_heapstore/, AgentOS-build/ |
+| **CMakeCache.txt** | 3个 | build_main/, build_heapstore/, AgentOS-build/ |
+
+**总污染物**: **550+个非预期构建产物**  
+**总占用空间**: **27MB+** (build_main 14MB + build_heapstore 13MB)
+
+### 5.3 根因分析
+
+**根本原因**: 团队未遵守BUILD-01 Out-of-Source Build规范
+
+**具体分析**:
+1. **build_main/** - 在`agentos/build_main/`内执行了cmake配置和编译
+   - CMakeCache.txt时间: 2026-04-20 12:32 (今天中午)
+   - 编译了atoms/corekern, atoms/coreloopthree, atoms/syscall, atoms/memoryrovol等模块
+   - 生成了20个.a静态库和380个.o目标文件
+
+2. **build_heapstore/** - 在`agentos/build_heapstore/`内执行了cmake配置和编译
+   - CMakeCache.txt时间: 2026-04-20 11:57 (今天上午)
+   - 编译了heapstore模块及相关依赖
+
+3. **正确做法**: 应该使用`OpenAirymax/AgentOS-build/`目录进行Out-of-Source Build
+
+### 5.4 修复方案
+
+**紧急清理操作**:
+```bash
+# 清理In-Source Build违规产物
+rm -rf /home/spharx/SpharxWorks/OpenAirymax/AgentOS/agentos/build_main/
+rm -rf /home/spharx/SpharxWorks/OpenAirymax/AgentOS/agentos/build_heapstore/
+
+# 验证清理结果
+find AgentOS -name "*.o" -o -name "CMakeFiles" | wc -l
+# 应返回: 0
+```
+
+**规范强化措施**:
+1. 在全员培训中强化BUILD-01规范
+2. 添加.gitignore规则排除build_*/目录
+3. CI流水线增加In-Source Build检测
+
+### 5.5 预防机制
+
+**自动化检测脚本**:
+```bash
+#!/bin/bash
+# scripts/check_in_source_build.sh - 检测In-Source Build违规
+
+find AgentOS/agentos -type d -name "build_*" | while read dir; do
+    if [ -f "$dir/CMakeCache.txt" ]; then
+        echo "❌ 发现In-Source Build违规: $dir"
+        exit 1
+    fi
+done
+
+echo "✅ 无In-Source Build违规"
+```
+
+**违规后果**:
+- 🔴 致命级违规: PR立即拒绝
+- 🟠 团队通报批评
+- 🟡 必须重新学习BUILD-01规范
+
+---
+
+## 6. Include路径全面修复记录
 
 ### 5.1 问题根源分析
 
@@ -911,9 +1003,254 @@ Docker/
 
 ---
 
-## 7. 详细问题清单总览
+## 7. **🆕 GetDiagnostics编译诊断报告** 🔴 **紧急**
 
-### 7.1 问题分类统计
+> **诊断时间**: 2026-04-21 10:00
+> **诊断工具**: VS Code Language Server (clang)
+> **诊断范围**: 全项目AgentOS源码
+> **发现结果**: 🔴 **14个源文件，330+编译错误，覆盖2大核心模块**
+
+### 7.1 诊断执行概况
+
+```
+诊断工具: GetDiagnostics (VS Code内置clang语言服务器)
+扫描文件: AgentOS/agentos/atoms/ 下所有 .c 和 .h 文件
+发现错误: 14个文件报告编译Error级别问题
+错误总数: 330+ (多个文件触发"Too many errors emitted"上限)
+影响模块: 
+  - atoms/coreloopthree (认知引擎模块) - 5个文件
+  - atoms/memoryrovol (内存管理模块) - 9个文件
+```
+
+### 7.2 受影响文件详细清单
+
+#### 📂 coreloopthree 模块 (5个文件, ~100+错误)
+
+| 文件路径 | 错误数 | 首要错误 | 严重程度 |
+|----------|--------|----------|----------|
+| `src/cognition/planner/ml_planner.c` | **21** | `'memory_compat.h' file not found` + AGENTOS_*未声明 | 🔴 致命 |
+| `src/cognition/metacognition.c` | **20+** | `'../../corekern/include/agentos.h' file not found` | 🔴 致命 |
+| `src/cognition/metacognition.h` | **20** | 同上 + AGENTOS_API未知类型(10处) | 🔴 致命 |
+| `src/cognition/thinking_chain.h` | **19+** | 同上 + AGENTOS_API未知类型(12处) | 🔴 致命 |
+| `include/error_utils.h` | **11** | `'agentos.h' file not found` + agentos_error_t未知 | 🔴 致命 |
+| `src/execution/units/weighted.c` | **22** | `'cognition.h' file not found` + 多类型未知 | 🔴 致命 |
+
+#### 📂 memoryrovol 模块 (9个文件, ~230+错误)
+
+| 文件路径 | 错误数 | 首要错误 | 严重程度 |
+|----------|--------|----------|----------|
+| `src/memory_pool.c` | **20+** | `'agentos.h' file not found` + mutex/time函数未声明 | 🔴 致命 |
+| `src/memory_pool.h` | **2** | `'agentos.h' file not found` | 🔴 致命 |
+| `src/vector_store.c` | **20+** | `'agentos.h' file not found` + AGENTOS_*未声明 | 🔴 致命 |
+| `src/garbage_collector.c` | **20+** | `'agentos.h' file not found` + mutex函数未声明(20处) | 🔴 致命 |
+| `src/garbage_collector.h` | **1** | `'agentos.h' file not found` | 🔴 致命 |
+| `src/layer2_feature/embedder.c` | **20** | `'agentos.h' file not found`(间接) + AGENTOS_*/mutex未声明 | 🔴 致命 |
+| `src/layer2_feature/index.c` | **23** | `'../include/layer2_feature.h' file not found` + uint32_t未知 | 🔴 致命 |
+| `src/layer1_raw/serialization.c` | **20** | `'layer1_raw.h' file not found` + 类型未知 | 🔴 致命 |
+| `src/cache_manager.h` | **6** | `'memory_compat.h' file not found` | 🔴 致命 |
+| `src/memory_pool_manager.h` | **4** | `'memory_compat.h' file not found` | 🔴 致命 |
+
+### 7.3 错误分类统计
+
+#### 按错误类型分布
+
+| 错误类别 | 出现次数 | 占比 | 典型错误信息 | 根本原因 |
+|----------|----------|------|--------------|----------|
+| **头文件未找到** | **14** | **4.2%** | `'xxx.h' file not found` | Include路径错误或文件缺失 |
+| **未知类型名** | **80+** | **24.2%** | `Unknown type name 'agentos_error_t/mutex_t/AGENTOS_API/uint32_t'` | 缺少定义这些类型的头文件 |
+| **未声明函数** | **180+** | **54.5%** | `Call to undeclared function 'AGENTOS_MALLOC/mutex_lock/log_error'` | 缺少函数声明头文件 |
+| **未声明标识符** | **40+** | **12.1%** | `Use of undeclared identifier 'AGENTOS_SUCCESS/EINVAL/TIME_UTC'` | 缺少宏/常量定义 |
+| **类型转换错误** | **6** | **1.8%** | `Incompatible integer to pointer conversion` | 函数返回值类型不匹配 |
+| **其他语法错误** | **10+** | **3.0%** | `Expected ')'`, `Expected expression` | 级联错误导致 |
+
+#### 按根本原因归类 (COMPILER-001~006)
+
+| 问题ID | 描述 | 影响文件 | 错误数 | 优先级 | 负责团队 | 工时估计 |
+|--------|------|----------|--------|--------|----------|----------|
+| **COMPILER-001** | agentos.h路径错误 | **10+** | **150+** | 🔴 P0 | TeamA | 8-12h |
+| **COMPILER-002** | memory_compat.h缺失 | **3** | **31** | 🔴 P0 | TeamA | 3-5h |
+| **COMPILER-003** | AGENTOS_*函数未声明 | **12+** | **40+** | 🔴 P0 | TeamA | 自动解决 |
+| **COMPILER-004** | mutex_*函数未声明 | **8+** | **30+** | 🔴 P0 | TeamA | 自动解决 |
+| **COMPILER-005** | 标准库头文件缺失 | **6+** | **15+** | 🟠 P1 | TeamA | 1-2h |
+| **COMPILER-006** | 内部模块头文件缺失 | **3** | **65** | 🟠 P1 | TeamA | 2-4h |
+| **总计** | | **14文件** | **~330** | | | **15-23h** |
+
+### 7.4 错误根因分析
+
+#### 根因1: Round 18-20重构遗留问题 (占85%错误)
+
+**问题描述**: 在Round 18-20架构重构中，删除了`include/`和`interfaces/`目录，将302处include路径替换为直接模块路径。但以下文件的路径未被正确更新：
+
+```c
+// ❌ 仍在使用的旧路径 (Round 18-20前)
+#include "../../corekern/include/agentos.h"  // corekern目录已不存在
+#include "agentos.h"                          // 需要CMake配置全局路径
+#include "../../../agentos/commons/utils/memory/include/memory_compat.h"  // 路径层级错误
+
+// ✅ 应该修正为 (Round 18-20后的正确路径)
+#include "../../../commons/include/agentos.h"  // 相对路径到commons
+// 或使用CMake全局include路径后直接:
+#include "agentos.h"  // CMake自动解析
+```
+
+**受影响的代码模式**:
+- Pattern A: `../../corekern/include/agentos.h` (3个文件: metacognition.c/h, thinking_chain.h)
+- Pattern B: 直接 `#include "agentos.h"` 无全局路径配置 (7个文件: memory_pool.c/h, vector_store.c, garbage_collector.c/h, error_utils.h, embedder.c)
+- Pattern C: 错误的memory_compat.h路径 (3个文件)
+
+#### 根因2: 标准库头文件遗漏 (占5%错误)
+
+**问题描述**: 部分文件缺少C标准库必需的头文件：
+
+```c
+// ❌ 缺少标准库头文件
+// 文件: layer2_feature/index.c, error_utils.h, serialization.c等
+uint32_t index_id;      // 错误: Unknown type name 'uint32_t'
+uint64_t timestamp;     // 错误: Unknown type name 'uint64_t'
+
+// 文件: memory_pool.c, metacognition.c
+timespec_get(&ts, TIME_UTC);  // 错误: 未声明函数 + 未声明标识符
+clock_gettime(CLOCK_MONOTONIC, &ts);  // 同上
+
+// ✅ 修复方法: 在文件顶部添加
+#include <stdint.h>   // for uint32_t, uint64_t
+#include <time.h>     // for timespec_get, CLOCK_MONOTONIC, clock_gettime
+```
+
+#### 根因3: 内部模块头文件路径错误 (占10%错误)
+
+**问题描述**: 模块内部头文件引用使用相对路径，但目标文件不存在或路径不匹配：
+
+```c
+// ❌ 当前错误的引用
+#include "cognition.h"                    // weighted.c L7 - cognition.h不在当前目录
+#include "layer1_raw.h"                   // serialization.c L7 - 文件不存在
+#include "../include/layer2_feature.h"    // index.c L7 - 路径不正确
+
+// ✅ 需要确认并修正为正确路径
+// 先搜索文件实际位置:
+// find . -name "cognition.h"
+// find . -name "layer1_raw.h"
+// find . -name "layer2_feature.h"
+// 然后根据实际位置修正include路径
+```
+
+### 7.5 修复方案与行动计划
+
+#### Phase 1: 快速修复 (Day 1, 2小时) - COMPILER-005
+
+**目标**: 消除最容易修复的标准库头文件错误
+
+**操作步骤**:
+1. 为6个缺少`<stdint.h>`的文件添加 `#include <stdint.h>`
+2. 为2个缺少`<time.h>`的文件添加 `#include <time.h>`
+3. 重新运行GetDiagnostics验证错误减少数量
+
+**预期效果**: 消除15-20个错误，验证修复流程可行
+
+#### Phase 2: 核心修复 (Day 2-4, 12-20小时) - COMPILER-001/002/006
+
+**目标**: 解决所有头文件路径问题
+
+**操作步骤**:
+
+**Step 1**: 定位关键头文件位置 (30分钟)
+```bash
+# 确认agentos.h的实际位置
+find /home/spharx/SpharxWorks/OpenAirymax/AgentOS -name "agentos.h" -type f
+
+# 确认memory_compat.h是否存在
+find /home/spharx/SpharxWorks/OpenAirymax/AgentOS -name "memory_compat.h" -type f
+
+# 确认内部模块头文件
+find /home/spharx/SpharxWorks/OpenAirymax/AgentOS -name "cognition.h" -o -name "layer1_raw.h" -o -name "layer2_feature.h"
+```
+
+**Step 2**: 修复agentos.h引用 (8-12小时)
+- 方案A (推荐): 为每个模块的CMakeLists.txt添加全局include路径
+  ```cmake
+  # 在atoms/coreloopthree/CMakeLists.txt中添加
+  target_include_directories(coreloopthree PRIVATE 
+      ${CMAKE_SOURCE_DIR}/agentos/commons/include
+  )
+  
+  # 在atoms/memoryrovol/CMakeLists.txt中添加
+  target_include_directories(memoryrovol PRIVATE 
+      ${CMAKE_SOURCE_DIR}/agentos/commons/include
+  )
+  ```
+- 方案B: 逐文件修改为正确的相对路径 (较耗时且易出错)
+
+**Step 3**: 处理memory_compat.h (3-5小时)
+- 如果文件存在: 更新3个文件的include路径
+- 如果文件不存在: 在正确位置重建该文件，定义必要的内存分配宏
+
+**Step 4**: 修复内部模块头文件路径 (2-4小时)
+- 确认cognition.h, layer1_raw.h, layer2_feature.h是否存在
+- 修正weighted.c, serialization.c, index.c的include路径
+
+#### Phase 3: 自动消除 (随Phase 2完成) - COMPILER-003/004
+
+**预期**: 当COMPILER-001和COMPILER-002修复后，所有AGENTOS_*和mutex_*函数的未声明错误将自动消除，因为这些函数声明都在agentos.h或memory_compat.h中。
+
+### 7.6 预期成果与验证标准
+
+#### 量化目标
+
+| 指标 | 当前值 | 目标值 (修复后) | 改善幅度 |
+|------|--------|-----------------|----------|
+| **编译错误文件数** | **14个** | **0个** | -100% |
+| **总编译错误数** | **330+** | **0** | -100% |
+| **coreloopthree模块** | ❌ 无法编译 | ✅ **编译通过** | 质变 |
+| **memoryrovol模块** | ❌ 无法编译 | ✅ **编译通过** | 质变 |
+| **项目整体编译通过率** | **48%** | **75%+** | +27%+ |
+
+#### 验证流程
+
+```bash
+# 1. 完成所有修复后，重新运行完整编译
+cmake --build AgentOS-build --config Release -j$(nproc)
+
+# 2. 检查是否还有Error级别问题
+# 预期: coreloopthree和memoryrovol模块编译成功，无error输出
+
+# 3. 运行GetDiagnostics确认
+# 预期: 14个文件的Error diagnostics全部消失
+
+# 4. 运行静态分析 (可选)
+cppcheck --enable=all agentos/atoms/coreloopthree/ agentos/atoms/memoryrovol/
+# 预期: 0 critical, 0 error (warning可接受)
+```
+
+### 7.7 团队分工与时间线
+
+| 时间 | 任务 | 负责人 | 产出 |
+|------|------|--------|------|
+| **Day 1上午 (1-2h)** | COMPILER-005: 添加标准库头文件 | TeamA工程师A | 6个文件修复，15-20错误消除 |
+| **Day 1下午 (2h)** | Step 1: 定位头文件位置 + 制定详细修复计划 | TeamA技术负责人 | 头文件位置文档 + CMake修改方案 |
+| **Day 2-3 (8-12h)** | COMPILER-001: 修复agentos.h路径 (CMake方案) | TeamA核心组 | 所有模块CMakeLists.txt更新完成 |
+| **Day 3-4 (3-5h)** | COMPILER-002: 处理memory_compat.h | TeamA工程师B | memory_compat.h就位或重建 |
+| **Day 4 (2-4h)** | COMPILER-006: 修复内部模块头文件路径 | TeamA工程师C | 3个文件路径修正 |
+| **Day 4下午 (2h)** | 全量编译验证 + GetDiagnostics复测 | TeamA全员 | **14文件0错误，编译通过率75%+** |
+
+**总工时**: **15-23小时** (4个工作日)
+**里程碑**: Day 4结束时，coreloopthree和memoryrovol两大核心模块完全可用
+
+### 7.8 风险评估与应对
+
+| 风险ID | 风险描述 | 可能性 | 影响 | 应对措施 |
+|--------|----------|--------|------|----------|
+| **CR-R1** | agentos.h本身有依赖问题 | 中 | 高 | 先检查agentos.h是否能独立编译，必要时先修复其依赖 |
+| **CR-R2** | memory_compat.h无法恢复 | 低 | 高 | 从git历史查找，或在commons/utils/memory/下基于POSIX标准重建 |
+| **CR-R3** | 内部模块头文件(cognition.h等)确实不存在 | 中 | 中 | 基于源码中的类型使用反向工程重建头文件 |
+| **CR-R4** | CMake全局路径导致其他模块冲突 | 低 | 中 | 使用PRIVATE作用域限制影响范围，充分测试 |
+| **CR-R5** | 修复后暴露更多深层问题 | 高 | 低 | 这是好消息！说明表层问题已解决，可继续迭代修复 |
+
+---
+
+## 8. 详细问题清单总览
+
+### 8.1 问题分类统计
 
 | 类别 | 问题数 | P0致命 | P1严重 | P2中等 | P3低 | 已解决 | 待解决 |
 |------|--------|--------|--------|--------|------|--------|--------|
@@ -926,9 +1263,10 @@ Docker/
 | **ARCH: 架构优化** | 3 | 0 | 0 | 0 | 3 | **3** | **0** ✅ |
 | **TYPE: 类型冲突** 🆕 | 3 | 0 | 0 | 3 | 0 | 0 | **3** |
 | **BUILD: 构建配置** 🆕 | 2 | 0 | 0 | 1 | 1 | **2** | **0** ✅ |
-| **总计** | **44** | **6** | **12** | **18** | **8** | **8** | **36** |
+| **🆕 COMPILER: 编译错误** | **6** | **6** | **0** | **0** | **0** | **0** | **6** 🔴 |
+| **总计** | **50** | **12** | **12** | **18** | **8** | **8** | **42** |
 
-### 7.2 已解决的问题 (8个)
+### 8.2 已解决的问题 (8个)
 
 | 问题ID | 描述 | 解决方案 | 解决时间 | 负责方 |
 |--------|------|----------|----------|--------|
@@ -941,9 +1279,9 @@ Docker/
 | HIST-007 | include/冗余 | 整合进commons/ | Round 18-20 | 全团队 |
 | HIST-008 | interfaces/冗余 | 合并入protocols/ | Round 18-20 | TeamB |
 
-### 7.3 待解决的关键问题 (36个)
+### 8.3 待解决的关键问题 (42个) **🆕 更新(含COMPILER-001~006)**
 
-#### 🔴 P0 致命级 (5个) - 必须立即解决
+#### 🔴 P0 致命级 (11个) - 必须立即解决 **🆕 从5个增至11个**
 
 | ID | 描述 | 影响 | 建议 |
 |----|------|------|------|
@@ -952,6 +1290,12 @@ Docker/
 | STUB-003 | cognition_engine桩函数 | AI能力为零 | TeamA优先 |
 | STUB-004 | scheduler桩函数 | 任务调度瘫痪 | TeamA优先 |
 | STUB-005 | protocol_adapter桩函数 | 协议通信中断 | TeamB配合 |
+| **🆕 COMPILER-001** | **agentos.h路径错误(10+文件)** | **coreloopthree+memoryrovol无法编译** | **TeamA最高优先** |
+| **🆕 COMPILER-002** | **memory_compat.h缺失(3文件)** | **ml_planner等无法编译** | **TeamA高优先** |
+| **🆕 COMPILER-003** | **AGENTOS_*函数未声明(12+文件)** | **内存操作全部失效** | **随001/002自动解决** |
+| **🆕 COMPILER-004** | **mutex_*函数未声明(8+文件)** | **线程同步全部失效** | **随001自动解决** |
+| **🆕 COMPILER-005** | **标准库头文件缺失(6+文件)** | **基础类型未知** | **TeamA立即修复(1-2h)** |
+| **🆕 COMPILER-006** | **内部模块头文件缺失(3文件)** | **weighted/serialization/index无法编译** | **TeamA高优先** |
 
 #### 🟠 P1 严重级 (12个) - 本周必须解决
 
@@ -1010,7 +1354,291 @@ Docker/
 
 ---
 
-## 8. 第7轮次执行路线图
+## 9. 双思维系统三组件架构升级方案 🆕
+
+> **技术来源**: [第01版-AgentOS双思维模型详细落地方案](./技术借鉴与改进/第01版-AgentOS双思维模型详细落地方案.md)
+> **提出时间**: 2026-04-20
+> **总体评估**: 🟢 **高价值技术改进** - 预期降低错误率40-65%
+
+### 9.1 当前架构问题诊断
+
+#### 9.1.1 现有dual_model架构的局限性
+
+**当前架构**: t2(主思考) + t1(快思考) 双组件协调
+
+| 问题 | 描述 | 影响 |
+|------|------|------|
+| **t2输出不可控** | LLM持续输出token流，无法实时验证 | 错误累积，后期难以纠正 |
+| **t1被动接收** | 只能事后检查完整响应 | 无法提前拦截错误 |
+| **MemoryRovol脱节** | Working Memory与L1缓存无同步 | 上下文丢失 |
+| **错误率高** | 复杂任务错误率15-30% | 生产环境不可用 |
+
+**具体表现**:
+```c
+// 现有dual_model.c中的问题
+agentos_error_t dual_model_run(dual_model_t* dm, const char* input, char** output) {
+    // t2直接生成完整输出
+    dm->t2->generate(dm->t2, input, output);  // ❌ 无中间验证
+    
+    // t1事后检查（太晚了）
+    dm->t1->validate(dm->t1, *output);         // ❌ 错误已累积
+    
+    return AGENTOS_SUCCESS;
+}
+```
+
+### 7.2 三组件协同架构设计 🆕
+
+#### 7.2.1 架构总览
+
+```
+┌─────────────────────────────────────────────────────┐
+│              triple_coordinator (协调器)             │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐           │
+│  │   t2    │←→│  t1-f    │←→│  t1-p    │           │
+│  │ 主思考  │  │ 快思考   │  │ 专业思考 │           │
+│  │(LLM)   │  │(流式验证)│  │(仲裁者)  │           │
+│  └────┬────┘  └────┬─────┘  └────┬─────┘           │
+│       │             │             │                 │
+│       ▼             ▼             ▼                 │
+│  ┌─────────────────────────────────────┐            │
+│  │        MemoryRovol (L1/L2/L3)      │            │
+│  │  Working Memory ↔ L1 Cache 同步     │            │
+│  └─────────────────────────────────────┘            │
+└─────────────────────────────────────────────────────┘
+```
+
+#### 7.2.2 三组件职责定义
+
+| 组件 | 名称 | 职责 | 输入 | 输出 | 特性 |
+|------|------|------|------|------|------|
+| **t2** | 主思考器 | 深度推理、复杂决策、长文本生成 | 用户请求 | token流 | 高延迟(~3s)、高质量 |
+| **t1-f** | 快思考器(流式) | 实时语义单元检测、边界识别、快速验证 | t2 token流 | 语义单元标记 | 低延迟(<100ms)、流式处理 |
+| **t1-p** | 专业思考器(仲裁) | 安全审查、事实核查、最终裁决 | t1-f验证结果 | 通过/拒绝/修正指令 | 中等延迟(~500ms)、权威仲裁 |
+
+#### 7.2.3 核心创新: 流式语义单元检测 🆕
+
+**原理**: t2输出的token流不是连续的文本块，而是由"语义单元"(sentence/paragraph/function-call)组成的离散序列。
+
+```c
+// semantic_unit.h - 新增数据结构
+typedef enum {
+    SEMANTIC_UNIT_SENTENCE = 0,    // 单句
+    SEMANTIC_UNIT_PARAGRAPH,        // 段落
+    SEMANTIC_UNIT_FUNCTION_CALL,    // 函数调用
+    SEMANTIC_UNIT_CODE_BLOCK,       // 代码块
+    SEMANTIC_UNIT_LIST_ITEM,        // 列表项
+    SEMANTIC_UNIT_UNKNOWN           // 未知类型
+} semantic_unit_type_t;
+
+typedef struct {
+    semantic_unit_type_t type;      // 单元类型
+    size_t start_pos;               // 起始位置(token索引)
+    size_t end_pos;                 // 结束位置
+    double confidence;              // 检测置信度(0.0-1.0)
+    char* content;                  // 单元内容
+} semantic_unit_t;
+```
+
+**检测算法**:
+```c
+// t1-f的核心工作循环
+while (t2_has_next_token(t2)) {
+    token_t tok = t2_get_next_token(t2);
+    
+    buffer_append(t1f->buffer, tok);
+    
+    if (is_semantic_boundary(tok)) {  // 检测到边界(.?!等)
+        semantic_unit_t unit = parse_buffer(t1f->buffer);
+        
+        validation_result_t result = t1f_validate(unit);
+        
+        if (!result.is_valid) {
+            t1p_request_arbitration(t1p, &unit, &result);  // 请求仲裁
+        }
+        
+        memoryrovol_sync_l1(memory, &unit);  // 同步到MemoryRovol
+    }
+}
+```
+
+### 7.3 MemoryRovol深度融合 🆕
+
+#### 7.3.1 双向同步机制
+
+```
+Working Memory (t2/t1-p)          MemoryRovol L1 Cache
+┌─────────────────────┐          ┌─────────────────────┐
+│ context_window      │ ←sync──→ │ recent_units[]      │
+│ current_task        │          │ validated_results[]  │
+│ active_constraints  │ ──sync→  │ error_patterns[]     │
+└─────────────────────┘          └─────────────────────┘
+```
+
+**同步时机**:
+1. **每个语义单元完成后**: t1-f将验证结果写入L1
+2. **每次仲裁前**: t1-p从L1读取历史错误模式
+3. **任务切换时**: 将Working Memory快照持久化到L2
+
+#### 7.3.2 错误模式学习
+
+```c
+// MemoryRovol L1中存储的错误模式
+typedef struct {
+    uint64_t pattern_hash;         // 错误模式哈希
+    semantic_unit_type_t type;     // 出错的单元类型
+    char* common_mistake;          // 常见错误描述
+    uint32_t occurrence_count;     // 出现次数
+    time_t last_seen;              // 最后出现时间
+    char* suggested_fix;           // 建议修复方案
+} error_pattern_t;
+
+// t1-p仲裁时参考历史错误
+error_pattern_t* patterns = memoryrovol_query_l1(memory, current_unit.type);
+if (patterns && patterns[0].occurrence_count > 3) {
+    // 这是一个高频错误，需要特别关注
+    apply_strict_validation(&current_unit, patterns[0]);
+}
+```
+
+### 7.4 预期效果与量化指标
+
+| 维度 | 当前值 (dual_model) | 目标值 (triple_coordinator) | 改善幅度 |
+|------|---------------------|---------------------------|----------|
+| **复杂任务错误率** | 15-30% | **5-10%** | ↓40-65% |
+| **首次响应时间** | ~3000ms | **<1500ms** (首单元) | ↓50% |
+| **错误检测时机** | 事后(完整响应后) | **事中(每个语义单元)** | 实时 |
+| **上下文保持能力** | 弱(窗口易溢出) | **强(L1缓存+LRU)** | 显著提升 |
+| **可解释性** | 低(只有最终结果) | **高(每步决策可见)** | 质变 |
+
+### 7.5 实施路线图
+
+#### Phase 1: 基础设施搭建 (Week 2, TeamA负责)
+
+**新增文件**:
+```
+agentos/atoms/coreloopthree/src/cognition/
+├── semantic_unit.h/c          # 流式语义单元定义+API
+├── triple_coordinator.h/c     # 三组件协调器实现
+└── stream_validator.h/c       # 流式验证器(可选优化)
+```
+
+**修改文件**:
+```
+agentos/atoms/coreloopthree/src/cognition/
+├── thinking_chain.h           # 新增: THINKING_CHAIN_TRIPLE枚举
+├── strategy.h                 # 新增: strategy_set_t1f/t1p_config()
+├── engine.c                   # 集成: 语义单元检查+MemoryRovol同步
+└── CMakeLists.txt             # 添加: semantic_unit.c triple_coordinator.c
+```
+
+**关键API**:
+```c
+// 语义单元检测API (semantic_unit.h)
+agentos_error_t semantic_unit_init(semantic_unit_detector_t* detector);
+agentos_error_t semantic_unit_feed_token(semantic_unit_detector_t* detector, const token_t* token);
+bool semantic_unit_is_complete(const semantic_unit_detector_t* detector);
+semantic_unit_t* semantic_unit_get_current(const semantic_unit_detector_t* detector);
+void semantic_unit_destroy(semantic_unit_detector_t* detector);
+
+// 三组件协调API (triple_coordinator.h)
+agentos_error_t triple_coordinator_init(triple_coordinator_t* tc);
+agentos_error_t triple_coordinator_set_t2(triple_coordinator_t* tc, llm_model_t* model);
+agentos_error_t triple_coordinator_set_t1f(triple_coordinator_t* tc, fast_thinker_t* ft);
+agentos_error_t triple_coordinator_set_t1p(triple_coordinator_t* tc, professional_thinker_t* pt);
+agentos_error_t triple_coordinator_run(triple_coordinator_t* tc, const char* input, char** output);
+void triple_coordinator_destroy(triple_coordinator_t* tc);
+```
+
+#### Phase 2: 核心功能实现 (Week 3, TeamA/B联合)
+
+**TeamA任务**:
+- [ ] 实现semantic_unit.c (200行)
+  - `semantic_unit_init()`: 初始化检测器状态机
+  - `semantic_unit_feed_token()`: 基于规则的状态转换
+  - `semantic_unit_is_complete()`: 边界检测逻辑
+- [ ] 实现triple_coordinator.c (350行)
+  - `triple_coordinator_run()`: 主协调循环
+  - 内部函数: `_process_token_stream()`, `_handle_semantic_unit()`, `_request_arbitration()`
+
+**TeamB任务**:
+- [ ] 实现t1-f安全策略 (cupolas模块)
+  - 注入检测、越权检测、格式验证
+- [ ] 实现t1-p仲裁协议 (protocols模块)
+  - 仲裁请求/响应格式定义
+
+#### Phase 3: MemoryRovol集成 (Week 4, TeamA/C联合)
+
+**集成点**:
+```c
+// engine.c中的集成代码示例
+static agentos_error_t _run_triple_coordinator(thinking_engine_t* engine, const char* input, char** output) {
+    // 1. 从MemoryRovol L1加载上下文
+    memoryrovol_context_t* ctx = NULL;
+    memoryrovol_load_l1(engine->memory, &ctx);
+    
+    // 2. 运行三组件协调
+    triple_coordinator_run(engine->coordinator, input, output);
+    
+    // 3. 将结果同步回MemoryRovol L1
+    memoryrovol_sync_l1(engine->memory, ctx, *output);
+    
+    // 4. 清理
+    memoryrovol_context_destroy(ctx);
+    
+    return AGENTOS_SUCCESS;
+}
+```
+
+### 7.6 测试与验证计划
+
+#### 7.6.1 单元测试 (TeamC负责)
+
+```bash
+# 测试用例清单
+tests/cognition/test_semantic_unit.c
+├── test_sentence_detection()      # 句子边界检测
+├── test_paragraph_detection()     # 段落边界检测
+├── test_function_call_detection() # 函数调用检测
+├── test_confidence_scoring()      # 置信度评分准确性
+└── test_edge_cases()              # 边界情况(空输入、超长输入)
+
+tests/cognition/test_triple_coordinator.c
+├── test_basic_coordination()      # 基本协调流程
+├── test_arbitration_trigger()     # 仲裁触发条件
+├── test_memory_sync()             # MemoryRovol同步
+└── test_error_recovery()          # 错误恢复机制
+```
+
+#### 7.6.2 集成测试 (TeamC负责)
+
+```bash
+# 端到端测试场景
+test_complex_reasoning.sh         # 复杂推理任务(多步骤)
+test_safety_critical_task.sh       # 安全关键任务(注入攻击)
+test_long_context_conversation.sh  # 长对话(>20轮)
+test_memory_overflow_scenario.sh   # 内存溢出场景
+```
+
+#### 7.6.3 性能基准 (TeamC负责)
+
+| 指标 | 目标值 | 测试方法 |
+|------|--------|----------|
+| 首个语义单元延迟 | <150ms | benchmark_semantic_latency |
+| 吞吐量 | >100 units/s | benchmark_throughput |
+| 内存占用 | <50MB (L1 cache) | valgrind massif |
+| 错误率降低 | ≥40% | 对比dual_model vs triple |
+
+### 7.7 风险评估与应对
+
+| 风险ID | 风险描述 | 可能性 | 影响 | 应对措施 |
+|--------|----------|--------|------|----------|
+| **DS-R1** | 语义单元检测准确率低 | 中 | 高 | 先用规则引擎，后续引入ML模型 |
+| **DS-R2** | t1-f/t1-p增加延迟 | 低 | 中 | 异步流水线，不阻塞t2输出 |
+| **DS-R3** | MemoryRovol同步开销大 | 低 | 中 | 批量写入+后台异步同步 |
+| **DS-R4** | 团队理解偏差 | 中 | 高 | 详细文档+代码示例+Code Review |
+
+### 8. 第7轮次执行路线图
 
 ### 8.1 第7轮次目标
 
@@ -1079,7 +1707,7 @@ Docker/
 - ✅ 文档: **80%+**
 - ✅ 评级提升: **7.5/10 → 8.5/10**
 
-### 8.3 关键风险与应对
+### 10.3 关键风险与应对
 
 | 风险 | 可能性 | 影响 | 应对措施 |
 |------|--------|------|----------|
@@ -1087,12 +1715,13 @@ Docker/
 | **R2: 双思考系统复杂度超预期** | 中 | 中 | 降低目标至80%，分阶段交付 |
 | **R3: 团队协作冲突** | 低 | 中 | 每日站会，明确接口责任人 |
 | **R4: CI/CD环境不稳定** | 中 | 中 | 使用Docker容器化构建 |
+| **🆕 R5: COMPILER类错误修复暴露深层问题** | 高 | 低 | 这是好消息，继续迭代修复 |
 
 ---
 
-## 9. 附录
+## 11. 附录
 
-### 9.1 重要文件索引
+### 11.1 重要文件索引
 
 | 文件 | 路径 | 用途 |
 |------|------|------|
@@ -1104,7 +1733,7 @@ Docker/
 | **gateway_protocol_handler** | `agentos/gateway/src/utils/gateway_protocol_handler.{h,c}` | 网关协议处理器 (已修复类型) |
 | **protocol_router.h** | `agentos/protocols/include/protocol_router.h` | 协议路由器 (已修复类型名) |
 
-### 9.2 常用命令速查
+### 11.2 常用命令速查
 
 ```bash
 # === Out-of-Source Build 标准流程 ===
@@ -1143,9 +1772,9 @@ find AgentOS -name "*.o" -o -name "CMakeFiles"
 # 应返回空
 ```
 
-### 9.3 Round 18-20 成果总结
+### 11.3 Round 18-20 成果总结 + 🆕 GetDiagnostics诊断成果
 
-**量化指标**:
+**Round 18-20 量化指标**:
 - 🗂️ **删除文件**: 21个 (include/ 18个 + interfaces/ 3个)
 - ➕ **新增文件**: 6个 (迁移+新建)
 - ✏️ **修改文件**: ~300个 (Include路径替换)
@@ -1158,11 +1787,20 @@ find AgentOS -name "*.o" -o -name "CMakeFiles"
   - 文档重建: ~1小时 (正在进行)
   - **总计**: ~6.5小时
 
+**🆕 GetDiagnostics诊断量化指标 (2026-04-21)**:
+- 🔴 **发现编译错误文件**: 14个 (coreloopthree 5个 + memoryrovol 9个)
+- 🔴 **总编译错误数**: 330+ (多个文件触发上限)
+- 📋 **问题分类**: COMPILER-001~006 (6大类)
+- 👥 **负责团队**: TeamA (核心组)
+- ⏱️ **预计修复工时**: 15-23小时 (4个工作日)
+- 🎯 **预期效果**: 编译通过率从48%提升至75%+
+
 **质量改善**:
 - 🏗️ 架构扁平化: 9模块 → **7模块** (-22%)
 - 🔄 间接层消除: 12个转发文件 → **0** (-100%)
 - 📂 源码纯净度: 受污染 → **100%纯净** (∞)
 - 🔨 构建标准: 混乱 → **企业级Out-of-Source** (显著↑)
+- 🔴 **🆕 编译透明度**: 黑箱 → **完全可见(14文件330+错误全部定位)** (新✅)
 
 ---
 
@@ -1176,15 +1814,55 @@ find AgentOS -name "*.o" -o -name "CMakeFiles"
 | v22.0 | 2026-04-19 09:00 | System | Round 18-20架构重构成果 |
 | **v23.0** | 2026-04-19 12:00 | System | Round 18-20执行记录 |
 | **v23.1** | 2026-04-19 16:32 | System | **Out-of-Source Build验证通过 + Include路径全面修复** |
+| **v24.0** | 2026-04-20 20:00 | System | **双思维系统三组件架构升级方案整合** |
+| **v25.0** | 2026-04-21 10:00 | System | **🆕 GetDiagnostics编译诊断: COMPILER-001~006(14文件330+错误)，新增第7章完整诊断报告** |
 
 ---
 
-**🎯 下一步行动**:
-1. ✅ **提交本次所有变更** (Include修复 + CMake增强 + 文档重建)
-2. 📧 **通知三团队** 开始第7轮次工作 (基于本报告的任务分工)
-3. 🚀 **TeamA优先**: 修复TYPE-003 + 开始SEC-017桩函数清除
-4. 🚀 **TeamB配合**: 修复TYPE-001/002 + 继续协议优化
-5. 🚀 **TeamC准备**: 搭建CI/CD环境 + 准备集成测试
+## 🎯 **🔴 紧急下一步行动 (用户确认后立即启动)**
+
+### 📋 **第一优先级: COMPILER类错误修复 (TeamA负责, 15-23h)**
+
+1. 🔴 **Day 1上午 (1-2h)**: **COMPILER-005** - 添加标准库头文件 `<stdint.h>` 和 `<time.h>` 到6个文件
+   - 最简单的修复，可立即看到效果
+
+2. 🔴 **Day 1下午 (2h)**: 定位关键头文件位置 + 制定详细修复计划
+   ```bash
+   find AgentOS -name "agentos.h" -type f
+   find AgentOS -name "memory_compat.h" -type f
+   find AgentOS -name "cognition.h" -o -name "layer1_raw.h" -o -name "layer2_feature.h"
+   ```
+
+3. 🔴 **Day 2-3 (8-12h)**: **COMPILER-001** - 修复agentos.h引用路径
+   - 推荐方案: 更新CMakeLists.txt添加全局include路径
+   - 涉及文件: 10+个源文件
+
+4. 🔴 **Day 3-4 (3-5h)**: **COMPILER-002** - 处理memory_compat.h缺失问题
+   - 定位或重建该头文件
+
+5. 🔴 **Day 4 (2-4h)**: **COMPILER-006** - 修复内部模块头文件路径
+   - cognition.h, layer1_raw.h, layer2_feature.h
+
+6. ✅ **Day 4下午 (2h)**: 全量编译验证 + GetDiagnostics复测
+   - 目标: **14文件0错误，编译通过率48%→75%+**
+
+### 📋 第二优先级: 继续历史任务 (并行推进)
+
+7. 🚀 **TeamB**: TYPE-001/002类型冲突修复 + protocols模块修复
+8. 🚀 **TeamC**: BUILD-004/005 include路径修复 + CI/CD环境搭建
+9. 📝 **全团队**: 双思维系统triple_coordinator实现规划 (Week 2启动)
+
+### ✅ 验证标准
+
+```bash
+# 修复完成后执行:
+cmake --build AgentOS-build --config Release -j$(nproc)
+# 预期: coreloopthree和memoryrovol模块编译成功
+
+# 运行静态分析:
+cppcheck --enable=all agentos/atoms/coreloopthree/ agentos/atoms/memoryrovol/
+# 预期: 0 critical, 0 error
+```
 
 ---
 
