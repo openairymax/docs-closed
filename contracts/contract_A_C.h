@@ -1,29 +1,33 @@
+// SPDX-FileCopyrightText: 2026 SPHARX Ltd.
+// SPDX-License-Identifier: Apache-2.0
 /**
  * @file contract_A_C.h
- * @brief 团队A（核心引擎）↔ 团队C（基础设施）接口合约
+ * @brief 跨团队接口合约：团队A（核心引擎 C）↔ 团队C（基础设施）
  *
- * 本合约定义了团队A的C核心引擎向团队C的测试/CI/部署基础设施
- * 暴露的接口契约。团队C的所有集成测试、CI验证和部署脚本必须
- * 基于此合约编写，团队A必须保证合约中所有接口的ABI稳定性。
+ * 本合约固化团队A 与团队C 之间的三类基础设施约定：
+ *   - daemon 测试注入点（团队C 测试团队A 的 daemon）
+ *   - Prometheus metrics 命名规范（14 项必需指标）
+ *   - IPC Bus 测试 hooks
  *
- * @contract_version 1.0.0
- * @teams team-A, team-C
- * @owner team-A (接口定义方), team-C (接口消费方)
- * @frozen 2026-06-14
+ * 团队C 在集成测试与生产监控中依赖本合约的稳定标识。
+ * 任何指标名或注入点变更必须先升级本合约版本号。
  *
- * 合约包含：
- *   1. Daemon 测试注入点（Testing Injection Points）
- *   2. Prometheus 指标命名规范与数据结构
- *   3. IPC Bus 测试 Hooks（消息注入/拦截/监控）
- *   4. 健康检查端点定义
- *   5. 错误码映射表（A 错误码 → C 测试断言期望）
- *   6. 时序约束（启动/就绪/心跳/超时）
+ * 参考实现：
+ *   - agentos/daemon/common/include/unified_metrics.h
+ *   - agentos/daemon/common/include/ipc_service_bus.h
+ *   - agentos/daemon/common/include/daemon_security.h
+ *   - agentos/daemon/common/include/svc_common.h
+ *   - tests/integration/c/test_c_link_*.c
+ *
+ * @owner team-A, team-C
+ * @version 1.0.0
+ * @see P0.14 跨团队合约任务
  */
 
-#ifndef CONTRACT_A_C_H
-#define CONTRACT_A_C_H
+#ifndef AGENTRT_CONTRACT_A_C_H
+#define AGENTRT_CONTRACT_A_C_H
+#pragma once
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -32,454 +36,272 @@ extern "C" {
 #endif
 
 /* ================================================================
- * 合约版本号（semver: MAJOR.MINOR.PATCH → 0x00MAJORMINORPATCH）
+ * 合约版本
  * ================================================================ */
-#define CONTRACT_A_C_VERSION 0x00010000  /* v1.0.0 */
+
+/** 团队A ↔ 团队C 合约版本（语义化版本） */
+#define CONTRACT_A_C_VERSION "1.0.0"
+
+/** 版本数值，用于运行时比较 */
+#define CONTRACT_A_C_VERSION_MAJOR 1
+#define CONTRACT_A_C_VERSION_MINOR 0
+#define CONTRACT_A_C_VERSION_PATCH 0
 
 /* ================================================================
- * 第1节：Daemon 测试注入点
+ * Daemon 测试注入点
  *
- * 团队A 向 团队C 暴露的测试注入接口，用于集成测试中
- * 模拟故障、注入延迟、控制行为。
+ * 团队C 在集成测试中通过以下注入点控制团队A 的 daemon 行为。
+ * 注入点通过环境变量启用，生产环境必须关闭。
  *
  * 时序约束：
- *   - 所有 inject_* 函数仅在 AGENTOS_TEST_MODE 编译宏启用时可用
- *   - 生产构建中，这些函数必须编译为 no-op（返回 AGENTOS_ERR_NOT_SUPPORTED）
- *   - 注入操作必须在 daemon 启动后、首次请求前完成
+ *   1. 团队C 设置 AGENTOS_TEST_MODE=1 启用注入
+ *   2. daemon 启动时检测环境变量，注册测试钩子
+ *   3. 测试用例通过 IPC 注入故障/延迟/断言
+ *   4. 测试结束清理注入状态
  * ================================================================ */
 
+/** 测试模式环境变量名 */
+#define CONTRACT_AC_TEST_MODE_ENV "AGENTOS_TEST_MODE"
+
+/** 测试模式启用值 */
+#define CONTRACT_AC_TEST_MODE_ENABLED "1"
+
+/** 测试模式禁用值（生产默认） */
+#define CONTRACT_AC_TEST_MODE_DISABLED "0"
+
+/** 测试注入点最大数量 */
+#define CONTRACT_AC_MAX_INJECTION_POINTS 32
+
+/** 测试注入点名称最大长度 */
+#define CONTRACT_AC_INJECTION_NAME_MAX 64
+
 /**
- * @brief 测试模式标识 —— 团队C 通过环境变量 AGENTOS_TEST_MODE=1 启用
+ * @brief 测试注入点类型
  *
- * 团队A 承诺：当 AGENTOS_TEST_MODE=1 时，所有 *_test_* 注入点可用。
- * 团队C 承诺：仅在 CI 测试环境中设置此变量，生产环境绝不设置。
+ * 团队C 通过此枚举选择注入的故障类型。
  */
-#define AGENTOS_TEST_MODE_ENV "AGENTOS_TEST_MODE"
-
-/* ── Orchestrator 测试注入 ── */
+typedef enum contract_ac_injection_type {
+    CONTRACT_AC_INJECT_FAULT      = 0, /**< 注入故障返回错误码 */
+    CONTRACT_AC_INJECT_DELAY      = 1, /**< 注入延迟（毫秒） */
+    CONTRACT_AC_INJECT_ASSERT     = 2, /**< 注入断言检查 */
+    CONTRACT_AC_INJECT_OVERRIDE   = 3, /**< 覆盖返回值 */
+    CONTRACT_AC_INJECT_DROP       = 4  /**< 丢弃请求（模拟超时） */
+} contract_ac_injection_type_t;
 
 /**
- * @brief 注入 Orchestrator 管道执行延迟
- * @param delay_ms 每个管道步骤额外延迟（毫秒），0 表示清除注入
- * @contract 团队A 承诺：inject 后下一次 orchestrator_execute_pipeline() 生效
+ * @brief 测试注入点描述
+ *
+ * 团队A 在 daemon 关键路径注册此结构，团队C 通过名称查找并激活。
  */
-void orch_test_inject_delay(uint32_t delay_ms);
+typedef struct contract_ac_injection_point {
+    char name[CONTRACT_AC_INJECTION_NAME_MAX]; /**< 注入点名称（唯一） */
+    contract_ac_injection_type_t type;         /**< 注入类型 */
+    const char *daemon_name;                   /**< 所属 daemon（如 "llm_d"） */
+    const char *description;                   /**< 注入点说明 */
+    uint32_t    reserved;                      /**< 对齐保留 */
+} contract_ac_injection_point_t;
 
 /**
- * @brief 注入 Orchestrator 管道步骤失败
- * @param phase      目标阶段（ORCH_PHASE_*）
- * @param error_code 注入的错误码
- * @param fail_count 失败次数（0 = 清除注入，N = 连续失败 N 次后恢复）
- * @contract 团队A 承诺：第 fail_count 次调用对应 phase 时返回 error_code
+ * @brief 标准 daemon 测试注入点名称
+ *
+ * 团队A 必须在每个 daemon 中注册以下注入点（如适用）。
+ * 团队C 的集成测试依赖这些名称。
  */
-void orch_test_inject_phase_failure(int phase, int error_code, uint32_t fail_count);
-
-/* ── Checkpoint 测试注入 ── */
-
-/**
- * @brief 注入 Checkpoint 保存失败
- * @param fail_count 连续保存失败次数（0 = 清除注入）
- * @contract 团队A 承诺：agentos_checkpoint_save() 在 fail_count 次内返回 AGENTOS_ERR_IO
- */
-void checkpoint_test_inject_save_failure(uint32_t fail_count);
-
-/**
- * @brief 注入 Checkpoint 恢复失败
- * @param task_id     目标 task_id，NULL 表示所有 task
- * @param fail_count  连续恢复失败次数（0 = 清除注入）
- * @contract 团队A 承诺：agentos_checkpoint_restore() 在 fail_count 次内返回 AGENTOS_ERR_NOT_FOUND
- */
-void checkpoint_test_inject_restore_failure(const char *task_id, uint32_t fail_count);
-
-/* ── ServiceDiscovery 测试注入 ── */
-
-/**
- * @brief 注入服务健康状态变更
- * @param service_name 服务名称
- * @param instance_id  实例 ID
- * @param healthy      目标健康状态
- * @contract 团队A 承诺：注入后下一次心跳周期触发 SD_EVENT_HEALTH_CHANGE 事件
- */
-void sd_test_inject_health_change(const char *service_name, const char *instance_id, bool healthy);
-
-/**
- * @brief 注入服务实例过期
- * @param service_name 服务名称
- * @param instance_id  实例 ID
- * @contract 团队A 承诺：注入后立即触发 SD_EVENT_EXPIRED，模拟心跳超时
- */
-void sd_test_inject_expiration(const char *service_name, const char *instance_id);
-
-/* ── SafetyGuard 测试注入 ── */
-
-/**
- * @brief 注入 SafetyGuard 守卫决策覆盖
- * @param guard_type    守卫类型（SAFETY_GUARD_*）
- * @param forced_decision 强制决策（SAFETY_DECISION_*）
- * @contract 团队A 承诺：注入后该类型守卫始终返回 forced_decision
- *          团队C 承诺：测试结束后调用 safety_test_reset_injections()
- */
-void safety_test_inject_guard_decision(int guard_type, int forced_decision);
-
-/**
- * @brief 清除所有 SafetyGuard 测试注入
- */
-void safety_test_reset_injections(void);
+#define CONTRACT_AC_INJ_DAEMON_INIT     "daemon.init"      /**< daemon 初始化注入 */
+#define CONTRACT_AC_INJ_DAEMON_SHUTDOWN "daemon.shutdown"  /**< daemon 关闭注入 */
+#define CONTRACT_AC_INJ_IPC_REQUEST     "ipc.request"      /**< IPC 请求处理注入 */
+#define CONTRACT_AC_INJ_IPC_RESPONSE    "ipc.response"     /**< IPC 响应处理注入 */
+#define CONTRACT_AC_INJ_CONFIG_RELOAD   "config.reload"    /**< 配置重载注入 */
+#define CONTRACT_AC_INJ_HEALTH_CHECK    "health.check"     /**< 健康检查注入 */
 
 /* ================================================================
- * 第2节：Prometheus 指标命名规范
+ * Prometheus Metrics 命名规范（14 项必需指标）
  *
- * 团队A 承诺：所有 daemon 暴露的 Prometheus 指标遵循以下命名规范。
- * 团队C 承诺：CI 中通过正则验证指标命名合规性。
+ * 团队A 的所有 daemon 必须通过 unified_metrics.h 注册以下 14 项指标。
+ * 团队C 的 Prometheus 采集配置（deploy/docker/monitoring/prometheus.yml）
+ * 与 Grafana 仪表板依赖这些指标名。
  *
- * 命名格式: agentos_{subsystem}_{metric_name}_{unit}
- * 标签规范: 每个指标至少包含 daemon="<name>" 标签
+ * 命名规范：agentos_<daemon>_<metric>_<unit>
+ *   - 前缀统一为 agentos_
+ *   - daemon 名小写下划线
+ *   - 单位后缀（seconds/bytes/total）
  * ================================================================ */
 
-/* ── 必需指标名称常量（团队C 在集成测试中验证这些指标存在）── */
+/** 指标前缀（所有指标必须以此开头） */
+#define CONTRACT_AC_METRIC_PREFIX "agentos_"
 
-/* Gauge: 各 daemon 常驻内存 (bytes) */
-#define METRIC_MEMORY_RSS_BYTES       "agentos_memory_rss_bytes"
+/** 指标名称最大长度（与 UM_METRIC_NAME_LEN 对齐） */
+#define CONTRACT_AC_METRIC_NAME_MAX 128
 
-/* Gauge: 堆内存使用量 (bytes) */
-#define METRIC_MEMORY_HEAP_BYTES      "agentos_memory_heap_bytes"
+/** 指标帮助文本最大长度 */
+#define CONTRACT_AC_METRIC_HELP_MAX 256
 
-/* Gauge: 内存池使用率 (0.0~1.0) */
-#define METRIC_MEMORY_POOL_UTIL       "agentos_memory_pool_utilization"
-
-/* Counter: OOM 事件计数（标签: level=NORMAL|WARNING|DEGRADED|CRITICAL|FATAL） */
-#define METRIC_OOM_EVENTS_TOTAL       "agentos_oom_events_total"
-
-/* Counter: 累计分配字节数 */
-#define METRIC_MEMORY_ALLOC_BYTES     "agentos_memory_alloc_bytes_total"
-
-/* Counter: 累计释放字节数 */
-#define METRIC_MEMORY_FREE_BYTES      "agentos_memory_free_bytes_total"
-
-/* Gauge: 当前内存压力级别 (0~4) */
-#define METRIC_MEMORY_PRESSURE_LEVEL  "agentos_memory_pressure_level"
-
-/* Histogram: 认知阶段延迟 (ms) */
-#define METRIC_COGNITION_LATENCY_MS   "agentos_cognition_latency_ms"
-
-/* Histogram: LLM 请求延迟 (ms) */
-#define METRIC_LLM_REQUEST_DURATION   "agentos_llm_request_duration_ms"
-
-/* Counter: LLM 累计费用 (USD) */
-#define METRIC_LLM_COST_USD_TOTAL     "agentos_llm_cost_usd_total"
-
-/* Counter: 工具调用次数 */
-#define METRIC_TOOL_CALL_TOTAL        "agentos_tool_call_total"
-
-/* Counter: 记忆操作次数 */
-#define METRIC_MEMORY_OPS_TOTAL       "agentos_memory_operations_total"
-
-/* Gauge: 连接线健康状态 (0=down, 1=up) */
-#define METRIC_CONNECTION_HEALTH      "agentos_connection_health"
-
-/* Counter: daemon 重启次数 */
-#define METRIC_DAEMON_RESTART_TOTAL   "agentos_daemon_restart_total"
-
-/* Gauge: Error Budget 剩余百分比 */
-#define METRIC_ERROR_BUDGET_REMAINING "agentos_error_budget_remaining"
-
-/* ── 指标标签规范 ── */
+/** 必需指标数量 */
+#define CONTRACT_AC_REQUIRED_METRICS_COUNT 14
 
 /**
- * @brief 必需标签列表
+ * @brief 14 项必需 Prometheus 指标名
  *
- * 团队A 承诺：所有指标至少包含以下标签中的 daemon。
- * 团队C 承诺：CI 中验证 /metrics 端点的每个指标都包含 daemon 标签。
+ * 团队A 的每个 daemon 必须注册这些指标（如适用）。
+ * 团队C 的告警规则（alerts.yml）基于这些指标名编写。
  */
-#define METRIC_REQUIRED_LABEL_DAEMON  "daemon"
-#define METRIC_LABEL_AGENT_ID         "agent_id"
-#define METRIC_LABEL_PROVIDER         "provider"
-#define METRIC_LABEL_MODEL            "model"
-#define METRIC_LABEL_TOOL_NAME        "tool_name"
-#define METRIC_LABEL_STATUS           "status"
-#define METRIC_LABEL_LAYER            "layer"
-#define METRIC_LABEL_OPERATION        "operation"
-#define METRIC_LABEL_HOOK_NAME        "hook_name"
-#define METRIC_LABEL_EVENT            "event"
-#define METRIC_LABEL_CONNECTION_ID    "connection_id"
-#define METRIC_LABEL_ERROR_CATEGORY   "error_category"
+#define CONTRACT_AC_METRIC_REQUESTS_TOTAL       "agentos_requests_total"        /**< 请求总数（Counter） */
+#define CONTRACT_AC_METRIC_REQUEST_DURATION     "agentos_request_duration_seconds" /**< 请求耗时（Histogram） */
+#define CONTRACT_AC_METRIC_ERRORS_TOTAL         "agentos_errors_total"          /**< 错误总数（Counter） */
+#define CONTRACT_AC_METRIC_ACTIVE_CONNECTIONS   "agentos_active_connections"    /**< 活跃连接数（Gauge） */
+#define CONTRACT_AC_METRIC_MEMORY_USAGE_BYTES   "agentos_memory_usage_bytes"    /**< 内存使用（Gauge） */
+#define CONTRACT_AC_METRIC_CPU_USAGE            "agentos_cpu_usage_ratio"       /**< CPU 使用率（Gauge） */
+#define CONTRACT_AC_METRIC_UPTIME_SECONDS       "agentos_uptime_seconds"        /**< 运行时长（Gauge） */
+#define CONTRACT_AC_METRIC_QUEUE_DEPTH          "agentos_queue_depth"           /**< 队列深度（Gauge） */
+#define CONTRACT_AC_METRIC_IPC_LATENCY          "agentos_ipc_latency_seconds"   /**< IPC 延迟（Histogram） */
+#define CONTRACT_AC_METRIC_GC_PAUSE_SECONDS     "agentos_gc_pause_seconds"      /**< GC 暂停（Histogram） */
+#define CONTRACT_AC_METRIC_FILE_DESCRIPTORS     "agentos_file_descriptors"      /**< 文件描述符数（Gauge） */
+#define CONTRACT_AC_METRIC_GOROUTINE_COUNT      "agentos_goroutine_count"       /**< 协程/线程数（Gauge） */
+#define CONTRACT_AC_METRIC_CACHE_HIT_RATIO      "agentos_cache_hit_ratio"       /**< 缓存命中率（Gauge） */
+#define CONTRACT_AC_METRIC_CIRCUIT_BREAKER_STATE "agentos_circuit_breaker_state" /**< 熔断器状态（Gauge） */
+
+/**
+ * @brief 指标类型枚举（与 um_metric_type_t 对齐）
+ */
+typedef enum contract_ac_metric_type {
+    CONTRACT_AC_METRIC_COUNTER   = 0, /**< Counter：单调递增 */
+    CONTRACT_AC_METRIC_GAUGE     = 1, /**< Gauge：可增可减 */
+    CONTRACT_AC_METRIC_HISTOGRAM = 2, /**< Histogram：分布统计 */
+    CONTRACT_AC_METRIC_SUMMARY   = 3  /**< Summary：分位数统计 */
+} contract_ac_metric_type_t;
+
+/**
+ * @brief 指标描述符
+ *
+ * 团队A 通过 unified_metrics.h 注册指标时必须填写此结构。
+ */
+typedef struct contract_ac_metric_def {
+    char name[CONTRACT_AC_METRIC_NAME_MAX];       /**< 指标名 */
+    char help[CONTRACT_AC_METRIC_HELP_MAX];       /**< 帮助文本 */
+    contract_ac_metric_type_t type;               /**< 指标类型 */
+    char labels[256];                             /**< 标签（逗号分隔） */
+} contract_ac_metric_def_t;
 
 /* ================================================================
- * 第3节：IPC Bus 测试 Hooks
+ * IPC Bus 测试 Hooks
  *
- * 团队A 向 团队C 暴露的 IPC Bus 测试接口，
- * 用于集成测试中注入消息、监控消息流、验证路由正确性。
+ * 团队C 通过以下 hooks 拦截 IPC Bus 消息，验证 daemon 间通信正确性。
+ * Hooks 仅在测试模式下激活，生产环境编译期排除。
+ *
+ * 时序约束：
+ *   1. 团队C 注册 hook 回调
+ *   2. IPC Bus 收发消息时调用 hook
+ *   3. hook 可修改消息（注入故障）或仅观察
+ *   4. hook 返回 0 放行，非 0 阻断
  * ================================================================ */
 
+/** IPC Bus 消息魔数（与 IPC_BUS_MESSAGE_MAGIC 对齐） */
+#define CONTRACT_AC_IPC_BUS_MAGIC 0x49534200U
+
+/** IPC Bus 消息版本（与 IPC_BUS_MESSAGE_VERSION 对齐） */
+#define CONTRACT_AC_IPC_BUS_VERSION 1
+
+/** IPC Bus 最大服务数（与 IPC_BUS_MAX_SERVICES 对齐） */
+#define CONTRACT_AC_IPC_BUS_MAX_SERVICES 64
+
+/** IPC Bus 最大通道数（与 IPC_BUS_MAX_CHANNELS 对齐） */
+#define CONTRACT_AC_IPC_BUS_MAX_CHANNELS 32
+
+/** IPC Bus 最大消息大小（与 IPC_BUS_MAX_MESSAGE_SIZE 对齐） */
+#define CONTRACT_AC_IPC_BUS_MAX_MESSAGE_SIZE (512 * 1024)
+
+/** IPC Bus 默认超时（毫秒，与 IPC_BUS_DEFAULT_TIMEOUT_MS 对齐） */
+#define CONTRACT_AC_IPC_BUS_DEFAULT_TIMEOUT_MS 5000
+
+/** IPC Bus 最大重试次数（与 IPC_BUS_MAX_RETRIES 对齐） */
+#define CONTRACT_AC_IPC_BUS_MAX_RETRIES 3
+
+/** IPC Bus 服务 ID 长度（与 IPC_BUS_SERVICE_ID_LEN 对齐） */
+#define CONTRACT_AC_IPC_BUS_SERVICE_ID_LEN 64
+
 /**
- * @brief IPC Bus 消息拦截回调类型
- * @param msg      被拦截的消息（只读，回调内不可修改或释放）
- * @param user_data 用户数据
+ * @brief IPC Bus 消息类型（与 ipc_bus_msg_type_t 对齐）
+ */
+typedef enum contract_ac_ipc_msg_type {
+    CONTRACT_AC_IPC_MSG_REQUEST      = 0, /**< 请求 */
+    CONTRACT_AC_IPC_MSG_RESPONSE     = 1, /**< 响应 */
+    CONTRACT_AC_IPC_MSG_NOTIFICATION = 2, /**< 通知 */
+    CONTRACT_AC_IPC_MSG_BROADCAST    = 3, /**< 广播 */
+    CONTRACT_AC_IPC_MSG_HEARTBEAT    = 4, /**< 心跳 */
+    CONTRACT_AC_IPC_MSG_DISCOVERY    = 5, /**< 发现 */
+    CONTRACT_AC_IPC_MSG_CONTROL      = 6  /**< 控制 */
+} contract_ac_ipc_msg_type_t;
+
+/**
+ * @brief IPC Bus 消息头（与 ipc_bus_message_header_t 对齐）
  *
- * @contract 团队A 承诺：回调在 IPC Bus 消息分发前同步调用
- *          团队C 承诺：回调内不执行阻塞操作（> 10ms）
+ * 团队C 的测试 hook 通过此头识别消息来源与目标。
  */
-typedef void (*ipc_test_intercept_cb_t)(const void *msg, void *user_data);
+typedef struct contract_ac_ipc_msg_header {
+    uint32_t magic;                          /**< 魔数 CONTRACT_AC_IPC_BUS_MAGIC */
+    uint32_t version;                        /**< 版本 CONTRACT_AC_IPC_BUS_VERSION */
+    contract_ac_ipc_msg_type_t msg_type;     /**< 消息类型 */
+    uint32_t protocol;                       /**< 协议类型（ipc_bus_proto_t） */
+    uint64_t msg_id;                         /**< 消息 ID */
+    uint64_t correlation_id;                 /**< 关联 ID（请求-响应配对） */
+    char     source[CONTRACT_AC_IPC_BUS_SERVICE_ID_LEN]; /**< 源服务 */
+    char     target[CONTRACT_AC_IPC_BUS_SERVICE_ID_LEN]; /**< 目标服务 */
+    uint32_t payload_len;                    /**< 负载长度 */
+    uint32_t flags;                          /**< 标志位 */
+    uint64_t timestamp;                      /**< 时间戳 */
+    uint32_t checksum;                       /**< 校验和 */
+    uint8_t  reserved[16];                   /**< 保留字段 */
+} contract_ac_ipc_msg_header_t;
 
 /**
- * @brief 注册 IPC Bus 消息拦截器（仅测试模式）
- * @param target_service 目标服务名，NULL 表示拦截所有
- * @param msg_type       消息类型过滤，0xFF 表示所有类型
- * @param callback       拦截回调
- * @param user_data      用户数据
- * @return 0 成功，非0失败
+ * @brief IPC Bus 测试 hook 回调签名
  *
- * @contract 团队A 承诺：拦截器在消息路由前调用，可观察但不可修改消息
- *          团队C 承诺：测试结束后调用 ipc_test_clear_interceptors()
+ * 团队C 注册此回调拦截 IPC 消息。
+ * @param header 消息头（BORROW，回调内只读）
+ * @param payload 消息负载（BORROW，回调内只读）
+ * @param payload_size 负载大小
+ * @param user_data 团队C 注册时传入的用户数据
+ * @return 0 放行消息，非 0 阻断并返回错误
  */
-int ipc_test_register_interceptor(const char *target_service, uint8_t msg_type,
-                                  ipc_test_intercept_cb_t callback, void *user_data);
-
-/**
- * @brief 清除所有 IPC Bus 测试拦截器
- */
-void ipc_test_clear_interceptors(void);
-
-/**
- * @brief 获取 IPC Bus 消息队列深度
- * @param service_name 服务名
- * @return 当前队列消息数，-1 表示服务不存在
- *
- * @contract 团队A 承诺：此函数在测试和生产模式下均可用
- *          团队C 承诺：用于背压控制测试的队列深度断言
- */
-int ipc_test_get_queue_depth(const char *service_name);
-
-/**
- * @brief 获取 IPC Bus 累计统计
- * @param service_name   服务名
- * @param out_sent       累计发送消息数
- * @param out_received   累计接收消息数
- * @param out_dropped    累计丢弃消息数
- * @return 0 成功，非0失败
- */
-int ipc_test_get_stats(const char *service_name, uint64_t *out_sent,
-                       uint64_t *out_received, uint64_t *out_dropped);
+typedef int (*contract_ac_ipc_hook_t)(const contract_ac_ipc_msg_header_t *header,
+                                      const void *payload,
+                                      size_t payload_size,
+                                      void *user_data);
 
 /* ================================================================
- * 第4节：健康检查端点定义
- *
- * 团队A 承诺：每个 daemon 暴露以下 HTTP 端点。
- * 团队C 承诺：CI 中通过 docker-compose 健康检查验证这些端点。
+ * 编译期验证（#if 0 块，不参与编译，仅作文档与示例）
  * ================================================================ */
+#if 0
+/* 注入点结构大小校验 */
+static_assert(sizeof(contract_ac_injection_point_t) > 0,
+              "injection point must be non-empty");
 
-/**
- * @brief 健康检查端点路径常量
+/* 指标描述符大小校验 */
+static_assert(sizeof(contract_ac_metric_def_t) > 0,
+              "metric def must be non-empty");
+
+/* IPC 消息头大小校验：64 + 64 + 8*2 + 4*5 + 16 = 188 字节（取决于对齐） */
+static_assert(sizeof(contract_ac_ipc_msg_header_t) >= 100,
+              "IPC header too small");
+
+/* 团队C 集成示例（伪代码）：
  *
- * 团队A 承诺：
- *   - GET /healthz → 200 OK (liveness: 进程存活)
- *   - GET /readyz  → 200 OK (readiness: 可接受请求)
- *   - GET /metrics → 200 OK (Prometheus 文本格式指标)
+ *   // C 测试用例注册 IPC hook
+ *   contract_ac_ipc_hook_t hook = my_test_hook;
+ *   ipc_bus_register_test_hook("llm_d", hook, test_ctx);
  *
- * 团队C 承诺：
- *   - docker-compose 中 healthcheck.test 使用 curl 验证 /healthz
- *   - CI 中验证 /metrics 输出包含 agentos_ 前缀指标
+ *   // Python 测试用例验证指标
+ *   metrics = prometheus_client.fetch(CONTRACT_AC_METRIC_REQUESTS_TOTAL)
+ *   assert metrics > 0
+ *
+ *   // 注入故障测试
+ *   daemon_inject(CONTRACT_AC_INJ_IPC_REQUEST,
+ *                 CONTRACT_AC_INJECT_DELAY, 100);
  */
-#define HEALTH_ENDPOINT_LIVENESS  "/healthz"
-#define HEALTH_ENDPOINT_READINESS "/readyz"
-#define HEALTH_ENDPOINT_METRICS  "/metrics"
-
-/* ================================================================
- * 第5节：错误码映射表
- *
- * 团队A 的 C 核心引擎错误码 → 团队C 测试断言期望映射。
- * 团队C 承诺：集成测试中仅使用此映射表中的错误码进行断言，
- *           不依赖未列出的错误码值。
- * 团队A 承诺：此映射表中的错误码值在 v1.x 生命周期内不变。
- *
- * 错误码分段规划（权威来源：commons/utils/error/include/error.h）：
- *   -1 ~ -99:      通用基础错误
- *   -100 ~ -199:   系统与平台错误
- *   -200 ~ -299:   内核层错误
- *   -300 ~ -399:   服务层错误
- *   -400 ~ -499:   LLM/AI 服务错误
- *   -500 ~ -599:   执行/工具错误
- *   -600 ~ -699:   记忆/存储错误
- *   -700 ~ -799:   安全/沙箱错误
- *   -800 ~ -899:   协调/规划错误
- * ================================================================ */
-
-/* ── 通用基础错误 ── */
-#define CONTRACT_ERR_OK                    0        /* 成功 */
-#define CONTRACT_ERR_INVALID_PARAM         (-2)     /* 参数无效 */
-#define CONTRACT_ERR_NULL_POINTER          (-3)     /* 空指针 */
-#define CONTRACT_ERR_OUT_OF_MEMORY         (-4)     /* 内存不足 */
-#define CONTRACT_ERR_BUFFER_TOO_SMALL      (-5)     /* 缓冲区过小 */
-#define CONTRACT_ERR_NOT_FOUND             (-6)     /* 资源未找到 */
-#define CONTRACT_ERR_ALREADY_EXISTS        (-7)     /* 资源已存在 */
-#define CONTRACT_ERR_TIMEOUT               (-8)     /* 操作超时 */
-#define CONTRACT_ERR_NOT_SUPPORTED         (-9)     /* 操作不支持 */
-#define CONTRACT_ERR_PERMISSION_DENIED     (-10)    /* 权限不足 */
-#define CONTRACT_ERR_IO                    (-11)    /* I/O 错误 */
-#define CONTRACT_ERR_PARSE_ERROR           (-12)    /* 解析错误 */
-#define CONTRACT_ERR_STATE_ERROR           (-13)    /* 状态错误 */
-#define CONTRACT_ERR_CANCELED              (-16)    /* 操作已取消 */
-#define CONTRACT_ERR_BUSY                  (-17)    /* 资源忙碌 */
-#define CONTRACT_ERR_WOULD_BLOCK           (-18)    /* 非阻塞模式下需重试 */
-#define CONTRACT_ERR_NOT_IMPLEMENTED       (-30)    /* 未实现 */
-#define CONTRACT_ERR_FAIL                  (-31)    /* 通用失败 */
-
-/* ── 系统与平台错误 ── */
-#define CONTRACT_ERR_SYS_NOT_INIT          (-101)   /* 系统未初始化 */
-#define CONTRACT_ERR_SYS_RESOURCE          (-102)   /* 系统资源不足 */
-#define CONTRACT_ERR_SYS_DEADLOCK          (-103)   /* 死锁检测 */
-#define CONTRACT_ERR_SYS_FILE              (-112)   /* 文件系统错误 */
-
-/* ── 内核层错误 ── */
-#define CONTRACT_ERR_KERN_IPC              (-201)   /* IPC 通信错误 */
-#define CONTRACT_ERR_KERN_TASK             (-202)   /* 任务管理错误 */
-#define CONTRACT_ERR_KERN_MEM              (-205)   /* 内核内存错误 */
-
-/* ── 服务层错误 ── */
-#define CONTRACT_ERR_SVC_NOT_READY         (-301)   /* 服务未就绪 */
-#define CONTRACT_ERR_SVC_STOPPED           (-303)   /* 服务已停止 */
-#define CONTRACT_ERR_SVC_CONFIG            (-304)   /* 配置错误 */
-#define CONTRACT_ERR_SVC_HEALTH            (-306)   /* 健康检查失败 */
-
-/* ── LLM/AI 服务错误 ── */
-#define CONTRACT_ERR_LLM_NO_PROVIDER       (-401)   /* 无 LLM 提供商 */
-#define CONTRACT_ERR_LLM_RATE_LIMIT        (-403)   /* LLM 速率限制 */
-#define CONTRACT_ERR_LLM_AUTH_FAIL         (-406)   /* LLM 认证失败 */
-
-/* ── 执行/工具错误 ── */
-#define CONTRACT_ERR_EXEC_NOT_FOUND        (-501)   /* 工具未找到 */
-#define CONTRACT_ERR_EXEC_TIMEOUT          (-503)   /* 执行超时 */
-#define CONTRACT_ERR_EXEC_SANDBOX          (-505)   /* 沙箱违规 */
-
-/* ── 记忆/存储错误 ── */
-#define CONTRACT_ERR_MEM_WRITE             (-601)   /* 记忆写入失败 */
-#define CONTRACT_ERR_MEM_READ              (-602)   /* 记忆读取失败 */
-#define CONTRACT_ERR_MEM_FULL              (-605)   /* 记忆存储已满 */
-#define CONTRACT_ERR_MEM_CORRUPT           (-606)   /* 记忆数据损坏 */
-
-/* ── 安全/沙箱错误 ── */
-#define CONTRACT_ERR_SEC_VIOLATION         (-701)   /* 安全违规 */
-#define CONTRACT_ERR_SEC_SANITIZE          (-702)   /* 输入净化失败 */
-#define CONTRACT_ERR_SEC_QUOTA             (-706)   /* 配额超限 */
-
-/**
- * @brief 错误码 → 测试断言类别映射
- *
- * 团队C 在集成测试中使用此枚举对错误码分类断言，
- * 而非直接断言具体数值（数值可能随版本微调）。
- */
-typedef enum {
-    CONTRACT_ERR_CATEGORY_OK = 0,           /* 成功类（code == 0） */
-    CONTRACT_ERR_CATEGORY_TRANSIENT,        /* 瞬态错误（可重试：TIMEOUT, BUSY, WOULD_BLOCK） */
-    CONTRACT_ERR_CATEGORY_PERMANENT,        /* 永久错误（不可重试：INVALID_PARAM, NOT_FOUND） */
-    CONTRACT_ERR_CATEGORY_RESOURCE,         /* 资源错误（OOM, FULL, QUOTA） */
-    CONTRACT_ERR_CATEGORY_SECURITY,         /* 安全错误（VIOLATION, SANITIZE, PERMISSION） */
-    CONTRACT_ERR_CATEGORY_INTERNAL          /* 内部错误（FAIL, STATE_ERROR, CORRUPT） */
-} contract_err_category_t;
-
-/**
- * @brief 将错误码映射为断言类别
- * @param code 团队A 返回的错误码
- * @return 断言类别
- *
- * @contract 团队C 承诺：测试断言使用此函数分类，而非硬编码数值比较
- */
-static inline contract_err_category_t contract_err_category(int code) {
-    if (code == 0) return CONTRACT_ERR_CATEGORY_OK;
-    switch (code) {
-    case -8:   case -17:  case -18:  case -403:
-        return CONTRACT_ERR_CATEGORY_TRANSIENT;
-    case -2:   case -3:   case -5:   case -6:   case -7:
-    case -9:   case -10:  case -30:  case -501:
-        return CONTRACT_ERR_CATEGORY_PERMANENT;
-    case -4:   case -102:  case -605:  case -706:
-        return CONTRACT_ERR_CATEGORY_RESOURCE;
-    case -701:  case -702:  case -705:
-        return CONTRACT_ERR_CATEGORY_SECURITY;
-    default:
-        return CONTRACT_ERR_CATEGORY_INTERNAL;
-    }
-}
-
-/* ================================================================
- * 第6节：时序约束
- *
- * 定义团队A 各 daemon 的启动、就绪、心跳和超时时序约束。
- * 团队C 承诺：CI 中基于此时序约束编写超时断言和等待逻辑。
- * 团队A 承诺：daemon 行为符合此时序约束，否则视为 Bug。
- * ================================================================ */
-
-/* ── 启动时序 ── */
-
-/** Daemon 从 exec() 到 /healthz 200 OK 的最大时间（毫秒） */
-#define CONTRACT_STARTUP_TIMEOUT_MS          30000   /* 30s */
-
-/** Daemon 从 /healthz 200 到 /readyz 200 的最大时间（毫秒） */
-#define CONTRACT_READINESS_TIMEOUT_MS        60000   /* 60s */
-
-/** 所有 daemon 串行启动的总超时（毫秒） */
-#define CONTRACT_FULL_STARTUP_TIMEOUT_MS     180000  /* 180s = 3min */
-
-/* ── 心跳时序 ── */
-
-/** Daemon 心跳间隔（毫秒） */
-#define CONTRACT_HEARTBEAT_INTERVAL_MS       5000    /* 5s */
-
-/** 心跳超时阈值（毫秒），超过此时间未收到心跳视为不健康 */
-#define CONTRACT_HEARTBEAT_TIMEOUT_MS        15000   /* 15s = 3 * interval */
-
-/** 服务发现注册超时（毫秒） */
-#define CONTRACT_SD_REGISTER_TIMEOUT_MS      10000   /* 10s */
-
-/* ── 请求超时 ── */
-
-/** 单次 IPC 请求-响应超时（毫秒） */
-#define CONTRACT_IPC_REQUEST_TIMEOUT_MS      5000    /* 5s */
-
-/** LLM 请求超时（毫秒） */
-#define CONTRACT_LLM_REQUEST_TIMEOUT_MS      120000  /* 120s */
-
-/** 工具执行超时（毫秒） */
-#define CONTRACT_TOOL_EXEC_TIMEOUT_MS        30000   /* 30s */
-
-/** 记忆查询超时（毫秒） */
-#define CONTRACT_MEMORY_QUERY_TIMEOUT_MS     10000   /* 10s */
-
-/* ── 优雅关闭 ── */
-
-/** SIGTERM 后优雅关闭的最大时间（毫秒），超时则 SIGKILL */
-#define CONTRACT_GRACEFUL_SHUTDOWN_MS        10000   /* 10s */
-
-/** Checkpoint 保存超时（毫秒） */
-#define CONTRACT_CHECKPOINT_SAVE_TIMEOUT_MS  5000    /* 5s */
-
-/* ── 背压与重试 ── */
-
-/** IPC 队列最大深度（超过此值触发背压） */
-#define CONTRACT_IPC_QUEUE_BACKPRESSURE      1024
-
-/** IPC 队列满时丢弃阈值 */
-#define CONTRACT_IPC_QUEUE_DROP_THRESHOLD    2048
-
-/** 默认重试间隔基数（毫秒），实际间隔 = base * 2^attempt */
-#define CONTRACT_RETRY_BACKOFF_BASE_MS       100
-
-/** 最大重试次数 */
-#define CONTRACT_RETRY_MAX_ATTEMPTS          3
-
-/* ── Soak Test 分层时序 ── */
-
-/** L1 PR 级 Soak Test 持续时间（秒） */
-#define CONTRACT_SOAK_L1_DURATION_SEC        (4 * 3600)   /* 4h */
-
-/** L2 周级 Soak Test 持续时间（秒） */
-#define CONTRACT_SOAK_L2_DURATION_SEC        (24 * 3600)  /* 24h */
-
-/** L3 发布前 Soak Test 持续时间（秒） */
-#define CONTRACT_SOAK_L3_DURATION_SEC        (72 * 3600)  /* 72h */
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* CONTRACT_A_C_H */
+#endif /* AGENTRT_CONTRACT_A_C_H */
