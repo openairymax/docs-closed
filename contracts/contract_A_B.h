@@ -1,19 +1,35 @@
-/*
- * contract_A_B.h - Team A (C Core) ↔ Team B (Ecosystem/SDK) 接口合约
+// SPDX-FileCopyrightText: 2026 SPHARX Ltd.
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * @file contract_A_B.h
+ * @brief 跨团队接口合约：团队A（核心引擎 C）↔ 团队B（生态 + SDK）
  *
- * 本合约定义 C 核心引擎与生态/SDK 层之间的所有跨团队接口。
- * 任何变更必须 bump 版本号并通知所有相关团队。
+ * 本合约固化团队A 与团队B 之间的四条关键连接线（C-L01 / C-L03 / C-L11 / C-L12）
+ * 的二进制布局、消息格式与时序约束。任何一方修改实现前必须先升级本合约版本号，
+ * 并通过 contracts/contract_test.c 编译验证。
  *
- * 版本: v1.0.0 | 涉及团队: A+B | 创建日期: 2026-06-17
+ * 连接线清单：
+ *   - C-L01: Manager (Python, 团队B) → CoreLoopThree (C, 团队A) 配置消息
+ *   - C-L03: market_d (C, 团队A) → OpenLab Markets (Python, 团队B) HTTP API
+ *   - C-L11: gateway_d (C, 团队A) → gateway 协议路由表（团队B 维护路由配置）
+ *   - C-L12: CoreLoopThree (C, 团队A) → MemoryRovol 内存提供商接口（团队B 集成）
  *
- * Copyright (c) 2026 SPHARX Ltd. All Rights Reserved.
- * SPDX-License-Identifier: Apache-2.0
+ * 参考实现：
+ *   - agentos/atoms/coreloopthree/include/manager_adapter.h
+ *   - agentos/daemon/market_d/include/market_service.h
+ *   - agentos/daemon/gateway_d/include/gateway_forward.h
+ *   - agentos/atoms/memory/src/memory_provider.h
+ *   - agentos/atoms/coreloopthree/include/memoryrovol_bridge.h
+ *
+ * @owner team-A, team-B
+ * @version 1.0.0
+ * @see P0.14 跨团队合约任务
  */
 
-#ifndef AGENTOS_CONTRACT_A_B_H
-#define AGENTOS_CONTRACT_A_B_H
+#ifndef AGENTRT_CONTRACT_A_B_H
+#define AGENTRT_CONTRACT_A_B_H
+#pragma once
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,187 +37,344 @@
 extern "C" {
 #endif
 
-/* ======================================================================
- * 1. 版本号
- * ====================================================================== */
+/* ================================================================
+ * 合约版本
+ * ================================================================ */
+
+/** 团队A ↔ 团队B 合约版本（语义化版本） */
+#define CONTRACT_A_B_VERSION "1.0.0"
+
+/** 版本数值，用于运行时比较 */
 #define CONTRACT_A_B_VERSION_MAJOR 1
 #define CONTRACT_A_B_VERSION_MINOR 0
 #define CONTRACT_A_B_VERSION_PATCH 0
 
-/* ======================================================================
- * 2. C-L03: market_d → OpenLab Markets 接口
- * ====================================================================== */
-
-/**
- * @brief market_d 服务端点定义
- * @details OpenLab Markets 通过 HTTP API 调用 market_d 的 JSON-RPC 端点
+/* ================================================================
+ * C-L01: Manager → CoreLoopThree 配置消息格式
  *
- * Team B (ecosystem/openlab/markets/client/market_client.py) 实现：
- *   - POST /api/v1/market/register
- *   - GET  /api/v1/market/search
- *   - POST /api/v1/market/install
- *   - GET  /api/v1/market/health
+ * 时序约束：
+ *   1. Manager 生成/修改 agentos.yaml
+ *   2. Manager 调用 manager_adapter_reload() 触发热重载
+ *   3. config_loader 检测文件变更 → yaml_loader 解析
+ *   4. 回调通知 CoreLoopThree 更新运行时配置
  *
- * Team A (agentos/daemon/market_d/) 实现 C 侧 JSON-RPC handler
- */
-#define MARKET_D_DEFAULT_SOCKET_PATH "/var/run/agentos/market.sock"
-#define MARKET_D_DEFAULT_TCP_PORT    8082
-#define MARKET_D_DEFAULT_TIMEOUT_SEC 10
+ * 团队A 负责：CoreLoopThree 侧的配置消费与回调注册
+ * 团队B 负责：Manager 侧的配置生成与 reload 触发
+ * ================================================================ */
 
-/** market_d 错误码映射（C → Python 异常） */
-typedef enum {
-    MARKET_ERR_NONE            = 0,     /**< 无错误 */
-    MARKET_ERR_INVALID_PARAM   = -32602, /**< 无效参数 → MarketValidationError */
-    MARKET_ERR_AGENT_NOT_FOUND = -32001, /**< Agent 未找到 → MarketNotFoundError */
-    MARKET_ERR_AGENT_EXISTS    = -32002, /**< Agent 已存在 → MarketAlreadyExistsError */
-    MARKET_ERR_INSTALL_FAILED  = -32003, /**< 安装失败 → MarketInstallError */
-    MARKET_ERR_CONNECTION      = -32004, /**< 连接失败 → MarketConnectionError */
-    MARKET_ERR_PERMISSION      = -32005, /**< 权限不足 → MarketPermissionError */
-} market_error_code_t;
+/** C-L01: 配置消息魔数，用于跨进程校验 */
+#define CONTRACT_CL01_MAGIC 0x4C30314DU /* "L01M" */
 
-/* ======================================================================
- * 3. C-L11: gateway_d → gateway 协议路由表
- * ====================================================================== */
+/** C-L01: 配置消息版本 */
+#define CONTRACT_CL01_VERSION 1
 
-/**
- * @brief 协议类型枚举
- * @details gateway_d 根据请求内容自动路由到对应协议处理器
- */
-typedef enum {
-    PROTOCOL_A2A,      /**< Agent-to-Agent 协议 */
-    PROTOCOL_MCP,      /**< Model Context Protocol */
-    PROTOCOL_OPENAI,   /**< OpenAI 兼容 API */
-    PROTOCOL_JSON_RPC, /**< 内部 JSON-RPC 2.0 */
-    PROTOCOL_COUNT
-} protocol_type_t;
+/** C-L01: 配置路径最大长度（与 manager_adapter 内部 g_config_path[256] 对齐） */
+#define CONTRACT_CL01_CONFIG_PATH_MAX 256
+
+/** C-L01: 热重载回调最大数量（与 AGENTOS_MAX_RELOAD_CALLBACKS 对齐） */
+#define CONTRACT_CL01_MAX_RELOAD_CALLBACKS 32
+
+/** C-L01: 默认配置文件路径 */
+#define CONTRACT_CL01_DEFAULT_CONFIG_PATH "./configs/agentos.yaml"
+
+/** C-L01: 默认配置监听间隔（毫秒，与 AGENTOS_CONFIG_WATCH_INTERVAL_MS 对齐） */
+#define CONTRACT_CL01_WATCH_INTERVAL_MS 1000
 
 /**
- * @brief 协议路由入口
- * @details gateway_d 的协议路由表。Team B 的 CLI/TUI 通过 HTTP 调用 gateway
+ * @brief C-L01: Manager → CoreLoopThree 配置消息头
+ *
+ * Manager 通过此消息头通知 CoreLoopThree 配置已变更。
+ * 二进制布局必须保持稳定，跨团队不得随意修改字段顺序与类型。
  */
-typedef struct {
-    protocol_type_t type;
-    const char *path_prefix;     /**< URL 路径前缀，如 "/api/v1/a2a/" */
-    const char *handler_name;    /**< C 侧 handler 函数名 */
-    bool requires_auth;          /**< 是否需要认证 */
-} protocol_route_entry_t;
-
-/* ======================================================================
- * 4. C-L12: CoreLoopThree → MemoryRovol 内存布局
- * ====================================================================== */
+typedef struct contract_cl01_config_msg {
+    uint32_t magic;       /**< 魔数 CONTRACT_CL01_MAGIC */
+    uint32_t version;     /**< 消息版本 CONTRACT_CL01_VERSION */
+    uint64_t timestamp;   /**< 配置变更时间戳（Unix 毫秒） */
+    uint32_t config_size; /**< 配置内容字节数（不含本头） */
+    uint32_t reserved;    /**< 8 字节对齐保留 */
+    char config_path[CONTRACT_CL01_CONFIG_PATH_MAX]; /**< 配置文件路径 */
+} contract_cl01_config_msg_t;
 
 /**
- * @brief 记忆提供商操作表
- * @details CoreLoopThree 通过此接口调用记忆层（内置或 MemoryRovol）
+ * @brief C-L01: 配置变更回调签名
+ *
+ * 团队A 在 CoreLoopThree 中注册此回调，团队B 的 Manager 触发重载后调用。
+ * @param old_path 旧配置路径（BORROW，回调内不可修改）
+ * @param new_path 新配置路径（BORROW，回调内不可修改）
+ * @param user_data 团队A 注册时传入的用户数据
  */
-typedef struct {
-    int (*init)(const char *config_path);
-    int (*shutdown)(void);
-    int (*store)(const char *key, const void *data, size_t data_len);
-    int (*query)(const char *query_text, void *results, size_t *results_len);
-    int (*delete)(const char *key);
-    int (*health)(void);
-} memory_provider_ops_t;
+typedef void (*contract_cl01_config_change_cb_t)(const char *old_path,
+                                                 const char *new_path,
+                                                 void *user_data);
 
-/** 记忆构建模式 */
-typedef enum {
-    AGENTOS_MEMORY_BUILTIN,     /**< 内置模式（开源） */
-    AGENTOS_MEMORY_MEMORYROVOL, /**< MemoryRovol 模式（商业） */
-    AGENTOS_MEMORY_HYBRID       /**< 混合模式 */
-} memory_build_mode_t;
+/* ================================================================
+ * C-L03: market_d → OpenLab Markets HTTP API 定义
+ *
+ * 时序约束：
+ *   1. OpenLab Markets (Python, 团队B) 通过 Unix Socket / TCP 调用 market_d
+ *   2. market_d (C, 团队A) 处理注册/搜索/安装请求
+ *   3. 响应通过 JSON-RPC 2.0 返回
+ *
+ * 团队A 负责：market_d 守护进程的 RPC 方法实现
+ * 团队B 负责：OpenLab Markets 客户端与 HTTP 端点映射
+ * ================================================================ */
 
-/* ======================================================================
- * 5. Hook 系统事件类型（C-L05-HOOK 扩展）
- * ====================================================================== */
+/** C-L03: market_d 默认 Unix Socket 路径 */
+#define CONTRACT_CL03_DEFAULT_SOCKET_PATH "/var/run/agentos/market.sock"
+
+/** C-L03: market_d 默认 TCP 端口 */
+#define CONTRACT_CL03_DEFAULT_TCP_PORT 8082
+
+/** C-L03: market_d 默认 TCP 主机 */
+#define CONTRACT_CL03_DEFAULT_TCP_HOST "127.0.0.1"
+
+/** C-L03: 默认请求超时（秒） */
+#define CONTRACT_CL03_DEFAULT_TIMEOUT_SEC 10
+
+/** C-L03: 最大缓冲区大小 */
+#define CONTRACT_CL03_MAX_BUFFER 65536
+
+/** C-L03: Agent ID 最大长度 */
+#define CONTRACT_CL03_AGENT_ID_MAX 128
+
+/** C-L03: Agent 名称最大长度 */
+#define CONTRACT_CL03_AGENT_NAME_MAX 128
+
+/** C-L03: 版本字符串最大长度 */
+#define CONTRACT_CL03_VERSION_MAX 32
+
+/** C-L03: HTTP API 基础路径 */
+#define CONTRACT_CL03_API_BASE "/api/v1/market"
 
 /**
- * @brief Hook 事件类型
- * @details Team B 的 Python/Rust Hook 实现监听这些事件
+ * @brief C-L03: HTTP 端点定义（market_d 暴露给 OpenLab Markets）
+ *
+ * 团队B 的 MarketClient 必须严格按此表构造 HTTP 请求。
  */
-typedef enum {
-    HOOK_EVENT_AGENT_INIT,      /**< Agent 初始化 */
-    HOOK_EVENT_AGENT_START,     /**< Agent 开始执行 */
-    HOOK_EVENT_TOOL_CALL,       /**< 工具调用前（可拦截） */
-    HOOK_EVENT_TOOL_RESULT,     /**< 工具调用后 */
-    HOOK_EVENT_LLM_REQUEST,     /**< LLM 请求发送前 */
-    HOOK_EVENT_LLM_RESPONSE,    /**< LLM 响应接收后 */
-    HOOK_EVENT_LLM_ERROR,       /**< LLM 调用失败 */
-    HOOK_EVENT_AGENT_STOP,      /**< Agent 停止 */
-    HOOK_EVENT_AGENT_DESTROY,   /**< Agent 销毁 */
-    HOOK_EVENT_COUNT
-} hook_event_type_t;
+#define CONTRACT_CL03_EP_REGISTER_AGENT  CONTRACT_CL03_API_BASE "/register"  /* POST: 注册 Agent */
+#define CONTRACT_CL03_EP_SEARCH_AGENTS   CONTRACT_CL03_API_BASE "/search"    /* GET:  搜索 Agent */
+#define CONTRACT_CL03_EP_INSTALL_AGENT   CONTRACT_CL03_API_BASE "/install"   /* POST: 安装 Agent */
+#define CONTRACT_CL03_EP_PUBLISH         CONTRACT_CL03_API_BASE "/publish"   /* POST: 发布到市场 */
+#define CONTRACT_CL03_EP_HEALTH          CONTRACT_CL03_API_BASE "/health"    /* GET:  健康检查 */
 
 /**
- * @brief Hook 类型
- * @details Team B 实现三种 Hook 模式
+ * @brief C-L03: market_d 错误码（与 market_service.h / main.c 对齐）
+ *
+ * 团队B 的 errors.py 必须与此表保持一致。
  */
-typedef enum {
-    AGENTOS_HOOK_TYPE_SHELL,    /**< Shell 脚本 Hook */
-    AGENTOS_HOOK_TYPE_PYTHON,   /**< Python 脚本 Hook */
-    AGENTOS_HOOK_TYPE_WEBHOOK,  /**< HTTP Webhook */
-    AGENTOS_HOOK_TYPE_RUST,     /**< Rust 编译型 Hook */
-} agentos_hook_type_t;
-
-/** Hook 执行超时（秒） */
-#define AGENTOS_HOOK_TIMEOUT_SEC 5
-
-/* ======================================================================
- * 6. Plugin SDK Manifest 格式
- * ====================================================================== */
+#define CONTRACT_CL03_ERR_INVALID_PARAM  (-1000)
+#define CONTRACT_CL03_ERR_OUT_OF_MEMORY  (-1001)
+#define CONTRACT_CL03_ERR_NOT_FOUND      (-1002)
+#define CONTRACT_CL03_ERR_ALREADY_EXISTS (-1003)
+#define CONTRACT_CL03_ERR_INSTALL_FAIL   (-1004)
 
 /**
- * @brief 四型插件类型
- * @details Team B 的 Python/Rust SDK 实现这四种插件基类
+ * @brief C-L03: Agent 信息结构（与 agent_info_t 字段对齐）
+ *
+ * 团队B 的 AgentInfo dataclass 必须与此结构字段一一对应。
+ * 注意：C 端使用 char* 指针（堆分配），Python 端使用 str。
  */
-typedef enum {
-    AGENTOS_PLUGIN_TYPE_AGENT,  /**< AgentPlugin — 扩展智能体能力 */
-    AGENTOS_PLUGIN_TYPE_TOOL,   /**< ToolPlugin — 提供自定义工具 */
-    AGENTOS_PLUGIN_TYPE_HOOK,   /**< HookPlugin — 拦截生命周期事件 */
-    AGENTOS_PLUGIN_TYPE_SKILL,  /**< SkillPlugin — 注册可复用技能 */
-} agentos_plugin_type_t;
+typedef struct contract_cl03_agent_info {
+    char    agent_id[CONTRACT_CL03_AGENT_ID_MAX];   /**< Agent ID */
+    char    name[CONTRACT_CL03_AGENT_NAME_MAX];      /**< Agent 名称 */
+    char    version[CONTRACT_CL03_VERSION_MAX];      /**< 版本 */
+    char    description[256];                        /**< 描述 */
+    int32_t type;                                    /**< Agent 类型（agent_type_t） */
+    int32_t status;                                  /**< Agent 状态（agent_status_t） */
+    char    author[64];                              /**< 作者 */
+    char    repository[256];                         /**< 仓库地址 */
+    char    dependencies[256];                       /**< 依赖项 */
+    float   rating;                                  /**< 评分 */
+    uint32_t download_count;                         /**< 下载次数 */
+    uint64_t last_updated;                           /**< 最后更新时间 */
+} contract_cl03_agent_info_t;
 
-/* ======================================================================
- * 7. CLI 退出码规范
- * ====================================================================== */
+/* ================================================================
+ * C-L11: gateway_d → gateway 协议路由表
+ *
+ * 时序约束：
+ *   1. 外部 HTTP 请求到达 gateway（团队B 维护协议转换层）
+ *   2. gateway 调用 gateway_d 的 gw_forward_request()
+ *   3. gateway_d 根据协议类型路由到目标 daemon
+ *   4. 响应原路返回
+ *
+ * 团队A 负责：gateway_d 的转发实现（gw_forward_*）
+ * 团队B 负责：gateway 协议转换层与路由配置注入
+ * ================================================================ */
+
+/** C-L11: 转发协议类型数量（与 GW_FWD_PROTO_COUNT 对齐） */
+#define CONTRACT_CL11_PROTO_COUNT 4
+
+/** C-L11: 默认请求超时（毫秒） */
+#define CONTRACT_CL11_DEFAULT_TIMEOUT_MS 30000
 
 /**
- * @brief CLI 退出码
- * @details Team B 的 CLI (sdk/cli/) 统一使用这些退出码
- * Team C 的 CI 集成测试检查这些退出码
+ * @brief C-L11: 协议类型枚举（与 gw_fwd_proto_t 对齐）
+ *
+ * 团队B 的路由配置必须使用此枚举值。
  */
-#define CLI_EXIT_SUCCESS          0   /**< 成功 */
-#define CLI_EXIT_ERROR            1   /**< 通用错误 */
-#define CLI_EXIT_CONFIG_ERROR     2   /**< 配置错误 */
-#define CLI_EXIT_NETWORK_ERROR    3   /**< 网络/连接错误 */
-#define CLI_EXIT_TIMEOUT          4   /**< 超时 */
-#define CLI_EXIT_PERMISSION       5   /**< 权限不足 */
-#define CLI_EXIT_INVALID_INPUT    6   /**< 无效输入 */
-#define CLI_EXIT_DAEMON_ERROR     7   /**< 守护进程错误 */
-#define CLI_EXIT_CANCELLED        8   /**< 用户取消 */
-#define CLI_EXIT_PANIC            9   /**< 未预期 panic */
+typedef enum contract_cl11_proto {
+    CONTRACT_CL11_PROTO_A2A    = 0, /**< A2A Agent-to-Agent 协议 */
+    CONTRACT_CL11_PROTO_MCP    = 1, /**< MCP Model Context Protocol */
+    CONTRACT_CL11_PROTO_OPENAI = 2, /**< OpenAI 兼容 API */
+    CONTRACT_CL11_PROTO_JSONRPC = 3 /**< JSON-RPC 通用协议 */
+} contract_cl11_proto_t;
 
-/* ======================================================================
- * 8. HTTP API 端点（gateway → CLI/TUI/SDK）
- * ====================================================================== */
+/**
+ * @brief C-L11: 协议路由表项
+ *
+ * 每种协议映射到一个目标 daemon 与 IPC 通道。
+ * 团队B 通过此表配置 gateway 的路由策略。
+ */
+typedef struct contract_cl11_route_entry {
+    contract_cl11_proto_t proto;     /**< 协议类型 */
+    const char *target_daemon;       /**< 目标 daemon 名称 */
+    const char *ipc_channel;         /**< IPC 通道名称 */
+    uint32_t    timeout_ms;          /**< 该协议超时（毫秒） */
+} contract_cl11_route_entry_t;
 
-/** Gateway 默认端口 */
-#define GATEWAY_DEFAULT_PORT 8080
+/**
+ * @brief C-L11: 默认路由表（与 GW_FORWARD_CONFIG_DEFAULTS 对齐）
+ *
+ * 团队B 必须按此表配置 gateway 路由：
+ *   A2A     → agent_d  (channel "a2a")
+ *   MCP     → tool_d   (channel "mcp")
+ *   OpenAI  → llm_d    (channel "llm")
+ *   JSONRPC → sched_d  (channel "sched")
+ */
+static const contract_cl11_route_entry_t
+    CONTRACT_CL11_DEFAULT_ROUTES[CONTRACT_CL11_PROTO_COUNT] = {
+        {CONTRACT_CL11_PROTO_A2A, "agent_d", "a2a", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
+        {CONTRACT_CL11_PROTO_MCP, "tool_d", "mcp", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
+        {CONTRACT_CL11_PROTO_OPENAI, "llm_d", "llm", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
+        {CONTRACT_CL11_PROTO_JSONRPC, "sched_d", "sched", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
+};
 
-/** Gateway API 端点 */
-#define GATEWAY_API_RUN_AGENT     "/api/v1/agent/run"
-#define GATEWAY_API_AGENT_STATUS  "/api/v1/agent/status"
-#define GATEWAY_API_CONFIG_GET    "/api/v1/config"
-#define GATEWAY_API_CONFIG_RELOAD "/api/v1/config/reload"
-#define GATEWAY_API_LLM_LIST      "/api/v1/llm/providers"
-#define GATEWAY_API_LLM_TEST      "/api/v1/llm/test"
-#define GATEWAY_API_LLM_COST      "/api/v1/llm/cost"
-#define GATEWAY_API_MARKET_SEARCH "/api/v1/market/search"
-#define GATEWAY_API_MARKET_INSTALL "/api/v1/market/install"
-#define GATEWAY_API_HEALTH        "/api/v1/health"
-#define GATEWAY_API_METRICS       "/metrics"
+/* ================================================================
+ * C-L12: CoreLoopThree → MemoryRovol 内存布局
+ *
+ * 时序约束：
+ *   1. CoreLoopThree (团队A) 通过 agentos_memory_provider_t 接口访问记忆
+ *   2. MemoryRovol (团队B 集成) 实现同一接口，作为商业提供商
+ *   3. 桥接层 memoryrovol_bridge 在构建时选择内置/MemoryRovol/混合模式
+ *
+ * 团队A 负责：agentos_memory_provider_t 接口定义与消费
+ * 团队B 负责：MemoryRovol 提供商实现与构建集成
+ * ================================================================ */
+
+/** C-L12: 提供商名称最大长度（与 provider_name[64] 对齐） */
+#define CONTRACT_CL12_PROVIDER_NAME_MAX 64
+
+/** C-L12: 提供商版本最大长度（与 provider_version[32] 对齐） */
+#define CONTRACT_CL12_PROVIDER_VERSION_MAX 32
+
+/** C-L12: 内置提供商名称 */
+#define CONTRACT_CL12_BUILTIN_NAME "builtin"
+
+/** C-L12: MemoryRovol 提供商名称 */
+#define CONTRACT_CL12_MEMORYROVOL_NAME "MemoryRovol"
+
+/** C-L12: MemoryRovol 提供商版本 */
+#define CONTRACT_CL12_MEMORYROVOL_VERSION "2.0.0"
+
+/** C-L12: 默认存储路径 */
+#define CONTRACT_CL12_DEFAULT_STORAGE_PATH "/var/lib/agentos/memoryrovol"
+
+/** C-L12: 默认查询结果数量上限 */
+#define CONTRACT_CL12_DEFAULT_QUERY_LIMIT 10
+
+/** C-L12: 默认同步间隔（毫秒） */
+#define CONTRACT_CL12_DEFAULT_SYNC_INTERVAL_MS 5000
+
+/**
+ * @brief C-L12: 提供商能力标记（与 agentos_memory_capabilities_t 对齐）
+ *
+ * 团队B 的 MemoryRovol 实现必须填充此结构。
+ * 内置提供商仅支持 L1+L2，MemoryRovol 支持 L1-L4 全功能。
+ */
+typedef struct contract_cl12_capabilities {
+    uint8_t l1_raw;          /**< L1 原始存储 */
+    uint8_t l2_feature;      /**< L2 特征提取/向量索引 */
+    uint8_t l3_structure;    /**< L3 结构绑定/知识图谱 */
+    uint8_t l4_pattern;      /**< L4 模式识别 */
+    uint8_t forgetting;      /**< 遗忘引擎 */
+    uint8_t attractor;       /**< 吸引子网络 */
+    uint8_t persistence;     /**< 持久同调 */
+    uint8_t faiss;           /**< FAISS 加速索引 */
+    uint8_t async_ops;       /**< 异步操作 */
+    uint8_t llm_integration; /**< LLM 集成 */
+    uint8_t reserved[5];     /**< 保留字段（必须置零） */
+} contract_cl12_capabilities_t;
+
+/**
+ * @brief C-L12: 内存统计信息（与 agentos_memory_stats_t 对齐）
+ *
+ * 团队A 通过此结构查询提供商运行时状态。
+ */
+typedef struct contract_cl12_memory_stats {
+    uint64_t total_records;       /**< 总记录数 */
+    uint64_t total_bytes;         /**< 总字节数 */
+    uint64_t l1_count;            /**< L1 记录数 */
+    uint64_t l2_indexed;          /**< L2 已索引数 */
+    uint64_t l3_relations;        /**< L3 关系数 */
+    uint64_t l4_patterns;         /**< L4 模式数 */
+    double   index_utilization;   /**< 索引利用率 */
+    char     provider_name[CONTRACT_CL12_PROVIDER_NAME_MAX];    /**< 提供商名称 */
+    char     provider_version[CONTRACT_CL12_PROVIDER_VERSION_MAX]; /**< 提供商版本 */
+} contract_cl12_memory_stats_t;
+
+/**
+ * @brief C-L12: 提供商类型枚举（与 mrb_provider_type_t 对齐）
+ */
+typedef enum contract_cl12_provider_type {
+    CONTRACT_CL12_PROVIDER_BUILTIN    = 0, /**< 内置免费提供商 */
+    CONTRACT_CL12_PROVIDER_MEMORYROVOL = 1, /**< MemoryRovol 商业提供商 */
+    CONTRACT_CL12_PROVIDER_HYBRID     = 2, /**< 混合模式 */
+    CONTRACT_CL12_PROVIDER_AUTO       = 3  /**< 自动选择 */
+} contract_cl12_provider_type_t;
+
+/* ================================================================
+ * 编译期验证（#if 0 块，不参与编译，仅作文档与示例）
+ * ================================================================ */
+#if 0
+/* C-L01 配置消息大小校验：256 + 24 = 280 字节 */
+static_assert(sizeof(contract_cl01_config_msg_t) == 280,
+              "C-L01 config message size mismatch");
+
+/* C-L03 Agent 信息结构校验 */
+static_assert(sizeof(contract_cl03_agent_info_t) > 0,
+              "C-L03 agent_info must be non-empty");
+
+/* C-L11 默认路由表项数校验 */
+static_assert(sizeof(CONTRACT_CL11_DEFAULT_ROUTES) /
+                  sizeof(CONTRACT_CL11_DEFAULT_ROUTES[0]) ==
+              CONTRACT_CL11_PROTO_COUNT,
+              "C-L11 default routes count mismatch");
+
+/* C-L12 能力标记大小校验：15 字节（10 + 5 保留） */
+static_assert(sizeof(contract_cl12_capabilities_t) == 15,
+              "C-L12 capabilities size mismatch");
+
+/* C-L12 统计结构校验 */
+static_assert(sizeof(contract_cl12_memory_stats_t) > 0,
+              "C-L12 memory_stats must be non-empty");
+
+/* 团队B 集成示例（伪代码）：
+ *
+ *   // Python 侧 MarketClient 构造 HTTP 请求
+ *   client.post(CONTRACT_CL03_EP_REGISTER_AGENT, agent_info_json)
+ *
+ *   // Rust 侧 GatewayClient 转发
+ *   gateway.forward(CONTRACT_CL11_PROTO_OPENAI, method, path, body)
+ *
+ *   // C 侧 MemoryRovol 填充能力标记
+ *   caps.l1_raw = 1; caps.l2_feature = 1;
+ *   caps.l3_structure = 1; caps.l4_pattern = 1;
+ */
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* AGENTOS_CONTRACT_A_B_H */
+#endif /* AGENTRT_CONTRACT_A_B_H */
