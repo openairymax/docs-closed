@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8">
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}.fig{width:750px;height:1000px;background:#fff;position:relative;font-family:'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif}</style>
+</head>
+<body><div class="fig">
+<svg width="750" height="1000" viewBox="0 0 750 1000" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#0000000e"/></filter>
+<filter id="shL"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#00000008"/></filter>
+<marker id="arCOG" markerWidth="8" markerHeight="6" refX="4" refY="6" orient="auto"><path d="M4,0 L8,6 L0,6 Z" fill="#6366F1"/></marker>
+<marker id="arEXE" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#10B981"/></marker>
+<marker id="arMEM" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6 Z" fill="#F59E0B"/></marker>
+<linearGradient id="gCOG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#4F46E5"/></linearGradient>
+<linearGradient id="gEXE" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+<linearGradient id="gMEM" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/></linearGradient>
+</defs>
+
+<!-- Title -->
+<rect x="0" y="0" width="750" height="50" fill="#FAFBFC" stroke="#E5E7EB" stroke-width="0.5"/>
+<text x="375" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#1E293B" letter-spacing="1.5">CoreLoopThree: Three-Layer Cognitive Loop Engine</text>
+<text x="375" y="40" text-anchor="middle" font-size="8" fill="#9CA3AF">Cognition (Think) → Execution (Act) → Memory (Remember) — A Kahneman Dual-System Inspired Architecture</text>
+
+<!-- ===== MAIN LOOP (Triangular) ===== -->
+
+<!-- COGNITION (Top) -->
+<rect x="185" y="74" width="380" height="244" rx="8" fill="#fff" stroke="#6366F1" stroke-width="1.8" filter="url(#sh)"/>
+<rect x="185" y="74" width="380" height="34" rx="8" fill="url(#gCOG)"/>
+<rect x="185" y="98" width="380" height="10" fill="url(#gCOG)"/>
+<text x="375" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" letter-spacing="0.5">Cognition Layer · 认知层</text>
+
+<!-- System 2 -->
+<rect x="200" y="122" width="350" height="40" rx="4" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="0.8"/>
+<text x="212" y="138" font-size="7.5" font-weight="700" fill="#4338CA">t2 — System 2 Slow Thinking (Primary)</text>
+<text x="212" y="154" font-size="6.5" fill="#6B7280">Planner · Deep Reasoner · Strategy Maker · Metacognition Controller</text>
+
+<!-- System 1 Fast -->
+<rect x="200" y="170" width="168" height="56" rx="4" fill="#F0FDF4" stroke="#A7F3D0" stroke-width="0.8"/>
+<text x="212" y="186" font-size="7" font-weight="700" fill="#065F46">t1-f — Fast Critic</text>
+<text x="212" y="200" font-size="6" fill="#6B7280">Streaming Critic</text>
+<text x="212" y="214" font-size="6" fill="#6B7280">Rationality Checker</text>
+<text x="212" y="226" font-size="6" fill="#9CA3AF">Token-level real-time</text>
+
+<!-- System 1 Professional -->
+<rect x="382" y="170" width="168" height="56" rx="4" fill="#FFF7ED" stroke="#FED7AA" stroke-width="0.8"/>
+<text x="394" y="186" font-size="7" font-weight="700" fill="#C2410C">t1-p — Domain Verifier</text>
+<text x="394" y="200" font-size="6" fill="#6B7280">Code Auditor</text>
+<text x="394" y="214" font-size="6" fill="#6B7280">Math Verifier</text>
+<text x="394" y="226" font-size="6" fill="#9CA3AF">Audit Committee</text>
+
+<!-- Flow inside cognition -->
+<rect x="200" y="236" width="350" height="30" rx="3" fill="#F3F4F6"/>
+<text x="212" y="255" font-size="6.5" fill="#6B7280">Pipeline: Intent → Parse → Plan(DAG) → t2 generates → t1-f critiques → t1-p verifies → Refined Plan</text>
+
+<!-- Pipe cognition -> action (external, in the dark area below) -->
+
+<!-- EXECUTION (Bottom-Right) -->
+<rect x="420" y="340" width="270" height="194" rx="8" fill="#fff" stroke="#10B981" stroke-width="1.8" filter="url(#sh)"/>
+<rect x="420" y="340" width="270" height="34" rx="8" fill="url(#gEXE)"/>
+<rect x="420" y="364" width="270" height="10" fill="url(#gEXE)"/>
+<text x="555" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" letter-spacing="0.5">Execution Layer · 执行层</text>
+
+<text x="434" y="396" font-size="7" font-weight="600" fill="#047857">Task Executor</text>
+<rect x="434" y="402" width="242" height="2" fill="#D1FAE5"/>
+<text x="434" y="416" font-size="6.5" fill="#6B7280">Tool invocation · shell · code exec · API calls</text>
+
+<text x="434" y="440" font-size="7" font-weight="600" fill="#047857">Multi-modal Coordinator</text>
+<rect x="434" y="446" width="242" height="2" fill="#D1FAE5"/>
+<text x="434" y="460" font-size="6.5" fill="#6B7280">Vision · Audio · File · structured outputs</text>
+
+<text x="434" y="480" font-size="7" font-weight="600" fill="#047857">Action Tracker</text>
+<rect x="434" y="486" width="242" height="2" fill="#D1FAE5"/>
+<text x="434" y="500" font-size="6.5" fill="#6B7280">State: PENDING → RUNNING → SUCCEEDED/FAILED</text>
+
+<rect x="434" y="516" width="242" height="10" rx="2" fill="#ECFDF5"/>
+<text x="555" y="524" text-anchor="middle" font-size="6" fill="#047857">Compensation Transaction on failure</text>
+
+<!-- MEMORY (Bottom-Left) -->
+<rect x="60" y="340" width="270" height="194" rx="8" fill="#fff" stroke="#F59E0B" stroke-width="1.8" filter="url(#sh)"/>
+<rect x="60" y="340" width="270" height="34" rx="8" fill="url(#gMEM)"/>
+<rect x="60" y="364" width="270" height="10" fill="url(#gMEM)"/>
+<text x="195" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" letter-spacing="0.5">Memory &amp; Evolution · 记忆层</text>
+
+<text x="74" y="396" font-size="7" font-weight="600" fill="#B45309">Memory Write &amp; Retrieve</text>
+<rect x="74" y="402" width="242" height="2" fill="#FEF3C7"/>
+<text x="74" y="416" font-size="6.5" fill="#6B7280">L1-L4 tiered write · hybrid vector+keyword retrieval</text>
+
+<text x="74" y="440" font-size="7" font-weight="600" fill="#B45309">Context Mounting</text>
+<rect x="74" y="446" width="242" height="2" fill="#FEF3C7"/>
+<text x="74" y="460" font-size="6.5" fill="#6B7280">Attractor network · relevance scoring · max N memories</text>
+
+<text x="74" y="480" font-size="7" font-weight="600" fill="#B45309">Memory Evolution</text>
+<rect x="74" y="486" width="242" height="2" fill="#FEF3C7"/>
+<text x="74" y="500" font-size="6.5" fill="#6B7280">Committee review → pattern mining → L3→L4 upgrade</text>
+
+<rect x="74" y="516" width="242" height="10" rx="2" fill="#FFFBEB"/>
+<text x="195" y="524" text-anchor="middle" font-size="6" fill="#B45309">Forgetting: Ebbinghaus R(t)=e^(-t/λ)</text>
+
+<!-- ===== LOOP ARROWS ===== -->
+
+<!-- Cognition → Execution -->
+<path d="M375,318 L375,340" stroke="#10B981" stroke-width="2.5" marker-end="url(#arEXE)"/>
+<text x="380" y="333" font-size="6.5" fill="#059669">task DAG</text>
+
+<!-- Execution → Memory -->
+<line x1="420" y1="437" x2="330" y2="437" stroke="#F59E0B" stroke-width="2.5" marker-end="url(#arMEM)"/>
+<text x="360" y="430" font-size="6.5" fill="#B45309">observe → record</text>
+
+<!-- Memory → Cognition (feedback loop) -->
+<path d="M195,340 L195,318 L375,318" stroke="#6366F1" stroke-width="2.5" marker-end="url(#arCOG)" fill="none"/>
+<text x="230" y="334" font-size="6.5" fill="#4338CA">evolved context</text>
+
+<!-- ===== BOTTOM: Dual-System Detail ===== -->
+<rect x="16" y="550" width="718" height="180" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="0.8"/>
+<text x="30" y="572" font-size="8" font-weight="700" fill="#1E293B" letter-spacing="0.5">DUAL-SYSTEM COGNITIVE ARCHITECTURE (Kahneman-inspired)</text>
+
+<rect x="28" y="586" width="230" height="66" rx="4" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="0.8"/>
+<text x="40" y="602" font-size="7" font-weight="700" fill="#4338CA">System 2 — Deliberative</text>
+<text x="40" y="618" font-size="6.5" fill="#6B7280">Slow · Analytical · Plan-Generating</text>
+<text x="40" y="632" font-size="6.5" fill="#6B7280">Deep reasoning · Strategy formulation</text>
+<text x="40" y="646" font-size="6" fill="#9CA3AF">Model: gpt-4o / claude-sonnet-4</text>
+
+<rect x="270" y="586" width="230" height="66" rx="4" fill="#F0FDF4" stroke="#A7F3D0" stroke-width="0.8"/>
+<text x="282" y="602" font-size="7" font-weight="700" fill="#065F46">System 1 — Fast (Critic)</text>
+<text x="282" y="618" font-size="6.5" fill="#6B7280">Fast · Intuitive · Error-Detecting</text>
+<text x="282" y="632" font-size="6.5" fill="#6B7280">Real-time streaming critique</text>
+<text x="282" y="646" font-size="6" fill="#9CA3AF">Model: gpt-4o-mini / local</text>
+
+<rect x="512" y="586" width="210" height="66" rx="4" fill="#FFF7ED" stroke="#FED7AA" stroke-width="0.8"/>
+<text x="524" y="602" font-size="7" font-weight="700" fill="#C2410C">System 1 — Domain Expert</text>
+<text x="524" y="618" font-size="6.5" fill="#6B7280">Specialized · Code/Math Verification</text>
+<text x="524" y="632" font-size="6.5" fill="#6B7280">Domain-specific model pool</text>
+<text x="524" y="646" font-size="6" fill="#9CA3AF">Brings domain knowledge</text>
+
+<!-- Collaboration mode -->
+<text x="30" y="674" font-size="7" font-weight="700" fill="#374151">Collaboration Modes:</text>
+<rect x="160" y="662" width="120" height="18" rx="2" fill="#DBEAFE"/><text x="220" y="675" text-anchor="middle" font-size="6" fill="#1E40AF">t2→t1-f→t2 (iterate)</text>
+<rect x="286" y="662" width="120" height="18" rx="2" fill="#D1FAE5"/><text x="346" y="675" text-anchor="middle" font-size="6" fill="#047857">t1-f only (simple tasks)</text>
+<rect x="412" y="662" width="120" height="18" rx="2" fill="#FED7AA"/><text x="472" y="675" text-anchor="middle" font-size="6" fill="#C2410C">t2→t1-p (code/math)</text>
+<rect x="538" y="662" width="184" height="18" rx="2" fill="#EDE9FE"/><text x="630" y="675" text-anchor="middle" font-size="6" fill="#6D28D9">Full: t2→t1-f→t1-p→t2</text>
+
+<text x="30" y="712" font-size="6.5" fill="#9CA3AF">"Invest more upfront, consume less later" strategy: front-load reasoning investment to reduce failure-driven backtracking in long-running tasks</text>
+
+<!-- ===== BOTTOM: Key Features ===== -->
+<rect x="16" y="744" width="350" height="200" rx="6" fill="#fff" stroke="#E5E7EB" stroke-width="0.8"/>
+<text x="30" y="766" font-size="8" font-weight="700" fill="#1E293B" letter-spacing="0.5">KEY INNOVATIONS</text>
+
+<text x="30" y="792" font-size="7" font-weight="600" fill="#374151">Dynamic Chunking (TAR-inspired)</text>
+<text x="30" y="808" font-size="6.5" fill="#6B7280">Adaptive granularity based on confidence delta</text>
+<text x="30" y="822" font-size="6.5" fill="#6B7280">Coarse chunks when confident, fine-grained when uncertain</text>
+
+<text x="30" y="846" font-size="7" font-weight="600" fill="#374151">Confidence Calibration</text>
+<text x="30" y="862" font-size="6.5" fill="#6B7280">Cross-system alignment scoring: 30% logic + 35% fact + 35% goal</text>
+<text x="30" y="876" font-size="6.5" fill="#6B7280">8-slot ring buffer for drift trend detection</text>
+
+<text x="30" y="900" font-size="7" font-weight="600" fill="#374151">Streaming Verification</text>
+<text x="30" y="916" font-size="6.5" fill="#6B7280">Token-by-token critique from t1-f during t2 generation</text>
+<text x="30" y="930" font-size="6.5" fill="#6B7280">Early termination on detected hallucination or contradiction</text>
+
+<!-- ===== BOTTOM RIGHT: Metrics ===== -->
+<rect x="378" y="744" width="356" height="200" rx="6" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="0.8"/>
+<text x="392" y="766" font-size="8" font-weight="700" fill="#1E293B" letter-spacing="0.5">PERFORMANCE &amp; SCALE</text>
+
+<rect x="392" y="780" width="330" height="22" rx="2" fill="#fff"/><text x="404" y="796" font-size="7" fill="#374151">Max Task Duration</text><text x="620" y="796" text-anchor="end" font-size="7" font-weight="600" fill="#6366F1">1000 Hours</text>
+<rect x="392" y="806" width="330" height="22" rx="2" fill="#fff"/><text x="404" y="822" font-size="7" fill="#374151">Token Efficiency vs. Traditional Agents</text><text x="620" y="822" text-anchor="end" font-size="7" font-weight="600" fill="#6366F1">~5x Savings</text>
+<rect x="392" y="832" width="330" height="22" rx="2" fill="#fff"/><text x="404" y="848" font-size="7" fill="#374151">Plan Refinement Iterations (avg)</text><text x="620" y="848" text-anchor="end" font-size="7" font-weight="600" fill="#6366F1">&lt; 3</text>
+
+<text x="392" y="878" font-size="7.5" font-weight="700" fill="#374151">Drift Severity Levels:</text>
+<rect x="392" y="888" width="76" height="16" rx="3" fill="#D1FAE5"/><text x="430" y="900" text-anchor="middle" font-size="6" fill="#047857">OK (0-5%)</text>
+<rect x="474" y="888" width="76" height="16" rx="3" fill="#FEF3C7"/><text x="512" y="900" text-anchor="middle" font-size="6" fill="#B45309">WARNING (5-20%)</text>
+<rect x="556" y="888" width="76" height="16" rx="3" fill="#FEE2E2"/><text x="594" y="900" text-anchor="middle" font-size="6" fill="#991B1B">ALERT (20-35%)</text>
+<rect x="638" y="888" width="84" height="16" rx="3" fill="#FECACA"/><text x="680" y="900" text-anchor="middle" font-size="6" fill="#7F1D1D">CRITICAL (&gt;35%)</text>
+
+<text x="392" y="930" font-size="6.5" fill="#6B7280">Theoretical foundation: Qian Xuesen's Engineering Cybernetics (feedback control)</text>
+<text x="392" y="944" font-size="6.5" fill="#6B7280">+ Systems Engineering (layered decomposition) + Parallel Systems Theory</text>
+
+</svg>
+</div></body></html>
