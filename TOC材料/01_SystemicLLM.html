@@ -4,286 +4,269 @@
 <meta charset="UTF-8">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
-  .fig{width:1200px;height:675px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
+  body{margin:0;padding:0;background:#FAFBFC}
+  .fig{width:1200px;height:675px;background:#FAFBFC;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
 </style>
 </head>
 <body>
 <div class="fig">
 <svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a2e15"/></filter>
-  <filter id="shd" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1a1a2e20"/></filter>
-  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2D3561"/><stop offset="1" stop-color="#1E2550"/></linearGradient>
-  <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4F7DF3"/><stop offset="1" stop-color="#3A5FD9"/></linearGradient>
-  <linearGradient id="g2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
-  <linearGradient id="g4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
-  <linearGradient id="g5" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF2FF"/><stop offset="1" stop-color="#E0E7FF"/></linearGradient>
-  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
-  <marker id="arW" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#fff"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3866FA18"/></filter>
+  <filter id="shd"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3866FA25"/></filter>
+  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
+  <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
+  <linearGradient id="gO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
+  <linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
+  <linearGradient id="gY" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
+  <linearGradient id="gBad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C04040"/><stop offset="1" stop-color="#A02020"/></linearGradient>
+  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#3866FA"/></marker>
+  <marker id="arG" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2EC4B6"/></marker>
+  <marker id="arO" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#E8734A"/></marker>
 </defs>
 
-<!-- ===== HEADER ===== -->
-<rect width="1200" height="58" fill="url(#gw)"/>
-<text x="32" y="32" font-size="22" font-weight="800" fill="#fff">Systemic LLM</text>
-<text x="200" y="32" font-size="12" fill="#A0B0E8">体系化多模型网关 · Unified Multi-Provider LLM Gateway</text>
-<rect x="1050" y="16" width="130" height="28" rx="14" fill="#ffffff20"/>
-<text x="1115" y="35" text-anchor="middle" font-size="11" font-weight="600" fill="#A0B0E8">Figure 1 / Architecture</text>
+<rect x="0" y="0" width="1200" height="675" fill="#FAFBFC"/>
 
-<!-- ===== LEFT: Request Lifecycle (70-560) ===== -->
-<text x="32" y="82" font-size="13" font-weight="700" fill="#2D3561">A · 请求生命周期 Request Lifecycle</text>
-<line x1="32" y1="88" x2="760" y2="88" stroke="#D0D5E8" stroke-width="1"/>
+<!-- HEADER -->
+<rect x="28" y="18" width="1144" height="58" rx="12" fill="url(#gw)" filter="url(#shd)"/>
+<text x="52" y="46" font-size="22" font-weight="800" fill="#fff">Systemic LLM</text>
+<text x="220" y="46" font-size="11" fill="#C0D4FF">从 Model-as-a-Service 到 Systemic LLM · 5 Provider 抽象 · 4 路由策略 · 成本感知</text>
+<rect x="990" y="32" width="168" height="30" rx="15" fill="#ffffff20"/>
+<text x="1074" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Figure 1 · Routing</text>
 
-<!-- User -->
-<rect x="40" y="105" width="80" height="55" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
-<text x="80" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#4F7DF3">User</text>
-<text x="80" y="148" text-anchor="middle" font-size="9" fill="#888">Agent SDK</text>
-<line x1="120" y1="132" x2="150" y2="132" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- ====== A · 演进对比 MaaS vs Systemic LLM ====== -->
+<text x="28" y="98" font-size="13" font-weight="700" fill="#1E3A8A">A · Paradigm Shift · 范式演进 — MaaS → Systemic LLM</text>
+<line x1="28" y1="106" x2="1172" y2="106" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- Gateway Box -->
-<rect x="150" y="98" width="480" height="175" rx="12" fill="url(#gb)" stroke="#4F7DF3" stroke-width="2" filter="url(#shd)"/>
-<text x="390" y="118" text-anchor="middle" font-size="13" font-weight="800" fill="#2D3561">Gateway Core 网关核心</text>
+<!-- MaaS (left) -->
+<rect x="28" y="118" width="556" height="100" rx="12" fill="#fff" stroke="#C04040" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="28" y="118" width="556" height="26" rx="12" fill="url(#gBad)"/>
+<rect x="28" y="132" width="556" height="12" fill="url(#gBad)"/>
+<text x="48" y="137" font-size="11" font-weight="800" fill="#fff">✗ Model-as-a-Service · 单一模型服务</text>
 
-<!-- 4 components in a row -->
-<rect x="165" y="135" width="108" height="50" rx="6" fill="#fff" stroke="#F5B935" stroke-width="1.5"/>
-<text x="219" y="156" text-anchor="middle" font-size="10" font-weight="700" fill="#E0A020">① Prompt Cache</text>
-<text x="219" y="172" text-anchor="middle" font-size="9" fill="#999">TTL=3600s</text>
+<text x="48" y="164" font-size="9" fill="#A02020" font-weight="600">• 硬编码 Provider · 切换需改代码</text>
+<text x="48" y="180" font-size="9" fill="#A02020" font-weight="600">• 无路由策略 · 单点故障</text>
+<text x="320" y="164" font-size="9" fill="#A02020" font-weight="600">• 无成本控制 · 预算失控</text>
+<text x="320" y="180" font-size="9" fill="#A02020" font-weight="600">• 无降级链 · Provider 宕机即停服</text>
+<text x="48" y="200" font-size="8" fill="#888" font-style="italic">vendor lock-in · 高成本 · 低可用性 · 无可观测性</text>
 
-<rect x="285" y="135" width="108" height="50" rx="6" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
-<text x="339" y="156" text-anchor="middle" font-size="10" font-weight="700" fill="#4F7DF3">② Cost Router</text>
-<text x="339" y="172" text-anchor="middle" font-size="9" fill="#999">strategy</text>
+<!-- Arrow -->
+<polygon points="588,160 612,150 612,158 640,158 640,162 612,162 612,170" fill="#3866FA"/>
 
-<rect x="405" y="135" width="108" height="50" rx="6" fill="#fff" stroke="#2EC4B6" stroke-width="1.5"/>
-<text x="459" y="156" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">③ Load Bal</text>
-<text x="459" y="172" text-anchor="middle" font-size="9" fill="#999">权重分配</text>
+<!-- Systemic LLM (right) -->
+<rect x="616" y="118" width="556" height="100" rx="12" fill="#fff" stroke="#3866FA" stroke-width="2" filter="url(#sh)"/>
+<rect x="616" y="118" width="556" height="26" rx="12" fill="url(#gP)"/>
+<rect x="616" y="132" width="556" height="12" fill="url(#gP)"/>
+<text x="636" y="137" font-size="11" font-weight="800" fill="#fff">✓ Systemic LLM · 系统化大模型平台</text>
 
-<rect x="525" y="135" width="95" height="50" rx="6" fill="#fff" stroke="#E8734A" stroke-width="1.5"/>
-<text x="572" y="156" text-anchor="middle" font-size="10" font-weight="700" fill="#D45A30">④ Fallback</text>
-<text x="572" y="172" text-anchor="middle" font-size="9" fill="#999">故障切换</text>
+<text x="636" y="164" font-size="9" fill="#1E3A8A" font-weight="600">• provider_ops_t 统一抽象 · 可拔插</text>
+<text x="636" y="180" font-size="9" fill="#1E3A8A" font-weight="600">• 4 路由策略 · 智能选择</text>
+<text x="900" y="164" font-size="9" fill="#1E3A8A" font-weight="600">• cost_tracker 成本感知 · 预算控制</text>
+<text x="900" y="180" font-size="9" fill="#1E3A8A" font-weight="600">• fallback_chain 降级链 · 高可用</text>
+<text x="636" y="200" font-size="8" fill="#3866FA" font-style="italic">vendor-free · 成本可控 · 99.9% 可用 · 全链路可观测</text>
 
-<line x1="273" y1="160" x2="285" y2="160" stroke="#555" stroke-width="1" marker-end="url(#ar)"/>
-<line x1="393" y1="160" x2="405" y2="160" stroke="#555" stroke-width="1" marker-end="url(#ar)"/>
-<line x1="513" y1="160" x2="525" y2="160" stroke="#555" stroke-width="1" marker-end="url(#ar)"/>
+<!-- ====== B · 5 Provider 统一抽象 ====== -->
+<text x="28" y="240" font-size="13" font-weight="700" fill="#1E3A8A">B · Unified Provider Abstraction · provider_ops_t 统一抽象</text>
+<line x1="28" y1="248" x2="1172" y2="248" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- Decision diamond -->
-<polygon points="390,200 445,235 390,270 335,235" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
-<text x="390" y="232" text-anchor="middle" font-size="9" font-weight="700" fill="#4F7DF3">routing</text>
-<text x="390" y="246" text-anchor="middle" font-size="8" fill="#888">S={c,r,l,f}</text>
-<line x1="390" y1="185" x2="390" y2="200" stroke="#555" stroke-width="1" marker-end="url(#ar)"/>
+<!-- Unified interface badge -->
+<rect x="28" y="260" width="200" height="56" rx="12" fill="url(#gP)" filter="url(#shd)"/>
+<text x="128" y="282" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">provider_ops_t</text>
+<text x="128" y="298" text-anchor="middle" font-size="8" fill="#D0E0FF">complete() · complete_stream()</text>
+<text x="128" y="310" text-anchor="middle" font-size="8" fill="#D0E0FF">embed() · count_tokens()</text>
 
-<!-- Budget + Rate + Metrics -->
-<rect x="165" y="200" width="100" height="65" rx="6" fill="#FFF8E8" stroke="#F5B935" stroke-width="1"/>
-<text x="215" y="218" text-anchor="middle" font-size="9" font-weight="700" fill="#E0A020">Budget Monitor</text>
-<text x="215" y="234" text-anchor="middle" font-size="9" fill="#666">$10/day</text>
-<rect x="175" y="242" width="80" height="8" rx="4" fill="#F0E8D0"/>
-<rect x="175" y="242" width="48" height="8" rx="4" fill="#F5B935"/>
-<text x="215" y="260" text-anchor="middle" font-size="8" fill="#999">60% used</text>
+<!-- 5 Provider cards -->
+<rect x="248" y="260" width="180" height="56" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<text x="338" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#3866FA">OpenAI</text>
+<text x="338" y="295" text-anchor="middle" font-size="8" fill="#555">gpt-4o · gpt-4o-mini</text>
+<text x="338" y="308" text-anchor="middle" font-size="7" fill="#888">SSE stream · function call</text>
 
-<rect x="515" y="200" width="105" height="65" rx="6" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
-<text x="567" y="218" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Metrics</text>
-<text x="567" y="234" text-anchor="middle" font-size="8" fill="#666">lat · cost · err%</text>
-<text x="567" y="250" text-anchor="middle" font-size="8" fill="#666">P50/P99 track</text>
-<text x="567" y="262" text-anchor="middle" font-size="8" fill="#999">EWMA</text>
+<rect x="442" y="260" width="180" height="56" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="532" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#7B5EE6">Anthropic</text>
+<text x="532" y="295" text-anchor="middle" font-size="8" fill="#555">claude-sonnet-4</text>
+<text x="532" y="308" text-anchor="middle" font-size="7" fill="#888">stream · tool use</text>
 
-<!-- Response -->
-<line x1="630" y1="132" x2="660" y2="132" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="660" y="105" width="80" height="55" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="700" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="#2EC4B6">Response</text>
-<text x="700" y="148" text-anchor="middle" font-size="9" fill="#888">+ cache write</text>
+<rect x="636" y="260" width="180" height="56" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="726" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#2EC4B6">DeepSeek</text>
+<text x="726" y="295" text-anchor="middle" font-size="8" fill="#555">deepseek-chat · v3</text>
+<text x="726" y="308" text-anchor="middle" font-size="7" fill="#888">OpenAI-compat · 低成本</text>
 
-<!-- ===== Provider Pool (left bottom) ===== -->
-<text x="32" y="302" font-size="13" font-weight="700" fill="#2D3561">B · 供应商池 Provider Pool</text>
-<line x1="32" y1="308" x2="760" y2="308" stroke="#D0D5E8" stroke-width="1"/>
+<rect x="830" y="260" width="160" height="56" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<text x="910" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#E8734A">Google</text>
+<text x="910" y="295" text-anchor="middle" font-size="8" fill="#555">gemini-pro</text>
+<text x="910" y="308" text-anchor="middle" font-size="7" fill="#888">multimodal</text>
 
-<!-- 5 provider cards -->
-<g>
-<rect x="40" y="320" width="140" height="95" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="40" y="320" width="140" height="24" rx="8" fill="url(#g1)"/>
-<rect x="40" y="336" width="140" height="8" fill="url(#g1)"/>
-<text x="110" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">OpenAI</text>
-<text x="50" y="361" font-size="9" fill="#555">GPT-4o · 4o-mini</text>
-<text x="50" y="376" font-size="9" fill="#888">128K · $2.5/$10</text>
-<rect x="48" y="385" width="55" height="18" rx="9" fill="#EEF2FF"/>
-<text x="75" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">default</text>
-<rect x="108" y="385" width="65" height="18" rx="9" fill="#F0FFF8"/>
-<text x="140" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">stream</text>
-</g>
+<rect x="1004" y="260" width="168" height="56" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
+<text x="1088" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#B07020">Ollama (Local)</text>
+<text x="1088" y="295" text-anchor="middle" font-size="8" fill="#555">llama3 · qwen</text>
+<text x="1088" y="308" text-anchor="middle" font-size="7" fill="#888">self-hosted · 零成本</text>
 
-<g>
-<rect x="190" y="320" width="140" height="95" rx="8" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="190" y="320" width="140" height="24" rx="8" fill="url(#g2)"/>
-<rect x="190" y="336" width="140" height="8" fill="url(#g2)"/>
-<text x="260" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Anthropic</text>
-<text x="200" y="361" font-size="9" fill="#555">Claude Sonnet 4</text>
-<text x="200" y="376" font-size="9" fill="#888">200K · $3/$15</text>
-<rect x="198" y="385" width="55" height="18" rx="9" fill="#F5F0FF"/>
-<text x="225" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">vision</text>
-<rect x="258" y="385" width="65" height="18" rx="9" fill="#FFF8E8"/>
-<text x="290" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#E0A020">200K ctx</text>
-</g>
+<!-- Connection lines from interface to providers -->
+<line x1="228" y1="288" x2="248" y2="288" stroke="#3866FA" stroke-width="1.5"/>
+<line x1="428" y1="288" x2="442" y2="288" stroke="#3866FA" stroke-width="1.5"/>
+<line x1="622" y1="288" x2="636" y2="288" stroke="#3866FA" stroke-width="1.5"/>
+<line x1="816" y1="288" x2="830" y2="288" stroke="#3866FA" stroke-width="1.5"/>
+<line x1="990" y1="288" x2="1004" y2="288" stroke="#3866FA" stroke-width="1.5"/>
 
-<g>
-<rect x="340" y="320" width="140" height="95" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="340" y="320" width="140" height="24" rx="8" fill="url(#g3)"/>
-<rect x="340" y="336" width="140" height="8" fill="url(#g3)"/>
-<text x="410" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">DeepSeek</text>
-<text x="350" y="361" font-size="9" fill="#555">V3 / R1</text>
-<text x="350" y="376" font-size="9" fill="#888">64K · $0.1/$0.3</text>
-<rect x="348" y="385" width="55" height="18" rx="9" fill="#F0FFF8"/>
-<text x="375" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">cheap</text>
-<rect x="408" y="385" width="65" height="18" rx="9" fill="#FFF0EC"/>
-<text x="440" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#D45A30">reasoning</text>
-</g>
+<!-- ====== C · Cost-Aware 路由决策树 (技术亮点) ====== -->
+<text x="28" y="342" font-size="13" font-weight="700" fill="#1E3A8A">C · Cost-Aware Routing Decision Tree · 成本感知路由决策树 (Core Innovation)</text>
+<line x1="28" y1="350" x2="1172" y2="350" stroke="#D0DCFF" stroke-width="1"/>
 
-<g>
-<rect x="490" y="320" width="140" height="95" rx="8" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="490" y="320" width="140" height="24" rx="8" fill="url(#g4)"/>
-<rect x="490" y="336" width="140" height="8" fill="url(#g4)"/>
-<text x="560" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ollama</text>
-<text x="500" y="361" font-size="9" fill="#555">Qwen2.5 · Llama3</text>
-<text x="500" y="376" font-size="9" fill="#888">32K · $0 (local)</text>
-<rect x="498" y="385" width="50" height="18" rx="9" fill="#FFF0EC"/>
-<text x="523" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#D45A30">local</text>
-<rect x="553" y="385" width="70" height="18" rx="9" fill="#F5F0FF"/>
-<text x="588" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">private</text>
-</g>
+<rect x="28" y="362" width="1144" height="158" rx="12" fill="#F8FAFF" stroke="#D0DCFF" filter="url(#sh)"/>
 
-<g>
-<rect x="640" y="320" width="105" height="95" rx="8" fill="#fff" stroke="#F5B935" stroke-width="1.5" stroke-dasharray="4,3" filter="url(#sh)"/>
-<rect x="640" y="320" width="105" height="24" rx="8" fill="url(#g5)"/>
-<rect x="640" y="336" width="105" height="8" fill="url(#g5)"/>
-<text x="692" y="338" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">Plugin</text>
-<text x="648" y="361" font-size="8" fill="#555">Rust/Python</text>
-<text x="648" y="376" font-size="8" fill="#888">FFI → adapter</text>
-<rect x="648" y="385" width="90" height="18" rx="9" fill="#FFF8E8"/>
-<text x="693" y="398" text-anchor="middle" font-size="8" font-weight="700" fill="#E0A020">extensible</text>
-</g>
+<!-- Decision flow -->
+<!-- Step 1: Request -->
+<rect x="48" y="378" width="90" height="40" rx="20" fill="url(#gP)"/>
+<text x="93" y="394" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Request</text>
+<text x="93" y="408" text-anchor="middle" font-size="7" fill="#D0E0FF">请求到达</text>
+<text x="142" y="400" font-size="12" fill="#3866FA">→</text>
 
-<!-- Fallback chain -->
-<rect x="40" y="430" width="705" height="48" rx="8" fill="#FFF5F2" stroke="#E8734A" stroke-width="1"/>
-<text x="52" y="450" font-size="10" font-weight="700" fill="#D45A30">Fallback Chain 故障切换链</text>
-<rect x="180" y="442" width="95" height="22" rx="11" fill="#4F7DF3"/>
-<text x="227" y="457" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">① OpenAI</text>
-<text x="288" y="458" text-anchor="middle" font-size="11" fill="#D45A30">→</text>
-<rect x="305" y="442" width="95" height="22" rx="11" fill="#7B5EE6"/>
-<text x="352" y="457" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">② Anthropic</text>
-<text x="413" y="458" text-anchor="middle" font-size="11" fill="#D45A30">→</text>
-<rect x="430" y="442" width="95" height="22" rx="11" fill="#2EC4B6"/>
-<text x="477" y="457" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">③ DeepSeek</text>
-<text x="538" y="458" text-anchor="middle" font-size="11" fill="#D45A30">→</text>
-<rect x="555" y="442" width="85" height="22" rx="11" fill="#E8734A"/>
-<text x="597" y="457" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">④ Ollama</text>
-<text x="650" y="458" text-anchor="middle" font-size="11" fill="#D45A30">→</text>
-<rect x="665" y="442" width="80" height="22" rx="11" fill="#F5B935"/>
-<text x="705" y="457" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">⑤ Plugin</text>
+<!-- Step 2: Budget check -->
+<polygon points="158,378 228,398 158,418 88,398" fill="#fff" stroke="#E8734A" stroke-width="2"/>
+<text x="158" y="395" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">Budget?</text>
+<text x="158" y="407" text-anchor="middle" font-size="7" fill="#888">预算检查</text>
+<text x="232" y="400" font-size="12" fill="#3866FA">→</text>
 
-<!-- ===== RIGHT: Routing + Metrics (780-1170) ===== -->
-<text x="785" y="82" font-size="13" font-weight="700" fill="#2D3561">C · 路由策略 Routing Strategy</text>
-<line x1="785" y1="88" x2="1170" y2="88" stroke="#D0D5E8" stroke-width="1"/>
+<!-- Step 3: Task type -->
+<polygon points="248,378 338,398 248,418 158,398" fill="#fff" stroke="#3866FA" stroke-width="2"/>
+<text x="248" y="395" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">Task Type</text>
+<text x="248" y="407" text-anchor="middle" font-size="7" fill="#888">任务类型</text>
 
-<rect x="785" y="100" width="385" height="240" rx="10" fill="#fff" stroke="#D0D5E8" stroke-width="1" filter="url(#sh)"/>
+<!-- 4 task branches -->
+<text x="345" y="378" font-size="8" fill="#3866FA" font-weight="700">reasoning</text>
+<rect x="410" y="370" width="120" height="22" rx="11" fill="#7B5EE6"/>
+<text x="470" y="385" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">o3 / claude-opus</text>
 
-<!-- 4 strategies 2x2 -->
-<rect x="800" y="115" width="175" height="100" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
-<text x="887" y="138" text-anchor="middle" font-size="11" font-weight="800" fill="#4F7DF3">cost_aware</text>
-<text x="887" y="156" text-anchor="middle" font-size="9" fill="#888">min(cost·quality)</text>
-<text x="810" y="178" font-size="9" fill="#555">score = q/c</text>
-<text x="810" y="193" font-size="9" fill="#555">budget-aware</text>
-<rect x="810" y="200" width="120" height="10" rx="3" fill="#EEF2FF"/>
-<text x="870" y="209" text-anchor="middle" font-size="7" font-weight="700" fill="#4F7DF3">→ default</text>
+<text x="345" y="402" font-size="8" fill="#3866FA" font-weight="700">code</text>
+<rect x="410" y="394" width="120" height="22" rx="11" fill="#3866FA"/>
+<text x="470" y="409" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">gpt-4o / sonnet</text>
 
-<rect x="985" y="115" width="175" height="100" rx="8" fill="#fff" stroke="#7B5EE6" stroke-width="1.5"/>
-<text x="1072" y="138" text-anchor="middle" font-size="11" font-weight="800" fill="#7B5EE6">round_robin</text>
-<text x="1072" y="156" text-anchor="middle" font-size="9" fill="#888">equal distribution</text>
-<text x="995" y="178" font-size="9" fill="#555">p_i = 1/N</text>
-<text x="995" y="193" font-size="9" fill="#555">no cost tracking</text>
-<rect x="995" y="200" width="130" height="10" rx="3" fill="#F5F0FF"/>
-<text x="1060" y="209" text-anchor="middle" font-size="7" font-weight="700" fill="#7B5EE6">→ load test</text>
+<text x="345" y="426" font-size="8" fill="#3866FA" font-weight="700">chat</text>
+<rect x="410" y="418" width="120" height="22" rx="11" fill="#2EC4B6"/>
+<text x="470" y="433" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">4o-mini / deepseek</text>
 
-<rect x="800" y="225" width="175" height="100" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5"/>
-<text x="887" y="248" text-anchor="middle" font-size="11" font-weight="800" fill="#2EC4B6">least_latency</text>
-<text x="887" y="266" text-anchor="middle" font-size="9" fill="#888">min P99 latency</text>
-<text x="810" y="288" font-size="9" fill="#555">argmin(lat_p99)</text>
-<text x="810" y="303" font-size="9" fill="#555">EWMA tracking</text>
-<rect x="810" y="310" width="120" height="10" rx="3" fill="#F0FFF8"/>
-<text x="870" y="319" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">→ real-time</text>
+<text x="345" y="450" font-size="8" fill="#3866FA" font-weight="700">embed</text>
+<rect x="410" y="442" width="120" height="22" rx="11" fill="#E8734A"/>
+<text x="470" y="457" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">text-embedding</text>
 
-<rect x="985" y="225" width="175" height="100" rx="8" fill="#fff" stroke="#E8734A" stroke-width="1.5"/>
-<text x="1072" y="248" text-anchor="middle" font-size="11" font-weight="800" fill="#E8734A">fallback_chain</text>
-<text x="1072" y="266" text-anchor="middle" font-size="9" fill="#888">ordered retry</text>
-<text x="995" y="288" font-size="9" fill="#555">try(p₁) → p₂ →</text>
-<text x="995" y="303" font-size="9" fill="#555">timeout=5s</text>
-<rect x="995" y="310" width="130" height="10" rx="3" fill="#FFF0EC"/>
-<text x="1060" y="319" text-anchor="middle" font-size="7" font-weight="700" fill="#D45A30">→ high-avail</text>
+<text x="538" y="410" font-size="12" fill="#3866FA">→</text>
 
-<!-- Cost optimization -->
-<text x="785" y="362" font-size="13" font-weight="700" fill="#2D3561">D · 成本优化 Cost Optimization</text>
-<line x1="785" y1="368" x2="1170" y2="368" stroke="#D0D5E8" stroke-width="1"/>
+<!-- Step 4: Fallback chain -->
+<rect x="556" y="378" width="150" height="86" rx="10" fill="#fff" stroke="#F5B935" stroke-width="2" filter="url(#sh)"/>
+<text x="631" y="395" text-anchor="middle" font-size="9" font-weight="800" fill="#B07020">Fallback Chain</text>
+<text x="631" y="410" text-anchor="middle" font-size="7" fill="#888">降级链 (3 级)</text>
+<line x1="572" y1="416" x2="690" y2="416" stroke="#F5B935" stroke-width="0.5"/>
+<text x="631" y="430" text-anchor="middle" font-size="7" fill="#555">① openai</text>
+<text x="631" y="442" text-anchor="middle" font-size="7" fill="#555">② anthropic</text>
+<text x="631" y="454" text-anchor="middle" font-size="7" fill="#555">③ deepseek</text>
+<text x="712" y="420" font-size="12" fill="#3866FA">→</text>
 
-<rect x="785" y="378" width="385" height="155" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
-<text x="800" y="398" font-size="10" font-weight="700" fill="#1AAA9C">日成本对比 Daily Cost ($)</text>
+<!-- Step 5: Cache check -->
+<polygon points="730,378 800,398 730,418 660,398" fill="#fff" stroke="#2EC4B6" stroke-width="2"/>
+<text x="730" y="395" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">Cache?</text>
+<text x="730" y="407" text-anchor="middle" font-size="7" fill="#888">缓存检查</text>
+<text x="804" y="400" font-size="12" fill="#3866FA">→</text>
 
-<text x="800" y="424" font-size="9" fill="#555">w/o gateway</text>
-<rect x="900" y="415" width="255" height="12" rx="6" fill="#F0E0E0"/>
-<rect x="900" y="415" width="255" height="12" rx="6" fill="#E8734A"/>
-<text x="1163" y="424" font-size="9" font-weight="700" fill="#D45A30">$14.2</text>
+<!-- Step 6: Output -->
+<rect x="820" y="378" width="100" height="40" rx="20" fill="url(#gT)"/>
+<text x="870" y="394" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Response</text>
+<text x="870" y="408" text-anchor="middle" font-size="7" fill="#C0F0E8">流式返回</text>
 
-<text x="800" y="446" font-size="9" fill="#555">w/ cache</text>
-<rect x="900" y="437" width="255" height="12" rx="6" fill="#F0E0E0"/>
-<rect x="900" y="437" width="153" height="12" rx="6" fill="#F5B935"/>
-<text x="1061" y="446" font-size="9" font-weight="700" fill="#E0A020">$8.2</text>
+<!-- Budget over limit branch -->
+<path d="M 158 418 Q 158 470 220 470" fill="none" stroke="#C04040" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#ar)"/>
+<rect x="225" y="460" width="140" height="22" rx="11" fill="#C04040"/>
+<text x="295" y="475" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">✗ 超预算 → 最便宜模型</text>
 
-<text x="800" y="468" font-size="9" fill="#555">w/ routing</text>
-<rect x="900" y="459" width="255" height="12" rx="6" fill="#F0E0E0"/>
-<rect x="900" y="459" width="108" height="12" rx="6" fill="#4F7DF3"/>
-<text x="1016" y="468" font-size="9" font-weight="700" fill="#4F7DF3">$5.8</text>
+<!-- Cache hit branch -->
+<path d="M 730 418 Q 730 470 780 470" fill="none" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arG)"/>
+<rect x="785" y="460" width="140" height="22" rx="11" fill="#2EC4B6"/>
+<text x="855" y="475" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">✓ 缓存命中 → 直接返回</text>
 
-<text x="800" y="490" font-size="9" fill="#555">w/ local</text>
-<rect x="900" y="481" width="255" height="12" rx="6" fill="#F0E0E0"/>
-<rect x="900" y="481" width="64" height="12" rx="6" fill="#2EC4B6"/>
-<text x="972" y="490" font-size="9" font-weight="700" fill="#1AAA9C">$3.5</text>
+<!-- Right side: code snippet -->
+<rect x="940" y="378" width="220" height="128" rx="10" fill="#1E2550" filter="url(#shd)"/>
+<text x="956" y="396" font-size="8" font-weight="700" fill="#7B9CFF">// router_common.h</text>
+<text x="956" y="410" font-size="7" fill="#A0B0D8">typedef enum {</text>
+<text x="956" y="421" font-size="7" fill="#7BFFC0">  ROUTE_COST_AWARE,</text>
+<text x="956" y="432" font-size="7" fill="#7BFFC0">  ROUTE_ROUND_ROBIN,</text>
+<text x="956" y="443" font-size="7" fill="#7BFFC0">  ROUTE_LEAST_LATENCY,</text>
+<text x="956" y="454" font-size="7" fill="#7BFFC0">  ROUTE_QUALITY_FIRST</text>
+<text x="956" y="465" font-size="7" fill="#A0B0D8">} route_strategy_t;</text>
+<text x="956" y="482" font-size="7" fill="#FFD0A0">cost_budget_daily: $10.0</text>
+<text x="956" y="494" font-size="7" fill="#FFD0A0">fallback: 3 levels</text>
+<text x="956" y="506" font-size="7" fill="#FFD0A0">cache_ttl: 3600s</text>
 
-<rect x="800" y="505" width="355" height="22" rx="6" fill="#F0FFF8"/>
-<text x="977" y="520" text-anchor="middle" font-size="10" font-weight="800" fill="#2EC4B6">→ 75% cost reduction</text>
+<!-- ====== D · 4 路由策略 + E · 核心机制 ====== -->
+<text x="28" y="540" font-size="13" font-weight="700" fill="#1E3A8A">D · 4 Routing Strategies · 四种路由策略</text>
+<line x1="28" y1="548" x2="760" y2="548" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- KPIs bottom -->
-<rect x="40" y="500" width="355" height="150" rx="10" fill="#fff" stroke="#D0D5E8" stroke-width="1" filter="url(#sh)"/>
-<text x="55" y="522" font-size="11" font-weight="700" fill="#2D3561">系统性能 System Performance</text>
+<!-- 4 strategy cards -->
+<rect x="28" y="560" width="178" height="48" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="28" y="560" width="6" height="48" rx="3" fill="#3866FA"/>
+<text x="46" y="578" font-size="10" font-weight="700" fill="#1E3A8A">① Cost-Aware</text>
+<text x="46" y="592" font-size="8" fill="#555">成本感知 · 任务类型匹配</text>
+<text x="46" y="603" font-size="7" fill="#888">budget + task_type → provider</text>
 
-<rect x="55" y="535" width="155" height="48" rx="8" fill="#F0FFF8"/>
-<text x="132" y="555" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">P50 latency</text>
-<text x="132" y="575" text-anchor="middle" font-size="18" font-weight="800" fill="#2EC4B6">340ms</text>
+<rect x="216" y="560" width="178" height="48" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="216" y="560" width="6" height="48" rx="3" fill="#2EC4B6"/>
+<text x="234" y="578" font-size="10" font-weight="700" fill="#1E3A8A">② Round-Robin</text>
+<text x="234" y="592" font-size="8" fill="#555">轮询 · 负载均衡</text>
+<text x="234" y="603" font-size="7" fill="#888">fair distribution · O(1)</text>
 
-<rect x="220" y="535" width="155" height="48" rx="8" fill="#FFF0EC"/>
-<text x="297" y="555" text-anchor="middle" font-size="10" font-weight="700" fill="#D45A30">P99 latency</text>
-<text x="297" y="575" text-anchor="middle" font-size="18" font-weight="800" fill="#E8734A">1.8s</text>
+<rect x="404" y="560" width="178" height="48" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="404" y="560" width="6" height="48" rx="3" fill="#E8734A"/>
+<text x="422" y="578" font-size="10" font-weight="700" fill="#1E3A8A">③ Least-Latency</text>
+<text x="422" y="592" font-size="8" fill="#555">最低延迟 · 实时优先</text>
+<text x="422" y="603" font-size="7" fill="#888">P99 monitoring · RTT</text>
 
-<rect x="55" y="590" width="155" height="48" rx="8" fill="#EEF2FF"/>
-<text x="132" y="610" text-anchor="middle" font-size="10" font-weight="700" fill="#4F7DF3">cache hit rate</text>
-<text x="132" y="630" text-anchor="middle" font-size="18" font-weight="800" fill="#4F7DF3">42%</text>
+<rect x="592" y="560" width="178" height="48" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="592" y="560" width="6" height="48" rx="3" fill="#F5B935"/>
+<text x="610" y="578" font-size="10" font-weight="700" fill="#1E3A8A">④ Quality-First</text>
+<text x="610" y="592" font-size="8" fill="#555">质量优先 · 复杂推理</text>
+<text x="610" y="603" font-size="7" fill="#888">strongest model · high cost</text>
 
-<rect x="220" y="590" width="155" height="48" rx="8" fill="#FFFDE8"/>
-<text x="297" y="610" text-anchor="middle" font-size="10" font-weight="700" fill="#E0A020">uptime</text>
-<text x="297" y="630" text-anchor="middle" font-size="18" font-weight="800" fill="#F5B935">99.9%</text>
+<!-- E · Core mechanisms (right) -->
+<text x="780" y="540" font-size="13" font-weight="700" fill="#1E3A8A">E · Core Mechanisms · 核心机制</text>
+<line x1="780" y1="548" x2="1172" y2="548" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- Cache detail -->
-<rect x="405" y="500" width="340" height="150" rx="10" fill="#FFFDE8" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<text x="420" y="522" font-size="11" font-weight="700" fill="#E0A020">Prompt Cache (K-V Store)</text>
-<text x="420" y="544" font-size="9" fill="#555">key: SHA-256(prompt) → lookup</text>
-<rect x="420" y="552" width="60" height="22" rx="6" fill="#2EC4B6"/>
-<text x="450" y="567" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">HIT → resp</text>
-<text x="490" y="567" font-size="9" fill="#888">·</text>
-<rect x="500" y="552" width="60" height="22" rx="6" fill="#E8734A"/>
-<text x="530" y="567" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MISS → p</text>
-<text x="420" y="595" font-size="9" fill="#555">TTL: 3600s · max_entries: 10,000</text>
-<text x="420" y="612" font-size="9" fill="#555">eviction: LRU · storage: in-memory</text>
-<text x="420" y="629" font-size="9" fill="#555">saves ~$4.2/day @ 42% hit rate</text>
+<rect x="780" y="560" width="96" height="48" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1" filter="url(#sh)"/>
+<text x="828" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">cost_tracker</text>
+<text x="828" y="592" text-anchor="middle" font-size="7" fill="#555">成本追踪</text>
+<text x="828" y="603" text-anchor="middle" font-size="7" fill="#888">USD · daily</text>
 
-<!-- Footer -->
-<text x="600" y="665" text-anchor="middle" font-size="9" fill="#AAA" font-style="italic">Systemic LLM · 5 providers · 4 routing strategies · zero-restart hot-swap · 75% cost ↓</text>
+<rect x="884" y="560" width="96" height="48" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1" filter="url(#sh)"/>
+<text x="932" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">token_counter</text>
+<text x="932" y="592" text-anchor="middle" font-size="7" fill="#555">Token 计数</text>
+<text x="932" y="603" text-anchor="middle" font-size="7" fill="#888">precise · per-call</text>
 
+<rect x="988" y="560" width="84" height="48" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
+<text x="1030" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">LRU cache</text>
+<text x="1030" y="592" text-anchor="middle" font-size="7" fill="#555">响应缓存</text>
+<text x="1030" y="603" text-anchor="middle" font-size="7" fill="#888">10K · 1h TTL</text>
+
+<rect x="1080" y="560" width="92" height="48" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1" filter="url(#sh)"/>
+<text x="1126" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">SSE stream</text>
+<text x="1126" y="592" text-anchor="middle" font-size="7" fill="#555">流式响应</text>
+<text x="1126" y="603" text-anchor="middle" font-size="7" fill="#888">cancel · progress</text>
+
+<!-- Bottom KPI strip -->
+<rect x="28" y="620" width="1144" height="42" rx="10" fill="url(#gw)" filter="url(#shd)"/>
+<text x="200" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">↓ 75% 成本</text>
+<text x="200" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">cost reduction</text>
+
+<line x1="380" y1="628" x2="380" y2="654" stroke="#ffffff30"/>
+<text x="500" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">99.9% 可用性</text>
+<text x="500" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">availability (fallback chain)</text>
+
+<line x1="680" y1="628" x2="680" y2="654" stroke="#ffffff30"/>
+<text x="800" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">5 Provider 统一</text>
+<text x="800" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">unified abstraction</text>
+
+<line x1="960" y1="628" x2="960" y2="654" stroke="#ffffff30"/>
+<text x="1060" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">40% 缓存命中</text>
+<text x="1060" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">cache hit rate</text>
+
+<text x="1168" y="670" text-anchor="end" font-size="8" fill="#D0D0D0" font-style="italic">Systemic LLM · v0.1.1</text>
 </svg>
 </div>
 </body>
