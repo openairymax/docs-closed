@@ -3,219 +3,249 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-  .figure {
-    width: 750px;
-    height: 1000px;
-    background: #ffffff;
-    position: relative;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
+  .fig{width:750px;height:1000px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
 </style>
 </head>
 <body>
-<div class="figure">
+<div class="fig">
 <svg width="750" height="1000" viewBox="0 0 750 1000" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="sh" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a2e15"/></filter>
+  <filter id="shd" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1a1a2e20"/></filter>
+  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D3A5C"/><stop offset="1" stop-color="#082840"/></linearGradient>
+  <linearGradient id="gT1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4F7DF3"/><stop offset="1" stop-color="#3A5FD9"/></linearGradient>
+  <linearGradient id="gT2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
+  <linearGradient id="gT3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
+  <linearGradient id="gTn" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
+  <marker id="ar" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#555"/></marker>
+  <marker id="arB" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#4F7DF3"/></marker>
+  <marker id="arR" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#E8734A"/></marker>
+</defs>
 
-  <defs>
-    <filter id="shadow" x="-8%" y="-8%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#00000015"/>
-    </filter>
-    <filter id="shadowLight" x="-5%" y="-5%" width="115%" height="115%">
-      <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#0000000C"/>
-    </filter>
-    <linearGradient id="gradSlice1" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#5B9BD5"/>
-      <stop offset="100%" stop-color="#3B7BC5"/>
-    </linearGradient>
-    <linearGradient id="gradSlice2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#667EEA"/>
-      <stop offset="100%" stop-color="#4A5FC5"/>
-    </linearGradient>
-    <linearGradient id="gradSlice3" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#7B68EE"/>
-      <stop offset="100%" stop-color="#5A4FCC"/>
-    </linearGradient>
-    <linearGradient id="gradSliceN" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#AF7AC5"/>
-      <stop offset="100%" stop-color="#8E5EA5"/>
-    </linearGradient>
-    <linearGradient id="gradState" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#FF8C69"/>
-      <stop offset="100%" stop-color="#E87050"/>
-    </linearGradient>
-    <linearGradient id="gradResult" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#48C9B0"/>
-      <stop offset="100%" stop-color="#28A090"/>
-    </linearGradient>
-    <marker id="arrowRight" markerWidth="12" markerHeight="8" refX="12" refY="3" orient="auto">
-      <path d="M0,0 L12,3 L0,6 Z" fill="#667EEA"/>
-    </marker>
-    <marker id="arrowState" markerWidth="10" markerHeight="6" refX="10" refY="3" orient="auto">
-      <path d="M0,0 L10,3 L0,6 Z" fill="#FF8C69"/>
-    </marker>
-    <marker id="arrowResult" markerWidth="10" markerHeight="6" refX="10" refY="3" orient="auto">
-      <path d="M0,0 L10,3 L0,6 Z" fill="#48C9B0"/>
-    </marker>
-  </defs>
+<!-- ===== HEADER ===== -->
+<rect width="750" height="70" fill="url(#gw)"/>
+<text x="30" y="34" font-size="20" font-weight="800" fill="#fff">TimeSliceInfer</text>
+<text x="30" y="54" font-size="11" fill="#80B0D8">分时推理框架 · Time-Sliced Inference with State Propagation &amp; Backtracking</text>
+<rect x="600" y="20" width="125" height="32" rx="16" fill="#ffffff20"/>
+<text x="662" y="40" text-anchor="middle" font-size="11" font-weight="600" fill="#80B0D8">Figure 6 / Inference</text>
 
-  <!-- Title -->
-  <text x="375" y="52" text-anchor="middle" font-size="22" font-weight="700" fill="#2C2C2C" letter-spacing="1">TimeSliceInfer — 分时推理框架</text>
-  <line x1="225" y1="66" x2="525" y2="66" stroke="#667EEA" stroke-width="2" stroke-linecap="round"/>
+<!-- ===== SECTION A: Problem (80-280) ===== -->
+<text x="30" y="92" font-size="13" font-weight="700" fill="#0D3A5C">A · 问题动机 Problem Motivation</text>
+<line x1="30" y1="98" x2="720" y2="98" stroke="#D0DCE8" stroke-width="1"/>
 
-  <!-- Problem statement -->
-  <rect x="75" y="95" width="600" height="80" rx="12" fill="#FFF5F2" stroke="#FFCCBB" stroke-width="1"/>
-  <text x="100" y="122" font-size="13" font-weight="700" fill="#D06040">问题</text>
-  <text x="100" y="145" font-size="12" fill="#777">单次"全量加载→推理"原子操作受限于LLM上下文窗口(128K/200K)</text>
-  <text x="100" y="163" font-size="12" fill="#777">当记忆积累超过窗口容量时 → 旧记忆截断丢失，检索结果不完整</text>
+<!-- Traditional approach -->
+<rect x="20" y="110" width="345" height="160" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="20" y="110" width="345" height="28" rx="10" fill="#E8734A"/>
+<rect x="20" y="130" width="345" height="8" fill="#E8734A"/>
+<text x="192" y="130" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">传统推理 Traditional Inference</text>
 
-  <!-- TimeSlice Pipeline - horizontal -->
-  <!-- T1 -->
-  <rect x="30" y="210" width="145" height="220" rx="12" fill="#ffffff" stroke="#5B9BD5" stroke-width="2.5" filter="url(#shadowLight)"/>
-  <rect x="30" y="210" width="145" height="40" rx="12" fill="url(#gradSlice1)"/>
-  <rect x="30" y="238" width="145" height="12" fill="url(#gradSlice1)"/>
-  <text x="102" y="237" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">时间片 T₁</text>
+<text x="30" y="156" font-size="9" fill="#555">长任务 → 单次生成 · 一次性输出</text>
+<text x="30" y="172" font-size="8" fill="#888">问题①: 超长任务 → 上下文溢出 (ctx &gt; 200K)</text>
+<text x="30" y="186" font-size="8" fill="#888">问题②: 中途出错 → 全量重算 (代价大)</text>
+<text x="30" y="200" font-size="8" fill="#888">问题③: 无中断恢复 · 状态丢失</text>
+<text x="30" y="214" font-size="8" fill="#888">问题④: 无并行 · 串行阻塞</text>
 
-  <rect x="42" y="262" width="121" height="32" rx="6" fill="#EDF4FD"/>
-  <text x="102" y="283" text-anchor="middle" font-size="10" fill="#555">记忆集₁ 加载</text>
+<rect x="30" y="225" width="325" height="38" rx="6" fill="#FFF0EC"/>
+<text x="40" y="240" font-size="8" font-weight="700" fill="#D45A30">局限: O(n) 复杂度 · n=任务长度</text>
+<text x="40" y="255" font-size="7" fill="#999">不可中断 · 不可回溯 · 不可并行</text>
 
-  <rect x="42" y="302" width="121" height="36" rx="6" fill="#EFF3FF"/>
-  <text x="102" y="319" text-anchor="middle" font-size="10" fill="#555">LLM 推理</text>
-  <text x="102" y="332" text-anchor="middle" font-size="8" fill="#888">Token Budget₁</text>
+<!-- TimeSlice approach -->
+<rect x="385" y="110" width="345" height="160" rx="10" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="385" y="110" width="345" height="28" rx="10" fill="#4F7DF3"/>
+<rect x="385" y="130" width="345" height="8" fill="#4F7DF3"/>
+<text x="557" y="130" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">TimeSliceInfer 分时推理</text>
 
-  <rect x="42" y="346" width="121" height="36" rx="6" fill="#F2F0FF"/>
-  <text x="102" y="363" text-anchor="middle" font-size="10" fill="#555">结论₁ + 置信度₁</text>
-  <text x="102" y="376" text-anchor="middle" font-size="8" fill="#888">Embedding生成</text>
+<text x="395" y="156" font-size="9" fill="#555">长任务 → 时间片序列 · 状态传递</text>
+<text x="395" y="172" font-size="8" fill="#888">优势①: 时间片 = 10ms · 上下文可控</text>
+<text x="395" y="186" font-size="8" fill="#888">优势②: 单片出错 → 局部回溯 (省80%)</text>
+<text x="395" y="200" font-size="8" fill="#888">优势③: 状态向量State_i 可序列化</text>
+<text x="395" y="214" font-size="8" fill="#888">优势④: 独立时间片可并行</text>
 
-  <!-- Arrow T1 -> T2 (main) -->
-  <line x1="180" y1="320" x2="215" y2="320" stroke="#5B9BD5" stroke-width="2.5" marker-end="url(#arrowRight)"/>
+<rect x="395" y="225" width="325" height="38" rx="6" fill="#EEF2FF"/>
+<text x="405" y="240" font-size="8" font-weight="700" fill="#3A5FD9">复杂度: O(n/k) · k=并行度</text>
+<text x="405" y="255" font-size="7" fill="#999">可中断 · 可回溯 · 可并行 · 可恢复</text>
 
-  <!-- State arrow T1 -> T2 (below) -->
-  <path d="M100,390 L100,410 L270,410 L270,320" stroke="#FF8C69" stroke-width="1.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowState)"/>
-  <rect x="115" y="400" width="140" height="20" rx="4" fill="#FFF0EC"/>
-  <text x="185" y="414" text-anchor="middle" font-size="9" fill="#E87050">状态向量 State₁⁻⟩</text>
+<!-- ===== SECTION B: Pipeline (280-560) ===== -->
+<text x="30" y="298" font-size="13" font-weight="700" fill="#0D3A5C">B · 分时流水线 Time-Sliced Pipeline with State Propagation</text>
+<line x1="30" y1="304" x2="720" y2="304" stroke="#D0DCE8" stroke-width="1"/>
 
-  <!-- T2 -->
-  <rect x="220" y="210" width="145" height="220" rx="12" fill="#ffffff" stroke="#667EEA" stroke-width="2.5" filter="url(#shadowLight)"/>
-  <rect x="220" y="210" width="145" height="40" rx="12" fill="url(#gradSlice2)"/>
-  <rect x="220" y="238" width="145" height="12" fill="url(#gradSlice2)"/>
-  <text x="292" y="237" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">时间片 T₂</text>
+<rect x="20" y="315" width="710" height="245" rx="10" fill="#fff" stroke="#D0DCE8" stroke-width="1" filter="url(#sh)"/>
 
-  <rect x="232" y="262" width="121" height="32" rx="6" fill="#EDF4FD"/>
-  <text x="292" y="283" text-anchor="middle" font-size="10" fill="#555">记忆集₂ 加载</text>
+<!-- Time axis -->
+<line x1="40" y1="540" x2="710" y2="540" stroke="#888" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="720" y="544" font-size="9" fill="#888">time →</text>
 
-  <rect x="232" y="302" width="121" height="36" rx="6" fill="#EFF3FF"/>
-  <text x="292" y="319" text-anchor="middle" font-size="10" fill="#555">LLM 推理</text>
-  <text x="292" y="332" text-anchor="middle" font-size="8" fill="#888">Token Budget₂</text>
+<!-- T1 slice -->
+<rect x="40" y="345" width="130" height="180" rx="8" fill="url(#gT1)" filter="url(#sh)"/>
+<text x="105" y="370" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">T₁</text>
+<text x="105" y="386" text-anchor="middle" font-size="8" fill="#D0D8FF">slice 1</text>
+<rect x="50" y="395" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="105" y="411" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">input: Q</text>
+<rect x="50" y="424" width="110" height="36" rx="4" fill="#ffffff15"/>
+<text x="105" y="440" text-anchor="middle" font-size="7" fill="#fff">infer(Q)</text>
+<text x="105" y="453" text-anchor="middle" font-size="7" fill="#D0D8FF">→ output₁</text>
+<rect x="50" y="466" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="105" y="482" text-anchor="middle" font-size="7" fill="#fff">State₁ = f(Q)</text>
+<text x="105" y="505" text-anchor="middle" font-size="6" fill="#D0D8FF">10ms · 1 LLM call</text>
+<text x="105" y="517" text-anchor="middle" font-size="6" fill="#D0D8FF">ctx: ~4K tokens</text>
 
-  <rect x="232" y="346" width="121" height="36" rx="6" fill="#F2F0FF"/>
-  <text x="292" y="363" text-anchor="middle" font-size="10" fill="#555">结论₂ + 置信度₂</text>
-  <text x="292" y="376" text-anchor="middle" font-size="8" fill="#888">Embedding生成</text>
+<!-- State arrow T1→T2 -->
+<line x1="170" y1="478" x2="195" y2="478" stroke="#4F7DF3" stroke-width="2" marker-end="url(#arB)"/>
+<text x="182" y="470" text-anchor="middle" font-size="7" font-weight="700" fill="#3A5FD9">State₁</text>
 
-  <!-- Arrow T2 -> T3 -->
-  <line x1="370" y1="320" x2="405" y2="320" stroke="#667EEA" stroke-width="2.5" marker-end="url(#arrowRight)"/>
+<!-- T2 slice -->
+<rect x="195" y="345" width="130" height="180" rx="8" fill="url(#gT2)" filter="url(#sh)"/>
+<text x="260" y="370" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">T₂</text>
+<text x="260" y="386" text-anchor="middle" font-size="8" fill="#D0F0EC">slice 2</text>
+<rect x="205" y="395" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="260" y="411" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">input: State₁</text>
+<rect x="205" y="424" width="110" height="36" rx="4" fill="#ffffff15"/>
+<text x="260" y="440" text-anchor="middle" font-size="7" fill="#fff">infer(S₁)</text>
+<text x="260" y="453" text-anchor="middle" font-size="7" fill="#D0F0EC">→ output₂</text>
+<rect x="205" y="466" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="260" y="482" text-anchor="middle" font-size="7" fill="#fff">State₂ = g(S₁)</text>
+<text x="260" y="505" text-anchor="middle" font-size="6" fill="#D0F0EC">10ms · 1 LLM call</text>
+<text x="260" y="517" text-anchor="middle" font-size="6" fill="#D0F0EC">ctx: ~4K tokens</text>
 
-  <!-- State arrow T2 -> T3 -->
-  <path d="M290,390 L290,425 L460,425 L460,320" stroke="#FF8C69" stroke-width="1.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowState)"/>
-  <rect x="305" y="415" width="140" height="20" rx="4" fill="#FFF0EC"/>
-  <text x="375" y="429" text-anchor="middle" font-size="9" fill="#E87050">状态向量 State₂⁻⟩</text>
+<line x1="325" y1="478" x2="350" y2="478" stroke="#2EC4B6" stroke-width="2" marker-end="url(#ar)"/>
+<text x="337" y="470" text-anchor="middle" font-size="7" font-weight="700" fill="#1AAA9C">State₂</text>
 
-  <!-- T3 -->
-  <rect x="410" y="210" width="145" height="220" rx="12" fill="#ffffff" stroke="#7B68EE" stroke-width="2.5" filter="url(#shadowLight)"/>
-  <rect x="410" y="210" width="145" height="40" rx="12" fill="url(#gradSlice3)"/>
-  <rect x="410" y="238" width="145" height="12" fill="url(#gradSlice3)"/>
-  <text x="482" y="237" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">时间片 T₃</text>
+<!-- T3 slice -->
+<rect x="350" y="345" width="130" height="180" rx="8" fill="url(#gT3)" filter="url(#sh)"/>
+<text x="415" y="370" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">T₃</text>
+<text x="415" y="386" text-anchor="middle" font-size="8" fill="#E0D0FF">slice 3</text>
+<rect x="360" y="395" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="415" y="411" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">input: State₂</text>
+<rect x="360" y="424" width="110" height="36" rx="4" fill="#ffffff15"/>
+<text x="415" y="440" text-anchor="middle" font-size="7" fill="#fff">infer(S₂)</text>
+<text x="415" y="453" text-anchor="middle" font-size="7" fill="#E0D0FF">→ output₃</text>
+<rect x="360" y="466" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="415" y="482" text-anchor="middle" font-size="7" fill="#fff">State₃ = h(S₂)</text>
+<text x="415" y="505" text-anchor="middle" font-size="6" fill="#E0D0FF">10ms · 1 LLM call</text>
+<text x="415" y="517" text-anchor="middle" font-size="6" fill="#E0D0FF">ctx: ~4K tokens</text>
 
-  <rect x="422" y="262" width="121" height="32" rx="6" fill="#EDF4FD"/>
-  <text x="482" y="283" text-anchor="middle" font-size="10" fill="#555">记忆集₃ 加载</text>
+<line x1="480" y1="478" x2="505" y2="478" stroke="#7B5EE6" stroke-width="2" marker-end="url(#ar)"/>
 
-  <rect x="422" y="302" width="121" height="36" rx="6" fill="#EFF3FF"/>
-  <text x="482" y="319" text-anchor="middle" font-size="10" fill="#555">LLM 推理</text>
-  <text x="482" y="332" text-anchor="middle" font-size="8" fill="#888">Token Budget₃</text>
+<!-- Tn slice (dashed = more) -->
+<rect x="505" y="345" width="130" height="180" rx="8" fill="url(#gTn)" filter="url(#sh)"/>
+<text x="570" y="370" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Tₙ</text>
+<text x="570" y="386" text-anchor="middle" font-size="8" fill="#FFD8C8">slice n</text>
+<rect x="515" y="395" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="570" y="411" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">input: Stateₙ₋₁</text>
+<rect x="515" y="424" width="110" height="36" rx="4" fill="#ffffff15"/>
+<text x="570" y="440" text-anchor="middle" font-size="7" fill="#fff">infer(Sₙ₋₁)</text>
+<text x="570" y="453" text-anchor="middle" font-size="7" fill="#FFD8C8">→ outputₙ</text>
+<rect x="515" y="466" width="110" height="24" rx="4" fill="#ffffff25"/>
+<text x="570" y="482" text-anchor="middle" font-size="7" fill="#fff">Stateₙ = FINAL</text>
+<text x="570" y="505" text-anchor="middle" font-size="6" fill="#FFD8C8">10ms · 1 LLM call</text>
+<text x="570" y="517" text-anchor="middle" font-size="6" fill="#FFD8C8">聚合: Σ outputs</text>
 
-  <rect x="422" y="346" width="121" height="36" rx="6" fill="#F2F0FF"/>
-  <text x="482" y="363" text-anchor="middle" font-size="10" fill="#555">结论₃ + 置信度₃</text>
-  <text x="482" y="376" text-anchor="middle" font-size="8" fill="#888">Embedding生成</text>
+<text x="645" y="478" font-size="14" fill="#888">···</text>
 
-  <!-- Arrow T3 -> Tn -->
-  <line x1="560" y1="320" x2="595" y2="320" stroke="#7B68EE" stroke-width="2.5" marker-end="url(#arrowRight)"/>
+<!-- Backtracking arrows -->
+<path d="M470,345 Q400,320 330,345" stroke="#E8734A" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#arR)"/>
+<text x="400" y="328" text-anchor="middle" font-size="7" font-weight="700" fill="#D45A30">⟲ 回溯 backtracking</text>
 
-  <!-- Tn -->
-  <rect x="600" y="210" width="120" height="220" rx="12" fill="#ffffff" stroke="#AF7AC5" stroke-width="2.5" filter="url(#shadowLight)"/>
-  <rect x="600" y="210" width="120" height="40" rx="12" fill="url(#gradSliceN)"/>
-  <rect x="600" y="238" width="120" height="12" fill="url(#gradSliceN)"/>
-  <text x="660" y="237" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">Tₙ ...</text>
+<text x="40" y="332" font-size="8" font-weight="700" fill="#0D3A5C">状态向量传递: State_i = F(output_i, State_{i-1}) · 可序列化 · 可恢复</text>
 
-  <rect x="612" y="268" width="96" height="28" rx="6" fill="#EDF4FD"/>
-  <text x="660" y="287" text-anchor="middle" font-size="10" fill="#555">记忆集ₙ</text>
+<!-- ===== SECTION C: Scheduling (560-780) ===== -->
+<text x="30" y="578" font-size="13" font-weight="700" fill="#0D3A5C">C · 调度算法 Scheduling Algorithms</text>
+<line x1="30" y1="584" x2="720" y2="584" stroke="#D0DCE8" stroke-width="1"/>
 
-  <rect x="612" y="304" width="96" height="28" rx="6" fill="#EFF3FF"/>
-  <text x="660" y="323" text-anchor="middle" font-size="10" fill="#555">推理ₙ</text>
+<!-- Static scheduling -->
+<rect x="20" y="595" width="345" height="170" rx="10" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
+<text x="30" y="615" font-size="11" font-weight="700" fill="#3A5FD9">静态调度 Static Scheduling</text>
+<text x="280" y="615" font-size="9" font-weight="700" fill="#888">O(n/k)</text>
 
-  <rect x="612" y="340" width="96" height="28" rx="6" fill="#F2F0FF"/>
-  <text x="660" y="359" text-anchor="middle" font-size="10" fill="#555">结论ₙ</text>
+<text x="30" y="635" font-size="8" fill="#555">时间片长度: 固定 time_slice = 10ms</text>
+<text x="30" y="649" font-size="8" fill="#555">并行度: k = min(CPU核, LLM并发)</text>
+<text x="30" y="663" font-size="8" fill="#555">分配: round-robin 到 worker pool</text>
 
-  <!-- State arrows continuing to Tn -->
-  <path d="M480,390 L480,438 L650,438 L650,390" stroke="#FF8C69" stroke-width="1.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowState)"/>
-  <rect x="495" y="428" width="140" height="20" rx="4" fill="#FFF0EC"/>
-  <text x="565" y="442" text-anchor="middle" font-size="9" fill="#E87050">State₃⁻⟩ → ...</text>
+<text x="30" y="685" font-size="8" font-weight="700" fill="#4F7DF3">伪代码 Pseudocode</text>
+<rect x="30" y="692" width="325" height="65" rx="4" fill="#EEF2FF"/>
+<text x="40" y="708" font-size="7" font-family="monospace" fill="#3A5FD9">slices = chunk(task, time_slice)</text>
+<text x="40" y="721" font-size="7" font-family="monospace" fill="#3A5FD9">for i, s in parallel(slices, k):</text>
+<text x="40" y="734" font-size="7" font-family="monospace" fill="#3A5FD9">  state_i = infer(s, state_{i-1})</text>
+<text x="40" y="747" font-size="7" font-family="monospace" fill="#3A5FD9">  if error: backtrack(i-1)</text>
 
-  <!-- State vector legend -->
-  <rect x="75" y="468" width="600" height="65" rx="10" fill="#FFF5F0" stroke="#FFDDCC" stroke-width="1"/>
-  <text x="100" y="492" font-size="12" font-weight="700" fill="#E87050">推理状态向量 Stateᵢ：</text>
-  <text x="100" y="510" font-size="11" fill="#777">Embedding(结论ᵢ ⊕ 关键发现ᵢ) : 固定768维向量</text>
-  <text x="100" y="525" font-size="11" fill="#777">processed_count · confidence · intermediate_conclusion · 回溯栈</text>
+<!-- Adaptive scheduling -->
+<rect x="385" y="595" width="345" height="170" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="395" y="615" font-size="11" font-weight="700" fill="#6540D0">自适应调度 Adaptive Scheduling</text>
+<text x="640" y="615" font-size="9" font-weight="700" fill="#888">EWMA-based</text>
 
-  <!-- Bottom section: algorithms -->
-  <rect x="75" y="565" width="600" height="155" rx="12" fill="#F8F9FC" stroke="#E8E8EE" stroke-width="1"/>
-  <text x="100" y="595" font-size="14" font-weight="700" fill="#333">分片调度算法</text>
+<text x="395" y="635" font-size="8" fill="#555">时间片长度: 动态调整 (conf反馈)</text>
+<text x="395" y="649" font-size="8" fill="#555">置信度高 → 增大 slice (减少开销)</text>
+<text x="395" y="663" font-size="8" fill="#555">置信度低 → 减小 slice (增精度)</text>
 
-  <!-- Static scheduling -->
-  <rect x="95" y="615" width="270" height="46" rx="8" fill="#EDF4FD"/>
-  <text x="110" y="634" font-size="12" font-weight="700" fill="#5B9BD5">静态等分 (v0.1)</text>
-  <text x="110" y="652" font-size="10" fill="#888">固定 Token Budget / 时间片</text>
+<text x="395" y="685" font-size="8" font-weight="700" fill="#7B5EE6">伪代码 Pseudocode</text>
+<rect x="395" y="692" width="325" height="65" rx="4" fill="#F5F0FF"/>
+<text x="405" y="708" font-size="7" font-family="monospace" fill="#6540D0">slice = init_slice</text>
+<text x="405" y="721" font-size="7" font-family="monospace" fill="#6540D0">while not done:</text>
+<text x="405" y="734" font-size="7" font-family="monospace" fill="#6540D0">  out, conf = infer(slice, state)</text>
+<text x="405" y="747" font-size="7" font-family="monospace" fill="#6540D0">  slice = adjust(conf, EWMA_lat)</text>
 
-  <rect x="385" y="615" width="270" height="46" rx="8" fill="#F2F0FF"/>
-  <text x="400" y="634" font-size="12" font-weight="700" fill="#7B68EE">自适应分片 (v0.2)</text>
-  <text x="400" y="652" font-size="10" fill="#888">根据置信度Δ动态调整预算</text>
+<!-- ===== SECTION D: Termination & Metrics (780-1000) ===== -->
+<text x="30" y="788" font-size="13" font-weight="700" fill="#0D3A5C">D · 终止条件与性能指标 Termination &amp; Metrics</text>
+<line x1="30" y1="794" x2="720" y2="794" stroke="#D0DCE8" stroke-width="1"/>
 
-  <!-- Termination conditions -->
-  <rect x="95" y="670" width="270" height="38" rx="6" fill="#FFF0EC"/>
-  <text x="110" y="690" font-size="10" font-weight="600" fill="#E87050">终止条件：</text>
-  <text x="110" y="703" font-size="9" fill="#888">置信度≥0.95 | 预算耗尽 | 队列空 | 超时</text>
+<!-- Termination conditions -->
+<rect x="20" y="805" width="345" height="115" rx="10" fill="#fff" stroke="#D0DCE8" stroke-width="1" filter="url(#sh)"/>
+<text x="30" y="825" font-size="11" font-weight="700" fill="#0D3A5C">终止条件 Termination Conditions</text>
 
-  <rect x="385" y="670" width="270" height="38" rx="6" fill="#E8F8F5"/>
-  <text x="400" y="690" font-size="10" font-weight="600" fill="#48C9B0">回溯机制：</text>
-  <text x="400" y="703" font-size="9" fill="#888">困惑检测 → 回退 → 降权重试</text>
+<rect x="30" y="835" width="155" height="22" rx="11" fill="#2EC4B6"/>
+<text x="107" y="850" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">✓ ① 完成度 ≥ threshold</text>
 
-  <!-- Core advantages -->
-  <rect x="75" y="745" width="600" height="125" rx="12" fill="#ffffff" stroke="#E8E8EE" stroke-width="1"/>
-  <text x="100" y="775" font-size="14" font-weight="700" fill="#333">核心优势</text>
+<rect x="195" y="835" width="155" height="22" rx="11" fill="#F5B935"/>
+<text x="272" y="850" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">② 轮次 ≥ max_rounds</text>
 
-  <rect x="95" y="793" width="175" height="30" rx="6" fill="#EFF3FF"/>
-  <text x="182" y="813" text-anchor="middle" font-size="11" font-weight="600" fill="#667EEA">突破窗口限制</text>
+<rect x="30" y="862" width="155" height="22" rx="11" fill="#E8734A"/>
+<text x="107" y="877" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">③ 时间 ≥ deadline</text>
 
-  <rect x="285" y="793" width="175" height="30" rx="6" fill="#E8F8F5"/>
-  <text x="372" y="813" text-anchor="middle" font-size="11" font-weight="600" fill="#48C9B0">上下文连续性</text>
+<rect x="195" y="862" width="155" height="22" rx="11" fill="#7B5EE6"/>
+<text x="272" y="877" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">④ 漂移 drift &gt; θ</text>
 
-  <rect x="475" y="793" width="180" height="30" rx="6" fill="#F5EEFA"/>
-  <text x="565" y="813" text-anchor="middle" font-size="11" font-weight="600" fill="#AF7AC5">Token预算可控</text>
+<text x="30" y="898" font-size="8" fill="#555">· 任一满足 → 停止 · 输出 Stateₙ 聚合结果</text>
+<text x="30" y="912" font-size="7" fill="#888">· 漂移检测: 8轮窗口 · cos_sim(State_i, State_{i-8})</text>
 
-  <text x="105" y="848" font-size="11" fill="#777">将 200K 物理窗口变为近乎无限的有效工作记忆 → 支撑 1000 小时超长任务</text>
+<!-- Metrics -->
+<rect x="385" y="805" width="345" height="115" rx="10" fill="#fff" stroke="#D0DCE8" stroke-width="1" filter="url(#sh)"/>
+<text x="557" y="825" text-anchor="middle" font-size="11" font-weight="700" fill="#0D3A5C">性能指标 Performance</text>
 
-  <!-- Result at bottom-right -->
-  <rect x="500" y="885" width="175" height="70" rx="14" fill="url(#gradResult)" filter="url(#shadow)"/>
-  <text x="587" y="914" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">最终结论</text>
-  <text x="587" y="936" text-anchor="middle" font-size="11" fill="#D0F0E8">置信度: 0.95+</text>
+<rect x="395" y="835" width="155" height="36" rx="6" fill="#EEF2FF"/>
+<text x="472" y="852" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">token节省</text>
+<text x="472" y="866" text-anchor="middle" font-size="13" font-weight="800" fill="#4F7DF3">~5×</text>
 
-  <line x1="660" y1="430" x2="555" y2="885" stroke="#48C9B0" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrowResult)" opacity="0.4"/>
+<rect x="560" y="835" width="155" height="36" rx="6" fill="#F0FFF8"/>
+<text x="637" y="852" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">回溯成本</text>
+<text x="637" y="866" text-anchor="middle" font-size="13" font-weight="800" fill="#2EC4B6">↓80%</text>
+
+<rect x="395" y="877" width="155" height="36" rx="6" fill="#FFF8E8"/>
+<text x="472" y="894" text-anchor="middle" font-size="8" font-weight="700" fill="#F5B935">单slice延迟</text>
+<text x="472" y="908" text-anchor="middle" font-size="13" font-weight="800" fill="#F5B935">10ms</text>
+
+<rect x="560" y="877" width="155" height="36" rx="6" fill="#FFF0EC"/>
+<text x="637" y="894" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">长任务稳定</text>
+<text x="637" y="908" text-anchor="middle" font-size="13" font-weight="800" fill="#E8734A">1000h+</text>
+
+<!-- Bottom design principles -->
+<rect x="20" y="930" width="710" height="55" rx="8" fill="#fff" stroke="#D0DCE8" stroke-width="1"/>
+<text x="30" y="948" font-size="9" font-weight="700" fill="#0D3A5C">核心设计原则 Design Principles</text>
+<circle cx="40" cy="965" r="3" fill="#4F7DF3"/>
+<text x="50" y="969" font-size="8" fill="#555">分而治之 Divide&amp;Conquer</text>
+<circle cx="200" cy="965" r="3" fill="#2EC4B6"/>
+<text x="210" y="969" font-size="8" fill="#555">状态机 State Machine</text>
+<circle cx="345" cy="965" r="3" fill="#7B5EE6"/>
+<text x="355" y="969" font-size="8" fill="#555">局部回溯 Local Backtrack</text>
+<circle cx="510" cy="965" r="3" fill="#F5B935"/>
+<text x="520" y="969" font-size="8" fill="#555">EWMA自适应</text>
+<circle cx="620" cy="965" r="3" fill="#E8734A"/>
+<text x="630" y="969" font-size="8" fill="#555">漂移检测</text>
+
+<text x="30" y="980" font-size="7" fill="#888" font-style="italic">类比: CPU时间片轮转调度 (10ms quantum) · 操作系统经典思想迁移到LLM推理</text>
+
+<text x="375" y="998" text-anchor="middle" font-size="8" fill="#AAA" font-style="italic">TimeSliceInfer · time_slice=10ms · state propagation · backtracking · parallel · adaptive</text>
 
 </svg>
 </div>
