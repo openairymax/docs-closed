@@ -5,286 +5,278 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
-  .fig{width:750px;height:1000px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
+  .fig{width:1200px;height:675px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
 </style>
 </head>
 <body>
 <div class="fig">
-<svg width="750" height="1000" viewBox="0 0 750 1000" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <filter id="sh" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a2e15"/></filter>
   <filter id="shd" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1a1a2e20"/></filter>
   <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D1B6B"/><stop offset="1" stop-color="#2A1050"/></linearGradient>
   <linearGradient id="gCog" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="gS2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6540D0"/><stop offset="1" stop-color="#5030B0"/></linearGradient>
   <linearGradient id="gExec" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
   <linearGradient id="gMem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
-  <marker id="ar" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#555"/></marker>
-  <marker id="arP" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#7B5EE6"/></marker>
-  <marker id="arG" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#2EC4B6"/></marker>
-  <marker id="arO" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#E8734A"/></marker>
+  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
+  <marker id="arG" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2EC4B6"/></marker>
+  <marker id="arO" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#E8734A"/></marker>
+  <marker id="arP" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#7B5EE6"/></marker>
 </defs>
 
 <!-- ===== HEADER ===== -->
-<rect width="750" height="70" fill="url(#gw)"/>
-<text x="30" y="34" font-size="20" font-weight="800" fill="#fff">CoreLoopThree</text>
-<text x="30" y="54" font-size="11" fill="#C0A0F0">三层认知循环引擎 · Cognition → Execution → Memory with Dual-System Thinking</text>
-<rect x="600" y="20" width="125" height="32" rx="16" fill="#ffffff20"/>
-<text x="662" y="40" text-anchor="middle" font-size="11" font-weight="600" fill="#C0A0F0">Figure 3 / Engine</text>
+<rect width="1200" height="58" fill="url(#gw)"/>
+<text x="32" y="32" font-size="22" font-weight="800" fill="#fff">CoreLoopThree</text>
+<text x="220" y="32" font-size="12" fill="#C0A0F0">三层认知循环引擎 · Cognition → Execution → Memory</text>
+<rect x="1050" y="16" width="130" height="28" rx="14" fill="#ffffff20"/>
+<text x="1115" y="35" text-anchor="middle" font-size="11" font-weight="600" fill="#C0A0F0">Figure 3 / Engine</text>
 
-<!-- ===== SECTION A: Three-Layer Loop (80-470) ===== -->
-<text x="30" y="92" font-size="13" font-weight="700" fill="#3D1B6B">A · 三层认知循环 Three-Layer Cognitive Loop</text>
-<line x1="30" y1="98" x2="720" y2="98" stroke="#D0D0E8" stroke-width="1"/>
+<!-- ===== LEFT: Three-Layer Loop (70-720) ===== -->
+<text x="32" y="82" font-size="13" font-weight="700" fill="#3D1B6B">A · 三层认知循环 Three-Layer Cognitive Loop</text>
+<line x1="32" y1="88" x2="720" y2="88" stroke="#D0D0E8" stroke-width="1"/>
 
-<!-- Cognition Layer (top, full width) -->
-<rect x="20" y="110" width="710" height="120" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#shd)"/>
-<rect x="20" y="110" width="710" height="34" rx="12" fill="url(#gCog)"/>
-<rect x="20" y="132" width="710" height="12" fill="url(#gCog)"/>
-<text x="40" y="133" font-size="13" font-weight="800" fill="#fff">① 认知层 Cognition Layer</text>
-<text x="300" y="133" font-size="9" fill="#E0D0FF">Think — 意图解析 · 任务规划 · 策略生成</text>
+<!-- Cognition Layer -->
+<rect x="40" y="100" width="680" height="120" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#shd)"/>
+<rect x="40" y="100" width="680" height="32" rx="12" fill="url(#gCog)"/>
+<rect x="40" y="120" width="680" height="12" fill="url(#gCog)"/>
+<text x="55" y="122" font-size="13" font-weight="800" fill="#fff">① 认知层 Cognition Layer</text>
+<text x="290" y="122" font-size="9" fill="#E0D0FF">Think — 意图解析 · 任务规划 · 策略生成</text>
 
-<!-- Dual system inside cognition -->
-<rect x="35" y="155" width="220" height="62" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1"/>
-<text x="145" y="172" text-anchor="middle" font-size="10" font-weight="800" fill="#6540D0">System 2 — 慢思考 (t2)</text>
-<text x="145" y="187" text-anchor="middle" font-size="8" fill="#777">深度推理 · 规划生成</text>
-<text x="145" y="200" text-anchor="middle" font-size="8" fill="#777">元认知控制 · 策略制定</text>
-<text x="145" y="212" text-anchor="middle" font-size="7" fill="#999">reflective_plan() · LLM-driven</text>
+<!-- 3 systems -->
+<rect x="55" y="145" width="210" height="62" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1"/>
+<text x="160" y="164" text-anchor="middle" font-size="10" font-weight="800" fill="#6540D0">System 2 — 慢思考 (t2)</text>
+<text x="160" y="180" text-anchor="middle" font-size="9" fill="#777">深度推理 · 规划生成</text>
+<text x="160" y="194" text-anchor="middle" font-size="8" fill="#999">reflective_plan() · LLM-driven</text>
 
-<rect x="265" y="155" width="220" height="62" rx="8" fill="#EEF2FF" stroke="#4F7DF3" stroke-width="1"/>
-<text x="375" y="172" text-anchor="middle" font-size="10" font-weight="800" fill="#4F7DF3">System 1-f — 快检验 (t1-f)</text>
-<text x="375" y="187" text-anchor="middle" font-size="8" fill="#777">流式批判 · 快速分类</text>
-<text x="375" y="200" text-anchor="middle" font-size="8" fill="#777">置信度校准 · 合理性检查</text>
-<text x="375" y="212" text-anchor="middle" font-size="7" fill="#999">streaming_critic() · token-level</text>
+<rect x="275" y="145" width="210" height="62" rx="8" fill="#EEF2FF" stroke="#4F7DF3" stroke-width="1"/>
+<text x="380" y="164" text-anchor="middle" font-size="10" font-weight="800" fill="#4F7DF3">System 1-f — 快检验 (t1-f)</text>
+<text x="380" y="180" text-anchor="middle" font-size="9" fill="#777">流式批判 · 置信度校准</text>
+<text x="380" y="194" text-anchor="middle" font-size="8" fill="#999">streaming_critic() · token-level</text>
 
-<rect x="495" y="155" width="220" height="62" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="605" y="172" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">System 1-p — 专业检 (t1-p)</text>
-<text x="605" y="187" text-anchor="middle" font-size="8" fill="#777">领域专家 · 代码审计</text>
-<text x="605" y="200" text-anchor="middle" font-size="8" fill="#777">数学验证 · 交叉验证委员会</text>
-<text x="605" y="212" text-anchor="middle" font-size="7" fill="#999">domain_expert() · backup</text>
+<rect x="495" y="145" width="210" height="62" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
+<text x="600" y="164" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">System 1-p — 专业检 (t1-p)</text>
+<text x="600" y="180" text-anchor="middle" font-size="9" fill="#777">领域专家 · 代码审计</text>
+<text x="600" y="194" text-anchor="middle" font-size="8" fill="#999">domain_expert() · backup</text>
 
-<!-- Arrow Cognition → Execution -->
-<line x1="375" y1="230" x2="375" y2="250" stroke="#2EC4B6" stroke-width="2.5" marker-end="url(#arG)"/>
-<rect x="385" y="232" width="80" height="16" rx="8" fill="#2EC4B6"/>
-<text x="425" y="244" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">task DAG</text>
+<line x1="380" y1="220" x2="380" y2="240" stroke="#2EC4B6" stroke-width="2.5" marker-end="url(#arG)"/>
+<rect x="395" y="222" width="75" height="16" rx="8" fill="#2EC4B6"/>
+<text x="432" y="234" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">task DAG</text>
 
-<!-- Execution Layer (middle, full width) -->
-<rect x="20" y="250" width="710" height="110" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#shd)"/>
-<rect x="20" y="250" width="710" height="34" rx="12" fill="url(#gExec)"/>
-<rect x="20" y="272" width="710" height="12" fill="url(#gExec)"/>
-<text x="40" y="273" font-size="13" font-weight="800" fill="#fff">② 执行层 Execution Layer</text>
-<text x="300" y="273" font-size="9" fill="#D0F0EC">Act — 工具调用 · 行动协调 · 状态追踪</text>
+<!-- Execution Layer -->
+<rect x="40" y="240" width="680" height="105" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#shd)"/>
+<rect x="40" y="240" width="680" height="32" rx="12" fill="url(#gExec)"/>
+<rect x="40" y="260" width="680" height="12" fill="url(#gExec)"/>
+<text x="55" y="262" font-size="13" font-weight="800" fill="#fff">② 执行层 Execution Layer</text>
+<text x="290" y="262" font-size="9" fill="#D0F0EC">Act — 工具调用 · 行动协调 · 状态追踪</text>
 
-<!-- Execution components -->
-<rect x="35" y="296" width="165" height="52" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="117" y="314" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Tool Executor</text>
-<text x="117" y="328" text-anchor="middle" font-size="8" fill="#777">工具调用 · FFI bridge</text>
-<text x="117" y="340" text-anchor="middle" font-size="7" fill="#999">register/submit/wait</text>
+<rect x="55" y="285" width="158" height="50" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
+<text x="134" y="305" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Tool Executor</text>
+<text x="134" y="320" text-anchor="middle" font-size="8" fill="#777">FFI bridge</text>
+<text x="134" y="330" text-anchor="middle" font-size="7" fill="#999">register/submit/wait</text>
 
-<rect x="210" y="296" width="165" height="52" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="292" y="314" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Multimodal Coord.</text>
-<text x="292" y="328" text-anchor="middle" font-size="8" fill="#777">多模态行动协调</text>
-<text x="292" y="340" text-anchor="middle" font-size="7" fill="#999">text/image/code/audio</text>
+<rect x="223" y="285" width="158" height="50" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
+<text x="302" y="305" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Multimodal Coord.</text>
+<text x="302" y="320" text-anchor="middle" font-size="8" fill="#777">行动协调</text>
+<text x="302" y="330" text-anchor="middle" font-size="7" fill="#999">text/image/code</text>
 
-<rect x="385" y="296" width="165" height="52" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="467" y="314" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Action Tracker</text>
-<text x="467" y="328" text-anchor="middle" font-size="8" fill="#777">行动状态跟踪</text>
-<text x="467" y="340" text-anchor="middle" font-size="7" fill="#999">trace_id · provenance</text>
+<rect x="391" y="285" width="158" height="50" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
+<text x="470" y="305" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Action Tracker</text>
+<text x="470" y="320" text-anchor="middle" font-size="8" fill="#777">状态跟踪</text>
+<text x="470" y="330" text-anchor="middle" font-size="7" fill="#999">trace_id</text>
 
-<rect x="560" y="296" width="155" height="52" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="637" y="314" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Compensation</text>
-<text x="637" y="328" text-anchor="middle" font-size="8" fill="#777">补偿事务管理</text>
-<text x="637" y="340" text-anchor="middle" font-size="7" fill="#999">rollback · retry</text>
+<rect x="559" y="285" width="146" height="50" rx="8" fill="#F0FFF8" stroke="#2EC4B6" stroke-width="1"/>
+<text x="632" y="305" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Compensation</text>
+<text x="632" y="320" text-anchor="middle" font-size="8" fill="#777">补偿事务</text>
+<text x="632" y="330" text-anchor="middle" font-size="7" fill="#999">rollback · retry</text>
 
-<!-- Arrow Execution → Memory -->
-<line x1="375" y1="360" x2="375" y2="380" stroke="#E8734A" stroke-width="2.5" marker-end="url(#arO)"/>
-<rect x="385" y="362" width="85" height="16" rx="8" fill="#E8734A"/>
-<text x="427" y="374" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">results + trace</text>
+<line x1="380" y1="345" x2="380" y2="365" stroke="#E8734A" stroke-width="2.5" marker-end="url(#arO)"/>
+<rect x="395" y="347" width="90" height="16" rx="8" fill="#E8734A"/>
+<text x="440" y="359" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">results + trace</text>
 
-<!-- Memory Layer (bottom, full width) -->
-<rect x="20" y="380" width="710" height="95" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#shd)"/>
-<rect x="20" y="380" width="710" height="34" rx="12" fill="url(#gMem)"/>
-<rect x="20" y="402" width="710" height="12" fill="url(#gMem)"/>
-<text x="40" y="403" font-size="13" font-weight="800" fill="#fff">③ 记忆层 Memory &amp; Evolution Layer</text>
-<text x="340" y="403" font-size="9" fill="#FFD8C8">Remember — 写入 · 检索 · 进化 · 遗忘</text>
+<!-- Memory Layer -->
+<rect x="40" y="365" width="680" height="90" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#shd)"/>
+<rect x="40" y="365" width="680" height="32" rx="12" fill="url(#gMem)"/>
+<rect x="40" y="385" width="680" height="12" fill="url(#gMem)"/>
+<text x="55" y="387" font-size="13" font-weight="800" fill="#fff">③ 记忆层 Memory &amp; Evolution Layer</text>
+<text x="320" y="387" font-size="9" fill="#FFD8C8">Remember — 写入 · 检索 · 进化 · 遗忘</text>
 
-<rect x="35" y="424" width="165" height="42" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
-<text x="117" y="442" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Memory Write/Query</text>
-<text x="117" y="456" text-anchor="middle" font-size="7" fill="#999">→ MemoryRovol L1-L4</text>
+<rect x="55" y="408" width="158" height="40" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
+<text x="134" y="425" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Memory Write/Query</text>
+<text x="134" y="440" text-anchor="middle" font-size="7" fill="#999">→ MemoryRovol L1-L4</text>
 
-<rect x="210" y="424" width="165" height="42" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
-<text x="292" y="442" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Context Mount</text>
-<text x="292" y="456" text-anchor="middle" font-size="7" fill="#999">mount() · access_count</text>
+<rect x="223" y="408" width="158" height="40" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
+<text x="302" y="425" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Context Mount</text>
+<text x="302" y="440" text-anchor="middle" font-size="7" fill="#999">mount() · access_count</text>
 
-<rect x="385" y="424" width="165" height="42" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
-<text x="467" y="442" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Evolution</text>
-<text x="467" y="456" text-anchor="middle" font-size="7" fill="#999">模式挖掘 · L4聚类</text>
+<rect x="391" y="408" width="158" height="40" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
+<text x="470" y="425" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Evolution</text>
+<text x="470" y="440" text-anchor="middle" font-size="7" fill="#999">模式挖掘 · L4聚类</text>
 
-<rect x="560" y="424" width="155" height="42" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
-<text x="637" y="442" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Forgetting</text>
-<text x="637" y="456" text-anchor="middle" font-size="7" fill="#999">Ebbinghaus R(t)=e^(-t/λ)</text>
+<rect x="559" y="408" width="146" height="40" rx="8" fill="#FFF0EC" stroke="#E8734A" stroke-width="1"/>
+<text x="632" y="425" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Forgetting</text>
+<text x="632" y="440" text-anchor="middle" font-size="7" fill="#999">R(t)=e^(-t/λ)</text>
 
-<!-- Feedback loop arrow (Memory → Cognition) -->
-<path d="M690,427 Q720,270 720,170 L710,170" stroke="#7B5EE6" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arP)"/>
-<rect x="640" y="280" width="75" height="18" rx="9" fill="#7B5EE6"/>
-<text x="677" y="293" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">反馈进化</text>
+<!-- Feedback loop -->
+<path d="M690,410 Q725,265 725,160 L715,160" stroke="#7B5EE6" stroke-width="2" stroke-dasharray="5,3" fill="none" marker-end="url(#arP)"/>
+<rect x="680" y="275" width="75" height="18" rx="9" fill="#7B5EE6"/>
+<text x="717" y="288" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">反馈进化</text>
 
-<!-- ===== SECTION B: Dual-System Detail (470-680) ===== -->
-<text x="30" y="502" font-size="13" font-weight="700" fill="#3D1B6B">B · 双系统协同机制 Dual-System Collaboration</text>
-<line x1="30" y1="508" x2="720" y2="508" stroke="#D0D0E8" stroke-width="1"/>
+<!-- ===== RIGHT: Dual-System + 5-Phase (740-1170) ===== -->
+<text x="745" y="82" font-size="13" font-weight="700" fill="#3D1B6B">B · 双系统协同 Dual-System</text>
+<line x1="745" y1="88" x2="1170" y2="88" stroke="#D0D0E8" stroke-width="1"/>
 
-<!-- Flow diagram -->
-<rect x="20" y="518" width="710" height="160" rx="10" fill="#fff" stroke="#D0D0E8" stroke-width="1" filter="url(#sh)"/>
+<rect x="745" y="100" width="425" height="170" rx="10" fill="#fff" stroke="#D0D0E8" stroke-width="1" filter="url(#sh)"/>
 
-<!-- t2 generates -->
-<rect x="35" y="535" width="120" height="55" rx="8" fill="url(#gS2)" filter="url(#sh)"/>
-<text x="95" y="555" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">t2 生成</text>
-<text x="95" y="570" text-anchor="middle" font-size="8" fill="#E0D0FF">深度推理</text>
-<text x="95" y="582" text-anchor="middle" font-size="7" fill="#C0A0F0">planner+reasoner</text>
+<rect x="760" y="115" width="110" height="55" rx="8" fill="#6540D0" filter="url(#sh)"/>
+<text x="815" y="138" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">t2 生成</text>
+<text x="815" y="153" text-anchor="middle" font-size="8" fill="#E0D0FF">深度推理</text>
+<text x="815" y="164" text-anchor="middle" font-size="7" fill="#C0A0F0">planner+reasoner</text>
 
-<line x1="155" y1="562" x2="180" y2="562" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#arP)"/>
+<line x1="870" y1="142" x2="895" y2="142" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#arP)"/>
 
-<!-- t1-f validates -->
-<rect x="180" y="535" width="120" height="55" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
-<text x="240" y="555" text-anchor="middle" font-size="10" font-weight="800" fill="#4F7DF3">t1-f 验证</text>
-<text x="240" y="570" text-anchor="middle" font-size="8" fill="#777">流式批判</text>
-<text x="240" y="582" text-anchor="middle" font-size="7" fill="#999">confidence ≥ θ?</text>
+<rect x="895" y="115" width="110" height="55" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
+<text x="950" y="138" text-anchor="middle" font-size="10" font-weight="800" fill="#4F7DF3">t1-f 验证</text>
+<text x="950" y="153" text-anchor="middle" font-size="8" fill="#777">流式批判</text>
+<text x="950" y="164" text-anchor="middle" font-size="7" fill="#999">conf ≥ θ?</text>
 
-<!-- Decision diamond -->
-<polygon points="335,540 370,562 335,584 300,562" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
-<text x="335" y="560" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">conf</text>
-<text x="335" y="572" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">≥ θ?</text>
-<line x1="300" y1="562" x2="320" y2="562" stroke="#4F7DF3" stroke-width="1.5" marker-end="url(#ar)"/>
+<polygon points="1045,120 1080,142 1045,164 1010,142" fill="#fff" stroke="#4F7DF3" stroke-width="1.5"/>
+<text x="1045" y="140" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">conf</text>
+<text x="1045" y="152" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">≥ θ?</text>
+<line x1="1005" y1="142" x2="1010" y2="142" stroke="#4F7DF3" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<!-- Yes path -->
-<line x1="370" y1="562" x2="400" y2="562" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
-<text x="385" y="555" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">YES</text>
-<rect x="400" y="535" width="100" height="55" rx="8" fill="#2EC4B6"/>
-<text x="450" y="555" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">接受</text>
-<text x="450" y="570" text-anchor="middle" font-size="8" fill="#D0F0EC">输出结果</text>
-<text x="450" y="582" text-anchor="middle" font-size="7" fill="#D0F0EC">→ execute</text>
+<!-- YES path -->
+<line x1="1080" y1="142" x2="1110" y2="142" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
+<text x="1095" y="135" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">Y</text>
+<rect x="1110" y="115" width="55" height="55" rx="8" fill="#2EC4B6"/>
+<text x="1137" y="138" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">接受</text>
+<text x="1137" y="153" text-anchor="middle" font-size="8" fill="#D0F0EC">输出</text>
+<text x="1137" y="164" text-anchor="middle" font-size="7" fill="#D0F0EC">→ exec</text>
 
-<!-- No path -->
-<line x1="335" y1="584" x2="335" y2="610" stroke="#E8734A" stroke-width="1.5" marker-end="url(#arO)"/>
-<text x="345" y="600" font-size="7" font-weight="700" fill="#E8734A">NO</text>
-<rect x="275" y="610" width="120" height="50" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5"/>
-<text x="335" y="628" text-anchor="middle" font-size="9" font-weight="800" fill="#1AAA9C">t1-p 专业检</text>
-<text x="335" y="642" text-anchor="middle" font-size="8" fill="#777">领域专家验证</text>
-<text x="335" y="654" text-anchor="middle" font-size="7" fill="#999">code/math audit</text>
+<!-- NO path -->
+<line x1="1045" y1="164" x2="1045" y2="190" stroke="#E8734A" stroke-width="1.5" marker-end="url(#arO)"/>
+<text x="1055" y="180" font-size="7" font-weight="700" fill="#E8734A">N</text>
+<rect x="990" y="190" width="110" height="40" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5"/>
+<text x="1045" y="207" text-anchor="middle" font-size="9" font-weight="800" fill="#1AAA9C">t1-p 专业检</text>
+<text x="1045" y="222" text-anchor="middle" font-size="7" fill="#999">code/math audit</text>
 
-<line x1="395" y1="635" x2="420" y2="635" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
+<line x1="1100" y1="210" x2="1125" y2="210" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
+<rect x="1125" y="190" width="40" height="40" rx="8" fill="#2EC4B6" opacity="0.8"/>
+<text x="1145" y="207" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">修正</text>
+<text x="1145" y="222" text-anchor="middle" font-size="7" fill="#D0F0EC">retry t2</text>
 
-<rect x="420" y="610" width="100" height="50" rx="8" fill="#2EC4B6" opacity="0.8"/>
-<text x="470" y="628" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">修正</text>
-<text x="470" y="642" text-anchor="middle" font-size="8" fill="#D0F0EC">→ retry t2</text>
-<text x="470" y="654" text-anchor="middle" font-size="7" fill="#D0F0EC">max 3 rounds</text>
+<!-- Adaptive chunking -->
+<rect x="760" y="195" width="195" height="65" rx="8" fill="#FFFDE8" stroke="#F5B935" stroke-width="1.5"/>
+<text x="857" y="214" text-anchor="middle" font-size="10" font-weight="800" fill="#E0A020">自适应分块 (TAR)</text>
+<text x="770" y="230" font-size="8" fill="#555">conf高 → 增大chunk</text>
+<text x="770" y="243" font-size="8" fill="#555">conf低 → 减小chunk</text>
+<text x="770" y="255" font-size="7" font-weight="700" fill="#E0A020">"前期多投入,后期少消耗"</text>
 
-<!-- Adapt mechanism -->
-<line x1="520" y1="562" x2="545" y2="562" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="545" y="535" width="170" height="125" rx="8" fill="#FFFDE8" stroke="#F5B935" stroke-width="1.5"/>
-<text x="630" y="555" text-anchor="middle" font-size="10" font-weight="800" fill="#E0A020">自适应分块</text>
-<text x="630" y="570" text-anchor="middle" font-size="8" fill="#888">Adaptive Chunking (TAR)</text>
-<text x="555" y="588" font-size="7" fill="#555">· conf高 → 增大chunk</text>
-<text x="555" y="602" font-size="7" fill="#555">· conf低 → 减小chunk</text>
-<text x="555" y="616" font-size="7" fill="#555">· 动态调整验证粒度</text>
-<text x="555" y="634" font-size="7" fill="#999">token-level实时纠正</text>
-<text x="555" y="650" font-size="7" font-weight="700" fill="#E0A020">"前期多投入,后期少消耗"</text>
+<!-- 5-Phase flow -->
+<text x="745" y="295" font-size="13" font-weight="700" fill="#3D1B6B">C · 五阶段执行流程 Five-Phase Flow</text>
+<line x1="745" y1="301" x2="1170" y2="301" stroke="#D0D0E8" stroke-width="1"/>
 
-<!-- ===== SECTION C: 5-Phase Flow (680-860) ===== -->
-<text x="30" y="704" font-size="13" font-weight="700" fill="#3D1B6B">C · 五阶段执行流程 Five-Phase Execution Flow</text>
-<line x1="30" y1="710" x2="720" y2="710" stroke="#D0D0E8" stroke-width="1"/>
+<rect x="745" y="312" width="425" height="115" rx="10" fill="#fff" stroke="#D0D0E8" stroke-width="1" filter="url(#sh)"/>
 
-<rect x="20" y="720" width="710" height="120" rx="10" fill="#fff" stroke="#D0D0E8" stroke-width="1" filter="url(#sh)"/>
+<rect x="755" y="328" width="78" height="42" rx="6" fill="#7B5EE6"/>
+<text x="794" y="346" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">Phase 1</text>
+<text x="794" y="358" text-anchor="middle" font-size="7" fill="#E0D0FF">意图解析</text>
+<text x="794" y="367" text-anchor="middle" font-size="6" fill="#C0A0F0">intent_parse</text>
 
-<!-- 5 phases -->
-<rect x="30" y="735" width="128" height="50" rx="8" fill="#7B5EE6"/>
-<text x="94" y="755" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Phase 1</text>
-<text x="94" y="769" text-anchor="middle" font-size="8" fill="#E0D0FF">意图解析</text>
-<text x="94" y="780" text-anchor="middle" font-size="7" fill="#C0A0F0">intent_parse</text>
+<line x1="833" y1="349" x2="843" y2="349" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<line x1="158" y1="760" x2="170" y2="760" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="843" y="328" width="78" height="42" rx="6" fill="#4F7DF3"/>
+<text x="882" y="346" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">Phase 2</text>
+<text x="882" y="358" text-anchor="middle" font-size="7" fill="#D0D8FF">任务规划</text>
+<text x="882" y="367" text-anchor="middle" font-size="6" fill="#A0B0E8">build_DAG</text>
 
-<rect x="170" y="735" width="128" height="50" rx="8" fill="#4F7DF3"/>
-<text x="234" y="755" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Phase 2</text>
-<text x="234" y="769" text-anchor="middle" font-size="8" fill="#D0D8FF">任务规划</text>
-<text x="234" y="780" text-anchor="middle" font-size="7" fill="#A0B0E8">build_DAG · LLM</text>
+<line x1="921" y1="349" x2="931" y2="349" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<line x1="298" y1="760" x2="310" y2="760" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="931" y="328" width="78" height="42" rx="6" fill="#2EC4B6"/>
+<text x="970" y="346" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">Phase 3</text>
+<text x="970" y="358" text-anchor="middle" font-size="7" fill="#D0F0EC">执行验证</text>
+<text x="970" y="367" text-anchor="middle" font-size="6" fill="#A0E0D8">execute</text>
 
-<rect x="310" y="735" width="128" height="50" rx="8" fill="#2EC4B6"/>
-<text x="374" y="755" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Phase 3</text>
-<text x="374" y="769" text-anchor="middle" font-size="8" fill="#D0F0EC">执行验证</text>
-<text x="374" y="780" text-anchor="middle" font-size="7" fill="#A0E0D8">execute · audit</text>
+<line x1="1009" y1="349" x2="1019" y2="349" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<line x1="438" y1="760" x2="450" y2="760" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="1019" y="328" width="78" height="42" rx="6" fill="#F5B935"/>
+<text x="1058" y="346" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">Phase 4</text>
+<text x="1058" y="358" text-anchor="middle" font-size="7" fill="#FFF8D8">目标对齐</text>
+<text x="1058" y="367" text-anchor="middle" font-size="6" fill="#F0E0A0">drift detect</text>
 
-<rect x="450" y="735" width="128" height="50" rx="8" fill="#F5B935"/>
-<text x="514" y="755" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Phase 4</text>
-<text x="514" y="769" text-anchor="middle" font-size="8" fill="#FFF8D8">目标对齐</text>
-<text x="514" y="780" text-anchor="middle" font-size="7" fill="#F0E0A0">align · drift detect</text>
+<line x1="1097" y1="349" x2="1107" y2="349" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<line x1="578" y1="760" x2="590" y2="760" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="1107" y="328" width="58" height="42" rx="6" fill="#E8734A"/>
+<text x="1136" y="346" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">Phase 5</text>
+<text x="1136" y="358" text-anchor="middle" font-size="7" fill="#FFD8C8">记忆进化</text>
+<text x="1136" y="367" text-anchor="middle" font-size="6" fill="#F0B8A0">evolve</text>
 
-<rect x="590" y="735" width="128" height="50" rx="8" fill="#E8734A"/>
-<text x="654" y="755" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Phase 5</text>
-<text x="654" y="769" text-anchor="middle" font-size="8" fill="#FFD8C8">记忆进化</text>
-<text x="654" y="780" text-anchor="middle" font-size="7" fill="#F0B8A0">evolve · forget</text>
+<!-- Alignment scoring -->
+<text x="755" y="392" font-size="8" font-weight="700" fill="#3D1B6B">Phase 4 目标对齐三维度 Alignment Scoring</text>
+<rect x="755" y="398" width="135" height="20" rx="4" fill="#F5F0FF"/>
+<text x="763" y="412" font-size="7" fill="#555">逻辑连贯</text>
+<rect x="825" y="400" width="60" height="14" rx="3" fill="#7B5EE6"/>
+<text x="895" y="412" font-size="7" font-weight="700" fill="#7B5EE6">30%</text>
 
-<!-- Alignment scoring detail -->
-<text x="30" y="808" font-size="9" font-weight="700" fill="#3D1B6B">Phase 4 目标对齐三维度评分 Alignment Scoring</text>
-<rect x="30" y="815" width="220" height="20" rx="4" fill="#F5F0FF"/>
-<text x="40" y="829" font-size="8" fill="#555">逻辑连贯性</text>
-<rect x="140" y="818" width="100" height="14" rx="3" fill="#E0D0F0"/>
-<rect x="140" y="818" width="30" height="14" rx="3" fill="#7B5EE6"/>
-<text x="250" y="829" font-size="8" font-weight="700" fill="#7B5EE6">30%</text>
+<rect x="905" y="398" width="135" height="20" rx="4" fill="#EEF2FF"/>
+<text x="913" y="412" font-size="7" fill="#555">事实一致</text>
+<rect x="975" y="400" width="60" height="14" rx="3" fill="#4F7DF3"/>
+<text x="1045" y="412" font-size="7" font-weight="700" fill="#4F7DF3">35%</text>
 
-<rect x="270" y="815" width="220" height="20" rx="4" fill="#EEF2FF"/>
-<text x="280" y="829" font-size="8" fill="#555">事实一致性</text>
-<rect x="380" y="818" width="100" height="14" rx="3" fill="#D0D8F0"/>
-<rect x="380" y="818" width="35" height="14" rx="3" fill="#4F7DF3"/>
-<text x="490" y="829" font-size="8" font-weight="700" fill="#4F7DF3">35%</text>
+<rect x="1055" y="398" width="110" height="20" rx="4" fill="#FFF8E8"/>
+<text x="1063" y="412" font-size="7" fill="#555">目标对齐</text>
+<rect x="1115" y="400" width="45" height="14" rx="3" fill="#F5B935"/>
+<text x="1163" y="412" font-size="7" font-weight="700" fill="#F5B935">35%</text>
 
-<rect x="510" y="815" width="210" height="20" rx="4" fill="#FFF8E8"/>
-<text x="520" y="829" font-size="8" fill="#555">目标对齐性</text>
-<rect x="610" y="818" width="100" height="14" rx="3" fill="#F0E8D0"/>
-<rect x="610" y="818" width="35" height="14" rx="3" fill="#F5B935"/>
-<text x="715" y="829" font-size="8" font-weight="700" fill="#F5B935">35%</text>
+<!-- ===== Metrics + Theory (bottom) ===== -->
+<text x="32" y="475" font-size="13" font-weight="700" fill="#3D1B6B">D · 关键指标 Key Metrics</text>
+<line x1="32" y1="481" x2="1170" y2="481" stroke="#D0D0E8" stroke-width="1"/>
 
-<!-- ===== SECTION D: Metrics (860-1000) ===== -->
-<text x="30" y="860" font-size="13" font-weight="700" fill="#3D1B6B">D · 关键指标与设计原则 Key Metrics</text>
-<line x1="30" y1="866" x2="720" y2="866" stroke="#D0D0E8" stroke-width="1"/>
+<rect x="40" y="495" width="280" height="55" rx="8" fill="#F5F0FF"/>
+<text x="180" y="515" text-anchor="middle" font-size="10" font-weight="700" fill="#6540D0">长任务稳定性</text>
+<text x="180" y="538" text-anchor="middle" font-size="20" font-weight="800" fill="#7B5EE6">1000h</text>
 
-<!-- 4 KPI -->
-<rect x="20" y="878" width="170" height="52" rx="8" fill="#F5F0FF"/>
-<text x="105" y="898" text-anchor="middle" font-size="9" font-weight="700" fill="#6540D0">长任务稳定性</text>
-<text x="105" y="918" text-anchor="middle" font-size="16" font-weight="800" fill="#7B5EE6">1000h</text>
+<rect x="330" y="495" width="280" height="55" rx="8" fill="#F0FFF8"/>
+<text x="470" y="515" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">任务准确率</text>
+<text x="470" y="538" text-anchor="middle" font-size="20" font-weight="800" fill="#2EC4B6">99%</text>
 
-<rect x="200" y="878" width="170" height="52" rx="8" fill="#F0FFF8"/>
-<text x="285" y="898" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">任务准确率</text>
-<text x="285" y="918" text-anchor="middle" font-size="16" font-weight="800" fill="#2EC4B6">99%</text>
+<rect x="620" y="495" width="280" height="55" rx="8" fill="#FFF8E8"/>
+<text x="760" y="515" text-anchor="middle" font-size="10" font-weight="700" fill="#E0A020">漂移检测窗口</text>
+<text x="760" y="538" text-anchor="middle" font-size="20" font-weight="800" fill="#F5B935">8 rounds</text>
 
-<rect x="380" y="878" width="170" height="52" rx="8" fill="#FFF8E8"/>
-<text x="465" y="898" text-anchor="middle" font-size="9" font-weight="700" fill="#E0A020">漂移检测窗口</text>
-<text x="465" y="918" text-anchor="middle" font-size="16" font-weight="800" fill="#F5B935">8 rounds</text>
+<rect x="910" y="495" width="260" height="55" rx="8" fill="#FFF0EC"/>
+<text x="1040" y="515" text-anchor="middle" font-size="10" font-weight="700" fill="#D45A30">Token节省</text>
+<text x="1040" y="538" text-anchor="middle" font-size="20" font-weight="800" fill="#E8734A">~500%</text>
 
-<rect x="560" y="878" width="170" height="52" rx="8" fill="#FFF0EC"/>
-<text x="645" y="898" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">Token节省</text>
-<text x="645" y="918" text-anchor="middle" font-size="16" font-weight="800" fill="#E8734A">~500%</text>
+<!-- Theory -->
+<rect x="40" y="565" width="1130" height="80" rx="8" fill="#fff" stroke="#D0D0E8" stroke-width="1" filter="url(#sh)"/>
+<text x="55" y="585" font-size="11" font-weight="700" fill="#3D1B6B">理论基础 Theoretical Foundations</text>
 
-<!-- Design principles -->
-<rect x="20" y="940" width="710" height="50" rx="8" fill="#fff" stroke="#D0D0E8" stroke-width="1"/>
-<text x="35" y="958" font-size="9" font-weight="700" fill="#3D1B6B">理论基础</text>
-<circle cx="40" cy="975" r="3" fill="#7B5EE6"/>
-<text x="50" y="979" font-size="8" fill="#555">钱学森工程控制论</text>
-<circle cx="190" cy="975" r="3" fill="#4F7DF3"/>
-<text x="200" y="979" font-size="8" fill="#555">Kahneman双系统理论</text>
-<circle cx="355" cy="975" r="3" fill="#2EC4B6"/>
-<text x="365" y="979" font-size="8" fill="#555">体系并行论</text>
-<circle cx="460" cy="975" r="3" fill="#F5B935"/>
-<text x="470" y="979" font-size="8" fill="#555">海马体-新皮层理论</text>
-<circle cx="610" cy="975" r="3" fill="#E8734A"/>
-<text x="620" y="979" font-size="8" fill="#555">控制论负反馈</text>
+<rect x="55" y="595" width="210" height="40" rx="6" fill="#F5F0FF"/>
+<circle cx="72" cy="615" r="4" fill="#7B5EE6"/>
+<text x="82" y="612" font-size="9" font-weight="700" fill="#6540D0">钱学森工程控制论</text>
+<text x="82" y="626" font-size="7" fill="#888">系统学 · 反馈控制</text>
 
-<text x="375" y="996" text-anchor="middle" font-size="8" fill="#AAA" font-style="italic">CoreLoopThree · Think-Act-Remember · 3 layers · 3 thinking components · 5 phases · 双系统协同</text>
+<rect x="275" y="595" width="210" height="40" rx="6" fill="#EEF2FF"/>
+<circle cx="292" cy="615" r="4" fill="#4F7DF3"/>
+<text x="302" y="612" font-size="9" font-weight="700" fill="#3A5FD9">Kahneman双系统</text>
+<text x="302" y="626" font-size="7" fill="#888">System 1 / System 2</text>
+
+<rect x="495" y="595" width="210" height="40" rx="6" fill="#F0FFF8"/>
+<circle cx="512" cy="615" r="4" fill="#2EC4B6"/>
+<text x="522" y="612" font-size="9" font-weight="700" fill="#1AAA9C">体系并行论</text>
+<text x="522" y="626" font-size="7" fill="#888">并行认知架构</text>
+
+<rect x="715" y="595" width="210" height="40" rx="6" fill="#FFF8E8"/>
+<circle cx="732" cy="615" r="4" fill="#F5B935"/>
+<text x="742" y="612" font-size="9" font-weight="700" fill="#E0A020">海马体-新皮层</text>
+<text x="742" y="626" font-size="7" fill="#888">记忆固化理论</text>
+
+<rect x="935" y="595" width="225" height="40" rx="6" fill="#FFF0EC"/>
+<circle cx="952" cy="615" r="4" fill="#E8734A"/>
+<text x="962" y="612" font-size="9" font-weight="700" fill="#D45A30">控制论负反馈</text>
+<text x="962" y="626" font-size="7" fill="#888">闭环纠偏 · 自适应</text>
+
+<text x="600" y="660" text-anchor="middle" font-size="9" fill="#AAA" font-style="italic">CoreLoopThree · Think-Act-Remember · 3 layers · 双系统协同 · 5 phases · 5 theories</text>
 
 </svg>
 </div>

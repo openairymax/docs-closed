@@ -5,12 +5,12 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
-  .fig{width:750px;height:1000px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
+  .fig{width:1200px;height:675px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
 </style>
 </head>
 <body>
 <div class="fig">
-<svg width="750" height="1000" viewBox="0 0 750 1000" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <filter id="sh" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a2e15"/></filter>
   <filter id="shd" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1a1a2e20"/></filter>
@@ -20,209 +20,215 @@
   <linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
   <linearGradient id="gC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
   <linearGradient id="gD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <marker id="ar" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 Z" fill="#555"/></marker>
+  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
 </defs>
 
 <!-- ===== HEADER ===== -->
-<rect width="750" height="70" fill="url(#gw)"/>
-<text x="30" y="34" font-size="20" font-weight="800" fill="#fff">Agents IPC</text>
-<text x="30" y="54" font-size="11" fill="#80D0B8">智能体进程间通信 · Zero-Copy Binder Bus with Shared Memory &amp; Registry</text>
-<rect x="600" y="20" width="125" height="32" rx="16" fill="#ffffff20"/>
-<text x="662" y="40" text-anchor="middle" font-size="11" font-weight="600" fill="#80D0B8">Figure 4 / Topology</text>
+<rect width="1200" height="58" fill="url(#gw)"/>
+<text x="32" y="32" font-size="22" font-weight="800" fill="#fff">Agents IPC</text>
+<text x="170" y="32" font-size="12" fill="#80D0B8">智能体进程间通信 · Zero-Copy Binder Bus</text>
+<rect x="1050" y="16" width="130" height="28" rx="14" fill="#ffffff20"/>
+<text x="1115" y="35" text-anchor="middle" font-size="11" font-weight="600" fill="#80D0B8">Figure 4 / Topology</text>
 
-<!-- ===== SECTION A: Multi-Agent Topology (80-420) ===== -->
-<text x="30" y="92" font-size="13" font-weight="700" fill="#1a4a3a">A · 多智能体拓扑 Multi-Agent Topology</text>
-<line x1="30" y1="98" x2="720" y2="98" stroke="#D0E8D8" stroke-width="1"/>
-
-<!-- Central IPC Bus -->
-<rect x="120" y="200" width="510" height="170" rx="16" fill="url(#gBus)" filter="url(#shd)"/>
-<text x="375" y="230" text-anchor="middle" font-size="14" font-weight="800" fill="#C0C0D8">IPC Binder Bus</text>
-<text x="375" y="248" text-anchor="middle" font-size="9" fill="#9090B0">零拷贝消息总线 · &lt;10μs · 100K+ msg/s</text>
-
-<!-- Bus internal: Shared Memory -->
-<rect x="140" y="262" width="225" height="92" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
-<text x="252" y="280" text-anchor="middle" font-size="11" font-weight="700" fill="#C0C0D8">Shared Memory Pool</text>
-<text x="252" y="296" text-anchor="middle" font-size="8" fill="#9090B0">128MB · zero-copy transfer</text>
-<!-- memory blocks viz -->
-<rect x="150" y="306" width="28" height="18" rx="3" fill="#2EC4B6" opacity="0.6"/>
-<rect x="182" y="306" width="28" height="18" rx="3" fill="#7B5EE6" opacity="0.6"/>
-<rect x="214" y="306" width="28" height="18" rx="3" fill="#E8734A" opacity="0.6"/>
-<rect x="246" y="306" width="28" height="18" rx="3" fill="#F5B935" opacity="0.6"/>
-<rect x="278" y="306" width="28" height="18" rx="3" fill="#2EC4B6" opacity="0.3"/>
-<rect x="310" y="306" width="28" height="18" rx="3" fill="#7B5EE6" opacity="0.3"/>
-<rect x="342" y="306" width="20" height="18" rx="3" fill="#E8734A" opacity="0.3"/>
-<text x="252" y="344" text-anchor="middle" font-size="7" fill="#9090B0">msg buffer · ring buffer · arena</text>
-
-<!-- Bus internal: Semaphore + Registry -->
-<rect x="380" y="262" width="110" height="92" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
-<text x="435" y="280" text-anchor="middle" font-size="10" font-weight="700" fill="#C0C0D8">Semaphore</text>
-<text x="435" y="296" text-anchor="middle" font-size="8" fill="#9090B0">同步原语</text>
-<text x="395" y="314" font-size="7" fill="#A0A0C0">sem_post()</text>
-<text x="395" y="328" font-size="7" fill="#A0A0C0">sem_wait()</text>
-<text x="395" y="342" font-size="7" fill="#A0A0C0">timeout=5s</text>
-
-<rect x="500" y="262" width="115" height="92" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
-<text x="557" y="280" text-anchor="middle" font-size="10" font-weight="700" fill="#C0C0D8">Registry</text>
-<text x="557" y="296" text-anchor="middle" font-size="8" fill="#9090B0">Agent发现</text>
-<text x="510" y="314" font-size="7" fill="#A0A0C0">register(cap)</text>
-<text x="510" y="328" font-size="7" fill="#A0A0C0">lookup(name)</text>
-<text x="510" y="342" font-size="7" fill="#A0A0C0">heartbeat</text>
+<!-- ===== LEFT: Multi-Agent Topology (70-700) ===== -->
+<text x="32" y="82" font-size="13" font-weight="700" fill="#1a4a3a">A · 多智能体拓扑 Multi-Agent Topology</text>
+<line x1="32" y1="88" x2="700" y2="88" stroke="#D0E8D8" stroke-width="1"/>
 
 <!-- Agent A: Cognition (top-left) -->
-<rect x="20" y="110" width="170" height="80" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#sh)"/>
-<rect x="20" y="110" width="170" height="28" rx="12" fill="url(#gA)"/>
-<rect x="20" y="130" width="170" height="8" fill="url(#gA)"/>
-<text x="105" y="130" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-A 认知</text>
-<text x="105" y="152" text-anchor="middle" font-size="8" fill="#555">CoreLoopThree</text>
-<text x="105" y="166" text-anchor="middle" font-size="8" fill="#777">Cognition Engine</text>
-<text x="105" y="180" text-anchor="middle" font-size="7" fill="#999">plan · reason · decide</text>
+<rect x="40" y="105" width="155" height="80" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#sh)"/>
+<rect x="40" y="105" width="155" height="28" rx="12" fill="url(#gA)"/>
+<rect x="40" y="125" width="155" height="8" fill="url(#gA)"/>
+<text x="117" y="125" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-A 认知</text>
+<text x="117" y="148" text-anchor="middle" font-size="9" fill="#555">CoreLoopThree</text>
+<text x="117" y="162" text-anchor="middle" font-size="8" fill="#777">Cognition Engine</text>
+<text x="117" y="176" text-anchor="middle" font-size="7" fill="#999">plan · reason · decide</text>
 
 <!-- Agent B: Execution (top-right) -->
-<rect x="560" y="110" width="170" height="80" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#sh)"/>
-<rect x="560" y="110" width="170" height="28" rx="12" fill="url(#gB)"/>
-<rect x="560" y="130" width="170" height="8" fill="url(#gB)"/>
-<text x="645" y="130" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-B 执行</text>
-<text x="645" y="152" text-anchor="middle" font-size="8" fill="#555">Execution Engine</text>
-<text x="645" y="166" text-anchor="middle" font-size="8" fill="#777">Tool Executor</text>
-<text x="645" y="180" text-anchor="middle" font-size="7" fill="#999">call · run · verify</text>
+<rect x="505" y="105" width="155" height="80" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#sh)"/>
+<rect x="505" y="105" width="155" height="28" rx="12" fill="url(#gB)"/>
+<rect x="505" y="125" width="155" height="8" fill="url(#gB)"/>
+<text x="582" y="125" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-B 执行</text>
+<text x="582" y="148" text-anchor="middle" font-size="9" fill="#555">Execution Engine</text>
+<text x="582" y="162" text-anchor="middle" font-size="8" fill="#777">Tool Executor</text>
+<text x="582" y="176" text-anchor="middle" font-size="7" fill="#999">call · run · verify</text>
 
 <!-- Agent C: Memory (bottom-left) -->
-<rect x="20" y="380" width="170" height="80" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#sh)"/>
-<rect x="20" y="380" width="170" height="28" rx="12" fill="url(#gC)"/>
-<rect x="20" y="400" width="170" height="8" fill="url(#gC)"/>
-<text x="105" y="400" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-C 记忆</text>
-<text x="105" y="422" text-anchor="middle" font-size="8" fill="#555">MemoryRovol</text>
-<text x="105" y="436" text-anchor="middle" font-size="8" fill="#777">L1-L4 Engine</text>
-<text x="105" y="450" text-anchor="middle" font-size="7" fill="#999">store · retrieve · evolve</text>
+<rect x="40" y="370" width="155" height="80" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#sh)"/>
+<rect x="40" y="370" width="155" height="28" rx="12" fill="url(#gC)"/>
+<rect x="40" y="390" width="155" height="8" fill="url(#gC)"/>
+<text x="117" y="390" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-C 记忆</text>
+<text x="117" y="413" text-anchor="middle" font-size="9" fill="#555">MemoryRovol</text>
+<text x="117" y="427" text-anchor="middle" font-size="8" fill="#777">L1-L4 Engine</text>
+<text x="117" y="441" text-anchor="middle" font-size="7" fill="#999">store · retrieve · evolve</text>
 
 <!-- Agent D: Security (bottom-right) -->
-<rect x="560" y="380" width="170" height="80" rx="12" fill="#fff" stroke="#F5B935" stroke-width="2" filter="url(#sh)"/>
-<rect x="560" y="380" width="170" height="28" rx="12" fill="url(#gD)"/>
-<rect x="560" y="400" width="170" height="8" fill="url(#gD)"/>
-<text x="645" y="400" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-D 安全</text>
-<text x="645" y="422" text-anchor="middle" font-size="8" fill="#555">Cupolas</text>
-<text x="645" y="436" text-anchor="middle" font-size="8" fill="#777">Security Dome</text>
-<text x="645" y="450" text-anchor="middle" font-size="7" fill="#999">audit · sanitize · guard</text>
+<rect x="505" y="370" width="155" height="80" rx="12" fill="#fff" stroke="#F5B935" stroke-width="2" filter="url(#sh)"/>
+<rect x="505" y="370" width="155" height="28" rx="12" fill="url(#gD)"/>
+<rect x="505" y="390" width="155" height="8" fill="url(#gD)"/>
+<text x="582" y="390" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Agent-D 安全</text>
+<text x="582" y="413" text-anchor="middle" font-size="9" fill="#555">Cupolas</text>
+<text x="582" y="427" text-anchor="middle" font-size="8" fill="#777">Security Dome</text>
+<text x="582" y="441" text-anchor="middle" font-size="7" fill="#999">audit · sanitize · guard</text>
+
+<!-- Central IPC Bus -->
+<rect x="120" y="200" width="460" height="155" rx="16" fill="url(#gBus)" filter="url(#shd)"/>
+<text x="350" y="228" text-anchor="middle" font-size="14" font-weight="800" fill="#C0C0D8">IPC Binder Bus</text>
+<text x="350" y="244" text-anchor="middle" font-size="9" fill="#9090B0">零拷贝消息总线 · &lt;10μs · 100K+ msg/s</text>
+
+<!-- Shared Memory -->
+<rect x="135" y="256" width="200" height="88" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
+<text x="235" y="274" text-anchor="middle" font-size="11" font-weight="700" fill="#C0C0D8">Shared Memory Pool</text>
+<text x="235" y="288" text-anchor="middle" font-size="8" fill="#9090B0">128MB · zero-copy</text>
+<rect x="145" y="296" width="26" height="16" rx="3" fill="#2EC4B6" opacity="0.6"/>
+<rect x="175" y="296" width="26" height="16" rx="3" fill="#7B5EE6" opacity="0.6"/>
+<rect x="205" y="296" width="26" height="16" rx="3" fill="#E8734A" opacity="0.6"/>
+<rect x="235" y="296" width="26" height="16" rx="3" fill="#F5B935" opacity="0.6"/>
+<rect x="265" y="296" width="26" height="16" rx="3" fill="#2EC4B6" opacity="0.3"/>
+<rect x="295" y="296" width="26" height="16" rx="3" fill="#7B5EE6" opacity="0.3"/>
+<text x="235" y="330" text-anchor="middle" font-size="7" fill="#9090B0">msg · ring buffer · arena</text>
+
+<!-- Semaphore -->
+<rect x="350" y="256" width="105" height="88" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
+<text x="402" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#C0C0D8">Semaphore</text>
+<text x="402" y="288" text-anchor="middle" font-size="8" fill="#9090B0">同步原语</text>
+<text x="360" y="306" font-size="7" fill="#A0A0C0">sem_post()</text>
+<text x="360" y="320" font-size="7" fill="#A0A0C0">sem_wait()</text>
+<text x="360" y="334" font-size="7" fill="#A0A0C0">timeout=5s</text>
+
+<!-- Registry -->
+<rect x="470" y="256" width="95" height="88" rx="8" fill="#ffffff15" stroke="#ffffff30" stroke-width="1"/>
+<text x="517" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#C0C0D8">Registry</text>
+<text x="517" y="288" text-anchor="middle" font-size="8" fill="#9090B0">Agent发现</text>
+<text x="478" y="306" font-size="7" fill="#A0A0C0">register(cap)</text>
+<text x="478" y="320" font-size="7" fill="#A0A0C0">lookup(name)</text>
+<text x="478" y="334" font-size="7" fill="#A0A0C0">heartbeat</text>
 
 <!-- Connections -->
-<line x1="190" y1="150" x2="250" y2="200" stroke="#7B5EE6" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
-<circle cx="245" cy="195" r="5" fill="#7B5EE6"/><circle cx="245" cy="195" r="2.5" fill="#fff"/>
+<line x1="195" y1="145" x2="245" y2="200" stroke="#7B5EE6" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+<circle cx="240" cy="195" r="5" fill="#7B5EE6"/><circle cx="240" cy="195" r="2.5" fill="#fff"/>
 
-<line x1="560" y1="150" x2="500" y2="200" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
-<circle cx="505" cy="195" r="5" fill="#2EC4B6"/><circle cx="505" cy="195" r="2.5" fill="#fff"/>
+<line x1="505" y1="145" x2="455" y2="200" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+<circle cx="460" cy="195" r="5" fill="#2EC4B6"/><circle cx="460" cy="195" r="2.5" fill="#fff"/>
 
-<line x1="190" y1="420" x2="250" y2="370" stroke="#E8734A" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
-<circle cx="245" cy="375" r="5" fill="#E8734A"/><circle cx="245" cy="375" r="2.5" fill="#fff"/>
+<line x1="195" y1="410" x2="245" y2="355" stroke="#E8734A" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+<circle cx="240" cy="360" r="5" fill="#E8734A"/><circle cx="240" cy="360" r="2.5" fill="#fff"/>
 
-<line x1="560" y1="420" x2="500" y2="370" stroke="#F5B935" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
-<circle cx="505" cy="375" r="5" fill="#F5B935"/><circle cx="505" cy="375" r="2.5" fill="#fff"/>
+<line x1="505" y1="410" x2="455" y2="355" stroke="#F5B935" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+<circle cx="460" cy="360" r="5" fill="#F5B935"/><circle cx="460" cy="360" r="2.5" fill="#fff"/>
 
-<!-- ===== SECTION B: Message Sequence (420-640) ===== -->
-<text x="30" y="492" font-size="13" font-weight="700" fill="#1a4a3a">B · 消息时序图 Message Sequence (Agent-A → Agent-B)</text>
-<line x1="30" y1="498" x2="720" y2="498" stroke="#D0E8D8" stroke-width="1"/>
+<!-- ===== RIGHT: Message Sequence + Patterns (720-1170) ===== -->
+<text x="720" y="82" font-size="13" font-weight="700" fill="#1a4a3a">B · 消息时序图 Message Sequence</text>
+<line x1="720" y1="88" x2="1170" y2="88" stroke="#D0E8D8" stroke-width="1"/>
 
-<rect x="20" y="510" width="710" height="135" rx="10" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
+<rect x="720" y="100" width="450" height="180" rx="10" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
 
-<!-- Lifelines -->
-<line x1="100" y1="530" x2="100" y2="635" stroke="#7B5EE6" stroke-width="1.5" stroke-dasharray="3,3"/>
-<line x1="375" y1="530" x2="375" y2="635" stroke="#888" stroke-width="1.5" stroke-dasharray="3,3"/>
-<line x1="650" y1="530" x2="650" y2="635" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="3,3"/>
+<line x1="800" y1="120" x2="800" y2="265" stroke="#7B5EE6" stroke-width="1.5" stroke-dasharray="3,3"/>
+<line x1="945" y1="120" x2="945" y2="265" stroke="#888" stroke-width="1.5" stroke-dasharray="3,3"/>
+<line x1="1090" y1="120" x2="1090" y2="265" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="3,3"/>
 
-<!-- Headers -->
-<rect x="50" y="515" width="100" height="22" rx="6" fill="#7B5EE6"/>
-<text x="100" y="531" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Agent-A</text>
-<rect x="325" y="515" width="100" height="22" rx="6" fill="#4A4A6E"/>
-<text x="375" y="531" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">IPC Bus</text>
-<rect x="600" y="515" width="100" height="22" rx="6" fill="#2EC4B6"/>
-<text x="650" y="531" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Agent-B</text>
+<rect x="760" y="105" width="80" height="20" rx="6" fill="#7B5EE6"/>
+<text x="800" y="120" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Agent-A</text>
+<rect x="905" y="105" width="80" height="20" rx="6" fill="#4A4A6E"/>
+<text x="945" y="120" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">IPC Bus</text>
+<rect x="1050" y="105" width="80" height="20" rx="6" fill="#2EC4B6"/>
+<text x="1090" y="120" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Agent-B</text>
 
-<!-- Messages -->
-<line x1="100" y1="552" x2="370" y2="552" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#ar)"/>
-<text x="235" y="548" text-anchor="middle" font-size="8" fill="#555">① bind(topic) → registry lookup</text>
+<line x1="800" y1="142" x2="940" y2="142" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="870" y="138" text-anchor="middle" font-size="8" fill="#555">① bind(topic)</text>
 
-<line x1="380" y1="568" x2="645" y2="568" stroke="#4A4A6E" stroke-width="1.5" marker-end="url(#ar)"/>
-<text x="512" y="564" text-anchor="middle" font-size="8" fill="#555">② shm_alloc(size) → handle</text>
+<line x1="950" y1="160" x2="1085" y2="160" stroke="#4A4A6E" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="1018" y="156" text-anchor="middle" font-size="8" fill="#555">② shm_alloc(size)</text>
 
-<line x1="100" y1="588" x2="370" y2="588" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#ar)"/>
-<text x="235" y="584" text-anchor="middle" font-size="8" fill="#555">③ memcpy → shm (zero-copy)</text>
+<line x1="800" y1="178" x2="940" y2="178" stroke="#7B5EE6" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="870" y="174" text-anchor="middle" font-size="8" fill="#555">③ memcpy → shm</text>
 
-<line x1="380" y1="588" x2="645" y2="588" stroke="#4A4A6E" stroke-width="1.5" marker-end="url(#ar)"/>
-<text x="512" y="606" text-anchor="middle" font-size="8" fill="#555">④ sem_post() → wake Agent-B</text>
+<line x1="950" y1="196" x2="1085" y2="196" stroke="#4A4A6E" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="1018" y="214" text-anchor="middle" font-size="8" fill="#555">④ sem_post() wake</text>
 
-<line x1="650" y1="620" x2="380" y2="620" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ar)"/>
-<text x="515" y="616" text-anchor="middle" font-size="8" fill="#555">⑤ ack(result) → sem_post</text>
+<line x1="1090" y1="228" x2="950" y2="228" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ar)"/>
+<text x="1020" y="224" text-anchor="middle" font-size="8" fill="#555">⑤ ack(result)</text>
 
-<line x1="370" y1="635" x2="100" y2="635" stroke="#4A4A6E" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ar)"/>
-<text x="235" y="631" text-anchor="middle" font-size="8" fill="#555">⑥ result delivered → callback</text>
+<line x1="940" y1="246" x2="800" y2="246" stroke="#4A4A6E" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ar)"/>
+<text x="870" y="242" text-anchor="middle" font-size="8" fill="#555">⑥ result → callback</text>
 
-<!-- ===== SECTION C: Collaboration Patterns (640-860) ===== -->
-<text x="30" y="672" font-size="13" font-weight="700" fill="#1a4a3a">C · 协作模式 Collaboration Patterns</text>
-<line x1="30" y1="678" x2="720" y2="678" stroke="#D0E8D8" stroke-width="1"/>
+<text x="945" y="262" text-anchor="middle" font-size="7" font-style="italic" fill="#888">zero-copy · &lt;10μs · 6-step handshake</text>
 
-<!-- 4 patterns -->
-<rect x="20" y="690" width="170" height="85" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="105" y="710" text-anchor="middle" font-size="10" font-weight="800" fill="#6540D0">Orchestrator</text>
-<text x="105" y="725" text-anchor="middle" font-size="8" fill="#777">编排者模式</text>
-<text x="30" y="742" font-size="7" fill="#555">orchestrator → plan</text>
-<text x="30" y="755" font-size="7" fill="#555">→ delegate → workers</text>
-<text x="30" y="768" font-size="7" fill="#999">→ aggregate</text>
+<!-- Collaboration patterns -->
+<text x="720" y="300" font-size="13" font-weight="700" fill="#1a4a3a">C · 协作模式 Collaboration Patterns</text>
+<line x1="720" y1="306" x2="1170" y2="306" stroke="#D0E8D8" stroke-width="1"/>
 
-<rect x="200" y="690" width="170" height="85" rx="10" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
-<text x="285" y="710" text-anchor="middle" font-size="10" font-weight="800" fill="#3A5FD9">Debate</text>
-<text x="285" y="725" text-anchor="middle" font-size="8" fill="#777">辩论共识模式</text>
-<text x="210" y="742" font-size="7" fill="#555">propose → debate</text>
-<text x="210" y="755" font-size="7" fill="#555">→ vote → consensus</text>
-<text x="210" y="768" font-size="7" fill="#999">多Agent辩论</text>
+<rect x="720" y="318" width="218" height="68" rx="8" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="829" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#6540D0">Orchestrator</text>
+<text x="829" y="353" text-anchor="middle" font-size="8" fill="#777">编排者模式</text>
+<text x="730" y="370" font-size="7" fill="#555">plan → delegate → workers → aggregate</text>
+<text x="730" y="381" font-size="7" fill="#999">centralized coordination</text>
 
-<rect x="380" y="690" width="170" height="85" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="465" y="710" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">Hierarchy</text>
-<text x="465" y="725" text-anchor="middle" font-size="8" fill="#777">层级分解模式</text>
-<text x="390" y="742" font-size="7" fill="#555">root → decompose</text>
-<text x="390" y="755" font-size="7" fill="#555">→ managers → workers</text>
-<text x="390" y="768" font-size="7" fill="#999">→ report</text>
+<rect x="948" y="318" width="222" height="68" rx="8" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
+<text x="1059" y="338" text-anchor="middle" font-size="11" font-weight="800" fill="#3A5FD9">Debate</text>
+<text x="1059" y="353" text-anchor="middle" font-size="8" fill="#777">辩论共识模式</text>
+<text x="958" y="370" font-size="7" fill="#555">propose → debate → vote → consensus</text>
+<text x="958" y="381" font-size="7" fill="#999">multi-agent deliberation</text>
 
-<rect x="560" y="690" width="170" height="85" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<text x="645" y="710" text-anchor="middle" font-size="10" font-weight="800" fill="#E0A020">Market</text>
-<text x="645" y="725" text-anchor="middle" font-size="8" fill="#777">竞价市场模式</text>
-<text x="570" y="742" font-size="7" fill="#555">announce → bid</text>
-<text x="570" y="755" font-size="7" fill="#555">→ award → execute</text>
-<text x="570" y="768" font-size="7" fill="#999">→ verify</text>
+<rect x="720" y="395" width="218" height="68" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="829" y="415" text-anchor="middle" font-size="11" font-weight="800" fill="#1AAA9C">Hierarchy</text>
+<text x="829" y="430" text-anchor="middle" font-size="8" fill="#777">层级分解模式</text>
+<text x="730" y="447" font-size="7" fill="#555">root → decompose → managers → workers</text>
+<text x="730" y="458" font-size="7" fill="#999">tree-structured delegation</text>
 
-<!-- Performance -->
-<rect x="20" y="790" width="710" height="70" rx="10" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
-<text x="30" y="810" font-size="10" font-weight="700" fill="#1a4a3a">通信性能 Communication Performance</text>
+<rect x="948" y="395" width="222" height="68" rx="8" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
+<text x="1059" y="415" text-anchor="middle" font-size="11" font-weight="800" fill="#E0A020">Market</text>
+<text x="1059" y="430" text-anchor="middle" font-size="8" fill="#777">竞价市场模式</text>
+<text x="958" y="447" font-size="7" fill="#555">announce → bid → award → execute</text>
+<text x="958" y="458" font-size="7" fill="#999">competitive allocation</text>
 
-<rect x="30" y="820" width="160" height="30" rx="6" fill="#F0FFF8"/>
-<text x="110" y="840" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">&lt; 10μs latency</text>
+<!-- ===== Bottom: Performance + Lifecycle ===== -->
+<text x="32" y="490" font-size="13" font-weight="700" fill="#1a4a3a">D · 通信性能与生命周期 Communication &amp; Lifecycle</text>
+<line x1="32" y1="496" x2="1170" y2="496" stroke="#D0E8D8" stroke-width="1"/>
 
-<rect x="200" y="820" width="160" height="30" rx="6" fill="#F5F0FF"/>
-<text x="280" y="840" text-anchor="middle" font-size="9" font-weight="700" fill="#6540D0">100K+ msg/s</text>
+<!-- Performance KPIs -->
+<rect x="40" y="510" width="660" height="140" rx="10" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
+<text x="55" y="530" font-size="11" font-weight="700" fill="#1a4a3a">通信性能 Communication Performance</text>
 
-<rect x="370" y="820" width="160" height="30" rx="6" fill="#FFF8E8"/>
-<text x="450" y="840" text-anchor="middle" font-size="9" font-weight="700" fill="#E0A020">zero-copy</text>
+<rect x="55" y="542" width="150" height="48" rx="8" fill="#F0FFF8"/>
+<text x="130" y="562" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">延迟 latency</text>
+<text x="130" y="582" text-anchor="middle" font-size="16" font-weight="800" fill="#2EC4B6">&lt;10μs</text>
 
-<rect x="540" y="820" width="180" height="30" rx="6" fill="#FFF0EC"/>
-<text x="630" y="840" text-anchor="middle" font-size="9" font-weight="700" fill="#D45A30">16 daemon并发无死锁</text>
+<rect x="215" y="542" width="150" height="48" rx="8" fill="#F5F0FF"/>
+<text x="290" y="562" text-anchor="middle" font-size="10" font-weight="700" fill="#6540D0">吞吐 throughput</text>
+<text x="290" y="582" text-anchor="middle" font-size="16" font-weight="800" fill="#7B5EE6">100K+ msg/s</text>
 
-<!-- ===== SECTION D: Lifecycle Hooks (860-1000) ===== -->
-<text x="30" y="888" font-size="13" font-weight="700" fill="#1a4a3a">D · 生命周期钩子 Lifecycle Hooks (IPC-driven)</text>
-<line x1="30" y1="894" x2="720" y2="894" stroke="#D0E8D8" stroke-width="1"/>
+<rect x="375" y="542" width="150" height="48" rx="8" fill="#FFF8E8"/>
+<text x="450" y="562" text-anchor="middle" font-size="10" font-weight="700" fill="#E0A020">传输方式</text>
+<text x="450" y="582" text-anchor="middle" font-size="16" font-weight="800" fill="#F5B935">zero-copy</text>
 
-<rect x="20" y="905" width="710" height="85" rx="8" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
+<rect x="535" y="542" width="155" height="48" rx="8" fill="#FFF0EC"/>
+<text x="612" y="562" text-anchor="middle" font-size="10" font-weight="700" fill="#D45A30">并发稳定性</text>
+<text x="612" y="582" text-anchor="middle" font-size="14" font-weight="800" fill="#E8734A">16 daemon无死锁</text>
 
-<text x="35" y="925" font-size="9" font-weight="700" fill="#7B5EE6">Agent生命周期</text>
-<text x="35" y="942" font-size="7" fill="#555">on_init → on_start → [on_cognition → on_plan → on_tool_call → on_tool_result → on_cognition_end → on_memory_write → on_evolve] → on_stop → on_destroy</text>
+<text x="55" y="612" font-size="9" font-weight="700" fill="#1a4a3a">机制 Mechanisms</text>
+<text x="55" y="628" font-size="8" fill="#555">· 共享内存 128MB · 信号量同步 · Binder Registry 发现 · 权限校验 · 调用者验证</text>
+<text x="55" y="642" font-size="8" fill="#555">· 零拷贝消息传递 · 环形缓冲区 · 内存池 · 看门狗心跳 · 死锁检测</text>
 
-<text x="35" y="962" font-size="9" font-weight="700" fill="#4F7DF3">LLM生命周期</text>
-<text x="35" y="979" font-size="7" fill="#555">on_llm_request (可改prompt) → on_llm_response (可过滤) → on_llm_error (可重试/切换)</text>
+<!-- Lifecycle hooks -->
+<rect x="715" y="510" width="455" height="140" rx="10" fill="#fff" stroke="#D0E8D8" stroke-width="1" filter="url(#sh)"/>
+<text x="730" y="530" font-size="11" font-weight="700" fill="#1a4a3a">生命周期钩子 Lifecycle Hooks</text>
 
-<text x="375" y="962" font-size="9" font-weight="700" fill="#E8734A">安全事件</text>
-<text x="375" y="979" font-size="7" fill="#555">on_permission_check · on_sanitize · on_audit</text>
+<text x="730" y="552" font-size="9" font-weight="700" fill="#7B5EE6">Agent</text>
+<text x="775" y="552" font-size="8" fill="#555">on_init → on_start → [cognition → plan → tool_call → tool_result → memory_write → evolve] → on_stop</text>
 
-<text x="375" y="925" font-size="9" font-weight="700" fill="#2EC4B6">MemoryRovol生命周期</text>
-<text x="375" y="942" font-size="7" fill="#555">on_l1_write → on_l2_embed → on_l3_bind → on_l4_rule</text>
+<text x="730" y="575" font-size="9" font-weight="700" fill="#4F7DF3">LLM</text>
+<text x="775" y="575" font-size="8" fill="#555">on_llm_request (改prompt) → on_llm_response (过滤) → on_llm_error (重试/切换)</text>
 
-<text x="375" y="998" text-anchor="middle" font-size="8" fill="#AAA" font-style="italic">Agents IPC · Binder Bus · shared memory · semaphore · registry · 4 collaboration patterns</text>
+<text x="730" y="598" font-size="9" font-weight="700" fill="#2EC4B6">MemoryRovol</text>
+<text x="830" y="598" font-size="8" fill="#555">on_l1_write → on_l2_embed → on_l3_bind → on_l4_rule</text>
+
+<text x="730" y="621" font-size="9" font-weight="700" fill="#E8734A">Security</text>
+<text x="800" y="621" font-size="8" fill="#555">on_permission_check · on_sanitize · on_audit</text>
+
+<rect x="730" y="630" width="425" height="14" rx="3" fill="#F0FFF8"/>
+<text x="942" y="641" text-anchor="middle" font-size="7" font-style="italic" fill="#1AAA9C">→ 全生命周期 IPC-driven 钩子 · 可插拔 · 可观测</text>
+
+<text x="600" y="665" text-anchor="middle" font-size="9" fill="#AAA" font-style="italic">Agents IPC · Binder Bus · shared memory · semaphore · registry · 4 collaboration patterns</text>
 
 </svg>
 </div>
