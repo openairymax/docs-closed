@@ -4,233 +4,210 @@
 <meta charset="UTF-8">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh}
-  .fig{width:1200px;height:675px;background:#FAFBFC;position:relative;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif;overflow:hidden}
+  body{margin:0;padding:0;background:#FAFBFC}
+  .fig{width:1200px;height:675px;background:#FAFBFC;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
 </style>
 </head>
 <body>
 <div class="fig">
 <svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a2e15"/></filter>
-  <filter id="shd" x="-5%" y="-5%" width="115%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1a1a2e20"/></filter>
-  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a3a5c"/><stop offset="1" stop-color="#0D2640"/></linearGradient>
-  <linearGradient id="gK" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2D5A8C"/><stop offset="1" stop-color="#1E4470"/></linearGradient>
-  <linearGradient id="gIpc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8C69"/><stop offset="1" stop-color="#E87050"/></linearGradient>
-  <linearGradient id="gMem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
-  <linearGradient id="gTask" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F7DF3"/><stop offset="1" stop-color="#3A5FD9"/></linearGradient>
-  <linearGradient id="gTime" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9B6EC4"/><stop offset="1" stop-color="#7B4FA8"/></linearGradient>
-  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3866FA18"/></filter>
+  <filter id="shd"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3866FA25"/></filter>
+  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
+  <linearGradient id="gL0" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E2550"/><stop offset="1" stop-color="#161B3D"/></linearGradient>
+  <linearGradient id="gL1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2A3568"/><stop offset="1" stop-color="#1E2850"/></linearGradient>
+  <linearGradient id="gL2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
+  <linearGradient id="gL3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4A7CFF"/><stop offset="1" stop-color="#3866FA"/></linearGradient>
+  <linearGradient id="gL4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6B95FF"/><stop offset="1" stop-color="#5078F0"/></linearGradient>
+  <linearGradient id="gL5" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8FB0FF"/><stop offset="1" stop-color="#6B95FF"/></linearGradient>
+  <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
+  <linearGradient id="gO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
+  <linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
+  <linearGradient id="gY" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
+  <linearGradient id="gR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C04040"/><stop offset="1" stop-color="#A02020"/></linearGradient>
 </defs>
 
-<!-- ===== HEADER ===== -->
-<rect width="1200" height="58" fill="url(#gw)"/>
-<text x="32" y="32" font-size="22" font-weight="800" fill="#fff">MicroCoreRT</text>
-<text x="200" y="32" font-size="12" fill="#80B0D8">极简核心运行时 · Minimal Core Runtime — 4 Atomic Mechanisms</text>
-<rect x="1050" y="16" width="130" height="28" rx="14" fill="#ffffff20"/>
-<text x="1115" y="35" text-anchor="middle" font-size="11" font-weight="600" fill="#80B0D8">Figure 2 / Stack</text>
+<rect x="0" y="0" width="1200" height="675" fill="#FAFBFC"/>
 
-<!-- ===== LEFT: System Stack (70-440) ===== -->
-<text x="32" y="82" font-size="13" font-weight="700" fill="#1a3a5c">A · 系统全栈架构 System Stack</text>
-<line x1="32" y1="88" x2="440" y2="88" stroke="#D0D5E8" stroke-width="1"/>
+<!-- HEADER -->
+<rect x="28" y="18" width="1144" height="58" rx="12" fill="url(#gw)" filter="url(#shd)"/>
+<text x="52" y="46" font-size="22" font-weight="800" fill="#fff">MicroCoreRT</text>
+<text x="220" y="46" font-size="11" fill="#C0D4FF">微内核运行时 · Ring 3 用户态 · ~5K LOC · 6-Layer Stack · 三层分配器</text>
+<rect x="990" y="32" width="168" height="30" rx="15" fill="#ffffff20"/>
+<text x="1074" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Figure 2 · Kernel</text>
 
-<!-- Layer 5: Applications -->
-<rect x="50" y="100" width="380" height="30" rx="6" fill="#fff" stroke="#9B6EC4" stroke-width="1.5" filter="url(#sh)"/>
-<text x="62" y="120" font-size="10" font-weight="700" fill="#7B4FA8">L5 · Applications</text>
-<text x="190" y="120" font-size="9" fill="#888">OpenLab · CLI · 4-lang SDK</text>
-<rect x="370" y="106" width="50" height="18" rx="9" fill="#F5EEFA"/>
-<text x="395" y="119" text-anchor="middle" font-size="8" font-weight="700" fill="#7B4FA8">Ring 3</text>
-<line x1="240" y1="130" x2="240" y2="140" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- ====== A · 6-Layer System Stack (LEFT, expanded as module) ====== -->
+<text x="28" y="98" font-size="13" font-weight="700" fill="#1E3A8A">A · System Stack · 六层系统全栈架构</text>
+<line x1="28" y1="106" x2="560" y2="106" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- Layer 4: CoreLoopThree -->
-<rect x="50" y="140" width="380" height="30" rx="6" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
-<text x="62" y="160" font-size="10" font-weight="700" fill="#3A5FD9">L4 · CoreLoopThree</text>
-<text x="190" y="160" font-size="9" fill="#888">Cognition → Execution → Memory</text>
-<rect x="370" y="146" width="50" height="18" rx="9" fill="#EEF2FF"/>
-<text x="395" y="159" text-anchor="middle" font-size="8" font-weight="700" fill="#4F7DF3">Ring 3</text>
-<line x1="240" y1="170" x2="240" y2="180" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- L0 Hardware Abstraction -->
+<rect x="28" y="116" width="540" height="60" rx="10" fill="url(#gL0)" filter="url(#sh)"/>
+<text x="48" y="138" font-size="11" font-weight="800" fill="#fff">L0</text>
+<text x="48" y="154" font-size="8" fill="#A0B0D8">HAL</text>
+<text x="90" y="138" font-size="11" font-weight="700" fill="#fff">Hardware Abstraction · 硬件抽象层</text>
+<text x="90" y="154" font-size="8" fill="#C0C8E0">arch_detect · atomic · barriers · cache_line</text>
+<text x="90" y="168" font-size="7" fill="#8888B0">x86_64 / aarch64 / riscv64 · cache-aligned · cross-platform</text>
 
-<!-- Layer 3: MemoryRovol -->
-<rect x="50" y="180" width="380" height="30" rx="6" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="62" y="200" font-size="10" font-weight="700" fill="#1AAA9C">L3 · MemoryRovol</text>
-<text x="190" y="200" font-size="9" fill="#888">L1 Raw → L2 Feature → L3 → L4</text>
-<rect x="370" y="186" width="50" height="18" rx="9" fill="#F0FFF8"/>
-<text x="395" y="199" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">Ring 3</text>
-<line x1="240" y1="210" x2="240" y2="220" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- L1 CoreKern Microkernel -->
+<rect x="28" y="180" width="540" height="60" rx="10" fill="url(#gL1)" filter="url(#sh)"/>
+<text x="48" y="202" font-size="11" font-weight="800" fill="#fff">L1</text>
+<text x="48" y="218" font-size="8" fill="#A0B0D8">CoreKern</text>
+<text x="90" y="202" font-size="11" font-weight="700" fill="#fff">Microkernel · 微内核 (atoms/corekern)</text>
+<text x="90" y="218" font-size="8" fill="#C0C8E0">IPC Binder · Memory Manager · Task Scheduler · Time Service</text>
+<text x="90" y="232" font-size="7" fill="#8888B0">4 原子机制 · Ring 3 用户态 · capability-based · seL4 启发</text>
 
-<!-- Layer 2: Syscall -->
-<rect x="50" y="220" width="380" height="26" rx="6" fill="#F5F5FA" stroke="#A0A0B0" stroke-width="1" stroke-dasharray="4,2"/>
-<text x="62" y="238" font-size="10" font-weight="700" fill="#888">L2 · Syscall 统一抽象层</text>
-<text x="200" y="238" font-size="8" fill="#999">sys_task · sys_memory · sys_telemetry</text>
-<line x1="240" y1="246" x2="240" y2="256" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+<!-- L2 CoreLoopThree Runtime -->
+<rect x="28" y="244" width="540" height="60" rx="10" fill="url(#gL2)" filter="url(#sh)"/>
+<text x="48" y="266" font-size="11" font-weight="800" fill="#fff">L2</text>
+<text x="48" y="282" font-size="8" fill="#C0D4FF">CoreLoop</text>
+<text x="90" y="266" font-size="11" font-weight="700" fill="#fff">Cognitive Runtime · 认知运行时 (coreloopthree)</text>
+<text x="90" y="282" font-size="8" fill="#D0DCFF">Cognition → Execution → Memory · Thinkdual · 5-phase</text>
+<text x="90" y="296" font-size="7" fill="#A0B8E0">三层循环 + 双思考系统 + 多Agent协作 + 认知演化</text>
 
-<!-- Layer 1: MicroCoreRT (highlighted) -->
-<rect x="40" y="256" width="400" height="48" rx="8" fill="url(#gK)" filter="url(#shd)"/>
-<text x="55" y="280" font-size="13" font-weight="800" fill="#fff">L1 · MicroCoreRT (CoreKern)</text>
-<text x="55" y="296" font-size="9" fill="#A0C0E8">用户态极简运行时 · 仅4原子机制 · 非OS内核</text>
-<rect x="365" y="266" width="60" height="22" rx="11" fill="#ffffff25"/>
-<text x="395" y="281" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Ring 3</text>
-<line x1="240" y1="304" x2="240" y2="314" stroke="#555" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#ar)"/>
+<!-- L3 Daemons -->
+<rect x="28" y="308" width="540" height="60" rx="10" fill="url(#gL3)" filter="url(#sh)"/>
+<text x="48" y="330" font-size="11" font-weight="800" fill="#fff">L3</text>
+<text x="48" y="346" font-size="8" fill="#D0E0FF">Daemons</text>
+<text x="90" y="330" font-size="11" font-weight="700" fill="#fff">Daemon Services · 守护进程层 (12 daemons)</text>
+<text x="90" y="346" font-size="8" fill="#E0E8FF">llm_d · tool_d · market_d · gateway_d · monit_d · sched_d</text>
+<text x="90" y="360" font-size="7" fill="#B0C8F0">hook_d · plugin_d · cupolas(SafetyGuard) · IPC Bus · orchestrator</text>
 
-<!-- Layer 0: Host OS -->
-<rect x="110" y="314" width="260" height="24" rx="6" fill="#E8E8F0" stroke="#B0B0C0" stroke-width="1"/>
-<text x="240" y="330" text-anchor="middle" font-size="10" font-weight="600" fill="#777">L0 · Host OS — Ring 0 Kernel</text>
+<!-- L4 Gateway & Protocols -->
+<rect x="28" y="372" width="540" height="60" rx="10" fill="url(#gL4)" filter="url(#sh)"/>
+<text x="48" y="394" font-size="11" font-weight="800" fill="#1E3A8A">L4</text>
+<text x="48" y="410" font-size="8" fill="#3A5AAA">Gateway</text>
+<text x="90" y="394" font-size="11" font-weight="700" fill="#1E3A8A">Gateway & Protocols · 网关与协议层</text>
+<text x="90" y="410" font-size="8" fill="#3A5AAA">HTTP / WS / stdio · MCP Server · A2A · OpenAI-compat</text>
+<text x="90" y="424" font-size="7" fill="#6A7AAA">JSON-RPC · 协议自动路由 gw_proto_router_route_auto()</text>
 
-<!-- Naming philosophy -->
-<rect x="50" y="355" width="380" height="55" rx="8" fill="#fff" stroke="#D0D5E8" stroke-width="1"/>
-<text x="62" y="373" font-size="10" font-weight="700" fill="#1a3a5c">命名哲学 Naming</text>
-<text x="80" y="390" font-size="14" font-weight="800" fill="#4F7DF3">Micro</text>
-<text x="135" y="390" font-size="9" fill="#888">极简4机制</text>
-<text x="210" y="390" font-size="14" font-weight="800" fill="#2EC4B6">Core</text>
-<text x="255" y="390" font-size="9" fill="#888">非Kernel</text>
-<text x="320" y="390" font-size="14" font-weight="800" fill="#9B6EC4">RT</text>
-<text x="345" y="390" font-size="9" fill="#888">Runtime</text>
-<text x="240" y="403" text-anchor="middle" font-size="8" font-style="italic" fill="#999">借鉴微内核哲学 · 不管理硬件 · Apache 2.0</text>
+<!-- L5 SDK & Ecosystem -->
+<rect x="28" y="436" width="540" height="60" rx="10" fill="url(#gL5)" filter="url(#sh)"/>
+<text x="48" y="458" font-size="11" font-weight="800" fill="#1E3A8A">L5</text>
+<text x="48" y="474" font-size="8" fill="#3A5AAA">SDK</text>
+<text x="90" y="458" font-size="11" font-weight="700" fill="#1E3A8A">SDK & Ecosystem · 开发者生态层</text>
+<text x="90" y="474" font-size="8" fill="#3A5AAA">Rust · Python · Go · TypeScript · CLI · TUI</text>
+<text x="90" y="488" font-size="7" fill="#6A7AAA">Plugin SDK · Hook 系统 · Prompt 模板 · Skill 集合</text>
 
-<!-- ===== RIGHT: 4 Atomic Mechanisms (460-1170) ===== -->
-<text x="465" y="82" font-size="13" font-weight="700" fill="#1a3a5c">B · 四大原子机制 Four Atomic Mechanisms</text>
-<line x1="465" y1="88" x2="1170" y2="88" stroke="#D0D5E8" stroke-width="1"/>
+<!-- Stack side label -->
+<text x="540" y="512" text-anchor="end" font-size="8" fill="#3866FA" font-style="italic">↑ 用户态 Ring 3 · 无内核态驱动 · ~5K LOC 精简内核</text>
 
-<!-- IPC Binder (top-left) -->
-<rect x="475" y="100" width="345" height="140" rx="10" fill="#fff" stroke="#FF8C69" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="475" y="100" width="345" height="30" rx="10" fill="url(#gIpc)"/>
-<rect x="475" y="118" width="345" height="12" fill="url(#gIpc)"/>
-<circle cx="500" cy="115" r="12" fill="#fff"/>
-<text x="500" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="#E87050">1</text>
-<text x="650" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">IPC Binder — 进程间通信</text>
+<!-- ====== B · 4 Atomic Mechanisms (RIGHT-TOP) ====== -->
+<text x="588" y="98" font-size="13" font-weight="700" fill="#1E3A8A">B · 4 Atomic Mechanisms · 四原子机制</text>
+<line x1="588" y1="106" x2="1172" y2="106" stroke="#D0DCFF" stroke-width="1"/>
 
-<text x="490" y="152" font-size="9" fill="#555">机制: 零拷贝消息传递 · 共享内存通道</text>
-<text x="490" y="168" font-size="9" fill="#555">同步: 信号量 (sem_post/wait) · 唤醒-等待</text>
-<text x="490" y="184" font-size="9" fill="#555">发现: Binder Registry · Agent能力注册</text>
-<rect x="490" y="195" width="100" height="32" rx="6" fill="#FFF0EC"/>
-<text x="540" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#D45A30">&lt;10μs</text>
-<rect x="600" y="195" width="100" height="32" rx="6" fill="#FFF0EC"/>
-<text x="650" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#D45A30">100K msg/s</text>
-<rect x="710" y="195" width="100" height="32" rx="6" fill="#FFF0EC"/>
-<text x="760" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#D45A30">zero-copy</text>
+<rect x="588" y="116" width="284" height="64" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="588" y="116" width="6" height="64" rx="3" fill="#3866FA"/>
+<text x="606" y="134" font-size="10" font-weight="700" fill="#1E3A8A">① IPC Binder</text>
+<text x="606" y="148" font-size="8" fill="#555">zero-copy · shared memory · semaphore</text>
+<text x="606" y="162" font-size="7" fill="#888">ipc_bus_register_channel() · &lt;10μs</text>
+<text x="606" y="174" font-size="7" fill="#3866FA" font-weight="600">128MB SHM pool · 100K+ msg/s</text>
 
-<!-- Memory Manager (top-right) -->
-<rect x="835" y="100" width="335" height="140" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="835" y="100" width="335" height="30" rx="10" fill="url(#gMem)"/>
-<rect x="835" y="118" width="335" height="12" fill="url(#gMem)"/>
-<circle cx="860" cy="115" r="12" fill="#fff"/>
-<text x="860" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="#1AAA9C">2</text>
-<text x="1005" y="120" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Memory Manager — 内存管理</text>
+<rect x="884" y="116" width="288" height="64" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="884" y="116" width="6" height="64" rx="3" fill="#2EC4B6"/>
+<text x="902" y="134" font-size="10" font-weight="700" fill="#1E3A8A">② Memory Manager</text>
+<text x="902" y="148" font-size="8" fill="#555">三层分配器 · OOM 五级框架</text>
+<text x="902" y="162" font-size="7" fill="#888">AGENTOS_MALLOC/FREE · canary guard</text>
+<text x="902" y="174" font-size="7" fill="#2EC4B6" font-weight="600">double-free detect · 5-level OOM</text>
 
-<text x="850" y="152" font-size="9" fill="#555">机制: 智能指针 (ref counting) · 自动回收</text>
-<text x="850" y="168" font-size="9" fill="#555">分配: slab allocator · 小对象内存池</text>
-<text x="850" y="184" font-size="9" fill="#555">保护: OOM水位 (85%) · GC阈值 (100K)</text>
-<rect x="850" y="195" width="100" height="32" rx="6" fill="#F0FFF8"/>
-<text x="900" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">max 4GB</text>
-<rect x="960" y="195" width="100" height="32" rx="6" fill="#F0FFF8"/>
-<text x="1010" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">no leak</text>
-<rect x="1070" y="195" width="90" height="32" rx="6" fill="#F0FFF8"/>
-<text x="1115" y="216" text-anchor="middle" font-size="10" font-weight="800" fill="#1AAA9C">pool-based</text>
+<rect x="588" y="188" width="284" height="64" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="588" y="188" width="6" height="64" rx="3" fill="#E8734A"/>
+<text x="606" y="206" font-size="10" font-weight="700" fill="#1E3A8A">③ Task Scheduler</text>
+<text x="606" y="220" font-size="8" fill="#555">preemptive · time-sliced · priority</text>
+<text x="606" y="234" font-size="7" fill="#888">max_tasks: 1024 · time_slice: 10ms</text>
+<text x="606" y="246" font-size="7" fill="#E8734A" font-weight="600">Agent Lanes isolation · 32 concurrent</text>
 
-<!-- Task Scheduler (bottom-left) -->
-<rect x="475" y="255" width="345" height="140" rx="10" fill="#fff" stroke="#4F7DF3" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="475" y="255" width="345" height="30" rx="10" fill="url(#gTask)"/>
-<rect x="475" y="273" width="345" height="12" fill="url(#gTask)"/>
-<circle cx="500" cy="270" r="12" fill="#fff"/>
-<text x="500" y="275" text-anchor="middle" font-size="12" font-weight="800" fill="#3A5FD9">3</text>
-<text x="650" y="275" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Task Scheduler — 任务调度</text>
+<rect x="884" y="188" width="288" height="64" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="884" y="188" width="6" height="64" rx="3" fill="#F5B935"/>
+<text x="902" y="206" font-size="10" font-weight="700" fill="#1E3A8A">④ Time Service</text>
+<text x="902" y="220" font-size="8" fill="#555">monotonic clock · deadline timer</text>
+<text x="902" y="234" font-size="7" fill="#888">high-res timer · timeout enforcement</text>
+<text x="902" y="246" font-size="7" fill="#B07020" font-weight="600">cancellation · SLA deadline</text>
 
-<text x="490" y="307" font-size="9" fill="#555">策略: 加权轮询 (weighted round-robin)</text>
-<text x="490" y="323" font-size="9" fill="#555">队列: 优先级队列 · max_tasks=1024</text>
-<text x="490" y="339" font-size="9" fill="#555">补偿: 失败自动重试 · compensation txn</text>
-<!-- mini queue visualization -->
-<rect x="490" y="350" width="26" height="28" rx="3" fill="#4F7DF3"/>
-<text x="503" y="368" text-anchor="middle" font-size="8" fill="#fff">P0</text>
-<rect x="520" y="350" width="26" height="28" rx="3" fill="#4F7DF3" opacity="0.7"/>
-<text x="533" y="368" text-anchor="middle" font-size="8" fill="#fff">P1</text>
-<rect x="550" y="350" width="26" height="28" rx="3" fill="#4F7DF3" opacity="0.5"/>
-<text x="563" y="368" text-anchor="middle" font-size="8" fill="#fff">P2</text>
-<rect x="580" y="350" width="26" height="28" rx="3" fill="#4F7DF3" opacity="0.3"/>
-<text x="593" y="368" text-anchor="middle" font-size="8" fill="#fff">P3</text>
-<text x="615" y="368" font-size="8" fill="#888">priority queue</text>
-<rect x="725" y="350" width="85" height="28" rx="6" fill="#EEF2FF"/>
-<text x="767" y="368" text-anchor="middle" font-size="9" font-weight="700" fill="#4F7DF3">slice: 10ms</text>
+<!-- ====== C · 三层分配器架构 (Core Innovation) ====== -->
+<text x="588" y="276" font-size="13" font-weight="700" fill="#1E3A8A">C · Three-Layer Allocator · 三层分配器架构 (Core Innovation)</text>
+<line x1="588" y1="284" x2="1172" y2="284" stroke="#D0DCFF" stroke-width="1"/>
 
-<!-- Time Service (bottom-right) -->
-<rect x="835" y="255" width="335" height="140" rx="10" fill="#fff" stroke="#9B6EC4" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="835" y="255" width="335" height="30" rx="10" fill="url(#gTime)"/>
-<rect x="835" y="273" width="335" height="12" fill="url(#gTime)"/>
-<circle cx="860" cy="270" r="12" fill="#fff"/>
-<text x="860" y="275" text-anchor="middle" font-size="12" font-weight="800" fill="#7B4FA8">4</text>
-<text x="1005" y="275" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Time Service — 时间服务</text>
+<!-- Layer 3: Application -->
+<rect x="588" y="294" width="584" height="44" rx="10" fill="#F0F4FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="588" y="294" width="80" height="44" rx="10" fill="url(#gL3)"/>
+<text x="628" y="314" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Layer 3</text>
+<text x="628" y="328" text-anchor="middle" font-size="7" fill="#D0E0FF">应用层</text>
+<text x="680" y="310" font-size="9" font-weight="700" fill="#1E3A8A">arena_alloc / arena_reset</text>
+<text x="680" y="322" font-size="8" fill="#555">agentos_mem_pool_alloc · agentos_slab_alloc</text>
+<text x="680" y="333" font-size="7" fill="#888">AGENTOS_MALLOC/FREE (回退 Layer 2) · 请求作用域零碎片</text>
 
-<text x="850" y="307" font-size="9" fill="#555">精度: 纳秒级 (CLOCK_MONOTONIC)</text>
-<text x="850" y="323" font-size="9" fill="#555">定时器: timer_create · 超时管理</text>
-<text x="850" y="339" font-size="9" fill="#555">心跳: 看门狗 · deadlock detection</text>
-<!-- clock -->
-<circle cx="875" cy="370" r="16" fill="#fff" stroke="#9B6EC4" stroke-width="1.5"/>
-<line x1="875" y1="370" x2="875" y2="358" stroke="#9B6EC4" stroke-width="2"/>
-<line x1="875" y1="370" x2="885" y2="370" stroke="#9B6EC4" stroke-width="1.5"/>
-<text x="900" y="368" font-size="8" fill="#888">ns precision</text>
-<rect x="990" y="358" width="80" height="22" rx="6" fill="#F5EEFA"/>
-<text x="1030" y="373" text-anchor="middle" font-size="9" font-weight="700" fill="#7B4FA8">10ms slice</text>
-<rect x="1080" y="358" width="80" height="22" rx="6" fill="#F5EEFA"/>
-<text x="1120" y="373" text-anchor="middle" font-size="9" font-weight="700" fill="#7B4FA8">watchdog</text>
+<!-- Layer 2: Middleware -->
+<rect x="588" y="344" width="584" height="44" rx="10" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="588" y="344" width="80" height="44" rx="10" fill="url(#gT)"/>
+<text x="628" y="364" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Layer 2</text>
+<text x="628" y="378" text-anchor="middle" font-size="7" fill="#C0F0E8">中间层</text>
+<text x="680" y="360" font-size="9" font-weight="700" fill="#1E3A8A">memory_compat.h + memory_pool.h</text>
+<text x="680" y="372" font-size="8" fill="#555">安全宏封装 · 8字节对齐 · 双重释放检测</text>
+<text x="680" y="383" font-size="7" fill="#888">per-thread cache · OOM 水位监控 · 紧急缓冲区预分配</text>
 
-<!-- ===== Comparison Table (bottom full width) ===== -->
-<text x="465" y="418" font-size="13" font-weight="700" fill="#1a3a5c">C · 与现代微内核对比 Comparison with Modern Microkernels</text>
-<line x1="465" y1="424" x2="1170" y2="424" stroke="#D0D5E8" stroke-width="1"/>
+<!-- Layer 1: Base -->
+<rect x="588" y="394" width="584" height="44" rx="10" fill="#FFF5F0" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="588" y="394" width="80" height="44" rx="10" fill="url(#gO)"/>
+<text x="628" y="414" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Layer 1</text>
+<text x="628" y="428" text-anchor="middle" font-size="7" fill="#FCD8C0">底层</text>
+<text x="680" y="410" font-size="9" font-weight="700" fill="#1E3A8A">agentos_memory.h + memory.c</text>
+<text x="680" y="422" font-size="8" fill="#555">封装 malloc/free/posix_memalign · 线程安全锁</text>
+<text x="680" y="433" font-size="7" fill="#888">标签追踪 · memory_stats_reporter 每60s上报</text>
 
-<rect x="475" y="435" width="695" height="190" rx="8" fill="#fff" stroke="#D0D5E8" stroke-width="1" filter="url(#sh)"/>
-<rect x="475" y="435" width="695" height="28" rx="8" fill="#1a3a5c"/>
-<rect x="475" y="453" width="695" height="10" fill="#1a3a5c"/>
-<text x="560" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">特性 Feature</text>
-<text x="720" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#80C0FF">MicroCoreRT</text>
-<text x="860" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">seL4</text>
-<text x="990" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Fuchsia</text>
-<text x="1110" y="455" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Redox</text>
+<!-- ====== D · 五级OOM + 安全机制 ====== -->
+<text x="28" y="534" font-size="13" font-weight="700" fill="#1E3A8A">D · 5-Level OOM Framework · 五级内存压力框架</text>
+<line x1="28" y1="542" x2="1172" y2="542" stroke="#D0DCFF" stroke-width="1"/>
 
-<text x="495" y="480" font-size="9" fill="#555">IPC 延迟 latency</text>
-<text x="720" y="480" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">&lt;10μs</text>
-<text x="860" y="480" text-anchor="middle" font-size="9" fill="#555">&lt;5μs</text>
-<text x="990" y="480" text-anchor="middle" font-size="9" fill="#555">~15μs</text>
-<text x="1110" y="480" text-anchor="middle" font-size="9" fill="#555">~20μs</text>
-<line x1="485" y1="486" x2="1165" y2="486" stroke="#E8E8F0"/>
+<!-- 5 OOM levels -->
+<rect x="28" y="554" width="220" height="58" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<text x="138" y="572" text-anchor="middle" font-size="9" font-weight="800" fill="#2EC4B6">L1 · NORMAL</text>
+<text x="138" y="586" text-anchor="middle" font-size="8" fill="#555">&lt; 70% RSS</text>
+<text x="138" y="600" text-anchor="middle" font-size="7" fill="#888">常规分配 · 无干预</text>
+<text x="138" y="610" text-anchor="middle" font-size="7" fill="#888">监控上报</text>
 
-<text x="495" y="500" font-size="9" fill="#555">吞吐量 throughput</text>
-<text x="720" y="500" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">100K+ msg/s</text>
-<text x="860" y="500" text-anchor="middle" font-size="9" fill="#555">150K+</text>
-<text x="990" y="500" text-anchor="middle" font-size="9" fill="#555">~80K</text>
-<text x="1110" y="500" text-anchor="middle" font-size="9" fill="#555">~50K</text>
-<line x1="485" y1="506" x2="1165" y2="506" stroke="#E8E8F0"/>
+<rect x="258" y="554" width="220" height="58" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
+<text x="368" y="572" text-anchor="middle" font-size="9" font-weight="800" fill="#B07020">L2 · WARNING</text>
+<text x="368" y="586" text-anchor="middle" font-size="8" fill="#555">70-80% RSS</text>
+<text x="368" y="600" text-anchor="middle" font-size="7" fill="#888">触发内存整理</text>
+<text x="368" y="610" text-anchor="middle" font-size="7" fill="#888">cache 收缩</text>
 
-<text x="495" y="520" font-size="9" fill="#555">形式化验证 formal</text>
-<text x="720" y="520" text-anchor="middle" font-size="9" font-weight="700" fill="#F5B935">🔶 partial</text>
-<text x="860" y="520" text-anchor="middle" font-size="9" fill="#555">✅ full</text>
-<text x="990" y="520" text-anchor="middle" font-size="9" fill="#888">❌</text>
-<text x="1110" y="520" text-anchor="middle" font-size="9" fill="#888">❌</text>
-<line x1="485" y1="526" x2="1165" y2="526" stroke="#E8E8F0"/>
+<rect x="488" y="554" width="220" height="58" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<text x="598" y="572" text-anchor="middle" font-size="9" font-weight="800" fill="#E8734A">L3 · CRITICAL</text>
+<text x="598" y="586" text-anchor="middle" font-size="8" fill="#555">80-90% RSS</text>
+<text x="598" y="600" text-anchor="middle" font-size="7" fill="#888">拒绝大块分配</text>
+<text x="598" y="610" text-anchor="middle" font-size="7" fill="#888">降级到便宜模型</text>
 
-<text x="495" y="540" font-size="9" fill="#555">运行特权级 ring</text>
-<text x="720" y="540" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">Ring 3 (user)</text>
-<text x="860" y="540" text-anchor="middle" font-size="9" fill="#555">Ring 0</text>
-<text x="990" y="540" text-anchor="middle" font-size="9" fill="#555">Ring 0</text>
-<text x="1110" y="540" text-anchor="middle" font-size="9" fill="#555">Ring 0</text>
-<line x1="485" y1="546" x2="1165" y2="546" stroke="#E8E8F0"/>
+<rect x="718" y="554" width="220" height="58" rx="10" fill="#fff" stroke="#C04040" stroke-width="1.5" filter="url(#sh)"/>
+<text x="828" y="572" text-anchor="middle" font-size="9" font-weight="800" fill="#C04040">L4 · EMERGENCY</text>
+<text x="828" y="586" text-anchor="middle" font-size="8" fill="#555">90-95% RSS</text>
+<text x="828" y="600" text-anchor="middle" font-size="7" fill="#888">驱逐 L1 旧记忆</text>
+<text x="828" y="610" text-anchor="middle" font-size="7" fill="#888">释放非关键缓存</text>
 
-<text x="495" y="560" font-size="9" fill="#555">目标 domain</text>
-<text x="720" y="560" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">Agent runtime</text>
-<text x="860" y="560" text-anchor="middle" font-size="9" fill="#555">OS kernel</text>
-<text x="990" y="560" text-anchor="middle" font-size="9" fill="#555">OS kernel</text>
-<text x="1110" y="560" text-anchor="middle" font-size="9" fill="#555">OS kernel</text>
-<line x1="485" y1="566" x2="1165" y2="566" stroke="#E8E8F0"/>
+<rect x="948" y="554" width="224" height="58" rx="10" fill="#1E2550" filter="url(#shd)"/>
+<text x="1060" y="572" text-anchor="middle" font-size="9" font-weight="800" fill="#FF8080">L5 · PANIC</text>
+<text x="1060" y="586" text-anchor="middle" font-size="8" fill="#C0C0D8">&gt; 95% RSS</text>
+<text x="1060" y="600" text-anchor="middle" font-size="7" fill="#A0A0C0">优雅降级 shutdown</text>
+<text x="1060" y="610" text-anchor="middle" font-size="7" fill="#A0A0C0">checkpoint → resume</text>
 
-<text x="495" y="580" font-size="9" fill="#555">硬件管理 hardware</text>
-<text x="720" y="580" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">❌ (by host OS)</text>
-<text x="860" y="580" text-anchor="middle" font-size="9" fill="#555">✅ direct</text>
-<text x="990" y="580" text-anchor="middle" font-size="9" fill="#555">✅ direct</text>
-<text x="1110" y="580" text-anchor="middle" font-size="9" fill="#555">✅ direct</text>
+<!-- Bottom KPI strip -->
+<rect x="28" y="620" width="1144" height="42" rx="10" fill="url(#gw)" filter="url(#shd)"/>
+<text x="200" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">~5K LOC</text>
+<text x="200" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">精简内核</text>
 
-<text x="495" y="610" font-size="9" font-style="italic" fill="#888">→ MicroCoreRT 是 AI Agent 运行时, 非OS内核; 借鉴微内核极简哲学但不承担硬件管理</text>
+<line x1="380" y1="628" x2="380" y2="654" stroke="#ffffff30"/>
+<text x="500" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ring 3 用户态</text>
+<text x="500" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">no kernel driver</text>
 
-<!-- Footer -->
-<text x="240" y="660" text-anchor="middle" font-size="9" fill="#AAA" font-style="italic">MicroCoreRT = Micro + Core + RT · 4 atomic mechanisms · cross-platform</text>
+<line x1="680" y1="628" x2="680" y2="654" stroke="#ffffff30"/>
+<text x="800" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">canary + double-free</text>
+<text x="800" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">memory safety guards</text>
 
+<line x1="960" y1="628" x2="960" y2="654" stroke="#ffffff30"/>
+<text x="1060" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">24h soak &lt;5% RSS</text>
+<text x="1060" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">leak-free verified</text>
+
+<text x="1168" y="670" text-anchor="end" font-size="8" fill="#D0D0D0" font-style="italic">MicroCoreRT · v0.1.1</text>
 </svg>
 </div>
 </body>
