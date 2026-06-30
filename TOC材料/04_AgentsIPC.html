@@ -4,286 +4,288 @@
 <meta charset="UTF-8">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{margin:0;padding:0;background:#FAFBFC}
-  .fig{width:1200px;height:675px;background:#FAFBFC;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:675px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
 </style>
 </head>
 <body>
 <div class="fig">
 <svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3866FA18"/></filter>
-  <filter id="shd"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3866FA25"/></filter>
-  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gBus" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E2550"/><stop offset="0.5" stop-color="#2A3568"/><stop offset="1" stop-color="#1E2550"/></linearGradient>
-  <linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
-  <linearGradient id="gO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
-  <linearGradient id="gY" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
-  <marker id="arB" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#3866FA"/></marker>
-  <marker id="arG" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2EC4B6"/></marker>
-  <marker id="arO" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#E8734A"/></marker>
-  <marker id="arV" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#7B5EE6"/></marker>
-  <marker id="arY" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#F5B935"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1E3A8A12"/></filter>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#3866FA00"/></linearGradient>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
 </defs>
 
-<rect x="0" y="0" width="1200" height="675" fill="#FAFBFC"/>
+<rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
 
-<!-- HEADER -->
-<rect x="28" y="18" width="1144" height="58" rx="12" fill="url(#gw)" filter="url(#shd)"/>
-<text x="52" y="46" font-size="22" font-weight="800" fill="#fff">Agents IPC</text>
-<text x="200" y="46" font-size="11" fill="#C0D4FF">智能体进程间通信 · Zero-Copy Binder Bus · &lt;10μs · 100K+ msg/s · 256 Agents</text>
-<rect x="990" y="32" width="168" height="30" rx="15" fill="#ffffff20"/>
-<text x="1074" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Figure 4 · Topology</text>
+<!-- TITLE (no dark bar — clean academic) -->
+<text x="40" y="48" font-size="20" font-weight="700" fill="#0F172A">Agents IPC</text>
+<text x="40" y="68" font-size="11" fill="#64748B">智能体进程间通信 · Zero-Copy Binder Bus · &lt;10μs · 100K+ msg/s · 256 Agents</text>
+<rect x="40" y="76" width="1120" height="2" fill="url(#accent)"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 4 · IPC</text>
 
 <!-- ====== A · Multi-Agent Topology (LEFT) ====== -->
-<text x="28" y="98" font-size="13" font-weight="700" fill="#1E3A8A">A · Multi-Agent Topology · 多智能体网络拓扑</text>
-<line x1="28" y1="106" x2="580" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
+<text x="68" y="106" font-size="12" font-weight="700" fill="#1E3A8A">Multi-Agent Topology · 多智能体网络拓扑</text>
+<line x1="40" y1="118" x2="580" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- Agent A (purple, top-left) -->
-<rect x="40" y="116" width="230" height="76" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#sh)"/>
-<rect x="40" y="116" width="230" height="26" rx="12" fill="url(#gV)"/>
-<rect x="40" y="130" width="230" height="12" fill="url(#gV)"/>
-<text x="155" y="135" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">🧠 Agent-A · 认知</text>
-<text x="155" y="158" text-anchor="middle" font-size="10" fill="#1E3A8A" font-weight="600">CoreLoopThree</text>
-<text x="155" y="172" text-anchor="middle" font-size="8" fill="#555">perceive · reason · plan</text>
-<text x="155" y="184" text-anchor="middle" font-size="7" fill="#7B5EE6" font-weight="600">System 2 + System 1</text>
+<!-- Agent-A (cognitive, blue) -->
+<rect x="40" y="126" width="260" height="56" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="126" width="4" height="56" rx="2" fill="#3866FA"/>
+<text x="52" y="144" font-size="10" font-weight="700" fill="#1E3A8A">Agent-A · 认知</text>
+<text x="52" y="158" font-size="9" font-weight="700" fill="#3866FA">CoreLoopThree</text>
+<text x="52" y="172" font-size="7" fill="#64748B">perceive · reason · plan</text>
+<rect x="208" y="138" width="86" height="20" rx="10" fill="#F0F5FF" stroke="#3866FA" stroke-width="0.8"/>
+<text x="251" y="151" text-anchor="middle" font-size="7" font-weight="700" fill="#3866FA">System 2 + System 1</text>
 
-<!-- Agent B (teal, top-right) -->
-<rect x="330" y="116" width="230" height="76" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#sh)"/>
-<rect x="330" y="116" width="230" height="26" rx="12" fill="url(#gT)"/>
-<rect x="330" y="130" width="230" height="12" fill="url(#gT)"/>
-<text x="445" y="135" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">⚡ Agent-B · 执行</text>
-<text x="445" y="158" text-anchor="middle" font-size="10" fill="#1E3A8A" font-weight="600">Execution Engine</text>
-<text x="445" y="172" text-anchor="middle" font-size="8" fill="#555">tool-call · verify · output</text>
-<text x="445" y="184" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="600">5-phase flow</text>
+<!-- Agent-B (execution, orange) -->
+<rect x="320" y="126" width="260" height="56" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="320" y="126" width="4" height="56" rx="2" fill="#E8734A"/>
+<text x="332" y="144" font-size="10" font-weight="700" fill="#1E3A8A">Agent-B · 执行</text>
+<text x="332" y="158" font-size="9" font-weight="700" fill="#E8734A">Execution Engine</text>
+<text x="332" y="172" font-size="7" fill="#64748B">tool-call · verify · output</text>
+<rect x="488" y="138" width="86" height="20" rx="10" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
+<text x="531" y="151" text-anchor="middle" font-size="7" font-weight="700" fill="#E8734A">5-phase flow</text>
 
-<!-- Central IPC Binder Bus -->
-<rect x="40" y="210" width="520" height="86" rx="14" fill="url(#gBus)" filter="url(#shd)"/>
-<!-- Decorative side ports -->
-<rect x="40" y="220" width="4" height="66" fill="#7B5EE6" opacity="0.7"/>
-<rect x="556" y="220" width="4" height="66" fill="#2EC4B6" opacity="0.7"/>
-<!-- Title -->
-<text x="300" y="234" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">🔄 IPC Binder Bus</text>
-<text x="300" y="250" text-anchor="middle" font-size="9" fill="#8FB0FF">ipc_service_bus.h · 零拷贝消息总线</text>
-<!-- Divider -->
-<line x1="80" y1="260" x2="520" y2="260" stroke="#ffffff20" stroke-width="1"/>
-<!-- 3 metric columns -->
-<text x="180" y="276" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">&lt;10μs</text>
-<text x="180" y="288" text-anchor="middle" font-size="7" fill="#C0D4FF">latency</text>
-<text x="300" y="276" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">100K+ msg/s</text>
-<text x="300" y="288" text-anchor="middle" font-size="7" fill="#C0D4FF">throughput</text>
-<text x="420" y="276" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">128MB SHM</text>
-<text x="420" y="288" text-anchor="middle" font-size="7" fill="#C0D4FF">pool · semaphore</text>
+<!-- Central IPC Binder Bus (CORE — light blue tinted, no dark gBus) -->
+<rect x="40" y="196" width="540" height="70" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="196" width="6" height="70" rx="3" fill="#3866FA"/>
+<text x="56" y="216" font-size="12" font-weight="700" fill="#1E3A8A">IPC Binder Bus</text>
+<text x="56" y="230" font-size="8" fill="#3866FA">ipc_service_bus.h · 零拷贝消息总线</text>
+<rect x="506" y="204" width="62" height="22" rx="11" fill="#FFFFFF" stroke="#3866FA" stroke-width="1"/>
+<text x="537" y="219" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">CORE</text>
+<line x1="56" y1="238" x2="490" y2="238" stroke="#C0D4FF" stroke-width="0.8"/>
+<text x="160" y="253" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">&lt;10μs</text>
+<text x="160" y="263" text-anchor="middle" font-size="7" fill="#64748B">latency</text>
+<text x="290" y="253" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">100K+ msg/s</text>
+<text x="290" y="263" text-anchor="middle" font-size="7" fill="#64748B">throughput</text>
+<text x="420" y="253" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">128MB SHM</text>
+<text x="420" y="263" text-anchor="middle" font-size="7" fill="#64748B">pool · semaphore</text>
 
-<!-- Agent C (orange, bottom-left) -->
-<rect x="40" y="312" width="230" height="76" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#sh)"/>
-<rect x="40" y="312" width="230" height="26" rx="12" fill="url(#gO)"/>
-<rect x="40" y="326" width="230" height="12" fill="url(#gO)"/>
-<text x="155" y="331" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">💾 Agent-C · 记忆</text>
-<text x="155" y="354" text-anchor="middle" font-size="10" fill="#1E3A8A" font-weight="600">MemoryRovol</text>
-<text x="155" y="368" text-anchor="middle" font-size="8" fill="#555">store · retrieve · evolve</text>
-<text x="155" y="380" text-anchor="middle" font-size="7" fill="#E8734A" font-weight="600">L1-L4 · HNSW 10M</text>
+<!-- Agent-C (memory, teal) -->
+<rect x="40" y="274" width="260" height="56" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="274" width="4" height="56" rx="2" fill="#2EC4B6"/>
+<text x="52" y="292" font-size="10" font-weight="700" fill="#1E3A8A">Agent-C · 记忆</text>
+<text x="52" y="306" font-size="9" font-weight="700" fill="#2EC4B6">MemoryRovol</text>
+<text x="52" y="320" font-size="7" fill="#64748B">store · retrieve · evolve</text>
+<rect x="208" y="286" width="86" height="20" rx="10" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="251" y="299" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">L1-L4 · HNSW 10M</text>
 
-<!-- Agent D (yellow, bottom-right) -->
-<rect x="330" y="312" width="230" height="76" rx="12" fill="#fff" stroke="#F5B935" stroke-width="2" filter="url(#sh)"/>
-<rect x="330" y="312" width="230" height="26" rx="12" fill="url(#gY)"/>
-<rect x="330" y="326" width="230" height="12" fill="url(#gY)"/>
-<text x="445" y="331" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">🛡️ Agent-D · 安全</text>
-<text x="445" y="354" text-anchor="middle" font-size="10" fill="#1E3A8A" font-weight="600">Cupolas SafetyGuard</text>
-<text x="445" y="368" text-anchor="middle" font-size="8" fill="#555">audit · sanitize · guard</text>
-<text x="445" y="380" text-anchor="middle" font-size="7" fill="#B07020" font-weight="600">Security Dome</text>
+<!-- Agent-D (safety, purple) -->
+<rect x="320" y="274" width="260" height="56" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="320" y="274" width="4" height="56" rx="2" fill="#7B5EE6"/>
+<text x="332" y="292" font-size="10" font-weight="700" fill="#1E3A8A">Agent-D · 安全</text>
+<text x="332" y="306" font-size="9" font-weight="700" fill="#7B5EE6">Cupolas SafetyGuard</text>
+<text x="332" y="320" font-size="7" fill="#64748B">audit · sanitize · guard</text>
+<rect x="488" y="286" width="86" height="20" rx="10" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="531" y="299" text-anchor="middle" font-size="7" font-weight="700" fill="#7B5EE6">Security Dome</text>
 
-<!-- Connection lines from agents to bus (with port circles) -->
-<!-- Agent A (top-left) to bus top -->
-<line x1="155" y1="192" x2="155" y2="210" stroke="#7B5EE6" stroke-width="2"/>
-<circle cx="155" cy="192" r="3" fill="#7B5EE6"/>
-<circle cx="155" cy="210" r="3" fill="#7B5EE6"/>
-<!-- Agent B (top-right) to bus top -->
-<line x1="445" y1="192" x2="445" y2="210" stroke="#2EC4B6" stroke-width="2"/>
-<circle cx="445" cy="192" r="3" fill="#2EC4B6"/>
-<circle cx="445" cy="210" r="3" fill="#2EC4B6"/>
-<!-- Agent C (bottom-left) to bus bottom -->
-<line x1="155" y1="296" x2="155" y2="312" stroke="#E8734A" stroke-width="2"/>
-<circle cx="155" cy="296" r="3" fill="#E8734A"/>
-<circle cx="155" cy="312" r="3" fill="#E8734A"/>
-<!-- Agent D (bottom-right) to bus bottom -->
-<line x1="445" y1="296" x2="445" y2="312" stroke="#F5B935" stroke-width="2"/>
-<circle cx="445" cy="296" r="3" fill="#F5B935"/>
-<circle cx="445" cy="312" r="3" fill="#F5B935"/>
+<!-- Connection lines (vertical, colored, with port circles) -->
+<line x1="170" y1="182" x2="170" y2="196" stroke="#3866FA" stroke-width="1.5"/>
+<circle cx="170" cy="182" r="3" fill="#3866FA"/>
+<circle cx="170" cy="196" r="3" fill="#3866FA"/>
+<line x1="450" y1="182" x2="450" y2="196" stroke="#E8734A" stroke-width="1.5"/>
+<circle cx="450" cy="182" r="3" fill="#E8734A"/>
+<circle cx="450" cy="196" r="3" fill="#E8734A"/>
+<line x1="170" y1="266" x2="170" y2="274" stroke="#2EC4B6" stroke-width="1.5"/>
+<circle cx="170" cy="266" r="3" fill="#2EC4B6"/>
+<circle cx="170" cy="274" r="3" fill="#2EC4B6"/>
+<line x1="450" y1="266" x2="450" y2="274" stroke="#7B5EE6" stroke-width="1.5"/>
+<circle cx="450" cy="266" r="3" fill="#7B5EE6"/>
+<circle cx="450" cy="274" r="3" fill="#7B5EE6"/>
 
-<!-- A section footnote -->
-<text x="300" y="402" text-anchor="middle" font-size="7" fill="#888" font-style="italic">↑ 4 agents registered via ipc_bus_register_channel() · bidirectional pub/sub</text>
+<!-- A footnote -->
+<text x="310" y="348" text-anchor="middle" font-size="7" fill="#94A3B8" font-style="italic">↑ 4 agents registered via ipc_bus_register_channel() · bidirectional pub/sub</text>
 
 <!-- ====== B · IPC Message Sequence (RIGHT-TOP) ====== -->
-<text x="600" y="98" font-size="13" font-weight="700" fill="#1E3A8A">B · IPC Message Sequence · 零拷贝消息序列</text>
-<line x1="600" y1="106" x2="1172" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<rect x="600" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="610" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="628" y="106" font-size="12" font-weight="700" fill="#1E3A8A">IPC Message Sequence · 零拷贝消息序列</text>
+<line x1="600" y1="118" x2="1160" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="600" y="116" width="572" height="178" rx="12" fill="#fff" stroke="#D0DCFF" filter="url(#sh)"/>
+<rect x="600" y="124" width="560" height="158" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<!-- timeline vertical line -->
+<line x1="620" y1="140" x2="620" y2="252" stroke="#E2E8F0" stroke-width="1.5"/>
 
 <!-- Step 1: Send Msg → alloc buf (blue) -->
-<circle cx="624" cy="138" r="11" fill="url(#gB)"/>
-<text x="624" y="142" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">①</text>
-<rect x="644" y="126" width="100" height="24" rx="12" fill="url(#gB)"/>
-<text x="694" y="142" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Send Msg</text>
-<text x="754" y="142" font-size="11" fill="#aaa">→</text>
-<rect x="772" y="126" width="388" height="24" rx="8" fill="#F0F4FF" stroke="#3866FA" stroke-width="0.5"/>
-<text x="784" y="142" font-size="9" font-weight="700" fill="#3866FA">alloc buf</text>
-<text x="844" y="142" font-size="8" fill="#555">→ allocate buffer in SHM pool · ipc_bus_alloc()</text>
+<circle cx="620" cy="140" r="10" fill="#3866FA"/>
+<text x="620" y="144" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">1</text>
+<rect x="636" y="131" width="82" height="18" rx="9" fill="#F0F5FF" stroke="#3866FA" stroke-width="0.8"/>
+<text x="677" y="144" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">Send Msg</text>
+<text x="724" y="144" font-size="11" fill="#CBD5E1">→</text>
+<rect x="736" y="131" width="410" height="18" rx="4" fill="#F8FAFF" stroke="#E2E8F0" stroke-width="0.6"/>
+<text x="744" y="144" font-size="8" font-weight="700" fill="#3866FA">alloc buf</text>
+<text x="788" y="144" font-size="7" fill="#64748B">→ allocate buffer in SHM pool · ipc_bus_alloc()</text>
 
 <!-- Step 2: Write SHM → zero-copy (teal) -->
-<circle cx="624" cy="170" r="11" fill="url(#gT)"/>
-<text x="624" y="174" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">②</text>
-<rect x="644" y="158" width="100" height="24" rx="12" fill="url(#gT)"/>
-<text x="694" y="174" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Write SHM</text>
-<text x="754" y="174" font-size="11" fill="#aaa">→</text>
-<rect x="772" y="158" width="388" height="24" rx="8" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.5"/>
-<text x="784" y="174" font-size="9" font-weight="700" fill="#2EC4B6">zero-copy</text>
-<text x="848" y="174" font-size="8" fill="#555">→ direct memory write · no kernel traversal</text>
+<circle cx="620" cy="168" r="10" fill="#2EC4B6"/>
+<text x="620" y="172" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">2</text>
+<rect x="636" y="159" width="82" height="18" rx="9" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="677" y="172" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">Write SHM</text>
+<text x="724" y="172" font-size="11" fill="#CBD5E1">→</text>
+<rect x="736" y="159" width="410" height="18" rx="4" fill="#F8FAFF" stroke="#E2E8F0" stroke-width="0.6"/>
+<text x="744" y="172" font-size="8" font-weight="700" fill="#2EC4B6">zero-copy</text>
+<text x="794" y="172" font-size="7" fill="#64748B">→ direct memory write · no kernel traversal</text>
 
 <!-- Step 3: Sem Signal → wake reader (yellow) -->
-<circle cx="624" cy="202" r="11" fill="url(#gY)"/>
-<text x="624" y="206" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">③</text>
-<rect x="644" y="190" width="100" height="24" rx="12" fill="url(#gY)"/>
-<text x="694" y="206" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Sem Signal</text>
-<text x="754" y="206" font-size="11" fill="#aaa">→</text>
-<rect x="772" y="190" width="388" height="24" rx="8" fill="#FFFAF0" stroke="#F5B935" stroke-width="0.5"/>
-<text x="784" y="206" font-size="9" font-weight="700" fill="#B07020">wake reader</text>
-<text x="858" y="206" font-size="8" fill="#555">→ sem_post() · notify subscriber agent</text>
+<circle cx="620" cy="196" r="10" fill="#F5B935"/>
+<text x="620" y="200" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">3</text>
+<rect x="636" y="187" width="82" height="18" rx="9" fill="#FFFBF0" stroke="#F5B935" stroke-width="0.8"/>
+<text x="677" y="200" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">Sem Signal</text>
+<text x="724" y="200" font-size="11" fill="#CBD5E1">→</text>
+<rect x="736" y="187" width="410" height="18" rx="4" fill="#F8FAFF" stroke="#E2E8F0" stroke-width="0.6"/>
+<text x="744" y="200" font-size="8" font-weight="700" fill="#B07020">wake reader</text>
+<text x="804" y="200" font-size="7" fill="#64748B">→ sem_post() · notify subscriber agent</text>
 
 <!-- Step 4: Read SHM → <10μs (orange) -->
-<circle cx="624" cy="234" r="11" fill="url(#gO)"/>
-<text x="624" y="238" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">④</text>
-<rect x="644" y="222" width="100" height="24" rx="12" fill="url(#gO)"/>
-<text x="694" y="238" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Read SHM</text>
-<text x="754" y="238" font-size="11" fill="#aaa">→</text>
-<rect x="772" y="222" width="388" height="24" rx="8" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.5"/>
-<text x="784" y="238" font-size="9" font-weight="700" fill="#E8734A">&lt;10μs</text>
-<text x="824" y="238" font-size="8" fill="#555">→ ultra-low latency read · memory-mapped</text>
+<circle cx="620" cy="224" r="10" fill="#E8734A"/>
+<text x="620" y="228" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">4</text>
+<rect x="636" y="215" width="82" height="18" rx="9" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
+<text x="677" y="228" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">Read SHM</text>
+<text x="724" y="228" font-size="11" fill="#CBD5E1">→</text>
+<rect x="736" y="215" width="410" height="18" rx="4" fill="#F8FAFF" stroke="#E2E8F0" stroke-width="0.6"/>
+<text x="744" y="228" font-size="8" font-weight="700" fill="#E8734A">&lt;10μs</text>
+<text x="776" y="228" font-size="7" fill="#64748B">→ ultra-low latency read · memory-mapped</text>
 
 <!-- Step 5: Release → free buf (purple) -->
-<circle cx="624" cy="266" r="11" fill="url(#gV)"/>
-<text x="624" y="270" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">⑤</text>
-<rect x="644" y="254" width="100" height="24" rx="12" fill="url(#gV)"/>
-<text x="694" y="270" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">Release</text>
-<text x="754" y="270" font-size="11" fill="#aaa">→</text>
-<rect x="772" y="254" width="388" height="24" rx="8" fill="#F8F6FF" stroke="#7B5EE6" stroke-width="0.5"/>
-<text x="784" y="270" font-size="9" font-weight="700" fill="#7B5EE6">free buf</text>
-<text x="840" y="270" font-size="8" fill="#555">→ return buffer to pool · ipc_bus_free()</text>
-
-<!-- Downward flow arrows between steps -->
-<text x="624" y="156" text-anchor="middle" font-size="9" fill="#aaa">↓</text>
-<text x="624" y="188" text-anchor="middle" font-size="9" fill="#aaa">↓</text>
-<text x="624" y="220" text-anchor="middle" font-size="9" fill="#aaa">↓</text>
-<text x="624" y="252" text-anchor="middle" font-size="9" fill="#aaa">↓</text>
+<circle cx="620" cy="252" r="10" fill="#7B5EE6"/>
+<text x="620" y="256" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">5</text>
+<rect x="636" y="243" width="82" height="18" rx="9" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="677" y="256" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">Release</text>
+<text x="724" y="256" font-size="11" fill="#CBD5E1">→</text>
+<rect x="736" y="243" width="410" height="18" rx="4" fill="#F8FAFF" stroke="#E2E8F0" stroke-width="0.6"/>
+<text x="744" y="256" font-size="8" font-weight="700" fill="#7B5EE6">free buf</text>
+<text x="784" y="256" font-size="7" fill="#64748B">→ return buffer to pool · ipc_bus_free()</text>
 
 <!-- ====== C · 4 Collaboration Patterns (RIGHT-MID) ====== -->
-<text x="600" y="312" font-size="13" font-weight="700" fill="#1E3A8A">C · 4 Collaboration Patterns · 四种协作模式</text>
-<line x1="600" y1="320" x2="1172" y2="320" stroke="#D0DCFF" stroke-width="1"/>
+<rect x="600" y="292" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="610" y="304" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
+<text x="628" y="304" font-size="12" font-weight="700" fill="#1E3A8A">4 Collaboration Patterns · 四种协作模式</text>
+<line x1="600" y1="312" x2="1160" y2="312" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- Orchestrator (blue, top-left) -->
-<rect x="600" y="330" width="282" height="42" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="600" y="330" width="6" height="42" rx="3" fill="#3866FA"/>
-<text x="618" y="346" font-size="10" font-weight="700" fill="#1E3A8A">🎯 Orchestrator</text>
-<text x="618" y="358" font-size="7" fill="#555">master → workers · centralized dispatch</text>
-<text x="618" y="368" font-size="7" fill="#3866FA" font-family="monospace">orchestrator_execute_pipeline()</text>
+<!-- Orchestrator (blue) -->
+<rect x="600" y="320" width="134" height="44" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="600" y="320" width="3" height="44" rx="1.5" fill="#3866FA"/>
+<text x="610" y="335" font-size="9" font-weight="700" fill="#1E3A8A">Orchestrator</text>
+<text x="610" y="347" font-size="7" fill="#64748B">master→workers</text>
+<text x="610" y="359" font-size="6" fill="#3866FA" font-family="monospace">orchestrator_execute_pipeline()</text>
 
-<!-- Debate (teal, top-right) -->
-<rect x="890" y="330" width="282" height="42" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="890" y="330" width="6" height="42" rx="3" fill="#2EC4B6"/>
-<text x="908" y="346" font-size="10" font-weight="700" fill="#1E3A8A">🗣️ Debate</text>
-<text x="908" y="358" font-size="7" fill="#555">peer ↔ peer · multi-perspective consensus</text>
-<text x="908" y="368" font-size="7" fill="#2EC4B6" font-family="monospace">debate_round() · voting</text>
+<!-- Debate (teal) -->
+<rect x="740" y="320" width="134" height="44" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="740" y="320" width="3" height="44" rx="1.5" fill="#2EC4B6"/>
+<text x="750" y="335" font-size="9" font-weight="700" fill="#1E3A8A">Debate</text>
+<text x="750" y="347" font-size="7" fill="#64748B">peer↔peer · consensus</text>
+<text x="750" y="359" font-size="6" fill="#2EC4B6" font-family="monospace">debate_round() · voting</text>
 
-<!-- Hierarchy (orange, bottom-left) -->
-<rect x="600" y="378" width="282" height="42" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="600" y="378" width="6" height="42" rx="3" fill="#E8734A"/>
-<text x="618" y="394" font-size="10" font-weight="700" fill="#1E3A8A">🌳 Hierarchy</text>
-<text x="618" y="406" font-size="7" fill="#555">parent → children · tree delegation</text>
-<text x="618" y="416" font-size="7" fill="#E8734A" font-family="monospace">Agent Lane isolation</text>
+<!-- Hierarchy (orange) -->
+<rect x="880" y="320" width="134" height="44" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="880" y="320" width="3" height="44" rx="1.5" fill="#E8734A"/>
+<text x="890" y="335" font-size="9" font-weight="700" fill="#1E3A8A">Hierarchy</text>
+<text x="890" y="347" font-size="7" fill="#64748B">parent→children · tree</text>
+<text x="890" y="359" font-size="6" fill="#E8734A" font-family="monospace">Agent Lane isolation</text>
 
-<!-- Market (yellow, bottom-right) -->
-<rect x="890" y="378" width="282" height="42" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="890" y="378" width="6" height="42" rx="3" fill="#F5B935"/>
-<text x="908" y="394" font-size="10" font-weight="700" fill="#1E3A8A">📊 Market</text>
-<text x="908" y="406" font-size="7" fill="#555">bid → select · auction-based allocation</text>
-<text x="908" y="416" font-size="7" fill="#B07020" font-family="monospace">market_d · price-bid</text>
+<!-- Market (yellow) -->
+<rect x="1020" y="320" width="134" height="44" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="1020" y="320" width="3" height="44" rx="1.5" fill="#F5B935"/>
+<text x="1030" y="335" font-size="9" font-weight="700" fill="#1E3A8A">Market</text>
+<text x="1030" y="347" font-size="7" fill="#64748B">bid→select · auction</text>
+<text x="1030" y="359" font-size="6" fill="#B07020" font-family="monospace">market_d · price-bid</text>
 
-<!-- ====== D · Infrastructure Services (BOTTOM) ====== -->
-<text x="28" y="436" font-size="13" font-weight="700" fill="#1E3A8A">D · Infrastructure Services · 基础设施服务</text>
-<line x1="28" y1="444" x2="1172" y2="444" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== D · Infrastructure Services (FULL WIDTH) ====== -->
+<rect x="40" y="370" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="382" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="68" y="382" font-size="12" font-weight="700" fill="#1E3A8A">Infrastructure Services · 基础设施服务</text>
+<line x1="40" y1="390" x2="1160" y2="390" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- Card 1: ServiceDiscovery (blue) -->
-<rect x="28" y="454" width="370" height="86" rx="12" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="28" y="454" width="370" height="24" rx="12" fill="url(#gB)"/>
-<rect x="28" y="466" width="370" height="12" fill="url(#gB)"/>
-<text x="44" y="471" font-size="10" font-weight="800" fill="#fff">📡 ServiceDiscovery · 服务发现</text>
-<text x="44" y="492" font-size="8" fill="#1E3A8A" font-weight="600" font-family="monospace">service_discovery_register()</text>
-<text x="44" y="506" font-size="8" fill="#555">自动注册 + 健康检查 · heartbeat 50ms</text>
-<text x="44" y="520" font-size="7" fill="#888">capacity advertise · load-aware routing</text>
-<text x="44" y="532" font-size="7" fill="#3866FA" font-weight="600">→ zero-config · auto peer discovery</text>
+<!-- ServiceDiscovery (blue) -->
+<rect x="40" y="396" width="366" height="62" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="396" width="4" height="62" rx="2" fill="#3866FA"/>
+<text x="54" y="414" font-size="10" font-weight="700" fill="#1E3A8A">ServiceDiscovery · 服务发现</text>
+<text x="54" y="428" font-size="8" font-weight="600" fill="#3866FA" font-family="monospace">service_discovery_register()</text>
+<text x="54" y="441" font-size="7" fill="#475569">自动注册 + 健康检查 · heartbeat 50ms · load-aware routing</text>
+<text x="54" y="453" font-size="7" fill="#94A3B8">→ zero-config · auto peer discovery</text>
 
-<!-- Card 2: Checkpoint (orange) -->
-<rect x="410" y="454" width="370" height="86" rx="12" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="410" y="454" width="370" height="24" rx="12" fill="url(#gO)"/>
-<rect x="410" y="466" width="370" height="12" fill="url(#gO)"/>
-<text x="426" y="471" font-size="10" font-weight="800" fill="#fff">💾 Checkpoint · 断点续跑</text>
-<text x="426" y="492" font-size="8" fill="#1E3A8A" font-weight="600" font-family="monospace">agentos_task_checkpoint_save()</text>
-<text x="426" y="506" font-size="8" fill="#555">任务状态快照 · kill → resume</text>
-<text x="426" y="520" font-size="7" fill="#888">崩溃恢复 · 长任务不丢失进度</text>
-<text x="426" y="532" font-size="7" fill="#E8734A" font-weight="600">→ fault-tolerant · zero progress loss</text>
+<!-- Checkpoint (orange) -->
+<rect x="417" y="396" width="366" height="62" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="417" y="396" width="4" height="62" rx="2" fill="#E8734A"/>
+<text x="431" y="414" font-size="10" font-weight="700" fill="#1E3A8A">Checkpoint · 断点续跑</text>
+<text x="431" y="428" font-size="8" font-weight="600" fill="#E8734A" font-family="monospace">agentos_task_checkpoint_save()</text>
+<text x="431" y="441" font-size="7" fill="#475569">任务状态快照 · kill → resume · 崩溃恢复</text>
+<text x="431" y="453" font-size="7" fill="#94A3B8">→ fault-tolerant · zero progress loss</text>
 
-<!-- Card 3: Orchestrator (purple) -->
-<rect x="792" y="454" width="380" height="86" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="792" y="454" width="380" height="24" rx="12" fill="url(#gV)"/>
-<rect x="792" y="466" width="380" height="12" fill="url(#gV)"/>
-<text x="808" y="471" font-size="10" font-weight="800" fill="#fff">🎬 Orchestrator · 流水线编排</text>
-<text x="808" y="492" font-size="8" fill="#1E3A8A" font-weight="600" font-family="monospace">orchestrator_execute_pipeline()</text>
-<text x="808" y="506" font-size="8" fill="#555">多 Agent 流水线编排 · DAG 依赖</text>
-<text x="808" y="520" font-size="7" fill="#888">parallel fan-out · result aggregation</text>
-<text x="808" y="532" font-size="7" fill="#7B5EE6" font-weight="600">→ declarative · stage composition</text>
+<!-- Orchestrator (purple) -->
+<rect x="794" y="396" width="366" height="62" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="794" y="396" width="4" height="62" rx="2" fill="#7B5EE6"/>
+<text x="808" y="414" font-size="10" font-weight="700" fill="#1E3A8A">Orchestrator · 流水线编排</text>
+<text x="808" y="428" font-size="8" font-weight="600" fill="#7B5EE6" font-family="monospace">orchestrator_execute_pipeline()</text>
+<text x="808" y="441" font-size="7" fill="#475569">多 Agent 流水线 · DAG 依赖 · parallel fan-out</text>
+<text x="808" y="453" font-size="7" fill="#94A3B8">→ declarative · stage composition</text>
 
-<!-- Unified IPC Backbone (bus line below 3 cards) -->
-<rect x="28" y="552" width="1144" height="44" rx="10" fill="url(#gBus)" filter="url(#sh)"/>
-<text x="48" y="572" font-size="10" font-weight="700" fill="#fff">🌐 统一 IPC 通信总线</text>
-<text x="48" y="586" font-size="7" fill="#C0D4FF">Unified IPC Backbone · gw_proto_router_route_auto()</text>
+<!-- ====== Unified IPC Backbone + Protocols (light tinted, no dark gBus) ====== -->
+<rect x="40" y="468" width="1120" height="46" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="468" width="5" height="46" rx="2.5" fill="#3866FA"/>
+<text x="54" y="486" font-size="10" font-weight="700" fill="#1E3A8A">统一 IPC 通信总线</text>
+<text x="54" y="500" font-size="7" fill="#3866FA" font-family="monospace">Unified IPC Backbone · gw_proto_router_route_auto()</text>
 
-<!-- Protocol badges -->
-<rect x="298" y="562" width="96" height="24" rx="12" fill="#3866FA"/>
-<text x="346" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">JSON-RPC</text>
+<!-- Protocol badges (light pills with colored stroke + text) -->
+<rect x="600" y="481" width="78" height="20" rx="10" fill="#FFFFFF" stroke="#3866FA" stroke-width="1"/>
+<text x="639" y="494" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">JSON-RPC</text>
 
-<rect x="404" y="562" width="68" height="24" rx="12" fill="#2EC4B6"/>
-<text x="438" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MCP</text>
+<rect x="686" y="481" width="50" height="20" rx="10" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1"/>
+<text x="711" y="494" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">MCP</text>
 
-<rect x="482" y="562" width="68" height="24" rx="12" fill="#E8734A"/>
-<text x="516" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">A2A</text>
+<rect x="744" y="481" width="50" height="20" rx="10" fill="#FFFFFF" stroke="#E8734A" stroke-width="1"/>
+<text x="769" y="494" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">A2A</text>
 
-<rect x="560" y="562" width="124" height="24" rx="12" fill="#7B5EE6"/>
-<text x="622" y="578" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">OpenAI-compat</text>
+<rect x="802" y="481" width="100" height="20" rx="10" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1"/>
+<text x="852" y="494" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">OpenAI-compat</text>
 
-<text x="700" y="578" font-size="8" fill="#C0D4FF">→ 多协议自动路由 · 跨语言互通 · pluggable transport</text>
+<text x="912" y="494" font-size="7" fill="#64748B">→ 多协议自动路由 · 跨语言互通 · pluggable transport</text>
 
-<!-- ====== BOTTOM KPI STRIP ====== -->
-<rect x="28" y="620" width="1144" height="42" rx="10" fill="url(#gw)" filter="url(#shd)"/>
-<text x="170" y="640" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">&lt;10μs</text>
-<text x="170" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">IPC Latency</text>
+<!-- ====== E · Key Metrics (4 light cards, no dark bar) ====== -->
+<rect x="40" y="522" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="534" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">E</text>
+<text x="68" y="534" font-size="12" font-weight="700" fill="#1E3A8A">Key Metrics · 关键指标</text>
+<line x1="40" y1="542" x2="1160" y2="542" stroke="#E2E8F0" stroke-width="1"/>
 
-<line x1="314" y1="628" x2="314" y2="654" stroke="#ffffff30"/>
-<text x="458" y="640" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">100K+</text>
-<text x="458" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">Throughput msg/s</text>
+<!-- Card 1: IPC Latency (teal) -->
+<rect x="40" y="548" width="270" height="76" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="548" width="270" height="3" rx="1.5" fill="#2EC4B6"/>
+<text x="175" y="568" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">IPC Latency</text>
+<text x="175" y="598" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">&lt;10μs</text>
+<text x="175" y="614" text-anchor="middle" font-size="7" fill="#94A3B8">zero-copy · p99</text>
 
-<line x1="602" y1="628" x2="602" y2="654" stroke="#ffffff30"/>
-<text x="744" y="640" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">128MB</text>
-<text x="744" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">SHM Pool</text>
+<!-- Card 2: Throughput (purple) -->
+<rect x="318" y="548" width="270" height="76" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="318" y="548" width="270" height="3" rx="1.5" fill="#7B5EE6"/>
+<text x="453" y="568" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">Throughput</text>
+<text x="453" y="598" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">100K+</text>
+<text x="453" y="614" text-anchor="middle" font-size="7" fill="#94A3B8">msg/s · semaphore</text>
 
-<line x1="888" y1="628" x2="888" y2="654" stroke="#ffffff30"/>
-<text x="1030" y="640" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">256</text>
-<text x="1030" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">Max Agents</text>
+<!-- Card 3: SHM Pool (orange) -->
+<rect x="596" y="548" width="270" height="76" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="596" y="548" width="270" height="3" rx="1.5" fill="#E8734A"/>
+<text x="731" y="568" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">SHM Pool</text>
+<text x="731" y="598" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">128MB</text>
+<text x="731" y="614" text-anchor="middle" font-size="7" fill="#94A3B8">shared memory</text>
 
-<text x="1168" y="670" text-anchor="end" font-size="8" fill="#D0D0D0" font-style="italic">Agents IPC · v0.1.1</text>
+<!-- Card 4: Max Agents (yellow) -->
+<rect x="874" y="548" width="270" height="76" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="874" y="548" width="270" height="3" rx="1.5" fill="#F5B935"/>
+<text x="1009" y="568" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">Max Agents</text>
+<text x="1009" y="598" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">256</text>
+<text x="1009" y="614" text-anchor="middle" font-size="7" fill="#94A3B8">concurrent · pub/sub</text>
+
+<!-- Bottom muted note (no dark bar) -->
+<text x="600" y="648" text-anchor="middle" font-size="9" fill="#94A3B8">Agents IPC · Zero-Copy Binder Bus × 4-Agent Topology × 5-Step Sequence × 4 Collaboration Patterns · v0.1.1</text>
+
 </svg>
 </div>
 </body>
 </html>
+
+
+
+
