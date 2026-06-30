@@ -4,230 +4,223 @@
 <meta charset="UTF-8">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{margin:0;padding:0;background:#FAFBFC}
-  .fig{width:1200px;height:675px;background:#FAFBFC;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:675px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
 </style>
 </head>
 <body>
 <div class="fig">
 <svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3866FA18"/></filter>
-  <filter id="shd"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3866FA25"/></filter>
-  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gP4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gP3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5078F0"/><stop offset="1" stop-color="#3866FA"/></linearGradient>
-  <linearGradient id="gP2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6B95FF"/><stop offset="1" stop-color="#5078F0"/></linearGradient>
-  <linearGradient id="gP1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8FB0FF"/><stop offset="1" stop-color="#6B95FF"/></linearGradient>
-  <linearGradient id="gCore" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
-  <linearGradient id="gO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
-  <linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="gY" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2EC4B6"/></marker>
-  <marker id="arB" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1E3A8A12"/></filter>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#3866FA00"/></linearGradient>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
 </defs>
 
-<rect x="0" y="0" width="1200" height="675" fill="#FAFBFC"/>
+<rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
 
-<!-- HEADER -->
-<rect x="28" y="18" width="1144" height="58" rx="12" fill="url(#gw)" filter="url(#shd)"/>
-<text x="52" y="46" font-size="22" font-weight="800" fill="#fff">MemoryRovol</text>
-<text x="230" y="46" font-size="11" fill="#C0D4FF">记忆卷载 · 4-Layer Pyramid · Sandwich Provider · HNSW · Ebbinghaus · 6 Backends</text>
-<rect x="990" y="32" width="168" height="30" rx="15" fill="#ffffff20"/>
-<text x="1074" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Figure 5 · Memory</text>
+<!-- TITLE (no dark bar — clean academic) -->
+<text x="40" y="48" font-size="20" font-weight="700" fill="#0F172A">MemoryRovol</text>
+<text x="40" y="68" font-size="11" fill="#64748B">记忆卷载 · 4-Layer Pyramid · Sandwich Provider · HNSW · Ebbinghaus · 6 Backends</text>
+<rect x="40" y="76" width="1120" height="2" fill="url(#accent)"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 5 · Memory</text>
 
 <!-- ====== A · Memory Pyramid (LEFT) ====== -->
-<text x="28" y="98" font-size="13" font-weight="700" fill="#1E3A8A">A · Memory Pyramid · 四层渐进式记忆金字塔</text>
-<line x1="28" y1="106" x2="470" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
+<text x="68" y="106" font-size="12" font-weight="700" fill="#1E3A8A">Memory Pyramid · 四层渐进式记忆金字塔</text>
+<line x1="40" y1="118" x2="470" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- L4 Pattern (top, narrowest, darkest theme) -->
-<polygon points="200,120 290,120 334,188 154,188" fill="url(#gP4)" filter="url(#shd)"/>
-<text x="244" y="145" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">L4 · Pattern</text>
-<text x="244" y="162" text-anchor="middle" font-size="9" fill="#D0DCFF">模式层</text>
-<text x="244" y="178" text-anchor="middle" font-size="8" fill="#A0C0FF">cross-task schema</text>
+<!-- L4 Pattern (top, deepest tint) -->
+<polygon points="200,132 290,132 334,200 154,200" fill="#C0D4FF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<text x="244" y="157" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">L4 · Pattern</text>
+<text x="244" y="174" text-anchor="middle" font-size="9" fill="#3866FA">模式层</text>
+<text x="244" y="190" text-anchor="middle" font-size="8" fill="#64748B">cross-task schema</text>
 
 <!-- L3 Structure -->
-<polygon points="154,193 334,193 384,263 104,263" fill="url(#gP3)" filter="url(#shd)"/>
-<text x="244" y="218" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">L3 · Structure</text>
-<text x="244" y="235" text-anchor="middle" font-size="9" fill="#D0E0FF">结构层</text>
-<text x="244" y="250" text-anchor="middle" font-size="8" fill="#B0CCFF">graph · relation</text>
+<polygon points="154,205 334,205 384,273 104,273" fill="#D6E3FF" stroke="#5078F0" stroke-width="1.2" filter="url(#sh)"/>
+<text x="244" y="230" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">L3 · Structure</text>
+<text x="244" y="247" text-anchor="middle" font-size="9" fill="#3866FA">结构层</text>
+<text x="244" y="263" text-anchor="middle" font-size="8" fill="#64748B">graph · relation</text>
 
 <!-- L2 Feature -->
-<polygon points="104,268 384,268 434,338 54,338" fill="url(#gP2)" filter="url(#shd)"/>
-<text x="244" y="293" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">L2 · Feature</text>
-<text x="244" y="310" text-anchor="middle" font-size="9" fill="#E0E8FF">特征层</text>
-<text x="244" y="325" text-anchor="middle" font-size="8" fill="#C0D8FF">embedding · cluster</text>
+<polygon points="104,278 384,278 434,346 54,346" fill="#E8F0FF" stroke="#6B95FF" stroke-width="1.2" filter="url(#sh)"/>
+<text x="244" y="303" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">L2 · Feature</text>
+<text x="244" y="320" text-anchor="middle" font-size="9" fill="#3866FA">特征层</text>
+<text x="244" y="336" text-anchor="middle" font-size="8" fill="#64748B">embedding · cluster</text>
 
-<!-- L1 Raw (bottom, widest, lightest) -->
-<polygon points="54,343 434,343 459,413 29,413" fill="url(#gP1)" filter="url(#shd)"/>
-<text x="244" y="368" text-anchor="middle" font-size="12" font-weight="800" fill="#1E3A8A">L1 · Raw</text>
-<text x="244" y="385" text-anchor="middle" font-size="9" fill="#2850D0">原始层</text>
-<text x="244" y="400" text-anchor="middle" font-size="8" fill="#5078F0">text · audio · vision</text>
+<!-- L1 Raw (bottom, lightest tint) -->
+<polygon points="54,351 434,351 459,419 29,419" fill="#F0F5FF" stroke="#8FB0FF" stroke-width="1.2" filter="url(#sh)"/>
+<text x="244" y="376" text-anchor="middle" font-size="12" font-weight="700" fill="#1E3A8A">L1 · Raw</text>
+<text x="244" y="393" text-anchor="middle" font-size="9" fill="#3866FA">原始层</text>
+<text x="244" y="409" text-anchor="middle" font-size="8" fill="#64748B">text · audio · vision</text>
 
-<!-- Consolidation annotation (right of pyramid top) -->
-<text x="350" y="140" font-size="11" font-weight="800" fill="#2EC4B6">↑ 10:1</text>
-<text x="350" y="155" font-size="8" font-weight="700" fill="#2EC4B6">Consolidation</text>
-<text x="350" y="168" font-size="7" fill="#888">progressive</text>
-<text x="350" y="180" font-size="7" fill="#888">compression</text>
+<!-- Consolidation annotation -->
+<text x="350" y="150" font-size="11" font-weight="700" fill="#2EC4B6">↑ 10:1</text>
+<text x="350" y="164" font-size="8" font-weight="600" fill="#2EC4B6">Consolidation</text>
+<text x="350" y="177" font-size="7" fill="#94A3B8">progressive</text>
+<text x="350" y="189" font-size="7" fill="#94A3B8">compression</text>
 
 <!-- Density labels -->
-<text x="30" y="428" font-size="8" fill="#888">高密度 · High</text>
-<text x="468" y="428" font-size="8" fill="#888" text-anchor="end">低密度 · Low</text>
+<text x="40" y="436" font-size="8" fill="#94A3B8">高密度 · High</text>
+<text x="470" y="436" font-size="8" fill="#94A3B8" text-anchor="end">低密度 · Low</text>
 
-<!-- Consolidation cycle mini (under pyramid) -->
-<rect x="28" y="442" width="442" height="48" rx="10" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
-<text x="44" y="460" font-size="9" font-weight="700" fill="#1E3A8A">Consolidation:</text>
-<rect x="138" y="452" width="56" height="20" rx="10" fill="url(#gV)"/>
-<text x="166" y="466" text-anchor="middle" font-size="7" font-weight="800" fill="#fff">Encode</text>
-<text x="198" y="466" font-size="9" fill="#888">→</text>
-<rect x="210" y="452" width="60" height="20" rx="10" fill="url(#gT)"/>
-<text x="240" y="466" text-anchor="middle" font-size="7" font-weight="800" fill="#fff">Consolid</text>
-<text x="276" y="466" font-size="9" fill="#888">→</text>
-<rect x="288" y="452" width="56" height="20" rx="10" fill="url(#gO)"/>
-<text x="316" y="466" text-anchor="middle" font-size="7" font-weight="800" fill="#fff">Replay</text>
-<text x="348" y="466" font-size="9" fill="#888">→</text>
-<rect x="360" y="452" width="68" height="20" rx="10" fill="url(#gY)"/>
-<text x="394" y="466" text-anchor="middle" font-size="7" font-weight="800" fill="#fff">Forgetting</text>
-<text x="249" y="484" text-anchor="middle" font-size="7" fill="#888">L1→L2→L3→L4 渐进式压缩 · 10:1 consolidation ratio</text>
+<!-- Consolidation cycle (light card) -->
+<rect x="40" y="448" width="430" height="44" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
+<text x="54" y="465" font-size="9" font-weight="700" fill="#1E3A8A">Consolidation:</text>
+<rect x="148" y="458" width="54" height="20" rx="10" fill="#F5F0FF" stroke="#7B5EE6"/>
+<text x="175" y="471" text-anchor="middle" font-size="7" font-weight="700" fill="#7B5EE6">Encode</text>
+<text x="206" y="471" font-size="9" fill="#CBD5E1">→</text>
+<rect x="216" y="458" width="58" height="20" rx="10" fill="#F0FAF8" stroke="#2EC4B6"/>
+<text x="245" y="471" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">Consolid</text>
+<text x="278" y="471" font-size="9" fill="#CBD5E1">→</text>
+<rect x="288" y="458" width="54" height="20" rx="10" fill="#FFF5F0" stroke="#E8734A"/>
+<text x="315" y="471" text-anchor="middle" font-size="7" font-weight="700" fill="#E8734A">Replay</text>
+<text x="346" y="471" font-size="9" fill="#CBD5E1">→</text>
+<rect x="356" y="458" width="64" height="20" rx="10" fill="#FFFBF0" stroke="#F5B935"/>
+<text x="388" y="471" text-anchor="middle" font-size="7" font-weight="700" fill="#B07020">Forgetting</text>
+<text x="255" y="487" text-anchor="middle" font-size="7" fill="#94A3B8">L1→L2→L3→L4 渐进式压缩 · 10:1 consolidation ratio</text>
 
-<!-- ====== B · Sandwich Provider Architecture (Core Innovation, RIGHT-TOP) ====== -->
-<text x="490" y="98" font-size="13" font-weight="700" fill="#1E3A8A">B · Sandwich Provider Architecture · 三明治供应者架构 (Core Innovation)</text>
-<line x1="490" y1="106" x2="1172" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== B · Sandwich Provider Architecture (Core Innovation) ====== -->
+<rect x="490" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="500" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="518" y="106" font-size="12" font-weight="700" fill="#1E3A8A">Sandwich Provider Architecture · 三明治供应者架构 (Core Innovation)</text>
+<line x1="490" y1="118" x2="1160" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
 <!-- Top slice: Application Layer -->
-<rect x="490" y="115" width="682" height="52" rx="10" fill="#F0F4FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="490" y="115" width="6" height="52" rx="3" fill="#3866FA"/>
-<text x="510" y="132" font-size="10" font-weight="700" fill="#1E3A8A">① Application Layer · 应用层</text>
-<text x="510" y="146" font-size="8" fill="#555">memory_query() · memory_store() — 统一读写接口</text>
-<text x="510" y="160" font-size="7" fill="#888">Retrieval: Query → HNSW → Rerank → Merge → Context → LLM</text>
-<rect x="1010" y="125" width="150" height="32" rx="8" fill="#fff" stroke="#D0DCFF"/>
-<text x="1085" y="140" text-anchor="middle" font-size="7" font-weight="700" fill="#3866FA">READ / WRITE</text>
-<text x="1085" y="151" text-anchor="middle" font-size="7" fill="#888">agent API</text>
+<rect x="490" y="128" width="670" height="50" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<rect x="490" y="128" width="4" height="50" rx="2" fill="#3866FA"/>
+<text x="510" y="145" font-size="10" font-weight="700" fill="#1E3A8A">① Application Layer · 应用层</text>
+<text x="510" y="159" font-size="8" fill="#475569">memory_query() · memory_store() — 统一读写接口</text>
+<text x="510" y="172" font-size="7" fill="#94A3B8">Retrieval: Query → HNSW → Rerank → Merge → Context → LLM</text>
+<rect x="1000" y="138" width="148" height="30" rx="6" fill="#F0F5FF" stroke="#D0DCFF"/>
+<text x="1074" y="152" text-anchor="middle" font-size="7" font-weight="700" fill="#3866FA">READ / WRITE</text>
+<text x="1074" y="163" text-anchor="middle" font-size="7" fill="#94A3B8">agent API</text>
 
-<!-- Middle slice: Provider Abstraction (CORE) -->
-<rect x="490" y="173" width="682" height="82" rx="10" fill="url(#gCore)" filter="url(#shd)"/>
-<text x="510" y="194" font-size="11" font-weight="800" fill="#fff">② memory_provider.h · Provider Abstraction (Sandwich Core)</text>
-<text x="510" y="210" font-size="8" fill="#D0DCFF">供应者抽象层 · 屏蔽后端差异 · 统一接口契约 · 可热插拔</text>
-<text x="510" y="226" font-size="8" fill="#fff">memory_provider_register() · memory_provider_query() · memory_provider_unregister()</text>
-<text x="510" y="242" font-size="7" fill="#A0C0FF">provider_ops_t 统一操作集 · 6 backends behind ONE API · zero vendor lock-in</text>
-<rect x="1010" y="183" width="150" height="62" rx="8" fill="#ffffff20"/>
-<text x="1085" y="207" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">CORE</text>
-<text x="1085" y="221" text-anchor="middle" font-size="7" fill="#D0DCFF">sandwich</text>
-<text x="1085" y="233" text-anchor="middle" font-size="7" fill="#D0DCFF">abstraction</text>
+<!-- Middle slice: Provider Abstraction (CORE - highlighted light blue tint) -->
+<rect x="490" y="184" width="670" height="78" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="490" y="184" width="6" height="78" rx="3" fill="#3866FA"/>
+<text x="510" y="204" font-size="11" font-weight="700" fill="#1E3A8A">② memory_provider.h · Provider Abstraction (Sandwich Core)</text>
+<text x="510" y="220" font-size="8" fill="#3866FA">供应者抽象层 · 屏蔽后端差异 · 统一接口契约 · 可热插拔</text>
+<text x="510" y="236" font-size="8" fill="#475569" font-family="monospace">memory_provider_register() · memory_provider_query() · memory_provider_unregister()</text>
+<text x="510" y="252" font-size="7" fill="#94A3B8">provider_ops_t 统一操作集 · 6 backends behind ONE API · zero vendor lock-in</text>
+<rect x="1000" y="194" width="148" height="58" rx="6" fill="#FFFFFF" stroke="#3866FA"/>
+<text x="1074" y="216" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">CORE</text>
+<text x="1074" y="230" text-anchor="middle" font-size="7" fill="#64748B">sandwich</text>
+<text x="1074" y="242" text-anchor="middle" font-size="7" fill="#64748B">abstraction</text>
 
 <!-- Bottom slice: 6 Backends -->
-<rect x="490" y="261" width="682" height="74" rx="10" fill="#FFF5F0" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="490" y="261" width="6" height="74" rx="3" fill="#E8734A"/>
-<text x="510" y="278" font-size="10" font-weight="700" fill="#1E3A8A">③ 6 Vector Backends · 向量后端 (swappable · 可插拔)</text>
-<rect x="510" y="287" width="100" height="38" rx="8" fill="#fff" stroke="#7B5EE6" stroke-width="1"/>
-<text x="560" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Milvus</text>
-<text x="560" y="315" text-anchor="middle" font-size="7" fill="#888">distributed</text>
-<rect x="616" y="287" width="100" height="38" rx="8" fill="#fff" stroke="#7B5EE6" stroke-width="1"/>
-<text x="666" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Qdrant</text>
-<text x="666" y="315" text-anchor="middle" font-size="7" fill="#888">Rust · filter</text>
-<rect x="722" y="287" width="100" height="38" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1"/>
-<text x="772" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">Weaviate</text>
-<text x="772" y="315" text-anchor="middle" font-size="7" fill="#888">GraphQL</text>
-<rect x="828" y="287" width="100" height="38" rx="8" fill="#fff" stroke="#2EC4B6" stroke-width="1"/>
-<text x="878" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">pgvector</text>
-<text x="878" y="315" text-anchor="middle" font-size="7" fill="#888">PostgreSQL</text>
-<rect x="934" y="287" width="100" height="38" rx="8" fill="#fff" stroke="#E8734A" stroke-width="1"/>
-<text x="984" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">Chroma</text>
-<text x="984" y="315" text-anchor="middle" font-size="7" fill="#888">embedded</text>
-<rect x="1040" y="287" width="120" height="38" rx="8" fill="#fff" stroke="#E8734A" stroke-width="1"/>
-<text x="1100" y="302" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">FAISS</text>
-<text x="1100" y="315" text-anchor="middle" font-size="7" fill="#888">Meta · GPU · billion</text>
+<rect x="490" y="268" width="670" height="68" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<rect x="490" y="268" width="4" height="68" rx="2" fill="#E8734A"/>
+<text x="510" y="284" font-size="10" font-weight="700" fill="#1E3A8A">③ 6 Vector Backends · 向量后端 (swappable · 可插拔)</text>
+<rect x="510" y="292" width="98" height="36" rx="6" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="559" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Milvus</text>
+<text x="559" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">distributed</text>
+<rect x="614" y="292" width="98" height="36" rx="6" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="663" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Qdrant</text>
+<text x="663" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">Rust · filter</text>
+<rect x="718" y="292" width="98" height="36" rx="6" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="767" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">Weaviate</text>
+<text x="767" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">GraphQL</text>
+<rect x="822" y="292" width="98" height="36" rx="6" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="871" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">pgvector</text>
+<text x="871" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">PostgreSQL</text>
+<rect x="926" y="292" width="98" height="36" rx="6" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
+<text x="975" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">Chroma</text>
+<text x="975" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">embedded</text>
+<rect x="1030" y="292" width="118" height="36" rx="6" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
+<text x="1089" y="307" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">FAISS</text>
+<text x="1089" y="320" text-anchor="middle" font-size="7" fill="#94A3B8">Meta · GPU · billion</text>
 
-<!-- ====== C · Ebbinghaus Forgetting Curve (RIGHT-MIDDLE-LEFT) ====== -->
-<text x="490" y="358" font-size="13" font-weight="700" fill="#1E3A8A">C · Ebbinghaus Forgetting · 艾宾浩斯遗忘曲线</text>
-<line x1="490" y1="366" x2="820" y2="366" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== C · Ebbinghaus Forgetting Curve ====== -->
+<rect x="490" y="350" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="500" y="362" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
+<text x="518" y="362" font-size="12" font-weight="700" fill="#1E3A8A">Ebbinghaus Forgetting · 艾宾浩斯遗忘曲线</text>
+<line x1="490" y1="374" x2="820" y2="374" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="490" y="372" width="330" height="118" rx="10" fill="#fff" stroke="#D0DCFF" filter="url(#sh)"/>
-<text x="655" y="388" text-anchor="middle" font-size="10" font-weight="700" fill="#1E3A8A">R(t) = e^(−t/λ)</text>
-<!-- Axes -->
-<line x1="520" y1="478" x2="800" y2="478" stroke="#ccc" stroke-width="1"/>
-<line x1="520" y1="395" x2="520" y2="478" stroke="#ccc" stroke-width="1"/>
-<text x="516" y="398" text-anchor="end" font-size="7" fill="#888">1.0</text>
-<text x="516" y="438" text-anchor="end" font-size="7" fill="#888">0.5</text>
-<text x="516" y="481" text-anchor="end" font-size="7" fill="#888">0.0</text>
-<text x="800" y="488" text-anchor="middle" font-size="7" fill="#888">t (days)</text>
-<!-- Curve with replay -->
-<path d="M 520 400 Q 560 415, 595 435 T 660 462 T 790 472" fill="none" stroke="#E8734A" stroke-width="2.5"/>
-<!-- Replay spike 1 -->
-<circle cx="595" cy="435" r="3.5" fill="#2EC4B6"/>
-<line x1="595" y1="435" x2="595" y2="408" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="2,2"/>
-<text x="595" y="404" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">replay↑</text>
-<!-- Replay spike 2 -->
-<circle cx="660" cy="462" r="3.5" fill="#2EC4B6"/>
-<line x1="660" y1="462" x2="660" y2="435" stroke="#2EC4B6" stroke-width="1.5" stroke-dasharray="2,2"/>
-<text x="660" y="431" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">replay↑</text>
-<!-- Without replay (faded) -->
-<path d="M 595 435 Q 628 454, 660 470 T 790 478" fill="none" stroke="#E8734A" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.35"/>
-<text x="655" y="486" text-anchor="middle" font-size="7" fill="#888">λ ≈ 3.5 days · replay resets retention curve</text>
+<rect x="490" y="380" width="330" height="115" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<text x="655" y="396" text-anchor="middle" font-size="10" font-weight="700" fill="#1E3A8A">R(t) = e^(−t/λ)</text>
+<line x1="520" y1="482" x2="800" y2="482" stroke="#CBD5E1" stroke-width="1"/>
+<line x1="520" y1="402" x2="520" y2="482" stroke="#CBD5E1" stroke-width="1"/>
+<text x="516" y="405" text-anchor="end" font-size="7" fill="#94A3B8">1.0</text>
+<text x="516" y="445" text-anchor="end" font-size="7" fill="#94A3B8">0.5</text>
+<text x="516" y="485" text-anchor="end" font-size="7" fill="#94A3B8">0.0</text>
+<text x="800" y="492" text-anchor="middle" font-size="7" fill="#94A3B8">t (days)</text>
+<path d="M 520 408 Q 560 422, 595 442 T 660 466 T 790 476" fill="none" stroke="#E8734A" stroke-width="2"/>
+<circle cx="595" cy="442" r="3" fill="#2EC4B6"/>
+<line x1="595" y1="442" x2="595" y2="416" stroke="#2EC4B6" stroke-width="1.2" stroke-dasharray="2,2"/>
+<text x="595" y="412" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">replay↑</text>
+<circle cx="660" cy="466" r="3" fill="#2EC4B6"/>
+<line x1="660" y1="466" x2="660" y2="440" stroke="#2EC4B6" stroke-width="1.2" stroke-dasharray="2,2"/>
+<text x="660" y="436" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">replay↑</text>
+<path d="M 595 442 Q 628 458, 660 474 T 790 482" fill="none" stroke="#E8734A" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.3"/>
+<text x="655" y="490" text-anchor="middle" font-size="7" fill="#94A3B8">λ ≈ 3.5 days · replay resets retention</text>
 
-<!-- ====== D · Encoding Pipeline (RIGHT-MIDDLE-RIGHT) ====== -->
-<text x="830" y="358" font-size="13" font-weight="700" fill="#1E3A8A">D · Encoding Pipeline · 写入流水线</text>
-<line x1="830" y1="366" x2="1172" y2="366" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== D · Encoding Pipeline ====== -->
+<rect x="830" y="350" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="840" y="362" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="858" y="362" font-size="12" font-weight="700" fill="#1E3A8A">Encoding Pipeline · 写入流水线</text>
+<line x1="830" y1="374" x2="1160" y2="374" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="830" y="372" width="342" height="118" rx="10" fill="#F8F9FC" stroke="#D0DCFF" filter="url(#sh)"/>
-<!-- Step 1 -->
-<rect x="846" y="380" width="110" height="22" rx="8" fill="url(#gV)"/>
-<text x="901" y="395" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">① Ingest</text>
-<text x="965" y="395" font-size="7" fill="#888">multimodal raw</text>
-<line x1="901" y1="402" x2="901" y2="408" stroke="#3866FA" stroke-width="1.5" marker-end="url(#arB)"/>
-<!-- Step 2 -->
-<rect x="846" y="408" width="110" height="22" rx="8" fill="url(#gT)"/>
-<text x="901" y="423" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">② Embed</text>
-<text x="965" y="423" font-size="7" fill="#888">chunk + vectorize</text>
-<line x1="901" y1="430" x2="901" y2="436" stroke="#3866FA" stroke-width="1.5" marker-end="url(#arB)"/>
-<!-- Step 3 -->
-<rect x="846" y="436" width="110" height="22" rx="8" fill="url(#gO)"/>
-<text x="901" y="451" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">③ Layered</text>
-<text x="965" y="451" font-size="7" fill="#888">L1→L2→L3→L4</text>
-<line x1="901" y1="458" x2="901" y2="464" stroke="#3866FA" stroke-width="1.5" marker-end="url(#arB)"/>
-<!-- Step 4 -->
-<rect x="846" y="464" width="110" height="22" rx="8" fill="url(#gY)"/>
-<text x="901" y="479" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">④ Consolidate</text>
-<text x="965" y="479" font-size="7" fill="#888">10:1 archive</text>
+<rect x="830" y="380" width="330" height="115" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<rect x="848" y="388" width="104" height="22" rx="6" fill="#F5F0FF" stroke="#7B5EE6"/>
+<text x="900" y="403" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">① Ingest</text>
+<text x="960" y="403" font-size="7" fill="#94A3B8">multimodal</text>
+<line x1="900" y1="410" x2="900" y2="416" stroke="#3866FA" stroke-width="1.2" marker-end="url(#ar)"/>
+<rect x="848" y="416" width="104" height="22" rx="6" fill="#F0FAF8" stroke="#2EC4B6"/>
+<text x="900" y="431" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">② Embed</text>
+<text x="960" y="431" font-size="7" fill="#94A3B8">vectorize</text>
+<line x1="900" y1="438" x2="900" y2="444" stroke="#3866FA" stroke-width="1.2" marker-end="url(#ar)"/>
+<rect x="848" y="444" width="104" height="22" rx="6" fill="#FFF5F0" stroke="#E8734A"/>
+<text x="900" y="459" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">③ Layered</text>
+<text x="960" y="459" font-size="7" fill="#94A3B8">L1→L4</text>
+<line x1="900" y1="466" x2="900" y2="472" stroke="#3866FA" stroke-width="1.2" marker-end="url(#ar)"/>
+<rect x="848" y="472" width="104" height="22" rx="6" fill="#FFFBF0" stroke="#F5B935"/>
+<text x="900" y="487" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">④ Consolidate</text>
+<text x="960" y="487" font-size="7" fill="#94A3B8">10:1</text>
 
-<!-- ====== E · Key Metrics + Design Principle (BOTTOM) ====== -->
-<text x="28" y="508" font-size="13" font-weight="700" fill="#1E3A8A">E · Key Metrics · 关键指标</text>
-<line x1="28" y1="516" x2="470" y2="516" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== E · Key Metrics (light cards, no dark bar) ====== -->
+<rect x="40" y="510" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="522" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">E</text>
+<text x="68" y="522" font-size="12" font-weight="700" fill="#1E3A8A">Key Metrics · 关键指标</text>
+<line x1="40" y1="534" x2="470" y2="534" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="28" y="524" width="105" height="80" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="80" y="544" text-anchor="middle" font-size="9" font-weight="700" fill="#2EC4B6">Retrieval</text>
-<text x="80" y="572" text-anchor="middle" font-size="20" font-weight="800" fill="#1E3A8A">&lt;12ms</text>
-<text x="80" y="590" text-anchor="middle" font-size="7" fill="#888">HNSW p99</text>
+<rect x="40" y="542" width="100" height="76" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="542" width="100" height="3" rx="1.5" fill="#2EC4B6"/>
+<text x="90" y="562" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">Retrieval</text>
+<text x="90" y="592" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">&lt;12ms</text>
+<text x="90" y="608" text-anchor="middle" font-size="7" fill="#94A3B8">HNSW p99</text>
 
-<rect x="141" y="524" width="105" height="80" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="193" y="544" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Recall@10</text>
-<text x="193" y="572" text-anchor="middle" font-size="20" font-weight="800" fill="#1E3A8A">94.2%</text>
-<text x="193" y="590" text-anchor="middle" font-size="7" fill="#888">precision</text>
+<rect x="148" y="542" width="100" height="76" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="148" y="542" width="100" height="3" rx="1.5" fill="#7B5EE6"/>
+<text x="198" y="562" text-anchor="middle" font-size="8" font-weight="700" fill="#7B5EE6">Recall@10</text>
+<text x="198" y="592" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">94.2%</text>
+<text x="198" y="608" text-anchor="middle" font-size="7" fill="#94A3B8">precision</text>
 
-<rect x="254" y="524" width="105" height="80" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<text x="306" y="544" text-anchor="middle" font-size="9" font-weight="700" fill="#E8734A">Compression</text>
-<text x="306" y="572" text-anchor="middle" font-size="20" font-weight="800" fill="#1E3A8A">10:1</text>
-<text x="306" y="590" text-anchor="middle" font-size="7" fill="#888">L1→L4</text>
+<rect x="256" y="542" width="100" height="76" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="256" y="542" width="100" height="3" rx="1.5" fill="#E8734A"/>
+<text x="306" y="562" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">Compression</text>
+<text x="306" y="592" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">10:1</text>
+<text x="306" y="608" text-anchor="middle" font-size="7" fill="#94A3B8">L1→L4</text>
 
-<rect x="367" y="524" width="103" height="80" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<text x="418" y="544" text-anchor="middle" font-size="9" font-weight="700" fill="#B07020">Capacity</text>
-<text x="418" y="572" text-anchor="middle" font-size="20" font-weight="800" fill="#1E3A8A">10M+</text>
-<text x="418" y="590" text-anchor="middle" font-size="7" fill="#888">vectors</text>
+<rect x="364" y="542" width="106" height="76" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="364" y="542" width="106" height="3" rx="1.5" fill="#F5B935"/>
+<text x="417" y="562" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">Capacity</text>
+<text x="417" y="592" text-anchor="middle" font-size="20" font-weight="700" fill="#1E3A8A">10M+</text>
+<text x="417" y="608" text-anchor="middle" font-size="7" fill="#94A3B8">vectors</text>
 
-<!-- Design principle -->
-<rect x="490" y="524" width="682" height="80" rx="10" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1" filter="url(#sh)"/>
-<text x="510" y="546" font-size="10" font-weight="700" fill="#6540D0">Design Principle</text>
-<text x="510" y="564" font-size="9" fill="#555" font-style="italic">"Memory is not storage — it is the agent's continuous identity across time."</text>
-<text x="510" y="580" font-size="8" fill="#777">记忆非存储，而是智能体跨时间的连续身份 · 渐进式压缩 · 遗忘与固化</text>
-<text x="510" y="594" font-size="7" fill="#999">4-layer pyramid · sandwich provider (memory_provider.h) · Ebbinghaus replay · HNSW · 6 backends</text>
+<!-- Design principle (light tinted card) -->
+<rect x="490" y="510" width="670" height="108" rx="8" fill="#F8F5FF" stroke="#7B5EE6" stroke-width="1" filter="url(#sh)"/>
+<rect x="490" y="510" width="4" height="108" rx="2" fill="#7B5EE6"/>
+<text x="510" y="532" font-size="10" font-weight="700" fill="#6540D0">Design Principle · 设计理念</text>
+<text x="510" y="552" font-size="10" fill="#1E3A8A" font-style="italic">"Memory is not storage — it is the agent's continuous identity across time."</text>
+<text x="510" y="572" font-size="8" fill="#475569">记忆非存储，而是智能体跨时间的连续身份 · 渐进式压缩 · 遗忘与固化</text>
+<text x="510" y="588" font-size="7" fill="#94A3B8">4-layer pyramid · sandwich provider (memory_provider.h) · Ebbinghaus replay · HNSW · 6 backends</text>
+<text x="510" y="604" font-size="7" fill="#94A3B8">provider_ops_t 统一操作集 · 可热插拔后端 · 零供应商锁定</text>
 
-<!-- Bottom tagline -->
-<rect x="28" y="620" width="1144" height="42" rx="10" fill="url(#gw)" filter="url(#shd)"/>
-<text x="600" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">4-Layer Pyramid × Sandwich Provider × Ebbinghaus Forgetting × HNSW Retrieval</text>
-<text x="600" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">四层渐进式记忆金字塔 · 三明治供应者架构(memory_provider.h) · 艾宾浩斯遗忘曲线 · 6向量后端可插拔</text>
+<!-- Bottom muted note (no dark bar) -->
+<text x="600" y="648" text-anchor="middle" font-size="9" fill="#94A3B8">MemoryRovol · 4-Layer Pyramid × Sandwich Provider × Ebbinghaus Forgetting × HNSW Retrieval · v0.1.1</text>
 
-<text x="1168" y="670" text-anchor="end" font-size="8" fill="#D0D0D0" font-style="italic">MemoryRovol · v0.1.1</text>
 </svg>
 </div>
 </body>

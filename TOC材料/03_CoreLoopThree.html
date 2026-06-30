@@ -4,271 +4,283 @@
 <meta charset="UTF-8">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{margin:0;padding:0;background:#FAFBFC}
-  .fig{width:1200px;height:675px;background:#FAFBFC;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:675px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
 </style>
 </head>
 <body>
 <div class="fig">
 <svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3866FA18"/></filter>
-  <filter id="shd"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3866FA25"/></filter>
-  <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#2850D0"/></linearGradient>
-  <linearGradient id="gT" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EC4B6"/><stop offset="1" stop-color="#1AAA9C"/></linearGradient>
-  <linearGradient id="gO" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8734A"/><stop offset="1" stop-color="#D45A30"/></linearGradient>
-  <linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="gY" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <linearGradient id="gT2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5EE6"/><stop offset="1" stop-color="#6540D0"/></linearGradient>
-  <linearGradient id="gT1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5B935"/><stop offset="1" stop-color="#E0A020"/></linearGradient>
-  <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#555"/></marker>
-  <marker id="arB" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#3866FA"/></marker>
-  <marker id="arG" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#2EC4B6"/></marker>
-  <marker id="arO" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#E8734A"/></marker>
+  <filter id="sh"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1E3A8A12"/></filter>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#3866FA00"/></linearGradient>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
+  <marker id="arG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#2EC4B6"/></marker>
+  <marker id="arO" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#E8734A"/></marker>
 </defs>
 
-<rect x="0" y="0" width="1200" height="675" fill="#FAFBFC"/>
+<rect x="0" y="0" width="1200" height="675" fill="#FFFFFF"/>
 
-<!-- HEADER -->
-<rect x="28" y="18" width="1144" height="58" rx="12" fill="url(#gw)" filter="url(#shd)"/>
-<text x="52" y="46" font-size="22" font-weight="800" fill="#fff">CoreLoopThree</text>
-<text x="240" y="46" font-size="11" fill="#C0D4FF">三层认知循环 · Thinkdual 双思考 · 5-Phase · 多Agent协调 · 认知演化</text>
-<rect x="990" y="32" width="168" height="30" rx="15" fill="#ffffff20"/>
-<text x="1074" y="52" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Figure 3 · Cognition</text>
+<!-- TITLE (no dark bar — clean academic) -->
+<text x="40" y="48" font-size="20" font-weight="700" fill="#0F172A">CoreLoopThree</text>
+<text x="40" y="68" font-size="11" fill="#64748B">三层认知循环 · Thinkdual 双思考 · 5-Phase · 4 Coordinator · 认知演化 · 补偿事务</text>
+<rect x="40" y="76" width="1120" height="2" fill="url(#accent)"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 3 · Cognition</text>
 
-<!-- ====== A · 三层认知循环 (LEFT) ====== -->
-<text x="28" y="98" font-size="13" font-weight="700" fill="#1E3A8A">A · Cognitive Loop · 三层认知循环</text>
-<line x1="28" y1="106" x2="370" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== A · Cognitive Loop (LEFT) ====== -->
+<rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
+<text x="68" y="106" font-size="12" font-weight="700" fill="#1E3A8A">Cognitive Loop · 三层认知循环</text>
+<line x1="40" y1="118" x2="360" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- Layer 1: Cognition -->
-<rect x="40" y="118" width="320" height="70" rx="12" fill="#fff" stroke="#3866FA" stroke-width="2" filter="url(#sh)"/>
-<rect x="40" y="118" width="6" height="70" rx="3" fill="#3866FA"/>
-<circle cx="78" cy="153" r="18" fill="url(#gP)"/>
-<text x="78" y="159" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅰ</text>
-<text x="108" y="140" font-size="11" font-weight="700" fill="#1E3A8A">Cognition · 认知层</text>
-<text x="108" y="156" font-size="8" fill="#555">perceive → reason → plan</text>
-<text x="108" y="170" font-size="7" fill="#888">cognition/ · coordinator/ · dual-model</text>
-<text x="108" y="182" font-size="7" fill="#3866FA" font-weight="600">t2 CoT推理 · t1 直觉响应</text>
+<!-- Ⅰ Cognition (blue, highlighted) -->
+<rect x="40" y="124" width="320" height="68" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="124" width="6" height="68" rx="3" fill="#3866FA"/>
+<circle cx="78" cy="158" r="16" fill="#3866FA"/>
+<text x="78" y="163" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅰ</text>
+<text x="104" y="142" font-size="11" font-weight="700" fill="#1E3A8A">Cognition · 认知层</text>
+<text x="104" y="157" font-size="8" fill="#475569">perceive → reason → plan</text>
+<text x="104" y="170" font-size="7" fill="#94A3B8">cognition/ · coordinator/ · dual-model</text>
+<text x="104" y="183" font-size="7" fill="#3866FA" font-weight="600">t2 CoT推理 · t1 直觉响应</text>
 
-<line x1="200" y1="188" x2="200" y2="204" stroke="#3866FA" stroke-width="2" marker-end="url(#arB)"/>
+<line x1="200" y1="192" x2="200" y2="204" stroke="#3866FA" stroke-width="1.5" marker-end="url(#ar)"/>
 
-<!-- Layer 2: Execution -->
-<rect x="40" y="208" width="320" height="70" rx="12" fill="#fff" stroke="#E8734A" stroke-width="2" filter="url(#sh)"/>
-<rect x="40" y="208" width="6" height="70" rx="3" fill="#E8734A"/>
-<circle cx="78" cy="243" r="18" fill="url(#gO)"/>
-<text x="78" y="249" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅱ</text>
-<text x="108" y="230" font-size="11" font-weight="700" fill="#1E3A8A">Execution · 执行层</text>
-<text x="108" y="246" font-size="8" fill="#555">tool-call → verify → output</text>
-<text x="108" y="260" font-size="7" fill="#888">execution/ · SafetyGuard 审批</text>
-<text x="108" y="272" font-size="7" fill="#E8734A" font-weight="600">compensating transaction · 补偿事务</text>
+<!-- Ⅱ Execution (orange) -->
+<rect x="40" y="208" width="320" height="68" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="208" width="6" height="68" rx="3" fill="#E8734A"/>
+<circle cx="78" cy="242" r="16" fill="#E8734A"/>
+<text x="78" y="247" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅱ</text>
+<text x="104" y="226" font-size="11" font-weight="700" fill="#1E3A8A">Execution · 执行层</text>
+<text x="104" y="241" font-size="8" fill="#475569">tool-call → verify → output</text>
+<text x="104" y="254" font-size="7" fill="#94A3B8">execution/ · SafetyGuard 审批</text>
+<text x="104" y="267" font-size="7" fill="#E8734A" font-weight="600">compensating transaction · 补偿事务</text>
 
-<line x1="200" y1="278" x2="200" y2="294" stroke="#2EC4B6" stroke-width="2" marker-end="url(#arG)"/>
+<line x1="200" y1="276" x2="200" y2="288" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
 
-<!-- Layer 3: Memory -->
-<rect x="40" y="298" width="320" height="70" rx="12" fill="#fff" stroke="#2EC4B6" stroke-width="2" filter="url(#sh)"/>
-<rect x="40" y="298" width="6" height="70" rx="3" fill="#2EC4B6"/>
-<circle cx="78" cy="333" r="18" fill="url(#gT)"/>
-<text x="78" y="339" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅲ</text>
-<text x="108" y="320" font-size="11" font-weight="700" fill="#1E3A8A">Memory · 记忆层</text>
-<text x="108" y="336" font-size="8" fill="#555">store → retrieve → evolve</text>
-<text x="108" y="350" font-size="7" fill="#888">memory/engine.c · provider 接口</text>
-<text x="108" y="362" font-size="7" fill="#2EC4B6" font-weight="600">cognitive evolution · 认知演化固化</text>
+<!-- Ⅲ Memory (teal) -->
+<rect x="40" y="292" width="320" height="68" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="292" width="6" height="68" rx="3" fill="#2EC4B6"/>
+<circle cx="78" cy="326" r="16" fill="#2EC4B6"/>
+<text x="78" y="331" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">Ⅲ</text>
+<text x="104" y="310" font-size="11" font-weight="700" fill="#1E3A8A">Memory · 记忆层</text>
+<text x="104" y="325" font-size="8" fill="#475569">store → retrieve → evolve</text>
+<text x="104" y="338" font-size="7" fill="#94A3B8">memory/engine.c · provider 接口</text>
+<text x="104" y="351" font-size="7" fill="#2EC4B6" font-weight="600">cognitive evolution · 认知演化固化</text>
 
-<!-- feedback loop -->
-<path d="M 40 333 Q 12 225 40 153" fill="none" stroke="#2EC4B6" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arG)"/>
-<text x="8" y="245" font-size="7" fill="#2EC4B6" font-weight="600" transform="rotate(-90 8 245)">context feedback</text>
+<!-- feedback loop arc -->
+<path d="M 40 326 Q 14 225 40 158" fill="none" stroke="#2EC4B6" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arG)"/>
+<text x="10" y="245" font-size="7" fill="#2EC4B6" font-weight="600" transform="rotate(-90 10 245)">context feedback</text>
 
-<!-- ====== B · Thinkdual 双思考系统 (MIDDLE) ====== -->
-<text x="388" y="98" font-size="13" font-weight="700" fill="#1E3A8A">B · Thinkdual · 双思考系统</text>
-<line x1="388" y1="106" x2="760" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== B · Thinkdual (MIDDLE) ====== -->
+<rect x="380" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="390" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="408" y="106" font-size="12" font-weight="700" fill="#1E3A8A">Thinkdual · 双思考系统</text>
+<line x1="380" y1="118" x2="720" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- System 2 -->
-<rect x="388" y="118" width="372" height="82" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="2" filter="url(#sh)"/>
-<rect x="388" y="118" width="372" height="26" rx="12" fill="url(#gT2)"/>
-<rect x="388" y="132" width="372" height="12" fill="url(#gT2)"/>
-<text x="574" y="137" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">🧠 System 2 · t2 深度思考 (Deliberate)</text>
-<text x="406" y="160" font-size="9" fill="#555">CoT chain-of-thought · ReAct loop · reflection</text>
-<text x="406" y="174" font-size="8" fill="#777">高精度 · 高延迟 · 复杂推理任务</text>
-<text x="406" y="188" font-size="8" fill="#7B5EE6" font-weight="600">占比 32% · reasoning/code 场景</text>
+<!-- System 2 (purple tint) -->
+<rect x="380" y="124" width="340" height="80" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="380" y="124" width="6" height="80" rx="3" fill="#7B5EE6"/>
+<text x="398" y="142" font-size="11" font-weight="700" fill="#1E3A8A">System 2 · t2 深度思考 (Deliberate)</text>
+<text x="398" y="158" font-size="8" fill="#475569">CoT chain-of-thought · ReAct loop · reflection</text>
+<text x="398" y="172" font-size="8" fill="#64748B">高精度 · 高延迟 · 复杂推理任务</text>
+<text x="398" y="188" font-size="8" fill="#7B5EE6" font-weight="600">占比 32% · reasoning/code 场景</text>
+<rect x="660" y="132" width="50" height="64" rx="6" fill="#FFFFFF" stroke="#7B5EE6"/>
+<text x="685" y="156" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">t2</text>
+<text x="685" y="170" text-anchor="middle" font-size="7" fill="#94A3B8">deep</text>
+<text x="685" y="182" text-anchor="middle" font-size="7" fill="#94A3B8">slow</text>
 
-<!-- System 1 -->
-<rect x="388" y="208" width="372" height="82" rx="12" fill="#fff" stroke="#F5B935" stroke-width="2" filter="url(#sh)"/>
-<rect x="388" y="208" width="372" height="26" rx="12" fill="url(#gT1)"/>
-<rect x="388" y="222" width="372" height="12" fill="url(#gT1)"/>
-<text x="574" y="227" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">⚡ System 1 · t1 直觉响应 (Intuitive)</text>
-<text x="406" y="250" font-size="9" fill="#555">t1-f: function calling · 模板匹配</text>
-<text x="406" y="264" font-size="9" fill="#555">t1-p: pattern match · 单步执行</text>
-<text x="406" y="278" font-size="8" fill="#B07020" font-weight="600">占比 68% · chat/常规场景 · 低延迟</text>
+<!-- System 1 (yellow tint) -->
+<rect x="380" y="212" width="340" height="80" rx="8" fill="#FFFBF0" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="380" y="212" width="6" height="80" rx="3" fill="#F5B935"/>
+<text x="398" y="230" font-size="11" font-weight="700" fill="#1E3A8A">System 1 · t1 直觉响应 (Intuitive)</text>
+<text x="398" y="246" font-size="8" fill="#475569">t1-f: function calling · 模板匹配</text>
+<text x="398" y="260" font-size="8" fill="#475569">t1-p: pattern match · 单步执行</text>
+<text x="398" y="276" font-size="8" fill="#B07020" font-weight="600">占比 68% · chat/常规场景 · 低延迟</text>
+<rect x="660" y="220" width="50" height="64" rx="6" fill="#FFFFFF" stroke="#F5B935"/>
+<text x="685" y="244" text-anchor="middle" font-size="9" font-weight="700" fill="#B07020">t1</text>
+<text x="685" y="258" text-anchor="middle" font-size="7" fill="#94A3B8">intui</text>
+<text x="685" y="270" text-anchor="middle" font-size="7" fill="#94A3B8">fast</text>
 
 <!-- Collaboration switch -->
-<rect x="510" y="300" width="128" height="24" rx="12" fill="url(#gw)"/>
-<text x="574" y="316" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">⇄ dual_model.c 协作切换</text>
+<rect x="490" y="300" width="120" height="22" rx="11" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<text x="550" y="315" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">⇄ dual_model.c 协作切换</text>
+<text x="550" y="334" text-anchor="middle" font-size="7" fill="#94A3B8">快慢系统融合 · cost-quality balance</text>
 
-<!-- ====== C · 5-Phase Execution (RIGHT) ====== -->
-<text x="776" y="98" font-size="13" font-weight="700" fill="#1E3A8A">C · 5-Phase Execution · 五阶段执行</text>
-<line x1="776" y1="106" x2="1172" y2="106" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== C · 5-Phase Execution (RIGHT-TOP) ====== -->
+<rect x="740" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="750" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
+<text x="768" y="106" font-size="12" font-weight="700" fill="#1E3A8A">5-Phase Execution · 五阶段执行</text>
+<line x1="740" y1="118" x2="1160" y2="118" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="776" y="118" width="396" height="82" rx="12" fill="#F8FAFF" stroke="#D0DCFF" filter="url(#sh)"/>
+<rect x="740" y="124" width="420" height="84" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
 
-<rect x="788" y="138" width="68" height="42" rx="21" fill="#3866FA"/>
-<text x="822" y="158" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P1</text>
-<text x="822" y="171" text-anchor="middle" font-size="7" fill="#D0E0FF">Perceive</text>
-<text x="860" y="161" font-size="11" fill="#aaa">→</text>
+<rect x="752" y="142" width="68" height="44" rx="22" fill="#3866FA"/>
+<text x="786" y="162" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P1</text>
+<text x="786" y="176" text-anchor="middle" font-size="7" fill="#C0D4FF">Perceive</text>
+<text x="826" y="166" font-size="11" fill="#CBD5E1">→</text>
 
-<rect x="870" y="138" width="68" height="42" rx="21" fill="#7B5EE6"/>
-<text x="904" y="158" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P2</text>
-<text x="904" y="171" text-anchor="middle" font-size="7" fill="#D0C8F0">Reason</text>
-<text x="942" y="161" font-size="11" fill="#aaa">→</text>
+<rect x="838" y="142" width="68" height="44" rx="22" fill="#7B5EE6"/>
+<text x="872" y="162" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P2</text>
+<text x="872" y="176" text-anchor="middle" font-size="7" fill="#D8CCFF">Reason</text>
+<text x="912" y="166" font-size="11" fill="#CBD5E1">→</text>
 
-<rect x="952" y="138" width="68" height="42" rx="21" fill="#E8734A"/>
-<text x="986" y="158" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P3</text>
-<text x="986" y="171" text-anchor="middle" font-size="7" fill="#FCD8C0">Execute</text>
-<text x="1024" y="161" font-size="11" fill="#aaa">→</text>
+<rect x="924" y="142" width="68" height="44" rx="22" fill="#E8734A"/>
+<text x="958" y="162" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P3</text>
+<text x="958" y="176" text-anchor="middle" font-size="7" fill="#FCD8C0">Execute</text>
+<text x="998" y="166" font-size="11" fill="#CBD5E1">→</text>
 
-<rect x="1034" y="138" width="62" height="42" rx="21" fill="#2EC4B6"/>
-<text x="1065" y="158" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P4</text>
-<text x="1065" y="171" text-anchor="middle" font-size="7" fill="#C0F0E8">Verify</text>
-<text x="1100" y="161" font-size="11" fill="#aaa">→</text>
+<rect x="1010" y="142" width="62" height="44" rx="22" fill="#2EC4B6"/>
+<text x="1041" y="162" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P4</text>
+<text x="1041" y="176" text-anchor="middle" font-size="7" fill="#C0F0E8">Verify</text>
+<text x="1078" y="166" font-size="11" fill="#CBD5E1">→</text>
 
-<rect x="1108" y="138" width="56" height="42" rx="21" fill="#F5B935"/>
-<text x="1136" y="158" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P5</text>
-<text x="1136" y="171" text-anchor="middle" font-size="7" fill="#FAE8B8">Reflect</text>
+<rect x="1088" y="142" width="62" height="44" rx="22" fill="#F5B935"/>
+<text x="1119" y="162" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">P5</text>
+<text x="1119" y="176" text-anchor="middle" font-size="7" fill="#FAE8B8">Reflect</text>
 
 <!-- reflection loop -->
-<path d="M 1136 184 Q 950 202 822 184" fill="none" stroke="#F5B935" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ar)"/>
-<text x="979" y="200" text-anchor="middle" font-size="7" fill="#B07020" font-weight="600">↺ reflection loop · 反思回环</text>
+<path d="M 1119 190 Q 950 206 786 190" fill="none" stroke="#F5B935" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#ar)"/>
+<text x="952" y="204" text-anchor="middle" font-size="7" fill="#B07020" font-weight="600">↺ reflection loop · 反思回环</text>
 
-<!-- D · 多Agent协调策略 -->
-<text x="776" y="222" font-size="13" font-weight="700" fill="#1E3A8A">D · Coordinator Strategies · 多Agent协调策略</text>
-<line x1="776" y1="230" x2="1172" y2="230" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== D · 4 Coordinator Strategies (RIGHT-MID) ====== -->
+<rect x="740" y="218" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="750" y="230" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="768" y="230" font-size="12" font-weight="700" fill="#1E3A8A">Coordinator Strategies · 多Agent协调策略</text>
+<line x1="740" y1="240" x2="1160" y2="240" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="776" y="242" width="192" height="58" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="776" y="242" width="6" height="58" rx="3" fill="#3866FA"/>
-<text x="794" y="260" font-size="10" font-weight="700" fill="#1E3A8A">arbiter.c</text>
-<text x="794" y="274" font-size="8" fill="#555">仲裁者 · 单一决策</text>
-<text x="794" y="288" font-size="7" fill="#888">权威 Agent 裁决</text>
-<text x="794" y="298" font-size="7" fill="#3866FA">low latency</text>
+<rect x="740" y="246" width="206" height="56" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="740" y="246" width="4" height="56" rx="2" fill="#3866FA"/>
+<text x="756" y="264" font-size="10" font-weight="700" fill="#1E3A8A">arbiter.c</text>
+<text x="756" y="278" font-size="8" fill="#475569">仲裁者 · 单一决策</text>
+<text x="756" y="290" font-size="7" fill="#94A3B8">权威 Agent 裁决</text>
+<text x="756" y="299" font-size="7" fill="#3866FA">low latency</text>
 
-<rect x="980" y="242" width="192" height="58" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="980" y="242" width="6" height="58" rx="3" fill="#2EC4B6"/>
-<text x="998" y="260" font-size="10" font-weight="700" fill="#1E3A8A">majority.c</text>
-<text x="998" y="274" font-size="8" fill="#555">多数表决 · 投票</text>
-<text x="998" y="288" font-size="7" fill="#888">n/2+1 共识</text>
-<text x="998" y="298" font-size="7" fill="#2EC4B6">fault tolerant</text>
+<rect x="954" y="246" width="206" height="56" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="954" y="246" width="4" height="56" rx="2" fill="#2EC4B6"/>
+<text x="970" y="264" font-size="10" font-weight="700" fill="#1E3A8A">majority.c</text>
+<text x="970" y="278" font-size="8" fill="#475569">多数表决 · 投票</text>
+<text x="970" y="290" font-size="7" fill="#94A3B8">n/2+1 共识</text>
+<text x="970" y="299" font-size="7" fill="#2EC4B6">fault tolerant</text>
 
-<rect x="776" y="308" width="192" height="58" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="776" y="308" width="6" height="58" rx="3" fill="#E8734A"/>
-<text x="794" y="326" font-size="10" font-weight="700" fill="#1E3A8A">weighted.c</text>
-<text x="794" y="340" font-size="8" fill="#555">加权投票 · 置信度</text>
-<text x="794" y="354" font-size="7" fill="#888">按能力权重</text>
-<text x="794" y="364" font-size="7" fill="#E8734A">expertise-based</text>
+<rect x="740" y="308" width="206" height="56" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="740" y="308" width="4" height="56" rx="2" fill="#E8734A"/>
+<text x="756" y="326" font-size="10" font-weight="700" fill="#1E3A8A">weighted.c</text>
+<text x="756" y="340" font-size="8" fill="#475569">加权投票 · 置信度</text>
+<text x="756" y="352" font-size="7" fill="#94A3B8">按能力权重</text>
+<text x="756" y="361" font-size="7" fill="#E8734A">expertise-based</text>
 
-<rect x="980" y="308" width="192" height="58" rx="10" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="980" y="308" width="6" height="58" rx="3" fill="#7B5EE6"/>
-<text x="998" y="326" font-size="10" font-weight="700" fill="#1E3A8A">dual_model.c</text>
-<text x="998" y="340" font-size="8" fill="#555">双模型协作 · t1+t2</text>
-<text x="998" y="354" font-size="7" fill="#888">快慢系统融合</text>
-<text x="998" y="364" font-size="7" fill="#7B5EE6">cost-quality balance</text>
+<rect x="954" y="308" width="206" height="56" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="954" y="308" width="4" height="56" rx="2" fill="#7B5EE6"/>
+<text x="970" y="326" font-size="10" font-weight="700" fill="#1E3A8A">dual_model.c</text>
+<text x="970" y="340" font-size="8" fill="#475569">双模型协作 · t1+t2</text>
+<text x="970" y="352" font-size="7" fill="#94A3B8">快慢系统融合</text>
+<text x="970" y="361" font-size="7" fill="#7B5EE6">cost-quality balance</text>
 
-<!-- ====== E · 认知演化 + 补偿事务 (MIDDLE-BOTTOM) ====== -->
-<text x="388" y="342" font-size="13" font-weight="700" fill="#1E3A8A">E · Cognitive Evolution & Compensation · 认知演化与补偿事务</text>
-<line x1="388" y1="350" x2="760" y2="350" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== E · Cognitive Evolution & Compensation (FULL-MID) ====== -->
+<rect x="40" y="378" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="390" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">E</text>
+<text x="68" y="390" font-size="12" font-weight="700" fill="#1E3A8A">Cognitive Evolution &amp; Compensation · 认知演化与补偿事务</text>
+<line x1="40" y1="400" x2="1160" y2="400" stroke="#E2E8F0" stroke-width="1"/>
 
-<!-- Cognitive Evolution -->
-<rect x="388" y="362" width="180" height="150" rx="12" fill="#fff" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="388" y="362" width="180" height="24" rx="12" fill="url(#gV)"/>
-<rect x="388" y="374" width="180" height="12" fill="url(#gV)"/>
-<text x="478" y="380" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">🔄 Cognitive Evolution</text>
-<text x="406" y="402" font-size="8" fill="#555" font-weight="600">认知演化 · 自我进化</text>
-<text x="406" y="418" font-size="7" fill="#777">① 经验提取 (L4 Pattern)</text>
-<text x="406" y="432" font-size="7" fill="#777">② 策略固化到记忆层</text>
-<text x="406" y="446" font-size="7" fill="#777">③ 下次任务复用经验</text>
-<text x="406" y="460" font-size="7" fill="#777">④ 持续优化决策路径</text>
-<line x1="406" y1="468" x2="550" y2="468" stroke="#E0E0F0"/>
-<text x="406" y="482" font-size="7" fill="#7B5EE6" font-weight="600">→ 越用越聪明的系统</text>
-<text x="406" y="498" font-size="7" fill="#999" font-style="italic">+12.7% 反思增益</text>
+<!-- Cognitive Evolution (purple tint) -->
+<rect x="40" y="406" width="556" height="74" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="406" width="4" height="74" rx="2" fill="#7B5EE6"/>
+<text x="56" y="422" font-size="10" font-weight="700" fill="#6540D0">🔄 Cognitive Evolution · 认知演化 · 自我进化</text>
+<text x="56" y="438" font-size="7" fill="#64748B">① 经验提取 (L4 Pattern)</text>
+<text x="220" y="438" font-size="7" fill="#64748B">② 策略固化到记忆层</text>
+<text x="400" y="438" font-size="7" fill="#64748B">③ 下次任务复用经验</text>
+<text x="56" y="452" font-size="7" fill="#64748B">④ 持续优化决策路径</text>
+<text x="220" y="452" font-size="7" fill="#7B5EE6" font-weight="600">→ 越用越聪明的系统</text>
+<text x="400" y="452" font-size="7" fill="#94A3B8" font-style="italic">+12.7% 反思增益</text>
+<text x="56" y="472" font-size="7" fill="#94A3B8">经验→策略→复用→优化 · L4 Pattern 提取 · 跨任务 schema 固化</text>
 
-<!-- Compensating Transaction -->
-<rect x="580" y="362" width="180" height="150" rx="12" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="580" y="362" width="180" height="24" rx="12" fill="url(#gO)"/>
-<rect x="580" y="374" width="180" height="12" fill="url(#gO)"/>
-<text x="670" y="380" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">↩ Compensating Tx</text>
-<text x="598" y="402" font-size="8" fill="#555" font-weight="600">补偿事务 · 失败回滚</text>
-<text x="598" y="418" font-size="7" fill="#777">① 工具调用执行</text>
-<text x="598" y="432" font-size="7" fill="#777">② 验证阶段失败</text>
-<text x="598" y="446" font-size="7" fill="#777">③ 触发补偿动作</text>
-<text x="598" y="460" font-size="7" fill="#777">④ 恢复到一致状态</text>
-<line x1="598" y1="468" x2="742" y2="468" stroke="#FFE0D0"/>
-<text x="598" y="482" font-size="7" fill="#E8734A" font-weight="600">→ 分布式事务安全</text>
-<text x="598" y="498" font-size="7" fill="#999" font-style="italic">saga pattern · 原子性</text>
+<!-- Compensating Transaction (orange tint) -->
+<rect x="604" y="406" width="556" height="74" rx="8" fill="#FFF5F0" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="604" y="406" width="4" height="74" rx="2" fill="#E8734A"/>
+<text x="620" y="422" font-size="10" font-weight="700" fill="#A05020">↩ Compensating Transaction · 补偿事务 · 失败回滚</text>
+<text x="620" y="438" font-size="7" fill="#64748B">① 工具调用执行</text>
+<text x="784" y="438" font-size="7" fill="#64748B">② 验证阶段失败</text>
+<text x="960" y="438" font-size="7" fill="#64748B">③ 触发补偿动作</text>
+<text x="620" y="452" font-size="7" fill="#64748B">④ 恢复到一致状态</text>
+<text x="784" y="452" font-size="7" fill="#E8734A" font-weight="600">→ 分布式事务安全</text>
+<text x="960" y="452" font-size="7" fill="#94A3B8" font-style="italic">saga pattern · 原子性</text>
+<text x="620" y="472" font-size="7" fill="#94A3B8">执行→失败→补偿→恢复 · saga pattern · 保证多步操作原子性</text>
 
-<!-- ====== F · 4种协作模式 (LEFT-BOTTOM) ====== -->
-<text x="28" y="396" font-size="13" font-weight="700" fill="#1E3A8A">F · 4 Collaboration Patterns · 四种协作模式</text>
-<line x1="28" y1="404" x2="370" y2="404" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== F · 4 Collaboration Patterns (LEFT-BOTTOM) ====== -->
+<rect x="40" y="490" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="502" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">F</text>
+<text x="68" y="502" font-size="12" font-weight="700" fill="#1E3A8A">4 Collaboration Patterns · 四种协作模式</text>
+<line x1="40" y1="512" x2="596" y2="512" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="28" y="416" width="168" height="46" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="28" y="416" width="6" height="46" rx="3" fill="#3866FA"/>
-<text x="46" y="434" font-size="10" font-weight="700" fill="#1E3A8A">🎯 Orchestrator</text>
-<text x="46" y="448" font-size="7" fill="#555">master → workers</text>
-<text x="46" y="458" font-size="7" fill="#888">orchestrator_execute_pipeline()</text>
+<rect x="40" y="518" width="276" height="44" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="518" width="4" height="44" rx="2" fill="#3866FA"/>
+<text x="56" y="534" font-size="9" font-weight="700" fill="#1E3A8A">Orchestrator</text>
+<text x="56" y="547" font-size="7" fill="#64748B">master → workers</text>
+<text x="56" y="558" font-size="6" fill="#3866FA" font-family="monospace">orchestrator_execute_pipeline()</text>
 
-<rect x="202" y="416" width="166" height="46" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="202" y="416" width="6" height="46" rx="3" fill="#2EC4B6"/>
-<text x="220" y="434" font-size="10" font-weight="700" fill="#1E3A8A">🗣️ Debate</text>
-<text x="220" y="448" font-size="7" fill="#555">peer ↔ peer</text>
-<text x="220" y="458" font-size="7" fill="#888">multi-perspective consensus</text>
+<rect x="322" y="518" width="274" height="44" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="322" y="518" width="4" height="44" rx="2" fill="#2EC4B6"/>
+<text x="338" y="534" font-size="9" font-weight="700" fill="#1E3A8A">Debate</text>
+<text x="338" y="547" font-size="7" fill="#64748B">peer ↔ peer</text>
+<text x="338" y="558" font-size="6" fill="#2EC4B6" font-family="monospace">multi-perspective consensus</text>
 
-<rect x="28" y="470" width="168" height="46" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="28" y="470" width="6" height="46" rx="3" fill="#E8734A"/>
-<text x="46" y="488" font-size="10" font-weight="700" fill="#1E3A8A">🌳 Hierarchy</text>
-<text x="46" y="502" font-size="7" fill="#555">parent → children</text>
-<text x="46" y="512" font-size="7" fill="#888">tree delegation · Agent Lane</text>
+<rect x="40" y="566" width="276" height="44" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="566" width="4" height="44" rx="2" fill="#E8734A"/>
+<text x="56" y="582" font-size="9" font-weight="700" fill="#1E3A8A">Hierarchy</text>
+<text x="56" y="595" font-size="7" fill="#64748B">parent → children</text>
+<text x="56" y="606" font-size="6" fill="#E8734A" font-family="monospace">tree delegation · Agent Lane</text>
 
-<rect x="202" y="470" width="166" height="46" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="202" y="470" width="6" height="46" rx="3" fill="#F5B935"/>
-<text x="220" y="488" font-size="10" font-weight="700" fill="#1E3A8A">📊 Market</text>
-<text x="220" y="502" font-size="7" fill="#555">bid → select</text>
-<text x="220" y="512" font-size="7" fill="#888">auction-based allocation</text>
+<rect x="322" y="566" width="274" height="44" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="322" y="566" width="4" height="44" rx="2" fill="#F5B935"/>
+<text x="338" y="582" font-size="9" font-weight="700" fill="#1E3A8A">Market</text>
+<text x="338" y="595" font-size="7" fill="#64748B">bid → select</text>
+<text x="338" y="606" font-size="6" fill="#B07020" font-family="monospace">auction-based allocation</text>
 
-<!-- ====== BOTTOM: Theoretical Foundations + KPIs ====== -->
-<text x="28" y="540" font-size="13" font-weight="700" fill="#1E3A8A">G · Theoretical Foundations · 理论基础</text>
-<line x1="28" y1="548" x2="760" y2="548" stroke="#D0DCFF" stroke-width="1"/>
+<!-- ====== G · Theoretical Foundations + H · Metrics (RIGHT-BOTTOM) ====== -->
+<rect x="620" y="490" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="630" y="502" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">G</text>
+<text x="648" y="502" font-size="12" font-weight="700" fill="#1E3A8A">Theoretical Foundations · 理论基础</text>
+<line x1="620" y1="512" x2="1160" y2="512" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="28" y="560" width="732" height="50" rx="10" fill="#F8FAFF" stroke="#D0DCFF" filter="url(#sh)"/>
-<text x="48" y="580" font-size="8" fill="#555">① Dual-Process Theory (Kahneman) · 双加工</text>
-<text x="48" y="596" font-size="8" fill="#555">② OODA Loop (Boyd) · 观察-调整-决策-行动</text>
-<text x="290" y="580" font-size="8" fill="#555">③ Cognitive Architecture (Anderson) · ACT-R</text>
-<text x="290" y="596" font-size="8" fill="#555">④ Reinforcement Learning · 强化学习</text>
-<text x="530" y="580" font-size="8" fill="#555">⑤ Metacognition (Flavell) · 元认知</text>
-<text x="530" y="596" font-size="8" fill="#555">⑥ Saga Pattern · 补偿事务模式</text>
+<rect x="620" y="518" width="540" height="44" rx="8" fill="#F8FAFF" stroke="#D0DCFF" stroke-width="1" filter="url(#sh)"/>
+<text x="634" y="534" font-size="7" fill="#475569">① Dual-Process (Kahneman)</text>
+<text x="634" y="548" font-size="7" fill="#94A3B8">② OODA Loop (Boyd)</text>
+<text x="764" y="534" font-size="7" fill="#475569">③ ACT-R (Anderson)</text>
+<text x="764" y="548" font-size="7" fill="#94A3B8">④ Reinforcement Learning</text>
+<text x="894" y="534" font-size="7" fill="#475569">⑤ Metacognition (Flavell)</text>
+<text x="894" y="548" font-size="7" fill="#94A3B8">⑥ Saga Pattern</text>
+<text x="1024" y="534" font-size="7" fill="#475569">双加工 · 观察-调整</text>
+<text x="1024" y="548" font-size="7" fill="#94A3B8">元认知 · 补偿事务</text>
 
-<!-- KPIs (right) -->
-<text x="776" y="540" font-size="13" font-weight="700" fill="#1E3A8A">H · Key Metrics · 核心指标</text>
-<line x1="776" y1="548" x2="1172" y2="548" stroke="#D0DCFF" stroke-width="1"/>
+<!-- H · Key Metrics (light cards) -->
+<rect x="620" y="568" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="630" y="580" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">H</text>
+<text x="648" y="580" font-size="12" font-weight="700" fill="#1E3A8A">Key Metrics · 核心指标</text>
+<line x1="620" y1="590" x2="1160" y2="590" stroke="#E2E8F0" stroke-width="1"/>
 
-<rect x="776" y="560" width="96" height="50" rx="10" fill="#fff" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<text x="824" y="578" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">决策延迟</text>
-<text x="824" y="600" text-anchor="middle" font-size="18" font-weight="800" fill="#1E3A8A">45ms</text>
+<rect x="620" y="596" width="132" height="40" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="620" y="596" width="132" height="3" rx="1.5" fill="#3866FA"/>
+<text x="686" y="611" text-anchor="middle" font-size="7" font-weight="700" fill="#3866FA">决策延迟</text>
+<text x="686" y="630" text-anchor="middle" font-size="15" font-weight="700" fill="#1E3A8A">45ms</text>
 
-<rect x="880" y="560" width="96" height="50" rx="10" fill="#fff" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<text x="928" y="578" text-anchor="middle" font-size="8" font-weight="700" fill="#2EC4B6">任务准确率</text>
-<text x="928" y="600" text-anchor="middle" font-size="18" font-weight="800" fill="#1E3A8A">91.3%</text>
+<rect x="758" y="596" width="132" height="40" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="758" y="596" width="132" height="3" rx="1.5" fill="#2EC4B6"/>
+<text x="824" y="611" text-anchor="middle" font-size="7" font-weight="700" fill="#2EC4B6">任务准确率</text>
+<text x="824" y="630" text-anchor="middle" font-size="15" font-weight="700" fill="#1E3A8A">91.3%</text>
 
-<rect x="984" y="560" width="90" height="50" rx="10" fill="#fff" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
-<text x="1029" y="578" text-anchor="middle" font-size="8" font-weight="700" fill="#E8734A">反思增益</text>
-<text x="1029" y="600" text-anchor="middle" font-size="18" font-weight="800" fill="#1E3A8A">+12.7%</text>
+<rect x="896" y="596" width="132" height="40" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="896" y="596" width="132" height="3" rx="1.5" fill="#E8734A"/>
+<text x="962" y="611" text-anchor="middle" font-size="7" font-weight="700" fill="#E8734A">反思增益</text>
+<text x="962" y="630" text-anchor="middle" font-size="15" font-weight="700" fill="#1E3A8A">+12.7%</text>
 
-<rect x="1082" y="560" width="90" height="50" rx="10" fill="#fff" stroke="#F5B935" stroke-width="1.5" filter="url(#sh)"/>
-<text x="1127" y="578" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">快/慢比</text>
-<text x="1127" y="600" text-anchor="middle" font-size="18" font-weight="800" fill="#1E3A8A">68/32</text>
+<rect x="1034" y="596" width="126" height="40" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="1034" y="596" width="126" height="3" rx="1.5" fill="#F5B935"/>
+<text x="1097" y="611" text-anchor="middle" font-size="7" font-weight="700" fill="#B07020">快/慢比</text>
+<text x="1097" y="630" text-anchor="middle" font-size="15" font-weight="700" fill="#1E3A8A">68/32</text>
 
-<!-- Bottom tagline -->
-<rect x="28" y="620" width="1144" height="42" rx="10" fill="url(#gw)" filter="url(#shd)"/>
-<text x="600" y="640" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">3-Layer Cognitive Loop × Thinkdual × 4 Coordinator Strategies × Compensating Transaction</text>
-<text x="600" y="654" text-anchor="middle" font-size="8" fill="#C0D4FF">三层认知循环 · 双思考系统 · 四协调策略 · 补偿事务 · 持续演化的认知引擎</text>
+<!-- Bottom muted note (no dark bar) -->
+<text x="600" y="666" text-anchor="middle" font-size="9" fill="#94A3B8">CoreLoopThree · 3-Layer Loop × Thinkdual × 5-Phase × 4 Coordinator × Cognitive Evolution × Compensating Tx · v0.1.1</text>
 
-<text x="1168" y="670" text-anchor="end" font-size="8" fill="#D0D0D0" font-style="italic">CoreLoopThree · v0.1.1</text>
 </svg>
 </div>
 </body>
