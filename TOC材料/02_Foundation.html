@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:900px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+</style>
+</head>
+<body>
+<div class="fig">
+<svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="sh"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1E3A8A12"/></filter>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#3866FA00"/></linearGradient>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
+  <marker id="arG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#2EC4B6"/></marker>
+</defs>
+
+<rect x="0" y="0" width="1200" height="900" fill="#FFFFFF"/>
+
+<!-- TITLE -->
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0F172A">系统的基石</text>
+<text x="40" y="70" font-size="12" fill="#64748B">微核心 × 进程间通信 · 4 原子机制 · 5 级内存压力 · v0.1.1</text>
+<rect x="40" y="80" width="1120" height="2" fill="url(#accent)"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 2 · Foundation</text>
+
+<!-- ====== A · Multi-Agent Topology + 进程间通信 ====== -->
+<rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
+<text x="68" y="106" font-size="13" font-weight="700" fill="#1E3A8A">多智能体拓扑 + 进程间通信 · 多智能体网络 + 零拷贝总线</text>
+<line x1="40" y1="120" x2="1160" y2="120" stroke="#E2E8F0" stroke-width="1"/>
+
+<!-- Agent-A (cognitive, blue) -->
+<rect x="40" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="128" width="4" height="64" rx="2" fill="#3866FA"/>
+<text x="60" y="148" font-size="12" font-weight="700" fill="#1E3A8A">智能体A · 认知</text>
+<text x="60" y="164" font-size="10" fill="#3866FA">CoreLoopThree</text>
+<text x="60" y="180" font-size="9" fill="#64748B">感知 · 推理 · 规划</text>
+
+<!-- Agent-B (execution, orange) -->
+<rect x="326" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="326" y="128" width="4" height="64" rx="2" fill="#E8734A"/>
+<text x="346" y="148" font-size="12" font-weight="700" fill="#1E3A8A">智能体B · 执行</text>
+<text x="346" y="164" font-size="10" fill="#E8734A">执行引擎</text>
+<text x="346" y="180" font-size="9" fill="#64748B">工具调用 · 验证 · 输出</text>
+
+<!-- Agent-C (memory, teal) -->
+<rect x="612" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="612" y="128" width="4" height="64" rx="2" fill="#2EC4B6"/>
+<text x="632" y="148" font-size="12" font-weight="700" fill="#1E3A8A">智能体C · 记忆</text>
+<text x="632" y="164" font-size="10" fill="#2EC4B6">MemoryRovol</text>
+<text x="632" y="180" font-size="9" fill="#64748B">存储 · 检索 · 演化</text>
+
+<!-- Agent-D (safety, purple) -->
+<rect x="898" y="128" width="262" height="64" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="898" y="128" width="4" height="64" rx="2" fill="#7B5EE6"/>
+<text x="918" y="148" font-size="12" font-weight="700" fill="#1E3A8A">智能体D · 安全</text>
+<text x="918" y="164" font-size="10" fill="#7B5EE6">Cupolas 守卫</text>
+<text x="918" y="180" font-size="9" fill="#64748B">审计 · 净化 · 防护</text>
+
+<!-- Connection lines Agents → 进程间通信总线 -->
+<line x1="177" y1="192" x2="177" y2="210" stroke="#3866FA" stroke-width="1.5"/>
+<circle cx="177" cy="210" r="3" fill="#3866FA"/>
+<line x1="463" y1="192" x2="463" y2="210" stroke="#E8734A" stroke-width="1.5"/>
+<circle cx="463" cy="210" r="3" fill="#E8734A"/>
+<line x1="749" y1="192" x2="749" y2="210" stroke="#2EC4B6" stroke-width="1.5"/>
+<circle cx="749" cy="210" r="3" fill="#2EC4B6"/>
+<line x1="1029" y1="192" x2="1029" y2="210" stroke="#7B5EE6" stroke-width="1.5"/>
+<circle cx="1029" cy="210" r="3" fill="#7B5EE6"/>
+
+<!-- 中央进程间通信总线 (CORE) -->
+<rect x="40" y="218" width="1120" height="80" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
+<rect x="40" y="218" width="6" height="80" rx="3" fill="#3866FA"/>
+<text x="60" y="242" font-size="14" font-weight="700" fill="#1E3A8A">进程间通信总线 · 零拷贝消息总线</text>
+<text x="60" y="260" font-size="10" fill="#3866FA">JSON-RPC · MCP · A2A · 基于能力的安全模型</text>
+<rect x="1044" y="228" width="100" height="28" rx="14" fill="#FFFFFF" stroke="#3866FA"/>
+<text x="1094" y="247" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">CORE</text>
+
+<!-- Key metrics inline -->
+<text x="60" y="284" font-size="16" font-weight="700" fill="#1E3A8A">&lt;10μs</text>
+<text x="130" y="284" font-size="9" fill="#64748B">延迟</text>
+<text x="280" y="284" font-size="16" font-weight="700" fill="#1E3A8A">100K+ msg/s</text>
+<text x="400" y="284" font-size="9" fill="#64748B">吞吐量</text>
+<text x="520" y="284" font-size="16" font-weight="700" fill="#1E3A8A">128MB</text>
+<text x="600" y="284" font-size="9" fill="#64748B">共享内存</text>
+<text x="760" y="284" font-size="16" font-weight="700" fill="#1E3A8A">256</text>
+<text x="800" y="284" font-size="9" fill="#64748B">最大并发</text>
+
+<!-- ====== B · Three-Layer Allocator + 4 Atomic Mechanisms ====== -->
+<rect x="40" y="314" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="68" y="326" font-size="13" font-weight="700" fill="#1E3A8A">三层分配器 + 四原子机制</text>
+<line x1="40" y1="338" x2="1160" y2="338" stroke="#E2E8F0" stroke-width="1"/>
+
+<!-- Three-Layer Allocator (left half) -->
+<rect x="40" y="346" width="540" height="36" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="346" width="64" height="36" rx="8" fill="#3866FA"/>
+<text x="72" y="369" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">第3层</text>
+<text x="114" y="362" font-size="10" font-weight="700" fill="#1E3A8A">Arena 应用层</text>
+<text x="114" y="376" font-size="8" fill="#475569">arena_alloc/reset · 请求作用域零碎片</text>
+
+<rect x="40" y="386" width="540" height="36" rx="8" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="386" width="64" height="36" rx="8" fill="#2EC4B6"/>
+<text x="72" y="409" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">第2层</text>
+<text x="114" y="402" font-size="10" font-weight="700" fill="#1E3A8A">Middleware 中间层</text>
+<text x="114" y="416" font-size="8" fill="#475569">安全宏 · 8字节对齐 · 双重释放检测</text>
+
+<rect x="40" y="426" width="540" height="36" rx="8" fill="#FFF5F0" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="40" y="426" width="64" height="36" rx="8" fill="#E8734A"/>
+<text x="72" y="449" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">第1层</text>
+<text x="114" y="442" font-size="10" font-weight="700" fill="#1E3A8A">Base 底层</text>
+<text x="114" y="456" font-size="8" fill="#475569">封装 malloc/free · 线程安全 · 标签追踪</text>
+
+<!-- 4 Atomic Mechanisms (right half, 2x2) -->
+<rect x="600" y="346" width="274" height="52" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="600" y="346" width="4" height="52" rx="2" fill="#3866FA"/>
+<text x="618" y="366" font-size="11" font-weight="700" fill="#1E3A8A">① 进程间通信</text>
+<text x="618" y="382" font-size="9" fill="#475569">零拷贝 · 共享内存 · 信号量 · &lt;10μs</text>
+<rect x="824" y="356" width="40" height="30" rx="6" fill="#F0F5FF" stroke="#3866FA"/>
+<text x="844" y="376" text-anchor="middle" font-size="10" font-weight="800" fill="#3866FA">①</text>
+
+<rect x="886" y="346" width="274" height="52" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="886" y="346" width="4" height="52" rx="2" fill="#2EC4B6"/>
+<text x="904" y="366" font-size="11" font-weight="700" fill="#1E3A8A">② 内存管理</text>
+<text x="904" y="382" font-size="9" fill="#475569">三层分配器 · OOM 五级框架</text>
+<rect x="1110" y="356" width="40" height="30" rx="6" fill="#F0FAF8" stroke="#2EC4B6"/>
+<text x="1130" y="376" text-anchor="middle" font-size="10" font-weight="800" fill="#2EC4B6">②</text>
+
+<rect x="600" y="406" width="274" height="52" rx="8" fill="#FFFFFF" stroke="#E8734A" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="600" y="406" width="4" height="52" rx="2" fill="#E8734A"/>
+<text x="618" y="426" font-size="11" font-weight="700" fill="#1E3A8A">③ 任务调度</text>
+<text x="618" y="442" font-size="9" fill="#475569">抢占式 · 10ms · 32 并发</text>
+<rect x="824" y="416" width="40" height="30" rx="6" fill="#FFF5F0" stroke="#E8734A"/>
+<text x="844" y="436" text-anchor="middle" font-size="10" font-weight="800" fill="#E8734A">③</text>
+
+<rect x="886" y="406" width="274" height="52" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="886" y="406" width="4" height="52" rx="2" fill="#F5B935"/>
+<text x="904" y="426" font-size="11" font-weight="700" fill="#1E3A8A">④ 时间服务</text>
+<text x="904" y="442" font-size="9" fill="#475569">单调时钟 · 截止时间 · SLA 计时器</text>
+<rect x="1110" y="416" width="40" height="30" rx="6" fill="#FFFBF0" stroke="#F5B935"/>
+<text x="1130" y="436" text-anchor="middle" font-size="10" font-weight="800" fill="#B07020">④</text>
+
+<!-- ====== C · IPC Sequence + 5-Level OOM ====== -->
+<rect x="40" y="478" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="490" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
+<text x="68" y="490" font-size="13" font-weight="700" fill="#1E3A8A">零拷贝通信序列 + 五级内存压力</text>
+<line x1="40" y1="502" x2="1160" y2="502" stroke="#E2E8F0" stroke-width="1"/>
+
+<!-- IPC Sequence (left, 3 steps) -->
+<rect x="40" y="510" width="540" height="120" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<line x1="60" y1="524" x2="60" y2="618" stroke="#E2E8F0" stroke-width="1.5"/>
+
+<circle cx="60" cy="530" r="10" fill="#3866FA"/>
+<text x="60" y="534" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">1</text>
+<text x="80" y="534" font-size="11" font-weight="700" fill="#3866FA">分配共享内存</text>
+<text x="240" y="534" font-size="10" fill="#475569">→ 在共享内存池中分配缓冲区</text>
+
+<circle cx="60" cy="562" r="10" fill="#2EC4B6"/>
+<text x="60" y="566" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">2</text>
+<text x="80" y="566" font-size="11" font-weight="700" fill="#2EC4B6">写入 + 信号</text>
+<text x="240" y="566" font-size="10" fill="#475569">→ 零拷贝写入 · 信号量通知</text>
+
+<circle cx="60" cy="594" r="10" fill="#E8734A"/>
+<text x="60" y="598" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">3</text>
+<text x="80" y="598" font-size="11" font-weight="700" fill="#E8734A">读取 &lt;10μs</text>
+<text x="240" y="598" font-size="10" fill="#475569">→ 内存映射读取 · 释放缓冲区</text>
+
+<!-- 5-Level OOM (right, gradient bar) -->
+<rect x="600" y="510" width="560" height="120" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
+<text x="616" y="532" font-size="12" font-weight="700" fill="#1E3A8A">五级内存压力框架</text>
+
+<!-- Gradient bar -->
+<rect x="616" y="544" width="528" height="28" rx="6" fill="#2EC4B6"/>
+<text x="720" y="562" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">L1 NORMAL &lt;70%</text>
+<rect x="722" y="544" width="106" height="28" fill="#F5B935"/>
+<text x="775" y="562" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">L2 WARN 70-80%</text>
+<rect x="828" y="544" width="106" height="28" fill="#E8734A"/>
+<text x="881" y="562" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">L3 CRIT 80-90%</text>
+<rect x="934" y="544" width="106" height="28" fill="#C04040"/>
+<text x="987" y="562" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">L4 EMER 90-95%</text>
+<rect x="1040" y="544" width="104" height="28" rx="0 6 6 0" fill="#A02020"/>
+<text x="1092" y="562" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">L5 PANIC &gt;95%</text>
+
+<!-- OOM descriptions -->
+<text x="616" y="594" font-size="9" fill="#475569">L1 常规分配 · L2 缓存收缩 · L3 拒绝大块 · L4 驱逐旧记忆 · L5 优雅降级</text>
+<text x="616" y="612" font-size="8" fill="#94A3B8">正常 → 整理 → 降级 → 驱逐 → 检查点恢复 · 确保系统永不 OOM 崩溃</text>
+
+<!-- ====== D · Key Metrics ====== -->
+<rect x="40" y="650" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="662" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="68" y="662" font-size="13" font-weight="700" fill="#1E3A8A">关键指标</text>
+<line x1="40" y1="674" x2="1160" y2="674" stroke="#E2E8F0" stroke-width="1"/>
+
+<rect x="40" y="686" width="272" height="54" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="40" y="686" width="272" height="3" rx="1.5" fill="#3866FA"/>
+<text x="60" y="708" font-size="9" font-weight="700" fill="#3866FA">精简内核</text>
+<text x="292" y="722" text-anchor="end" font-size="20" font-weight="700" fill="#1E3A8A">~5K LOC</text>
+<text x="60" y="730" font-size="8" fill="#94A3B8">Ring 3 用户态</text>
+
+<rect x="324" y="686" width="272" height="54" rx="8" fill="#FFFFFF" stroke="#2EC4B6" stroke-width="1.2"/>
+<rect x="324" y="686" width="272" height="3" rx="1.5" fill="#2EC4B6"/>
+<text x="344" y="708" font-size="9" font-weight="700" fill="#2EC4B6">通信延迟</text>
+<text x="576" y="722" text-anchor="end" font-size="20" font-weight="700" fill="#1E3A8A">&lt;10μs</text>
+<text x="344" y="730" font-size="8" fill="#94A3B8">零拷贝 p99</text>
+
+<rect x="608" y="686" width="272" height="54" rx="8" fill="#FFFFFF" stroke="#7B5EE6" stroke-width="1.2"/>
+<rect x="608" y="686" width="272" height="3" rx="1.5" fill="#7B5EE6"/>
+<text x="628" y="708" font-size="9" font-weight="700" fill="#7B5EE6">吞吐量</text>
+<text x="860" y="722" text-anchor="end" font-size="20" font-weight="700" fill="#1E3A8A">100K+</text>
+<text x="628" y="730" font-size="8" fill="#94A3B8">msg/s · 128MB 共享内存</text>
+
+<rect x="892" y="686" width="268" height="54" rx="8" fill="#FFFFFF" stroke="#F5B935" stroke-width="1.2"/>
+<rect x="892" y="686" width="268" height="3" rx="1.5" fill="#F5B935"/>
+<text x="912" y="708" font-size="9" font-weight="700" fill="#B07020">最大智能体数</text>
+<text x="1140" y="722" text-anchor="end" font-size="20" font-weight="700" fill="#1E3A8A">256</text>
+<text x="912" y="730" font-size="8" fill="#94A3B8">并发 · 发布/订阅</text>
+
+<!-- Design principle -->
+<rect x="40" y="758" width="1120" height="36" rx="6" fill="#F8F5FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<rect x="40" y="758" width="3" height="36" rx="1.5" fill="#7B5EE6"/>
+<text x="54" y="778" font-size="10" font-weight="700" fill="#6540D0">设计原则:</text>
+<text x="140" y="778" font-size="10" fill="#1E3A8A" font-style="italic">"微核心 — 极简内核，只提供最基本机制，其余皆用户态服务"</text>
+<text x="54" y="790" font-size="8" fill="#94A3B8">基于能力 · seL4 启发 · Ring 3 · 零信任 · 最小权限</text>
+
+<text x="600" y="830" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">系统的基石 · 4 原子机制 × 三层分配器 × 5 级内存压力 × 进程间通信 × 256 智能体 · v0.1.1</text>
+
+</svg>
+</div>
+</body>
+</html>
