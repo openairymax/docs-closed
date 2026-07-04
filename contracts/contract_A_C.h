@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 SPHARX Ltd.
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: AGPL-3.0-or-later OR Apache-2.0
 /**
  * @file contract_A_C.h
  * @brief 跨团队接口合约：团队A（核心引擎 C）↔ 团队C（基础设施）
