@@ -1,6 +1,6 @@
 # AgentRT 跨团队合约测试构建配置
 # Copyright (c) 2026 SPHARX. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: AGPL-3.0-or-later OR Apache-2.0
 #
 # 本文件构建 contract_tests 目标，验证三份跨团队合约头文件
 # （contract_A_B.h / contract_A_C.h / contract_B_C.h）的可编译性
