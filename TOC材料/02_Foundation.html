@@ -26,6 +26,17 @@
 <rect x="40" y="80" width="1120" height="2" fill="url(#accent)"/>
 <text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 2 · Foundation</text>
 
+<!-- 核心要点（精简一句话总结） -->
+<rect x="700" y="38" width="120" height="34" rx="4" fill="#F0F5FF" stroke="#3866FA" stroke-width="0.8"/>
+<text x="760" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">MicroCoreRT</text>
+<text x="760" y="65" text-anchor="middle" font-size="8" fill="#475569">约 5K LOC</text>
+<rect x="830" y="38" width="140" height="34" rx="4" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="900" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">AgentsIPC</text>
+<text x="900" y="65" text-anchor="middle" font-size="8" fill="#475569">进程间通信</text>
+<rect x="980" y="38" width="180" height="34" rx="4" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="1070" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#6540D0">4 原子机制</text>
+<text x="1070" y="65" text-anchor="middle" font-size="8" fill="#475569">通信·内存·调度·时间</text>
+
 <!-- ====== A · Multi-Agent Topology + 进程间通信 ====== -->
 <rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
 <text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
@@ -224,7 +235,24 @@
 <text x="140" y="778" font-size="10" fill="#1E3A8A" font-style="italic">"微核心 — 极简内核，只提供最基本机制，其余皆用户态服务"</text>
 <text x="54" y="790" font-size="8" fill="#94A3B8">基于能力 · seL4 启发 · Ring 3 · 零信任 · 最小权限</text>
 
-<text x="600" y="830" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">系统的基石 · 4 原子机制 × 三层分配器 × 5 级内存压力 × 进程间通信 × 256 智能体 · v0.1.1</text>
+<!-- 2 Core Tech Summary -->
+<rect x="40" y="794" width="555" height="70" rx="5" fill="#F0F5FF" stroke="#3866FA" stroke-width="1" filter="url(#sh)"/>
+<rect x="40" y="794" width="4" height="70" rx="2" fill="#3866FA"/>
+<text x="54" y="810" font-size="9" font-weight="700" fill="#1E3A8A">① 极简微核心 + 进程间通信 · 内核级创新</text>
+<text x="58" y="824" font-size="7" fill="#475569">• 约 5K 代码行内核 · 仅提供最基本机制</text>
+<text x="58" y="835" font-size="7" fill="#475569">• Ring 3 用户态运行 · 故障天然隔离可恢复</text>
+<text x="58" y="846" font-size="7" fill="#475569">• 进程间通信零拷贝 · 共享内存 + 信号量</text>
+<text x="58" y="857" font-size="7" fill="#475569">• 256 智能体并发 · 100K+ msg/s · &lt;10μs 延迟</text>
+
+<rect x="605" y="794" width="555" height="70" rx="5" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
+<rect x="605" y="794" width="4" height="70" rx="2" fill="#2EC4B6"/>
+<text x="619" y="810" font-size="9" font-weight="700" fill="#1E3A8A">② 4 原子机制 + 5 级内存压力 · 系统级韧性</text>
+<text x="623" y="824" font-size="7" fill="#475569">• 通信 / 内存 / 调度 / 时间四大原子原语</text>
+<text x="623" y="835" font-size="7" fill="#475569">• 三层分配器 · Arena / Middleware / Base</text>
+<text x="623" y="846" font-size="7" fill="#475569">• 5 级渐进 OOM · 常规→警告→拒绝→驱逐→降级</text>
+<text x="623" y="857" font-size="7" fill="#475569">• 多智能体拓扑 + 零拷贝总线 · 永不下线</text>
+
+<text x="600" y="880" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">系统的基石 · 4 原子机制 × 三层分配器 × 5 级内存压力 × 进程间通信 × 256 智能体 · v0.1.1</text>
 
 </svg>
 </div>

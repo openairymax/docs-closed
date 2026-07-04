@@ -1,6 +1,6 @@
 # AgentOS 宏观架构图
 
-> **项目**: 极境智能体操作系统 | **版本**: v0.0.5 | **许可证**: Apache-2.0  
+> **项目**: 极境智能体操作系统 | **版本**: v0.0.5 | **许可证**: AGPL-3.0-or-later OR Apache-2.0（双许可证）  
 > **开源边界**: AgentOS + Desktop + Docker + Docs 四个子项目，捐赠予 **开放原子开源基金会**  
 > **仓库**: [AtomGit](https://atomgit.com/openairymax/agentos) | [GitHub](https://github.com/SpharxTeam/AgentOS)
 

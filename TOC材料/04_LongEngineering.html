@@ -27,6 +27,20 @@
 <rect x="40" y="80" width="1120" height="2" fill="url(#accent)"/>
 <text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 4 · Long Engineering</text>
 
+<!-- 核心要点（精简一句话总结） -->
+<rect x="640" y="38" width="120" height="34" rx="4" fill="#F0F5FF" stroke="#3866FA" stroke-width="0.8"/>
+<text x="700" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">TimeSliceInfer</text>
+<text x="700" y="65" text-anchor="middle" font-size="8" fill="#475569">10ms 时间片</text>
+<rect x="770" y="38" width="120" height="34" rx="4" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
+<text x="830" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">KV 缓存</text>
+<text x="830" y="65" text-anchor="middle" font-size="8" fill="#475569">抢占可回溯</text>
+<rect x="900" y="38" width="140" height="34" rx="4" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
+<text x="970" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#6540D0">记忆卷载</text>
+<text x="970" y="65" text-anchor="middle" font-size="8" fill="#475569">层次记忆</text>
+<rect x="1050" y="38" width="110" height="34" rx="4" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
+<text x="1105" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#A05020">先存后算</text>
+<text x="1105" y="65" text-anchor="middle" font-size="8" fill="#475569">存算分离</text>
+
 <!-- ====== A · Two Pillars ====== -->
 <rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
 <text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
@@ -271,7 +285,24 @@
 <!-- Design principle -->
 <text x="600" y="856" text-anchor="middle" font-size="10" fill="#1E3A8A" font-style="italic">"记忆不是存储——它是智能体跨越时间的连续身份。"</text>
 
-<text x="600" y="880" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">长工程的支撑 · TimeSliceInfer × MemoryRovol · 10ms 时间片 × KV缓存 × 四层金字塔 × 三明治供应者 × 艾宾浩斯遗忘 · v0.1.1</text>
+<!-- 2 Core Tech Summary -->
+<rect x="40" y="824" width="555" height="70" rx="5" fill="#F0F5FF" stroke="#3866FA" stroke-width="1" filter="url(#sh)"/>
+<rect x="40" y="824" width="4" height="70" rx="2" fill="#3866FA"/>
+<text x="54" y="840" font-size="9" font-weight="700" fill="#1E3A8A">① 分时推理 · 10ms 时间片渐进流水线</text>
+<text x="58" y="854" font-size="7" fill="#475569">• 全量推理分解为多时间片 · P99 尾延迟降低 68%</text>
+<text x="58" y="865" font-size="7" fill="#475569">• KV 缓存检查点 · 抢占可回溯 · 零丢失</text>
+<text x="58" y="876" font-size="7" fill="#475569">• 32 并发/核心 · 静态/自适应双调度器</text>
+<text x="58" y="887" font-size="7" fill="#475569">• 4 终止条件 · EOS/MaxLen/Timeout/Cancel</text>
+
+<rect x="605" y="824" width="555" height="70" rx="5" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
+<rect x="605" y="824" width="4" height="70" rx="2" fill="#2EC4B6"/>
+<text x="619" y="840" font-size="9" font-weight="700" fill="#1E3A8A">② 记忆卷载 · 四层金字塔 + 三明治供应者</text>
+<text x="623" y="854" font-size="7" fill="#475569">• L1 原始 → L2 特征 → L3 结构 → L4 模式 · 逐层抽象</text>
+<text x="623" y="865" font-size="7" fill="#475569">• 10:1 压缩比 · 10M+ 向量 · 12ms 检索</text>
+<text x="623" y="876" font-size="7" fill="#475569">• 三明治架构 · 6 后端 (Milvus/Qdrant/...) 热切换</text>
+<text x="623" y="887" font-size="7" fill="#475569">• 艾宾浩斯遗忘曲线 · 智能重放 · 越久越精准</text>
+
+<text x="600" y="900" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">长工程的支撑 · TimeSliceInfer × MemoryRovol · 10ms 时间片 × KV缓存 × 四层金字塔 × 三明治供应者 × 艾宾浩斯遗忘 · v0.1.1</text>
 
 </svg>
 </div>
