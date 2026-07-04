@@ -182,8 +182,8 @@ static void test_cl11_protocol_routes(void)
 
     /* 路由表目标 daemon 校验 */
     TEST_ASSERT(strcmp(CONTRACT_CL11_DEFAULT_ROUTES[0].target_daemon,
-                       "agent_d") == 0,
-                "C-L11 A2A route -> agent_d");
+                       "sched_d") == 0,
+                "C-L11 A2A route -> sched_d");
     TEST_ASSERT(strcmp(CONTRACT_CL11_DEFAULT_ROUTES[1].target_daemon,
                        "tool_d") == 0,
                 "C-L11 MCP route -> tool_d");

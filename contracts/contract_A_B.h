@@ -237,14 +237,14 @@ typedef struct contract_cl11_route_entry {
  * @brief C-L11: 默认路由表（与 GW_FORWARD_CONFIG_DEFAULTS 对齐）
  *
  * 团队B 必须按此表配置 gateway 路由：
- *   A2A     → agent_d  (channel "a2a")
+ *   A2A     → sched_d  (channel "a2a")
  *   MCP     → tool_d   (channel "mcp")
  *   OpenAI  → llm_d    (channel "llm")
  *   JSONRPC → sched_d  (channel "sched")
  */
 static const contract_cl11_route_entry_t
     CONTRACT_CL11_DEFAULT_ROUTES[CONTRACT_CL11_PROTO_COUNT] = {
-        {CONTRACT_CL11_PROTO_A2A, "agent_d", "a2a", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
+        {CONTRACT_CL11_PROTO_A2A, "sched_d", "a2a", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
         {CONTRACT_CL11_PROTO_MCP, "tool_d", "mcp", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
         {CONTRACT_CL11_PROTO_OPENAI, "llm_d", "llm", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},
         {CONTRACT_CL11_PROTO_JSONRPC, "sched_d", "sched", CONTRACT_CL11_DEFAULT_TIMEOUT_MS},

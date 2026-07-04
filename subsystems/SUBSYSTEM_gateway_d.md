@@ -38,7 +38,7 @@ Gateway Daemon（gateway_d）是 AgentRT 的 API 网关守护进程，作为整�
        ▼
   IPC Service Bus (JSON-RPC 2.0)
        │
-       ├─→ agent_d (A2A)
+       ├─→ sched_d (A2A)
        ├─→ tool_d (MCP)
        ├─→ llm_d (OpenAI)
        └─→ sched_d (JSON-RPC)
@@ -48,7 +48,7 @@ Gateway Daemon（gateway_d）是 AgentRT 的 API 网关守护进程，作为整�
 
 | 协议类型 | 检测条件 | 目标 daemon | IPC 通道 |
 |----------|---------|------------|----------|
-| A2A | Agent-to-Agent 协议特征 | `agent_d` | `a2a` |
+| A2A | Agent-to-Agent 协议特征 | `sched_d` | `a2a` |
 | MCP | Model Context Protocol 特征 | `tool_d` | `mcp` |
 | OpenAI API | OpenAI API 格式请求 | `llm_d` | `llm` |
 | JSON-RPC | 通用 JSON-RPC 2.0 | `sched_d` | `sched` |
@@ -269,7 +269,7 @@ daemon/gateway_d/
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|:---:|------|
-| `a2a_target_daemon` | const char* | `"agent_d"` | A2A 目标 daemon |
+| `a2a_target_daemon` | const char* | `"sched_d"` | A2A 目标 daemon（agent 注册 + task 调度） |
 | `mcp_target_daemon` | const char* | `"tool_d"` | MCP 目标 daemon |
 | `openai_target_daemon` | const char* | `"llm_d"` | OpenAI 目标 daemon |
 | `jsonrpc_target_daemon` | const char* | `"sched_d"` | JSON-RPC 目标 daemon |
