@@ -4031,7 +4031,7 @@ AgentOS正站在从优秀到卓越的历史转折点。当前项目拥有坚实�
   4. 体系并行论和五维正交设计体系理论指导
   5. 对AgentOS代码架构的详细技术评估（atoms/cupolas/gateway模块分析）
 
-**版权声明**：© 2026 SPHARX Ltd. All Rights Reserved.  
+**版权声明**：© 2025-2026 SPHARX Ltd. All Rights Reserved.  
 **联系方式**：tech-committee@spharx.com  
 
 **"From data intelligence emerges."**

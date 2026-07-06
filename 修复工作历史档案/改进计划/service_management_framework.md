@@ -417,6 +417,6 @@ typedef struct {
 **AgentOS 服务管理框架设计**  
 *设计先行，渐进实施 - 构建统一、可靠、可扩展的服务管理体系*
 
-© 2026 SPHARX Ltd. All Rights Reserved.
+© 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 </div>

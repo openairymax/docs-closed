@@ -19127,7 +19127,7 @@ def create_file(path, content=""):
 
 def main():
     # 顶层文件
-    create_file("CMakeLists.txt", """# Copyright (c) 2026 SPHARX. All Rights Reserved. "From data intelligence emerges."
+    create_file("CMakeLists.txt", """# Copyright (c) 2025-2026 SPHARX. All Rights Reserved. "From data intelligence emerges."
 # coresvc 顶层构建文件
 cmake_minimum_required(VERSION 3.20)
 project(agentos-coresvc VERSION 3.0.0 LANGUAGES C)

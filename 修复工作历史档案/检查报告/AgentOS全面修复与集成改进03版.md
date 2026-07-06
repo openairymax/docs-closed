@@ -1014,7 +1014,7 @@ AgentOS项目的模块化设计存在以下架构缺陷：
   3. `.bendiwenjian/项目阶段性改进计划` 所有文档综合分析
   4. 十大核心问题识别与风险评估
 
-**版权声明**：© 2026 SPHARX Ltd. All Rights Reserved.  
+**版权声明**：© 2025-2026 SPHARX Ltd. All Rights Reserved.  
 **联系方式**：tech-committee@spharx.com  
 
 **"From solid foundation emerges excellence."**

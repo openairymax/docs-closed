@@ -1324,4 +1324,4 @@ async def test_skill_framework_integration():
 
 *文档维护: AgentOS 架构团队*  
 *最后更新: 2026-04-11*  
-*© 2026 SPHARX Ltd. All Rights Reserved.*
+*© 2025-2026 SPHARX Ltd. All Rights Reserved.*
