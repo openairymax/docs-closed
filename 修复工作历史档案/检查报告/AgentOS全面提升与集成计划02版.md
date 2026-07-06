@@ -502,7 +502,7 @@ timeline
   5. 对AgentOS代码架构的详细技术评估
   6. **对AgentOS项目全部内容的全面代码审查与现状分析**（2026-04-13）
 
-**版权声明**：© 2026 SPHARX Ltd. All Rights Reserved.  
+**版权声明**：© 2025-2026 SPHARX Ltd. All Rights Reserved.  
 **联系方式**：tech-committee@spharx.com  
 
 **"From data intelligence emerges."**

@@ -331,7 +331,7 @@ Windows Performance Toolkit: ">=10.0"  # Windows
 
 ---
 
-© 2026 SPHARX Ltd. All Rights Reserved.
+© 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 *始于数据，终于智能。*
 *From data intelligence emerges.*

@@ -311,4 +311,4 @@ AgentOS 第三阶段（系统完善）**已100%完成**，所有4个主要任务
 
 *文档维护: AgentOS 核心团队*  
 *最后更新: 2026-04-11*  
-*© 2026 SPHARX Ltd. All Rights Reserved.*
+*© 2025-2026 SPHARX Ltd. All Rights Reserved.*

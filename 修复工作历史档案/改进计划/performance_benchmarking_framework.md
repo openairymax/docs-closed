@@ -579,6 +579,6 @@ AGENTOS_API agentos_error_t agentos_benchmark_detect_regression(
 **AgentOS 性能基准测试框架设计**  
 *度量改进 - 构建统一、可重复、可比较的性能测试体系*
 
-© 2026 SPHARX Ltd. All Rights Reserved.
+© 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 </div>
