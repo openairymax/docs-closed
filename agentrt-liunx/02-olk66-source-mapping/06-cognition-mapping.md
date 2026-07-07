@@ -1,12 +1,13 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# OLK-6.6 认知子系统 → AirymaxOS CoreLoopThree 源码映射
+# OLK-6.6 kthread + accel + drm_sched → AirymaxOS 认知循环（CoreLoopThree）源码映射
 
-> **文档定位**: 闭源内部参考，OLK-6.6 `kernel/kthread.c` + `include/linux/kthread.h` + `drivers/accel/` + `drivers/gpu/drm/scheduler/` + `include/drm/gpu_scheduler.h` 源码 → AirymaxOS 认知子系统（CoreLoopThree kthread + Thinkdual + LLM 推理调度 + GPU/NPU 调度）设计映射
+> **文档定位**: 闭源内部参考，OLK-6.6 `kernel/kthread.c` + `include/linux/kthread.h` + `drivers/accel/` + `drivers/gpu/drm/scheduler/` + `include/drm/gpu_scheduler.h` 源码 → AirymaxOS 认知循环（CoreLoopThree kthread + Thinkdual + LLM 推理调度 + GPU/NPU 算力调度）子系统设计映射
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1（文档体系完成）
 > **最后更新**: 2026-07-07
 > **源码基线**: OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **代码共享边界**: IRON-9 v2——agentrt ↔ AirymaxOS 共享 [SC] 契约层；与 OLK-6.6/Euler 仅技术参考，**不共享代码**
 
 ---
 
@@ -14,56 +15,58 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档建立 OLK-6.6 认知子系统支撑机制源码到 AirymaxOS 认知子系统设计的精确映射，标注 IRON-9 v2 三层共享模型边界：
+本文档建立 OLK-6.6 认知子系统支撑机制（kthread + accel + drm_sched）源码到 AirymaxOS 认知循环（CoreLoopThree）设计的精确映射，标注 IRON-9 v2 三层共享模型边界：
 
 | 标注 | 含义 | 共享程度 |
 |------|------|----------|
-| **[SC]** | Shared Contract 共享契约层 | 完全共享代码（`include/airymax/cognition_types.h`） |
+| **[SC]** | Shared Contract 共享契约层 | agentrt ↔ AirymaxOS 完全共享代码（`include/airymax/cognition_types.h`） |
 | **[SS]** | Semantic Same-origin 语义同源层 | API 签名同源，实现独立 |
-| **[IND]** | Independent 完全独立层 | 各自独立实现 |
+| **[IND]** | Independent 完全独立层 | AirymaxOS 独立实现（kthread/accel/drm_sched 内核态专属） |
 
-**认知是 4 大数据流之一**：CoreLoopThree 三阶段循环（PERCEPTION/THINKING/ACTION）是 AirymaxOS 区别于通用 OS 的核心特征。kthread 是内核态认知循环的承载机制，drm_sched + accel 框架是 GPU/NPU 算力调度的支撑底座。
+**代码共享边界澄清**（IRON-9 v2）：
+- agentrt 与 AirymaxOS 之间共享 [SC] 契约层代码（`include/airymax/cognition_types.h`）
+- AirymaxOS 与 OLK-6.6/Euler 之间**仅技术参考，不共享代码**——OLK-6.6 kthread/accel/drm_sched 是 AirymaxOS [IND] 独立层的实现参考，AirymaxOS 自行实现内核态认知 kthread 机制
+- AirymaxOS 的工程思想与实现方式与 Euler 保持一致性（如 KABI 管理、版本节奏、模块化），以便未来兼容 Euler 标准的发行版工具链，但**不直接采用 Euler 代码**
 
 ### 1.2 源码定位
 
 | 路径 | 说明 | 行数 |
 |------|------|------|
-| `kernel/kthread.c` | kthread 机制核心（创建/绑定/驻留/停止/worker） | 1562 行 |
-| `include/linux/kthread.h` | kthread 公共 API 声明 + 宏定义 | 227 行 |
-| `drivers/accel/drm_accel.c` | accel 框架核心（class + minor + debugfs） | 227 行 |
-| `include/drm/drm_accel.h` | accel 公共 API + ACCEL_MAJOR/MAX_MINORS | 84 行 |
-| `drivers/accel/ivpu/ivpu_drv.c` | Intel NPU 驱动主入口（probe/remove） | 707 行 |
-| `drivers/accel/ivpu/ivpu_job.c` | Intel NPU 作业管理（kthread_run 派发） | ~622 行 |
-| `drivers/accel/habanalabs/` | HabanaLabs AI 加速器（Gaudi 系列） | ~15000 行 |
-| `drivers/accel/qaic/qaic_main.c` | Qualcomm AI 100 加速器主入口 | ~600 行 |
-| `drivers/gpu/drm/scheduler/sched_main.c` | drm_sched 核心（kthread 主循环 + init/fini） | 1218 行 |
-| `drivers/gpu/drm/scheduler/sched_entity.c` | 调度实体（多对一 entity↔scheduler） | 594 行 |
-| `drivers/gpu/drm/scheduler/sched_fence.c` | fence 机制（dma_fence 子类） | 240 行 |
-| `include/drm/gpu_scheduler.h` | drm_sched 公共结构体 + API 声明 | 617 行 |
-| `kernel/sched/ext.c` | sched_ext 框架（与 kthread 兼容性） | ~5300 行 |
+| `kernel/kthread.c` | kthread 框架核心（创建/绑定/驻留/停止/worker） | 1562 行 |
+| `include/linux/kthread.h` | kthread 公共 API（47 函数 + 宏 + 结构体） | 227 行 |
+| `drivers/accel/drm_accel.c` | accel 框架核心（class + debugfs + open + stub） | 227 行 |
+| `include/drm/drm_accel.h` | accel 框架公共 API | ~80 行 |
+| `drivers/accel/habanalabs/` | HabanaLabs GPU/NPU 驱动（含 habanalabs.c 等） | 大型 |
+| `drivers/accel/ivpu/` | Intel VPU/NPU 驱动（ivpu_drv.c + ivpu_job.c 等 17+ 文件） | ~7000+ 行 |
+| `drivers/accel/qaic/` | Qualcomm AI 100 NPU 驱动（qaic_drv.c + qaic_data.c 等） | ~5000+ 行 |
+| `drivers/gpu/drm/scheduler/sched_main.c` | drm_sched 调度器主循环 | 1218 行 |
+| `drivers/gpu/drm/scheduler/sched_entity.c` | drm_sched 调度实体 | 594 行 |
+| `drivers/gpu/drm/scheduler/sched_fence.c` | drm_sched fence 同步 | 240 行 |
+| `drivers/gpu/drm/scheduler/gpu_scheduler_trace.h` | drm_sched tracepoint | 114 行 |
+| `include/drm/gpu_scheduler.h` | drm_sched 公共 API + 结构体 | 617 行 |
 
 ### 1.3 关键配置选项
 
 ```kconfig
-CONFIG_KTHREAD=y                    # kthread 机制（默认启用）
+CONFIG_KTHREAD=y                   # kthread 框架（默认启用）
+CONFIG_KTHREAD_WORKER=y             # kthread worker（kthread_work 队列）
 CONFIG_DRM_ACCEL=y                  # accel 框架（GPU/NPU 统一接入）
 CONFIG_DRM_GPU_SCHED=y              # drm_sched 通用 GPU 调度器
-CONFIG_DRM_ACCEL_IVPU=y            # Intel NPU 驱动（ivpu）
-CONFIG_DRM_ACCEL_HABANALABS=y      # HabanaLabs Gaudi 驱动
-CONFIG_DRM_ACCEL_QAIC=y            # Qualcomm AI 100 驱动
-CONFIG_CGROUPS=y                   # cgroup（kthread 关联）
-CONFIG_BLK_CGROUP=y                # blkcg（kthread_associate_blkcg）
+CONFIG_DRM_SCHED_PRIORITY=2        # drm_sched 优先级层数（MIN/HIGH/KERNEL/HIGH)
+CONFIG_ACCEL_HABANALABS=m           # HabanaLabs Gaudi 驱动（模块）
+CONFIG_ACCEL_IVPU=m                 # Intel VPU/NPU 驱动（模块）
+CONFIG_DRM_ACCEL_QAIC=m             # Qualcomm AI 100 驱动（模块）
 CONFIG_SCHED_EXT=y                  # sched_ext（与 kthread 协同）
-CONFIG_NUMA=y                      # NUMA（kthread_create_on_node）
-CONFIG_FREEZER=y                    # freezer（KTW_FREEZABLE）
-CONFIG_CXL_BUS=y                   # CXL 总线（KV pool 共享）
+CONFIG_CGROUPS=y                    # cgroup（kthread 默认不纳入应用 cgroup）
+CONFIG_BLK_CGROUP=y                 # blkcg（kthread_associate_blkcg 依赖）
+CONFIG_CXL_BUS=y                    # CXL 3.0（LLM KV cache 池化基础）
 ```
 
 ---
 
-## 2. kernel/kthread.c 源码深度研究
+## 2. OLK-6.6 `kernel/kthread.c` 源码研究
 
-### 2.1 文件概览
+### 2.1 文件头与版权
 
 ```
 SPDX-License-Identifier: GPL-2.0-only
@@ -71,711 +74,598 @@ Copyright (C) 2004 IBM Corporation, Rusty Russell.
 Copyright (C) 2009 Red Hat, Inc.
 ```
 
-文件 1562 行，承载内核线程（kernel thread）的全部生命周期管理。设计哲学是"通过 kthreadd 守护进程提供干净环境"——即使从用户态触发（modprobe、hotplug cpu），也能继承干净上下文。
+**关键 include**（`kthread.c:L10-31`）：`<linux/sched.h>` / `<linux/kthread.h>` / `<linux/cgroup.h>` / `<linux/cpuset.h>` / `<linux/freezer.h>` / `<linux/numa.h>` / `<linux/sched/isolation.h>` / `<trace/events/sched.h>`。
 
-**关键 include**：
-- `<linux/kthread.h>`（自身 API）
-- `<linux/completion.h>`（同步原语）
-- `<linux/cgroup.h>` + `<linux/cpuset.h>`（cgroup 关联）
-- `<linux/freezer.h>`（freeze 友好）
-- `<trace/events/sched.h>`（ftrace 钩子）
+**全局变量**（`kthread.c:L34-36`）：
+- `static DEFINE_SPINLOCK(kthread_create_lock)`——创建请求链表自旋锁
+- `static LIST_HEAD(kthread_create_list)`——创建请求链表
+- `struct task_struct *kthreadd_task`——kthreadd 守护进程 task_struct（PID=2）
 
 ### 2.2 核心结构体
 
-#### struct kthread_create_info（kthread.c:38-51）
+#### 2.2.1 `struct kthread_create_info`（`kthread.c:L38-51`）
 
-```c
-struct kthread_create_info
-{
-    /* Information passed to kthread() from kthreadd. */
-    char *full_name;
-    int (*threadfn)(void *data);
-    void *data;
-    int node;
+创建请求描述符，从 kthreadd 传递给 kthread：
 
-    /* Result passed back to kthread_create() from kthreadd. */
-    struct task_struct *result;
-    struct completion *done;
+| 字段 | 类型 | 行号 | 用途 |
+|------|------|------|------|
+| `full_name` | `char *` | L41 | kthread 完整名（task comm 截断时备份） |
+| `threadfn` | `int (*)(void *data)` | L42 | 用户函数指针 |
+| `data` | `void *` | L43 | threadfn 参数 |
+| `node` | `int` | L44 | NUMA 节点（内存分配亲和） |
+| `result` | `struct task_struct *` | L47 | 创建结果（task_struct 指针） |
+| `done` | `struct completion *` | L48 | 完成通知（创建者等待） |
+| `list` | `struct list_head` | L50 | 链入 `kthread_create_list` |
 
-    struct list_head list;
-};
-```
+#### 2.2.2 `struct kthread`（`kthread.c:L53-66`）
 
-字段说明：
-- `full_name`：kthread 完整名称（task comm 可能截断，full_name 保留全名）
-- `threadfn`：kthread 主体函数指针
-- `data`：threadfn 的私有数据
-- `node`：NUMA 节点（kthread_create_on_node 的 node 参数）
-- `result`：创建结果（task_struct 指针，由 kthreadd 填充）
-- `done`：完成信号（创建者等待 kthreadd 完成）
-- `list`：挂入 `kthread_create_list` 链表
+kthread 持久化状态（`p->worker_private`）：
 
-#### struct kthread（kthread.c:53-66）
+| 字段 | 类型 | 行号 | 用途 |
+|------|------|------|------|
+| `flags` | `unsigned long` | L54 | 3 bit 状态机（见 2.4） |
+| `cpu` | `unsigned int` | L55 | per-CPU 绑定缓存（unpark 时重绑） |
+| `result` | `int` | L56 | threadfn 返回值（kthread_exit 传回） |
+| `threadfn` | `int (*)(void *)` | L57 | threadfn 指针（kthread_stop 时仍需） |
+| `data` | `void *` | L58 | threadfn 参数 |
+| `parked` | `struct completion` | L59 | 驻留完成通知 |
+| `exited` | `struct completion` | L60 | 退出完成通知（kthread_stop 等待） |
+| `blkcg_css` | `struct cgroup_subsys_state *` | L62 | blkcg 关联（CONFIG_BLK_CGROUP） |
+| `full_name` | `char *` | L65 | 完整名备份 |
 
-```c
-struct kthread {
-    unsigned long flags;
-    unsigned int cpu;
-    int result;
-    int (*threadfn)(void *);
-    void *data;
-    struct completion parked;
-    struct completion exited;
-#ifdef CONFIG_BLK_CGROUP
-    struct cgroup_subsys_state *blkcg_css;
-#endif
-    char *full_name;
-};
-```
+#### 2.2.3 `enum KTHREAD_BITS`（`kthread.c:L68-72`）
 
-字段说明：
-- `flags`：状态位（KTHREAD_IS_PER_CPU / KTHREAD_SHOULD_STOP / KTHREAD_SHOULD_PARK）
-- `cpu`：绑定的 CPU（per-CPU kthread 缓存）
-- `result`：threadfn 返回值（kthread_stop 取回）
-- `threadfn`：主体函数指针（与 create_info.threadfn 一致）
-- `data`：私有数据
-- `parked`：驻留完成信号（kthread_park 等待）
-- `exited`：退出完成信号（kthread_stop 等待）
-- `blkcg_css`：块设备 cgroup（可选，CONFIG_BLK_CGROUP）
-- `full_name`：完整名称
+3 个状态 bit：
 
-#### enum KTHREAD_BITS（kthread.c:68-72）
+| bit | 名称 | 行号 | 设置者 | 检查者 |
+|-----|------|------|--------|--------|
+| 0 | `KTHREAD_IS_PER_CPU` | L69 | `kthread_set_per_cpu` | `kthread_is_per_cpu` |
+| 1 | `KTHREAD_SHOULD_STOP` | L70 | `kthread_stop` | `kthread_should_stop` |
+| 2 | `KTHREAD_SHOULD_Park` | L71 | `kthread_park` | `kthread_should_park` |
 
-```c
-enum KTHREAD_BITS {
-    KTHREAD_IS_PER_CPU = 0,
-    KTHREAD_SHOULD_STOP,
-    KTHREAD_SHOULD_PARK,
-};
-```
+#### 2.2.4 kthread worker 结构体（`kthread.h:L123-143`）
 
-3 个状态位，对应 `flags` 字段的 bit 0/1/2。
+| 结构体 | 行号 | 字段数 | 用途 |
+|--------|------|--------|------|
+| `struct kthread_worker` | L123-130 | 6 | 工作队列（flags/lock/work_list/delayed_work_list/task/current_work） |
+| `struct kthread_work` | L132-138 | 4 | 工作项（node/func/worker/canceling） |
+| `struct kthread_delayed_work` | L140-143 | 2 | 延迟工作（work + timer） |
 
-### 2.3 公开 API 清单
+### 2.3 kthread 公开 API 清单（47 函数 + 宏）
 
-#### 创建类 API
+#### 2.3.1 创建类 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_create_on_node(fn, data, node, namefmt...)` | kthread.h:11-14 | NUMA 感知创建原语（停止状态） | CoreLoopThree kthread 创建 |
-| `kthread_create(fn, data, namefmt, arg...)` | kthread.h:27-28 | `= create_on_node(NUMA_NO_NODE)` 宏 | 简单场景 |
-| `kthread_create_on_cpu(fn, data, cpu, namefmt)` | kthread.c:570-584 | create_on_node + bind | per-CPU kthread |
-| `kthread_run(fn, data, namefmt, ...)` | kthread.h:51-58 | create + wake_up_process 便捷宏 | drm_sched helper |
-| `kthread_run_on_cpu(fn, data, cpu, namefmt)` | kthread.h:72-83 | create_on_cpu + wake | per-CPU 即启动 |
-| `set_kthread_struct(p)` | kthread.c:111-128 | 分配 struct kthread（kzalloc GFP_KERNEL） | kthreadd 内部 |
-| `free_kthread_struct(k)` | kthread.c:130-147 | 释放 struct kthread | kthreadd 内部 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 1 | `kthread_create_on_node(fn, data, node, namefmt...)` | kthread.h:L11-14 | NUMA 感知创建原语 | OS-COG-MAP-01 |
+| 2 | `kthread_create(fn, data, namefmt...)` | kthread.h:L27-28 | = create_on_node(NUMA_NO_NODE) | OS-COG-MAP-02 |
+| 3 | `kthread_create_on_cpu(fn, data, cpu, namefmt)` | kthread.c:L570-584 | per-CPU 创建 + bind | OS-COG-MAP-03 |
+| 4 | `kthread_run(fn, data, namefmt...)` | kthread.h:L51-58 | create + wake_up_process | OS-COG-MAP-04 |
+| 5 | `kthread_run_on_cpu(fn, data, cpu, namefmt)` | kthread.h:L72-83 | create_on_cpu + wake | OS-COG-MAP-05 |
+| 6 | `set_kthread_struct(p)` | kthread.c:L111-128 | 分配 struct kthread | OS-COG-MAP-06 |
+| 7 | `free_kthread_struct(k)` | kthread.c:L130-147 | 释放 struct kthread | OS-COG-MAP-07 |
 
-#### 绑定与亲和性 API
+#### 2.3.2 绑定与亲和性 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_bind(k, cpu)` | kthread.c:554-558 | 绑定单 CPU（设 PF_NO_SETAFFINITY） | cognition kthread 绑定 |
-| `kthread_bind_mask(k, mask)` | kthread.c:540 | 绑定 cpumask | 多 CPU 池化 |
-| `kthread_set_per_cpu(k, cpu)` | kthread.c:587-602 | 标记 per-CPU | per-CPU kthread |
-| `kthread_is_per_cpu(k)` | kthread.c:604-611 | 查询 per-CPU 标记 | sub-scheduler 识别 |
-| `get_kthread_comm(buf, size, tsk)` | kthread.c:99-109 | 获取完整名称 | 调试输出 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 8 | `kthread_bind(k, cpu)` | kthread.c:L554-558 | 绑定单 CPU + PF_NO_SETAFFINITY | OS-COG-MAP-08 |
+| 9 | `kthread_bind_mask(k, mask)` | kthread.c:L540 | 绑定 cpumask | OS-COG-MAP-09 |
+| 10 | `kthread_set_per_cpu(k, cpu)` | kthread.c:L587-602 | 标记 per-CPU | OS-COG-MAP-10 |
+| 11 | `kthread_is_per_cpu(p)` | kthread.c:L604-611 | 查询 per-CPU 标记 | OS-COG-MAP-11 |
 
-#### 停止与驻留 API
+#### 2.3.3 停止与驻留 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_should_stop()` | kthread.c:156-160 | 检查 SHOULD_STOP bit | 主循环顶部检查 |
-| `kthread_should_park()` | kthread.c:178-182 | 检查 SHOULD_PARK bit | CPU hotplug 协议 |
-| `kthread_should_stop_or_park()` | kthread.c:184-192 | 联合检查（容忍 NULL kthread） | 安全检查 |
-| `kthread_park(k)` | kthread.c:654-681 | 驻留 kthread（阻塞至 parked） | 系统休眠 |
-| `kthread_unpark(k)` | kthread.c:621-640 | 恢复驻留的 kthread（re-bind + wake） | 系统唤醒 |
-| `kthread_parkme()` | kthread.c:168-172 | kthread 主动驻留（schedule） | 主循环内调用 |
-| `kthread_stop(k)` | kthread.c:698-717 | 停止 kthread（完整序列） | 模块卸载 |
-| `kthread_stop_put(k)` | kthread.c:728 | stop + put_task_struct | 持额外引用时 |
-| `kthread_exit(result)` | kthread.c:312 | 显式退出（__noreturn） | threadfn 主动退出 |
-| `kthread_complete_and_exit(comp, code)` | kthread.c:331-338 | complete + exit（OOM 安全） | OOM 场景 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 12 | `kthread_should_stop()` | kthread.c:L156-160 | 检查 KTHREAD_SHOULD_STOP | OS-COG-MAP-12 |
+| 13 | `kthread_should_park()` | kthread.c:L178-182 | 检查 KTHREAD_SHOULD_PARK | OS-COG-MAP-13 |
+| 14 | `kthread_should_stop_or_park()` | kthread.c:L184-192 | 联合检查（容忍 NULL） | OS-COG-MAP-14 |
+| 15 | `kthread_stop(k)` | kthread.c:L698-717 | 完整停止序列 | OS-COG-MAP-15 |
+| 16 | `kthread_stop_put(k)` | kthread.c:L728 | stop + put_task_struct | OS-COG-MAP-16 |
+| 17 | `kthread_park(k)` | kthread.c:L654-680 | 驻留（阻塞直至 parked） | OS-COG-MAP-17 |
+| 18 | `kthread_unpark(k)` | kthread.c:L621-639 | 解驻留（re-bind + wake） | OS-COG-MAP-18 |
+| 19 | `kthread_parkme()` | kthread.c:L641-652 | kthread 内部主动驻留 | OS-COG-MAP-19 |
+| 20 | `kthread_exit(result)` | kthread.c:L312 | 显式退出 + 传回 result | OS-COG-MAP-20 |
+| 21 | `kthread_complete_and_exit(comp, code)` | kthread.c:L331-338 | complete + exit（OOM 安全） | OS-COG-MAP-21 |
+| 22 | `kthread_freezable_should_stop(was_frozen)` | — | 可冻结停止检查 | OS-COG-MAP-22 |
 
-#### 数据访问 API
+#### 2.3.4 数据访问 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_func(k)` | kthread.c:166 | 取 threadfn 指针 | 调试 |
-| `kthread_data(k)` | kthread.c:175 | 取 data 指针 | 调试 |
-| `kthread_probe_data(k)` | kthread.c:184 | 探测 data（不安全但快速） | 调试 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 23 | `kthread_func(k)` | kthread.h:L94 | 取 threadfn | OS-COG-MAP-23 |
+| 24 | `kthread_data(k)` | kthread.h:L95 | 取 data | OS-COG-MAP-24 |
+| 25 | `kthread_probe_data(k)` | kthread.h:L96 | 探测 data（调试） | — |
+| 26 | `get_kthread_comm(buf, size, tsk)` | kthread.c:L99-109 | 取完整名 | — |
 
-#### Worker API（kthread 工作队列）
+#### 2.3.5 内存管理 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_worker_fn(worker_ptr)` | kthread.h:187 | worker 主循环函数 | daemon worker |
-| `kthread_create_worker(flags, namefmt...)` | kthread.h:190-191 | 创建 worker | 通用 worker |
-| `kthread_create_worker_on_cpu(cpu, flags, namefmt...)` | kthread.h:193-195 | per-CPU worker | per-CPU daemon |
-| `kthread_queue_work(worker, work)` | kthread.h:197-198 | 排入 work | 异步任务 |
-| `kthread_queue_delayed_work(worker, dwork, delay)` | kthread.h:200-202 | 排入延迟 work | 定时任务 |
-| `kthread_mod_delayed_work(worker, dwork, delay)` | kthread.h:204-206 | 修改延迟 | 重设定时 |
-| `kthread_flush_work(work)` | kthread.h:208 | 刷新单个 work | 等待完成 |
-| `kthread_flush_worker(worker)` | kthread.h:209 | 刷新全部 work | 批量等待 |
-| `kthread_cancel_work_sync(work)` | kthread.h:211 | 取消 work（同步） | 任务取消 |
-| `kthread_cancel_delayed_work_sync(dwork)` | kthread.h:212 | 取消延迟 work | 定时取消 |
-| `kthread_destroy_worker(worker)` | kthread.h:214 | 销毁 worker | 资源释放 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 27 | `kthread_use_mm(mm)` | kthread.h:L216 | 借用 mm（kthread 默认无 mm） | OS-COG-MAP-25 |
+| 28 | `kthread_unuse_mm(mm)` | kthread.h:L217 | 归还 mm | OS-COG-MAP-26 |
 
-#### 内存与 cgroup API
+#### 2.3.6 cgroup 关联 API
 
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `kthread_use_mm(mm)` | kthread.h:216 | 切换到指定 mm（borrow） | 用户态内存访问 |
-| `kthread_unuse_mm(mm)` | kthread.h:217 | 切回 kthread mm | 释放 borrow |
-| `kthread_associate_blkcg(css)` | kthread.h:222 | 关联 blkcg | kthread I/O 计费 |
-| `kthread_blkcg()` | kthread.h:223 | 取当前 blkcg | I/O 路径查询 |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 29 | `kthread_associate_blkcg(css)` | kthread.h:L222 | 关联 blkcg | — |
+| 30 | `kthread_blkcg()` | kthread.h:L223 | 取当前 blkcg | — |
 
-#### 宏定义
+#### 2.3.7 kthread worker API（kthread_work 队列）
 
-| 宏 | 行号 | 功能 |
-|-----|------|------|
-| `KTHREAD_WORK_INIT(work, fn)` | kthread.h:145-148 | 静态初始化 work |
-| `KTHREAD_DELAYED_WORK_INIT(dwork, fn)` | kthread.h:150-154 | 静态初始化 delayed work |
-| `DEFINE_KTHREAD_WORK(work, fn)` | kthread.h:156-157 | 定义全局 work |
-| `DEFINE_KTHREAD_DELAYED_WORK(dwork, fn)` | kthread.h:159-161 | 定义全局 delayed work |
-| `kthread_init_worker(worker)` | kthread.h:166-170 | 动态初始化 worker（含 lockdep key） |
-| `kthread_init_work(work, fn)` | kthread.h:172-177 | 动态初始化 work |
-| `kthread_init_delayed_work(dwork, fn)` | kthread.h:179-185 | 动态初始化 delayed work |
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 31 | `kthread_worker_fn(worker_ptr)` | kthread.h:L187 | worker 主循环 | OS-COG-MAP-27 |
+| 32 | `kthread_create_worker(flags, namefmt...)` | kthread.h:L190-191 | 创建 worker | OS-COG-MAP-28 |
+| 33 | `kthread_create_worker_on_cpu(cpu, flags, namefmt...)` | kthread.h:L193-195 | per-CPU worker | — |
+| 34 | `kthread_queue_work(worker, work)` | kthread.h:L197-198 | 入队 work | — |
+| 35 | `kthread_queue_delayed_work(worker, dwork, delay)` | kthread.h:L200-202 | 入队延迟 work | — |
+| 36 | `kthread_mod_delayed_work(worker, dwork, delay)` | kthread.h:L204-206 | 修改延迟 work | — |
+| 37 | `kthread_flush_work(work)` | kthread.h:L208 | flush 单个 work | — |
+| 38 | `kthread_flush_worker(worker)` | kthread.h:L209 | flush 全队列 | — |
+| 39 | `kthread_cancel_work_sync(work)` | kthread.h:L211 | 取消 work（同步） | — |
+| 40 | `kthread_cancel_delayed_work_sync(dwork)` | kthread.h:L212 | 取消延迟 work | — |
+| 41 | `kthread_destroy_worker(worker)` | kthread.h:L214 | 销毁 worker | — |
+| 42 | `kthread_init_worker(worker)` | kthread.h:L166-170 | 初始化 worker（宏） | — |
+| 43 | `kthread_init_work(work, fn)` | kthread.h:L172-177 | 初始化 work（宏） | — |
+| 44 | `kthread_init_delayed_work(dwork, fn)` | kthread.h:L179-185 | 初始化延迟 work（宏） | — |
+| 45 | `DEFINE_KTHREAD_WORK(work, fn)` | kthread.h:L156-157 | 静态定义 work（宏） | — |
+| 46 | `DEFINE_KTHREAD_DELAYED_WORK(dwork, fn)` | kthread.h:L159-161 | 静态定义延迟 work（宏） | — |
+| 47 | `kthread_delayed_work_timer_fn(t)` | kthread.h:L117 | 延迟 work 定时器回调 | — |
 
 ### 2.4 kthread 生命周期状态机
 
+kthread 经由 kthreadd（PID=2）fork，状态机如下：
+
 ```mermaid
 stateDiagram-v2
-    [*] --> Create: kthread_create_on_node
-    Create --> Stopped: kthreadd 完成 fork
-    Stopped --> Bound: kthread_bind
-    Bound --> Running: wake_up_process
-    Running --> Parked: kthread_park (主循环检查 should_park)
-    Parked --> Running: kthread_unpark
-    Running --> Stopped: kthread_should_stop (主循环退出)
-    Stopped --> [*]: kthread_stop_put
-    Running --> [*]: kthread_exit (主动退出)
+    [*] --> Created: kthread_create_on_node\n(kthread.c:L427-478)
+    Created --> Bound: kthread_bind\n(kthread.c:L554-558)
+    Created --> Woken: wake_up_process\n(kthread.c:L381)
+    Bound --> Woken: wake_up_process
+    Woken --> Running: kthread() 主体\n(kthread.c:L340-391)
+    Running --> Parked: kthread_park + kthread_parkme\n(kthread.c:L654-681, L641-652)
+    Parked --> Running: kthread_unpark\n(kthread.c:L621-639)
+    Running --> Stopped: kthread_stop + kthread_exit\n(kthread.c:L698-717, L312)
+    Stopped --> [*]: free_kthread_struct\n(kthread.c:L130-147)
+
+    note right of Created
+        状态：TASK_UNINTERRUPTIBLE
+        flags = 0
+        等待 wake_up_process
+    end note
+
+    note right of Running
+        threadfn(data) 执行中
+        周期检查 kthread_should_stop()
+        可选检查 kthread_should_park()
+    end note
+
+    note right of Parked
+        状态：TASK_PARKED
+        完成通知 parked
+        等待 kthread_unpark
+    end note
+
+    note right of Stopped
+        完成通知 exited
+        result 传回 kthread_stop 调用者
+    end note
 ```
 
 **关键状态转换点**：
 
-1. **Create → Stopped**（kthreadd fork）：
-   - `kthreadd`（PID=2，kthread.c:738-774）从 `kthread_create_list` 取请求
-   - `create_kthread`（kthread.c:403-425）调 `kernel_thread(kthread, create, CLONE_FS|CLONE_FILES|SIGCHLD)`
-   - 新 task 进入 `kthread()` 主体（kthread.c:340-391），设置 `SCHED_NORMAL`/0 + housekeeping cpumask + `__set_current_state(TASK_UNINTERRUPTIBLE)` + `complete(done)` + `schedule_preempt_disabled()`
-   - 创建者从 `wait_for_completion_killable` 醒来，取 `create->result`
+| 转换 | 触发 API | 行号 | 关键行为 |
+|------|----------|------|----------|
+| 创建 → 就绪 | `__kthread_create_on_node` | L427-478 | 挂入 kthread_create_list + wake kthreadd + wait_for_completion_killable |
+| kthreadd fork | `kthreadd` 主循环 | L738-774 | ignore_signals + PF_NOFREEZE + cgroup_init_kthreadd |
+| kthread 主体初始化 | `kthread()` | L340-391 | sched_setscheduler_nocheck(SCHED_NORMAL) + set_cpus_allowed_ptr(housekeeping) + cgroup_kthread_ready |
+| 驻留 | `kthread_park` | L654-681 | set SHOULD_PARK + wake + wait_for_completion(parked) + wait_task_inactive(TASK_PARKED) |
+| 解驻留 | `kthread_unpark` | L621-639 | per-CPU re-bind + clear SHOULD_PARK + wake_up_state(TASK_PARKED) |
+| 停止 | `kthread_stop` | L698-717 | set SHOULD_STOP + unpark + TIF_NOTIFY_SIGNAL + wake + wait_for_completion(exited) |
 
-2. **Stopped → Bound → Running**（手动启动）：
-   - `kthread_bind(p, cpu)`（kthread.c:554-558）→ `__kthread_bind`（L519-538）等 `wait_task_inactive` 后 `do_set_cpus_allowed` + `PF_NO_SETAFFINITY`
-   - `wake_up_process(p)` 唤醒
+### 2.5 kthreadd 守护进程（`kthread.c:L738-774`）
 
-3. **Running → Parked**（CPU hotplug / 系统休眠）：
-   - 调用者 `kthread_park(k)`（kthread.c:654-681）：set `KTHREAD_SHOULD_PARK` + `wake_up_process` + `wait_for_completion(parked)` + `wait_task_inactive(TASK_PARKED)`
-   - kthread 主循环 `kthread_should_park()` 返回 true，调 `kthread_parkme()`（L168-172）→ `__kthread_parkme(self)` 设 `TASK_PARKED` + `schedule()`
-
-4. **Parked → Running**（恢复）：
-   - `kthread_unpark(k)`（kthread.c:621-640）：per-CPU 重新 bind（`__kthread_bind(k, kthread->cpu, TASK_PARKED)`）+ clear `KTHREAD_SHOULD_PARK` + `wake_up_state(k, TASK_PARKED)`
-
-5. **Running → Stopped → [*]**（停止）：
-   - `kthread_stop(k)`（kthread.c:698-717）完整序列：
-     1. `trace_sched_kthread_stop(k)`（ftrace）
-     2. `get_task_struct(k)`（防 task_struct 释放）
-     3. `set_bit(KTHREAD_SHOULD_STOP, &kthread->flags)`
-     4. `kthread_unpark(k)`（若被 park，先唤醒）
-     5. `set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL)`（打破 `wait_event_interruptible` 阻塞点）
-     6. `wake_up_process(k)`
-     7. `wait_for_completion(&kthread->exited)`（等待 kthread 退出）
-     8. `ret = kthread->result`
-     9. `put_task_struct(k)`
-     10. `trace_sched_kthread_stop_ret(ret)`
-
-### 2.5 关键代码片段
-
-#### kthread 主体函数（kthread.c:340-391）
+kthreadd 是所有 kthread 的祖先（PID=2），由 `rest_init()` 在 boot 早期创建：
 
 ```c
-static int kthread(void *_create)
-{
-    struct kthread_create_info *create = _create;
-    int (*threadfn)(void *data) = create->threadfn;
-    void *data = create->data;
-    struct completion *done;
-    struct kthread *self;
-    int ret;
-
-    self = to_kthread(current);
-    /* If we were called by kthread_create_on_node(), the cpumask was
-     * set to node-mask by the kthreadd code. No need to override.
-     */
-    set_kthread_struct(current);   /* L363: 不存在时设置 */
-
-    /* Set up our state before we can be woken */
-    __set_current_state(TASK_UNINTERRUPTIBLE);
-    create->result = current;
-    complete(done);  /* 通知创建者"我已出生" */
-
-    /* And then schedule away, to let kthread_create_on_node()
-     * return.  Wait_for_completion_killable is in
-     * __kthread_create_on_node() (kthread.c:460)
-     */
-    schedule_preempt_disabled();
-
-    /* → 醒来后，cgroup 关联 + park 检查 + 调 threadfn */
-    cgroup_kthread_ready();
-    __kthread_parkme(self);
-    ret = threadfn(data);
-    kthread_exit(ret);  /* L390: 显式退出，传 result */
-}
-```
-
-#### kthread_stop 完整序列（kthread.c:698-717）
-
-```c
-int kthread_stop(struct task_struct *k)
-{
-    struct kthread *kthread;
-    int trace;
-    int ret;
-
-    trace_sched_kthread_stop(k);
-    if (k) {
-        get_task_struct(k);
-        kthread = to_kthread(k);
-        set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);
-        kthread_unpark(k);
-        set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);
-        wake_up_process(k);
-        wait_for_completion(&kthread->exited);
-        ret = kthread->result;
-        put_task_struct(k);
-    } else {
-        ret = -EINTR;
-    }
-    trace_sched_kthread_stop_ret(ret);
-    return ret;
-}
-EXPORT_SYMBOL(kthread_stop);
-```
-
-#### kthreadd 守护进程（kthread.c:738-774）
-
-```c
+// kthread.c:L738-774（简化）
 int kthreadd(void *unused)
 {
     struct task_struct *tsk = current;
-
-    /* Setup a clean context for our children to start with. */
-    use_mm(init_mm);  /* 借用 init_mm，干净地址空间 */
-    set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));
+    ignore_signals(tsk);              // L744: 忽略所有信号
+    set_cpus_allowed_ptr(tsk, housekeeping_cpumask(HK_TYPE_KTHREAD));  // L746
     set_mems_allowed(node_states[N_MEMORY]);
-
-    current->flags |= PF_NOFREEZE;
-    cgroup_init_kthreadd();  /* 纳入根 cgroup */
-    ignore_signals(tsk);     /* 忽略所有信号 */
-
+    current->flags |= PF_NOFREEZE;    // L748: 不冻结
+    cgroup_init_kthreadd();           // L749: cgroup 关联
     for (;;) {
+        // L752-773: 主循环
         set_current_state(TASK_INTERRUPTIBLE);
         if (list_empty(&kthread_create_list))
             schedule();
         __set_current_state(TASK_RUNNING);
-
-        spin_lock_irq(&kthread_create_lock);
+        spin_lock(&kthread_create_lock);
         while (!list_empty(&kthread_create_list)) {
             struct kthread_create_info *create;
-            create = list_entry(kthread_create_list.next,
-                                struct kthread_create_info, list);
-            list_del_init(&create->list);
-            spin_unlock_irq(&kthread_create_lock);
-
-            create_kthread(create);  /* fork 新 kthread */
-
-            spin_lock_irq(&kthread_create_lock);
+            create = list_entry(kthread_create_list.next, ...);
+            list_del(&create->list);
+            spin_unlock(&kthread_create_lock);
+            create_kthread(create);   // L765: fork kthread
+            spin_lock(&kthread_create_lock);
         }
-        spin_unlock_irq(&kthread_create_lock);
+        spin_unlock(&kthread_create_lock);
     }
     return 0;
 }
 ```
 
----
+**AirymaxOS 映射**：kthreadd 是 OLK-6.6 的 kthread 创建中枢，AirymaxOS 沿用此机制（[IND] 独立实现保持一致），CoreLoopThree kthread 经由 kthreadd 创建以获得干净环境。
 
-## 3. drivers/accel/ 加速器框架研究
-
-### 3.1 目录结构
-
-```
-drivers/accel/
-├── Kconfig                    # 配置选项（CONFIG_DRM_ACCEL）
-├── Makefile                   # 构建规则
-├── drm_accel.c                # accel 框架核心（227 行）
-└── include/drm/drm_accel.h    # 公共 API（84 行）
-    ├── habanalabs/            # HabanaLabs Gaudi 加速器（~15000 行）
-    ├── ivpu/                  # Intel NPU（NPU for Vision Processing Unit）（17+ 文件）
-    └── qaic/                  # Qualcomm AI 100 加速器（4 文件）
-```
-
-### 3.2 drm_accel.c 核心 API
-
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `accel_core_init()` | L205-227 | accel 子系统初始化（sysfs + debugfs + chrdev） | boot 时调用 |
-| `accel_core_exit()` | L197-203 | accel 子系统退出 | 关机时调用 |
-| `accel_open(inode, filp)` | L133-161 | accel 设备 open（acquire minor + drm_open_helper） | 用户态 ioctl 入口 |
-| `accel_stub_open(inode, filp)` | L163-189 | 占位 open（fops 替换） | 模块加载时切换 |
-| `accel_debugfs_init(minor, id)` | L89-104 | debugfs 初始化 | 调试接口 |
-| `accel_set_device_instance_params(kdev, index)` | L115-120 | 设备参数设置（devt + class + type） | 设备注册 |
-| `accel_sysfs_init()` | L34-43 | sysfs class 创建（"accel"） | 用户态发现 |
-| `accel_sysfs_destroy()` | L45-51 | sysfs class 销毁 | 关机 |
-
-**关键设计**：
-- **ACCEL_MAJOR = 261**（drm_accel.h:13）——固定主设备号
-- **ACCEL_MAX_MINORS = 256**（drm_accel.h:14）——最多 256 个 accel 设备
-- **DEFINE_XARRAY_ALLOC(accel_minors_xa)**（drm_accel.c:20）——minor 池用 xarray 分配
-- **accel_class**（drm_accel.c:23）——sysfs class "accel"，`/sys/class/accel/`
-- **accel_devnode**（drm_accel.c:29-32）——`/dev/accel/<name>` 设备节点
-- **DEFINE_DRM_ACCEL_FOPS(name)**（drm_accel.h:46-50）——标准 fops 宏（accel_open + drm_release + drm_ioctl + drm_poll + drm_read + drm_gem_mmap）
-
-### 3.3 accel 与 DRM 的解耦点
-
-accel 框架**复用 DRM 核心基础设施**，但独立成一类：
-
-| 共享 | 独立 |
-|------|------|
-| `struct drm_device`（设备模型） | ACCEL_MAJOR=261（vs DRM_MAJOR=226） |
-| `struct drm_minor`（minor 管理） | `/sys/class/accel/`（vs `/sys/class/drm/`） |
-| `drm_open_helper` / `drm_release` | `accel_open` 替换 `drm_open` |
-| `drm_ioctl` / `drm_compat_ioctl` | accel 模块加载时 `accel_stub_open` → fops 替换 |
-| `drm_gem_mmap`（GEM 内存管理） | debugfs 根 `/sys/kernel/debug/accel/` |
-| `drm_minor_acquire` / `drm_minor_release` | `accel_minors_xa` 独立 xarray |
-
-**解耦理由**：GPU（DRM）= 图形 + 计算加速；accel = 纯计算加速（NPU/TPU/IPU）。共享基础设施但分类独立，避免 `/dev/drm/` 混淆图形卡与 AI 加速卡。
-
-### 3.4 三大子目录关键文件
-
-#### drivers/accel/ivpu/（Intel NPU，17+ 文件）
-
-| 文件 | 功能 |
-|------|------|
-| `ivpu_drv.c`（707 行） | 主入口（probe/remove + ivpu_device 结构体） |
-| `ivpu_job.c`（~622 行） | 作业管理（ivpu_job_done_thread 用 kthread_run） |
-| `ivpu_mmu.c` / `ivpu_mmu_context.c` | MMU + 地址空间管理 |
-| `ivpu_hw_37xx.c` / `ivpu_hw_40xx.c` | 硬件抽象（MTL/Meteor Lake vs LNL/Lunar Lake） |
-| `ivpu_fw.c` | 固件加载 |
-| `ivpu_ipc.c` / `ivpu_jsm_msg.c` | IPC（host↔NPU 固件通信） |
-| `ivpu_pm.c` | 电源管理 |
-| `ivpu_gem.c` | GEM 内存对象 |
-| `ivpu_debugfs.c` | debugfs 接口 |
-| `ivpu_fw_log.c` | 固件日志 |
-
-#### drivers/accel/habanalabs/（HabanaLabs Gaudi，~15000 行）
-
-模块化设计：
-- `habanalabs.c`（核心注册）
-- `common/`（公共代码）
-- `gaudi2/`（Gaudi2 ASIC 特定）
-- `gaudi/`（Gaudi ASIC 特定）
-- `goya/`（Goya ASIC 特定）
-
-#### drivers/accel/qaic/（Qualcomm AI 100，4 文件）
-
-| 文件 | 功能 |
-|------|------|
-| `qaic_drv.c`（~600 行） | 主入口（probe/remove） |
-| `qaic_data.c` | 数据路径（作业 + DMA） |
-| `qaic_control.c` | 控制路径（MHI 协议） |
-| `mhi_controller.c` | MHI 总线控制器 |
-
-### 3.5 ivpu_drv.c 关键代码
-
-#### ivpu_job_done_thread（ivpu_job.c，使用 kthread_run）
+### 2.6 kthread_stop 完整序列（`kthread.c:L698-717`）
 
 ```c
-static int ivpu_job_done_thread(void *arg)
+// kthread.c:L698-717（关键停止协议）
+int kthread_stop(struct task_struct *k)
 {
-    struct ivpu_device *vdev = (struct ivpu_device *)arg;
-    struct ivpu_ipc_consumer cons;
-    struct vpu_jsm_msg jsm_msg;
-    bool jobs_submitted;
-    unsigned int timeout;
+    struct kthread *kthread;
     int ret;
 
-    ivpu_dbg(vdev, JOB, "Started %s\n", __func__);
-    ivpu_ipc_consumer_add(vdev, &cons, VPU_IPC_CHAN_JOB_RET);
-
-    while (!kthread_should_stop()) {  /* 协作式停止协议 */
-        timeout = ivpu_tdr_timeout_ms ? ivpu_tdr_timeout_ms : vdev->timeout.tdr;
-        jobs_submitted = !xa_empty(&vdev->submitted_jobs_xa);
-        ret = ivpu_ipc_receive(vdev, &cons, NULL, &jsm_msg, timeout);
-        if (!ret) {
-            ivpu_job_done_message(vdev, &jsm_msg);
-        } else if (ret == -ETIMEDOUT) {
-            if (jobs_submitted && !xa_empty(&vdev->submitted_jobs_xa)) {
-                ivpu_err(vdev, "TDR detected, timeout %d ms", timeout);
-                ivpu_hw_diagnose_failure(vdev);
-                ivpu_pm_schedule_recovery(vdev);
-            }
-        }
-    }
-
-    ivpu_ipc_consumer_del(vdev, &cons);
-    ivpu_jobs_abort_all(vdev);
-    ivpu_dbg(vdev, JOB, "Stopped %s\n", __func__);
-    return 0;
-}
-
-int ivpu_job_done_thread_init(struct ivpu_device *vdev)
-{
-    struct task_struct *thread;
-    thread = kthread_run(&ivpu_job_done_thread, (void *)vdev, "ivpu_job_done_thread");
-    if (IS_ERR(thread)) {
-        ivpu_err(vdev, "Failed to start job completion thread\n");
-        return -EIO;
-    }
-    get_task_struct(thread);
-    wake_up_process(thread);  /* 注：kthread_run 内部已 wake_up_process，此处冗余但安全 */
-    vdev->job_done_thread = thread;
-    return 0;
-}
-
-void ivpu_job_done_thread_fini(struct ivpu_device *vdev)
-{
-    kthread_stop_put(vdev->job_done_thread);  /* 持额外引用时用 _put 变体 */
+    trace_sched_kthread_stop(k);                       // L702: ftrace 钩子
+    get_task_struct(k);                                // L704: 获取引用
+    kthread = to_kthread(k);
+    set_bit(KTHREAD_SHOULD_STOP, &kthread->flags);     // L706: 设停止标志
+    kthread_unpark(k);                                 // L707: 先解驻留
+    set_tsk_thread_flag(k, TIF_NOTIFY_SIGNAL);         // L709: 打破阻塞点
+    wake_up_process(k);                                // L711: 唤醒
+    wait_for_completion(&kthread->exited);             // L713: 等待退出
+    ret = kthread->result;                              // L715: 取返回值
+    put_task_struct(k);                                // L716: 释放引用
+    trace_sched_kthread_stop_ret(ret);
+    return ret;
 }
 ```
 
-**关键工程要点**：
-- `kthread_run` 创建即唤醒（适合生命周期与设备一致的 kthread）
-- `while (!kthread_should_stop())` 协作式停止
-- TDR（Timeout Detection and Recovery）机制：超时触发硬件诊断 + 恢复
-- `kthread_stop_put` 在持 `get_task_struct` 时使用
+**关键点**：`TIF_NOTIFY_SIGNAL`（L709）打破 `wait_event_interruptible` 等阻塞点——这是停止协议的关键工程细节，CoreLoopThree kthread 主循环必须容忍此机制。
 
 ---
 
-## 4. drivers/gpu/drm/scheduler/ 研究
+## 3. OLK-6.6 `drivers/accel/` 加速器框架研究
 
-### 4.1 目录文件清单 + 行数
+### 3.1 文件头与版权
+
+`drivers/accel/drm_accel.c:L1-7`：
+```
+SPDX-License-Identifier: GPL-2.0
+Copyright 2022 HabanaLabs, Ltd.
+```
+
+### 3.2 accel 框架核心机制
+
+accel 框架是 OLK-6.6 为 AI 加速器（GPU/NPU/TPU）引入的统一接入层，与 DRM（GPU 显示）解耦：
+
+| 机制 | 实现位置 | 说明 |
+|------|----------|------|
+| `accel_class`（sysfs） | drm_accel.c:L23, L34-43 | `class_create("accel")`，设备节点 `/dev/accel/*` |
+| `accel_minors_xa`（minor 管理） | drm_accel.c:L20 | `DEFINE_XARRAY_ALLOC(accel_minors_xa)` |
+| `accel_debugfs_root` | drm_accel.c:L22, L215 | `/sys/kernel/debug/accel/` |
+| `ACCEL_MAJOR`（字符设备主号） | drm_accel.c:L117, L199, L217 | `register_chrdev(ACCEL_MAJOR, "accel", ...)` |
+| `accel_stub_fops` | drm_accel.c:L191-195 | 桩 file_operations，open 时替换为驱动 fops |
+
+### 3.3 accel 核心 API
+
+| API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|-----|-----------|------|----------------|
+| `accel_core_init()` | drm_accel.c:L205-227 | accel 框架初始化（sysfs + debugfs + chrdev） | OS-COG-MAP-29 |
+| `accel_core_exit()` | drm_accel.c:L197-203 | accel 框架卸载 | — |
+| `accel_sysfs_init()` | drm_accel.c:L34-43 | 创建 `/sys/class/accel` | — |
+| `accel_open(inode, filp)` | drm_accel.c:L133-160 | accel 设备 open（drm_minor_acquire + drm_open_helper） | OS-COG-MAP-30 |
+| `accel_stub_open(inode, filp)` | drm_accel.c:L163-189 | 桩 open（fops_get + replace_fops） | — |
+| `accel_debugfs_init(minor, id)` | drm_accel.c:L89-104 | minor 的 debugfs 初始化 | — |
+| `accel_set_device_instance_params(kdev, index)` | drm_accel.c:L115-120 | 设备 devt + class + type 设置 | — |
+| `accel_devnode(dev, mode)` | drm_accel.c:L29-32 | devnode 命名（`accel/%s`） | — |
+| `accel_name_info(m, data)` | drm_accel.c:L53-73 | debugfs name 信息（驱动名 + dev + master + unique） | — |
+
+### 3.4 三大子目录
+
+| 子目录 | 厂商 | 代表硬件 | 关键文件 | 行数（估） |
+|--------|------|----------|----------|-----------|
+| `drivers/accel/habanalabs/` | HabanaLabs（Intel 子公司） | Gaudi 2/Gaudi 3 训练卡 | `habanalabs.c` / `habanalabs_drv.c` / `gaudi2/` | 30000+ |
+| `drivers/accel/ivpu/` | Intel | Keem Bay / Arrow Lake-S NPU | `ivpu_drv.c`(707) / `ivpu_job.c` / `ivpu_mmu.c` / `ivpu_hw_37xx.c` / `ivpu_hw_40xx.c` / `ivpu_ipc.c` / `ivpu_fw.c` | 7000+ |
+| `drivers/accel/qaic/` | Qualcomm | AI 100 / AI 100 Ultra | `qaic_drv.c` / `qaic_data.c` / `qaic_control.c` / `mhi_controller.c` | 5000+ |
+
+### 3.5 accel 与 DRM 的解耦点
+
+accel 框架与 DRM 共享底层基础设施，但独立成类：
+
+| 共享层 | 独立层 |
+|--------|--------|
+| `struct drm_device`（设备对象） | `accel_class`（区别于 `drm_class`） |
+| `struct drm_minor`（minor 管理） | `ACCEL_MAJOR`（区别于 DRM 主号） |
+| `drm_minor_acquire/release` | `accel_minors_xa`（独立 minor 池） |
+| `drm_open_helper` | `accel_open`（独立 open 路径） |
+| `drm_debugfs_create_files` | `accel_debugfs_root`（独立 debugfs 根） |
+
+**AirymaxOS 映射**：accel 框架是 GPU/NPU 统一接入的范例——AirymaxOS `airymaxos-cognition/gpu-npu` 模块参考 accel 设计，为各类加速器（含国产昇腾/寒武纪/海光）提供统一抽象（[IND] 独立实现，不共享 accel 代码）。
+
+---
+
+## 4. OLK-6.6 `drivers/gpu/drm/scheduler/` 研究
+
+### 4.1 文件清单与行数
 
 | 文件 | 行数 | 功能 |
 |------|------|------|
-| `sched_main.c` | 1218 | 调度器核心（init/fini/main/stop/start/resubmit/pick_best） |
-| `sched_entity.c` | 594 | 调度实体（init/fini/push/pop/select_rq/priority） |
-| `sched_fence.c` | 240 | fence 机制（init/alloc/free/scheduled/finished） |
+| `sched_main.c` | 1218 | 调度器主循环 + init/fini + job 派发 |
+| `sched_entity.c` | 594 | 调度实体（per-context 队列） |
+| `sched_fence.c` | 240 | fence 同步（dma_fence 子类） |
 | `gpu_scheduler_trace.h` | 114 | tracepoint 定义 |
 
-### 4.2 核心结构体（include/drm/gpu_scheduler.h，617 行）
+### 4.2 核心结构体（`include/drm/gpu_scheduler.h`）
 
-#### struct drm_sched_entity（18 字段）
+#### 4.2.1 `struct drm_gpu_scheduler`（617 行头文件）
 
-```c
-struct drm_sched_entity {
-    struct drm_gpu_scheduler        *sched;
-    struct list_head                 list;
-    struct drm_sched_rq            *rq;
-    spinlock_t                      rq_lock;
-    struct dma_fence               *dependency;
-    struct dma_fence_cb            cb;
-    atomic_t                       fence_seq;
-    uint64_t                       fence_context;
-    struct list_head                job_list;
-    spinlock_t                      job_list_lock;
-    struct rb_root_cached           rb_tree_root;
-    spinlock_t                      priority_lock;
-    struct drm_sched_priority      priority;
-    struct drm_gpu_scheduler      **sched_list;
-    unsigned int                    num_sched_list;
-    enum drm_sched_priority         new_priority;
-    bool                            stopped;
-    struct completion                entity_idle;
-    struct work_struct              work;
-};
-```
+GPU 调度器实例（每 GPU 一个）：
 
-#### struct drm_gpu_scheduler（20 字段）
+| 字段组 | 关键字段 | 用途 |
+|--------|---------|------|
+| 调度实体 | `sched_rq[]`（按优先级分层） | entity 队列 |
+| 工作线程 | `thread`（`struct task_struct *`） | kthread_run(drm_sched_main) |
+| 同步 | `wake_up_worker`（wait_queue） | 唤醒调度器 kthread |
+| 任务清理 | `pending_list` | 已提交待清理 job |
+| 硬件限制 | `max_rqs` / `hw_submission_count` | 硬件并发上限 |
+| 后端 ops | `ops`（`struct drm_sched_backend_ops *`） | 硬件驱动回调 |
+| 设备 | `dev`（`struct device *`） | 硬件设备 |
+| 调度类 | `credit_account`（DRM 6.6+ 新增） | 资源核算 |
 
-```c
-struct drm_gpu_scheduler {
-    const struct drm_sched_backend_ops *ops;
-    struct drm_sched_rq           *sched_rq;
-    uint32_t                       hw_submission_limit;
-    unsigned                       hang_limit;
-    struct workqueue_struct       *timeout_wq;
-    struct delayed_work            work_tdr;
-    struct list_head               pending_list;
-    spinlock_t                     job_list_lock;
-    struct spsc_queue             *pending_queue;
-    atomic_t                       hw_rq_count;
-    atomic64_t                     job_id_count;
-    struct task_struct            *thread;       /* ← kthread！ */
-    struct device                 *dev;
-    char                           name[12];
-    bool                           ready;
-    bool                           free_guilty;
-    enum drm_gpu_sched_stat       stat;
-    unsigned int                   num_rqs;
-    struct drm_sched_rq           *sched_rq_kfree;
-};
-```
+#### 4.2.2 `struct drm_sched_entity`（594 行 sched_entity.c）
 
-#### struct drm_sched_job（13 字段）
+调度实体（per 进程/上下文）：
 
-```c
-struct drm_sched_job {
-    struct drm_gpu_scheduler       *sched;
-    struct drm_sched_fence        *s_fence;
-    struct dma_fence              *parent;
-    struct list_head               list;
-    struct dma_fence_cb            cb;
-    struct xarray                  dependencies;
-    enum drm_sched_priority        s_priority;
-    atomic_t                       karma;
-    uint64_t                       id;
-    struct dma_fence_cb           *fence_cb;
-    struct dma_fence              *fence;
-    void                          *owner;
-    struct drm_sched_entity       *entity;
-};
-```
+| 字段 | 类型 | 用途 |
+|------|------|------|
+| `list` | `struct list_head` | 链入 rq |
+| `rq` | `struct drm_sched_rq *` | 所属运行队列 |
+| `sched_list` | `struct drm_gpu_scheduler **` | 多调度器（load balance） |
+| `num_sched_list` | `unsigned int` | 调度器数量 |
+| `queue` | `struct drm_sched_rq *` | 优先级队列 |
+| `job_queue` | `struct list_head` | job 链表 |
+| `fence_seq` | `uint64_t` | fence 序列号 |
+| `last_scheduled` | `struct dma_fence *` | 最后调度 fence |
+| `priority` | `enum drm_sched_priority` | 优先级 |
+| `stopped` | `bool` | 停止标志 |
 
-#### struct drm_sched_fence（7 字段）
+#### 4.2.3 `struct drm_sched_job`（gpu_scheduler.h）
 
-```c
-struct drm_sched_fence {
-    struct dma_fence           scheduled;   /* 调度器接受的 fence */
-    struct dma_fence           finished;    /* 作业完成的 fence */
-    struct drm_gpu_scheduler  *sched;
-    struct dma_fence          *parent;
-    struct dma_fence_cb       cb;
-    struct list_head          list;
-    spinlock_t                lock;
-};
-```
+| 字段 | 用途 |
+|------|------|
+| `entity` | 所属 entity |
+| `sched` | 所属 scheduler |
+| `s_fence` | `drm_sched_fence`（依赖 + 完成信号） |
+| `cb` | dma_fence callback |
+| `id` | job 序号 |
 
-#### struct drm_sched_backend_ops（4 字段，驱动回调）
+#### 4.2.4 `struct drm_sched_fence`（sched_fence.c）
+
+| 字段 | 用途 |
+|------|------|
+| `scheduled` | `dma_fence`（已调度信号） |
+| `finished` | `dma_fence`（已完成信号） |
+| `sched` | 所属 scheduler |
+| `owner` | entity 指针 |
+
+### 4.3 drm_sched 核心 API
+
+| # | API | 文件:行号 | 功能 | AirymaxOS 映射 |
+|---|-----|-----------|------|----------------|
+| 1 | `drm_sched_init(sched, ops, ...) ` | sched_main.c:L1095 | 初始化调度器 + kthread_run(drm_sched_main) | OS-COG-MAP-31 |
+| 2 | `drm_sched_fini(sched)` | sched_main.c | 销毁调度器 + kthread_stop | OS-COG-MAP-32 |
+| 3 | `drm_sched_entity_init(entity, rq_list, num, guilty)` | sched_entity.c | 初始化 entity | OS-COG-MAP-33 |
+| 4 | `drm_sched_entity_fini(entity)` | sched_entity.c | 销毁 entity | OS-COG-MAP-34 |
+| 5 | `drm_sched_entity_push_job(job, entity)` | sched_entity.c | 入队 job | OS-COG-MAP-35 |
+| 6 | `drm_sched_entity_is_idle(entity)` | sched_entity.c | 查询 entity 是否空闲 | — |
+| 7 | `drm_sched_entity_set_priority(entity, priority)` | sched_entity.c | 设置 entity 优先级 | — |
+| 8 | `drm_sched_entity_set_rq(entity, rq)` | sched_entity.c | 切换 entity 的 rq | — |
+| 9 | `drm_sched_entity_flush(entity, timeout)` | sched_entity.c | flush entity | — |
+| 10 | `drm_sched_job_init(job, entity, owner)` | sched_main.c | 初始化 job + fence | OS-COG-MAP-36 |
+| 11 | `drm_sched_pick_best(sched_list, num, ...)` | sched_main.c | 选最佳调度器（load balance） | OS-COG-MAP-37 |
+| 12 | `drm_sched_run_job_work(work)` | sched_main.c | workqueue 回调（run_job） | — |
+| 13 | `drm_sched_fault(sched, error)` | sched_main.c | 故障注入 | — |
+| 14 | `drm_sched_set_guilty(job, error)` | sched_main.c | 标记 job 故障 | — |
+| 15 | `drm_sched_resubmit_jobs(sched)` | sched_main.c | 重新提交（故障恢复后） | OS-COG-MAP-38 |
+| 16 | `drm_sched_increase_karma(job)` | sched_main.c | 故障 job karma 提升 | — |
+| 17 | `drm_sched_entity_get_rq_sched(entity)` | sched_main.c | 取当前 rq 的 scheduler | — |
+
+### 4.4 drm_sched 主循环（`sched_main.c:L1015-1048`）
 
 ```c
-struct drm_sched_backend_ops {
-    struct dma_fence *(*run_job)(struct drm_sched_job *sched_job);
-    void (*timedout_job)(struct drm_sched_job *sched_job);
-    void (*free_job)(struct drm_sched_job *sched_job);
-    void (*update_job)(struct drm_sched_job *sched_job);
-};
-```
-
-#### enum drm_sched_priority
-
-```c
-enum drm_sched_priority {
-    DRM_SCHED_PRIORITY_MIN,
-    DRM_SCHED_PRIORITY_NORMAL,
-    DRM_SCHED_PRIORITY_HIGH,
-    DRM_SCHED_PRIORITY_KERNEL,
-    DRM_SCHED_PRIORITY_COUNT,
-};
-```
-
-### 4.3 核心 API 清单
-
-#### 调度器生命周期 API（sched_main.c）
-
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `drm_sched_init(sched, ops, ..., hw_submission, hang_limit, timeout, timeout_wq, name, dev)` | L1095 | 创建调度器（含 kthread_run(drm_sched_main)） | GPU/NPU 调度器创建 |
-| `drm_sched_fini(sched)` | L1168 | 销毁调度器（kthread_stop + 释放） | 设备卸载 |
-| `drm_sched_stop(sched, bad)` | L439-511 | 停止调度器（kthread_park + 取消 pending） | GPU 复位 |
-| `drm_sched_start(sched, full_recovery)` | L520-558 | 启动调度器（kthread_unpark + 恢复 pending） | GPU 恢复 |
-| `drm_sched_resubmit_jobs(sched)` | L577-611 | 重提 pending jobs（已废弃，不推荐新代码） | — |
-| `drm_sched_main(arg)` | L1015-1048 | 调度器主循环（kthread 主体） | CoreLoopThree 主循环模板 |
-| `drm_sched_pick_best(sched_list, num_sched, entity, atomic_queue)` | L992 | 选最优调度器 | 负载均衡 |
-| `drm_sched_blocked(sched)` | L1001 | 检查是否阻塞（kthread_should_park） | hotplug 检测 |
-| `drm_sched_fault(sched, mask)` | L1060 | 报告故障 | GPU 错误 |
-| `drm_sched_set_guilty(job)` | L627 | 标记作业为有错 | 故障归因 |
-
-#### 作业 API（sched_main.c）
-
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `drm_sched_job_init(job, entity, owner)` | L632-657 | 初始化作业（含 fence 分配） | LLM 推理请求初始化 |
-| `drm_sched_job_arm(job)` | L673-688 | 武装作业（绑定 sched + priority + id） | 调度前准备 |
-| `drm_sched_job_add_dependency(job, fence)` | L700-734 | 添加依赖 fence | 多作业同步 |
-| `drm_sched_job_add_syncobj_dependency(job, file, handle, point)` | L748-770 | 添加 syncobj 依赖 | syncobj 集成 |
-| `drm_sched_get_cleanup_job(sched)` | L949 | 取待清理作业 | 完成处理 |
-| `drm_sched_entity_pop_job(entity)` | L309-330 | 取下一作业 | 派发 |
-
-#### Entity API（sched_entity.c）
-
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `drm_sched_entity_init(entity, priority, sched_list, num_sched, guilty)` | L59-127 | 初始化 entity（绑 sched + priority + workqueue） | Agent 实体创建 |
-| `drm_sched_entity_fini(entity)` | L131-220 | 销毁 entity（flush + 释放） | Agent 实体销毁 |
-| `drm_sched_entity_push_job(job, entity)` | L239-283 | 推送作业到 entity 队列 | LLM 请求提交 |
-| `drm_sched_entity_is_idle(entity)` | L291-304 | 检查 entity 是否空闲 | 闲置检测 |
-| `drm_sched_entity_is_ready(entity)` | L336-348 | 检查 entity 有可派发作业 | 就绪检测 |
-| `drm_sched_entity_select_rq(entity)` | L399-427 | 选择 rq（负载均衡） | 调度选择 |
-| `drm_sched_entity_modify_sched(entity, sched_list, num_sched)` | L436-487 | 修改 entity 绑定的 sched | 迁移 |
-| `drm_sched_entity_set_priority(entity, priority)` | L489-503 | 设置 entity 优先级 | 优先级调整 |
-| `drm_sched_entity_flush(entity)` | L512-543 | 刷新 entity（等队列清空） | 优雅停止 |
-| `drm_sched_entity_destroy(entity)` | L549-564 | 销毁 entity（flush + fini） | 优雅销毁 |
-| `drm_sched_entity_pop_job(entity)` | L309-330 | 弹出下一作业 | 派发 |
-| `drm_sched_entity_error(entity)` | L317-322 | 取 entity 错误码 | 错误处理 |
-
-#### Fence API（sched_fence.c）
-
-| API | 行号 | 功能 | AirymaxOS 映射 |
-|-----|------|------|----------------|
-| `drm_sched_fence_init(fence, entity)` | L165-200 | 初始化 fence（scheduled + finished + driver/timeline name） | 作业 fence 创建 |
-| `drm_sched_fence_alloc(entity, owner)` | L91-102 | 分配 fence（kmem_cache） | fence 池 |
-| `drm_sched_fence_free(rcu)` | L67-79 | 释放 fence | fence 池回收 |
-| `drm_sched_fence_scheduled(fence)` | L46-51 | 信号 scheduled fence | 调度器接受信号 |
-| `drm_sched_fence_finished(fence, error)` | L53-62 | 信号 finished fence（含 error） | 作业完成信号 |
-| `to_drm_sched_fence(fence)` | L109-150 | dma_fence → drm_sched_fence（类型转换） | fence 查询 |
-
-### 4.4 调度策略与算法
-
-#### Round-Robin（默认，sched_main.c:195）
-
-```c
-static struct drm_sched_entity *
-drm_sched_rq_select_entity_rr(struct drm_sched_rq *rq)
+// sched_main.c:L1015-1048（drm_sched_main 简化）
+static int drm_sched_main(void *params)
 {
-    struct drm_sched_entity *entity;
-
-    spin_lock(&rq->lock);
-    if (list_empty(&rq->entities)) {
-        spin_unlock(&rq->lock);
-        return NULL;
+    struct drm_gpu_scheduler *sched = params;
+    sched_set_fifo_low(current);    // L1020: SCHED_FIFO prio=1（低 RT）
+    
+    while (!kthread_should_stop()) {  // L1022: 协作式停止
+        struct drm_sched_entity *entity;
+        struct drm_sched_job *cleanup_job;
+        
+        wait_event_interruptible(sched->wake_up_worker,
+            (cleanup_job = drm_sched_get_cleanup_job(sched)) ||
+            (!drm_sched_blocked(sched) &&
+             (entity = drm_sched_select_entity(sched))) ||
+            kthread_should_stop());  // L1029-1033: 三条件等待
+        
+        if (cleanup_job) {
+            sched->ops->free_job(cleanup_job);  // L1036: 释放完成 job
+            continue;
+        }
+        if (!entity)
+            continue;
+        
+        sched_job = drm_sched_entity_pop_job(entity);  // L1041: 弹出 job
+        // 提交到硬件驱动
+        dma_fence_get(&sched_job->s_fence->scheduled);
+        sched->ops->run_job(sched_job);  // L1046: 调用硬件 run_job
     }
-    entity = rq->current_entity;
-    if (!entity)
-        entity = list_first_entry_or_null(&rq->entities,
-                                            struct drm_sched_entity, list);
-    if (entity) {
-        rq->current_entity = list_next_entry(entity, list);
-        drm_sched_entity_get(entity);  /* 增加 refcount */
-    }
-    spin_unlock(&rq->lock);
-    return entity;
+    return 0;
 }
 ```
 
-#### FIFO（可选，sched_main.c:239）
+**关键工程要点**（CoreLoopThree kthread 主循环借鉴模板）：
+1. **`sched_set_fifo_low(current)`**（L1020）：SCHED_FIFO prio=1，RT 低优先级，不抢关键 RT 任务。
+2. **`while (!kthread_should_stop())`**（L1022）：协作式停止，每次循环检查。
+3. **`wait_event_interruptible` + 三条件**（L1029-1033）：事件驱动，不忙等。
+4. **cleanup / entity ready / stop** 三条件——任一触发即唤醒。
 
-```c
-static struct drm_sched_entity *
-drm_sched_rq_select_entity_fifo(struct drm_sched_rq *rq)
-{
-    struct drm_sched_entity *entity;
-    spin_lock(&rq->lock);
-    entity = list_first_entry_or_null(&rq->entities, struct drm_sched_entity, list);
-    if (entity)
-        drm_sched_entity_get(entity);
-    spin_unlock(&rq->lock);
-    return entity;
-}
-```
+**AirymaxOS 借鉴**：CoreLoopThree kthread 主循环结构同构，仅将 `sched_set_fifo_low` 替换为 SCHED_AGENT（经 sched_ext），三条件改为（cleanup / cognition_request_ready / stop）。
 
-#### 优先级分层
+---
 
-调度器维护 4 个 `drm_sched_rq`（按 `DRM_SCHED_PRIORITY_MIN/NORMAL/HIGH/KERNEL`），调度时**从高优先级 rq 开始选 entity**，高优先级 rq 有 entity 时低优先级饿死。
+## 5. AirymaxOS CoreLoopThree 映射规则
 
-### 4.5 fence 机制详解
+### 5.1 kthread → CoreLoopThree kthread 映射（OS-COG-MAP-001 ~ OS-COG-MAP-028）
 
-**dma_fence 子类化**：
-- `drm_sched_fence` 包含 2 个 `dma_fence`：`scheduled`（调度器接受）+ `finished`（作业完成）
-- `drm_sched_fence_init`（sched_fence.c:165-200）调用 `dma_fence_init` 两次，分别初始化 scheduled 和 finished，driver/timeline name 由 `drm_sched_fence_get_driver_name` / `drm_sched_fence_get_timeline_name` 提供
+| 规则 | OLK-6.6 源码 | AirymaxOS 概念 | IRON-9 v2 层次 | 兼容性 |
+|------|-------------|----------------|----------------|--------|
+| OS-COG-MAP-01 | `kthread_create_on_node` (kthread.h:L11-14) | `coreloop_cognition_kthread` 创建（NUMA 感知 GPU 节点） | [IND] | 兼容 Euler kthread 标准 |
+| OS-COG-MAP-02 | `kthread_create` (kthread.h:L27-28) | 简单 kthread 创建（memory kthread） | [IND] | 兼容 |
+| OS-COG-MAP-03 | `kthread_create_on_cpu` (kthread.c:L570-584) | per-CPU cognition kthread | [IND] | 兼容 |
+| OS-COG-MAP-04 | `kthread_run` (kthread.h:L51-58) | 简单启动（drm_sched helper 类） | [IND] | 兼容 |
+| OS-COG-MAP-05 | `kthread_run_on_cpu` (kthread.h:L72-83) | per-CPU 即启动 | [IND] | 兼容 |
+| OS-COG-MAP-06 | `set_kthread_struct` (kthread.c:L111-128) | 分配 `agentrt_clt_ctx_t` | [SC] | 类型在 cognition_types.h 共享 |
+| OS-COG-MAP-07 | `free_kthread_struct` (kthread.c:L130-147) | 释放 CoreLoopThree 上下文 | [IND] | 兼容 |
+| OS-COG-MAP-08 | `kthread_bind` (kthread.c:L554-558) | cognition kthread 绑定 GPU/NPU 所在 CPU | [IND] | 兼容 |
+| OS-COG-MAP-09 | `kthread_bind_mask` (kthread.c:L540) | 多 CPU 绑定（execution kthread） | [IND] | 兼容 |
+| OS-COG-MAP-10 | `kthread_set_per_cpu` (kthread.c:L587-602) | per-CPU cognition（避免跨 CPU 迁移） | [IND] | 兼容 |
+| OS-COG-MAP-11 | `kthread_is_per_cpu` (kthread.c:L604-611) | 查询 per-CPU（sched_ext select_cpu 协同） | [IND] | 兼容 |
+| OS-COG-MAP-12 | `kthread_should_stop` (kthread.c:L156-160) | CoreLoopThree 主循环停止检查 | [IND] | 兼容 |
+| OS-COG-MAP-13 | `kthread_should_park` (kthread.c:L178-182) | 系统休眠时驻留 cognition | [IND] | 兼容 |
+| OS-COG-MAP-14 | `kthread_should_stop_or_park` (kthread.c:L184-192) | 安全联合检查 | [IND] | 兼容 |
+| OS-COG-MAP-15 | `kthread_stop` (kthread.c:L698-717) | CoreLoopThree 停止协议（含 TIF_NOTIFY_SIGNAL） | [IND] | 兼容 |
+| OS-COG-MAP-16 | `kthread_stop_put` (kthread.c:L728) | 引用计数感知停止 | [IND] | 兼容 |
+| OS-COG-MAP-17 | `kthread_park` (kthread.c:L654-681) | cognition 驻留（保存半完成 KV 后） | [IND] | 兼容 |
+| OS-COG-MAP-18 | `kthread_unpark` (kthread.c:L621-639) | cognition 解驻留（恢复 KV） | [IND] | 兼容 |
+| OS-COG-MAP-19 | `kthread_parkme` (kthread.c:L641-652) | kthread 内部主动驻留 | [IND] | 兼容 |
+| OS-COG-MAP-20 | `kthread_exit` (kthread.c:L312) | CoreLoopThree 显式退出 | [IND] | 兼容 |
+| OS-COG-MAP-21 | `kthread_complete_and_exit` (kthread.c:L331-338) | OOM 安全退出 | [IND] | 兼容 |
+| OS-COG-MAP-22 | `kthread_freezable_should_stop` (kthread.h) | 可冻结 cognition | [IND] | 兼容 |
+| OS-COG-MAP-23 | `kthread_func` (kthread.h:L94) | 取 threadfn | [IND] | 兼容 |
+| OS-COG-MAP-24 | `kthread_data` (kthread.h:L95) | 取 data（CoreLoopThree 上下文） | [IND] | 兼容 |
+| OS-COG-MAP-25 | `kthread_use_mm` (kthread.h:L216) | cognition 借用用户态 mm（KV cache 访问） | [IND] | 兼容 |
+| OS-COG-MAP-26 | `kthread_unuse_mm` (kthread.h:L217) | 归还 mm | [IND] | 兼容 |
+| OS-COG-MAP-27 | `kthread_worker_fn` (kthread.h:L187) | cognition worker 主循环 | [IND] | 兼容 |
+| OS-COG-MAP-28 | `kthread_create_worker` (kthread.h:L190-191) | cognition worker 创建 | [IND] | 兼容 |
 
-**信号流程**：
-1. 作业推送 → entity → 调度器接受 → `drm_sched_fence_scheduled` 信号 scheduled fence
-2. 驱动 `run_job` 回调返回 hw
+### 5.2 drm_sched → LLM 推理调度映射（OS-COG-MAP-29 ~ OS-COG-MAP-38）
+
+| 规则 | OLK-6.6 源码 | AirymaxOS 概念 | IRON-9 v2 层次 | 兼容性 |
+|------|-------------|----------------|----------------|--------|
+| OS-COG-MAP-29 | `accel_core_init` (drm_accel.c:L205-227) | `gpu-npu` 模块初始化 | [IND] | 兼容 Euler accel 标准 |
+| OS-COG-MAP-30 | `accel_open` (drm_accel.c:L133-160) | GPU/NPU 设备 open 路径 | [IND] | 兼容 |
+| OS-COG-MAP-31 | `drm_sched_init` (sched_main.c:L1095) | `llm-scheduler` 初始化 | [IND] | 兼容 drm_sched 标准 |
+| OS-COG-MAP-32 | `drm_sched_fini` (sched_main.c) | `llm-scheduler` 销毁 | [IND] | 兼容 |
+| OS-COG-MAP-33 | `drm_sched_entity_init` (sched_entity.c) | `agentrt_llm_request` 提交实体 | [SS] | API 签名同源 |
+| OS-COG-MAP-34 | `drm_sched_entity_fini` (sched_entity.c) | 请求实体销毁 | [SS] | 同源 |
+| OS-COG-MAP-35 | `drm_sched_entity_push_job` (sched_entity.c) | `agentrt_llm_scheduler_submit` [SS] | [SS] | 语义同源 |
+| OS-COG-MAP-36 | `drm_sched_job_init` (sched_main.c) | LLM 推理 job 初始化 | [IND] | 独立实现 |
+| OS-COG-MAP-37 | `drm_sched_pick_best` (sched_main.c) | GPU/NPU 池化负载均衡 | [IND] | 独立 |
+| OS-COG-MAP-38 | `drm_sched_resubmit_jobs` (sched_main.c) | LLM 推理故障恢复重试 | [IND] | 独立 |
+
+### 5.3 [SC] 共享契约层映射（`include/airymax/cognition_types.h`）
+
+agentrt 与 AirymaxOS 完全共享的类型定义（落地于 `include/airymax/cognition_types.h`）：
+
+| [SC] 契约 | 来源（OLK-6.6 参考） | agentrt ↔ AirymaxOS 共享内容 |
+|-----------|---------------------|------------------------------|
+| `enum clt_phase` | kthread 状态机启发 | `CLT_PHASE_PERCEPTION/THINKING/ACTION`（3 项） |
+| `enum thinkdual_mode` | 双思考理论 | `THINKDUAL_SYSTEM1_FAST/SYSTEM2_SLOW`（2 项） |
+| `enum llm_stage` | LLM 推理生命周期 | `LLM_STAGE_PREFILL/DECODE/SPECULATIVE`（3 项） |
+| `struct agentrt_clt_ctx_t` | struct kthread 启发 | per-cpu CoreLoopThree 上下文（kthread_data 取回） |
+| `struct agentrt_token_efficiency_t` | drm_sched metric 启发 | Token 能效（tokens/s/J + speculative_accept_rate） |
+| `struct agentrt_accel_capabilities_t` | accel 框架启发 | GPU/NPU 能力描述符（VRAM/FLOPS/带宽） |
+
+**关键说明**：[SC] 层是 agentrt ↔ AirymaxOS 之间完全共享的代码（同一个头文件），但与 OLK-6.6 **不共享代码**——OLK-6.6 的 `struct kthread` 等是 [IND] 独立层的实现参考，AirymaxOS 自行实现内核态 `agentrt_clt_ctx_t` 的内存布局。
+
+### 5.4 Euler 兼容性声明
+
+AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性，以便未来兼容 Euler 标准的发行版工具链：
+
+| 维度 | Euler 标准 | AirymaxOS 实现 | 兼容性 |
+|------|-----------|----------------|--------|
+| kthread 创建协议 | `kthread_create_on_node` + `wake_up_process` | 同源协议（[IND] 独立实现） | ✅ 兼容 |
+| kthread 停止协议 | `kthread_should_stop` + `kthread_stop`（TIF_NOTIFY_SIGNAL） | 同源协议 | ✅ 兼容 |
+| kthread 驻留协议 | `kthread_park` + `kthread_unpark` | 同源协议 | ✅ 兼容 |
+| 加速器接入 | `drivers/accel/`（habanalabs/ivpu/qaic） | 参考设计（[IND] 独立实现） | ✅ 兼容 |
+| GPU 调度器 | `drm_sched`（kthread + wait_event + fifo_low） | 参考模板（[IND] 独立实现） | ✅ 兼容 |
+| 模块化 | `CONFIG_DRM_ACCEL` / `CONFIG_DRM_GPU_SCHED` | 同源 Kconfig 风格 | ✅ 兼容 |
+| 调度类 | SCHED_NORMAL / SCHED_FIFO / SCHED_EXT | 新增 SCHED_AGENT（编号 7，不冲突） | ✅ 兼容 |
+
+**代码共享边界澄清**：
+- agentrt ↔ AirymaxOS：[SC] 共享契约层完全共享代码（cognition_types.h）
+- AirymaxOS ↔ OLK-6.6/Euler：**仅技术参考，不共享代码**——OLK-6.6 的 kthread.c/accel.c/sched_main.c 是 AirymaxOS [IND] 独立层的实现参考，AirymaxOS 自行实现内核态认知 kthread 机制
+- AirymaxOS 工程思想与 Euler 一致性体现在协议层（创建/停止/驻留协议）和接入层（accel/drm_sched 模式），不体现在代码层
+
+---
+
+## 6. 反模式与规避
+
+基于 OLK-6.6 kthread.c 源码注释与社区经验，CoreLoopThree kthread 工程反模式清单：
+
+| # | 反模式 | OLK-6.6 依据 | 后果 | 规避 |
+|---|--------|--------------|------|------|
+| RP-COG-01 | 主循环不检查 `kthread_should_stop()` | kthread.c:L156 注释 | `kthread_stop` 死锁 | 每次循环顶部检查 |
+| RP-COG-02 | 长时间忙等（`while(!cond) cpu_relax()`） | drm_sched 对比 | 浪费 CPU | `wait_event_interruptible` |
+| RP-COG-03 | 持自旋锁时 `GFP_KERNEL` | kthread.c:L118 GFP_KERNEL | 睡眠致死锁 | 持锁用 `GFP_ATOMIC` |
+| RP-COG-04 | kthread 间共享锁竞争 | io_uring 零拷贝对比 | 优先级反转 | io_uring IPC 解耦 |
+| RP-COG-05 | 不 yield 的长循环 | cond_resched() 必要性 | 饿死其他任务 | `cond_resched()` |
+| RP-COG-06 | 用 `allow_signal(SIGKILL)` 实现停止 | kthread.c:L410 注释 | 信号竞态 | `kthread_should_stop()` |
+| RP-COG-07 | `kthread_run` 后立即 `kthread_bind` | kthread.c:L519 wait_task_inactive | race（kthread 已跑） | `create_on_node` + bind + wake |
+| RP-COG-08 | 在 `threadfn` 中 `do_exit()` | kthread.c:L312 注释 | 绕过 result 传递 | `kthread_exit(result)` |
+| RP-COG-09 | kthread 内大量 `printk` | log 锁竞争 | 影响实时性 | ftrace/relay，限速 printk |
+| RP-COG-10 | per-CPU kthread 不处理 CPU hotplug | kthread.c:L621 unpark re-bind | CPU offline 时失效 | `kthread_park`/`unpark` hotplug 回调 |
+| RP-COG-11 | kthread 创建在 atomic 上下文 | kthread.c:L460 wait_for_completion_killable | 睡眠调用 | process context 创建 |
+| RP-COG-12 | 不释放 `kthread_associate_blkcg` 关联 | kthread.c:L142 WARN_ON_ONCE | WARN 触发 | 退出前 `associate_blkcg(NULL)` |
+
+---
+
+## 7. 性能基线
+
+基于 OLK-6.6 kthread 机制与内核社区基准：
+
+| 指标 | 典型值 | 来源 | AirymaxOS 目标 |
+|------|--------|------|----------------|
+| `wake_up_process` 本地 CPU 唤醒 | 2-5 µs | 内核 perf 基准 | cognition→execution 切换下限 |
+| `wake_up_process` 跨 CPU 唤醒 | 5-15 µs（含 IPI） | 同上 | NUMA 跨节点更慢 |
+| kthread→kthread 上下文切换 | 3-10 µs | 同上 | 避免 user/kernel 切换收益 |
+| 用户态→内核态 syscall | ~1 µs | 通用 | kthread 内循环省去此开销 |
+| `wait_event_interruptible` 唤醒 | 3-8 µs | 通用 | 事件驱动优于轮询 |
+| `kthread_stop` 完整停止 | 10-50 µs | 推算 | 含 wake + exit completion |
+| drm_sched job 派发 | ~10 µs | drm_sched 实践 | LLM 推理 job 调度基线 |
+| CoreLoopThree 单次循环 P99 | — | NFR-P-001 | < 100ms（标准）/ < 10ms（实时） |
+| kthread 上下文切换开销占比 | — | 推算 | < 5%（即 < 5ms/100ms） |
+
+---
+
+## 8. 相关文档
+
+- [认知模块设计](../../docs/AirymaxAgentOS/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
+- [认知循环数据流](../../docs/AirymaxAgentOS/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
+- [调度子系统闭源映射](01-sched-ext-mapping.md)：sched_ext + SCHED_AGENT
+- [内存子系统闭源映射](04-mm-mapping.md)：MemoryRovol + CXL + PMEM（KV cache 分层基础）
+- [安全子系统闭源映射](05-security-mapping.md)：capability + LSM（横切关注点）
+- [认知子系统技术规范](../01-openeuler-tech-reference/06-cognition-spec.md)：kthread 工程规范 + LLM 推理调度最佳实践
+- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxAgentOS/50-engineering-standards/README.md)
+
+---
+
+## 9. 文档变更记录
+
+| 版本 | 日期 | 变更内容 | 变更人 |
+|---|---|---|---|
+| 0.1.1 | 2026-07-07 | 初始版本，建立 OLK-6.6 kthread + accel + drm_sched → AirymaxOS CoreLoopThree 源码映射，38 条 OS-COG-MAP 规则，12 项反模式 | Airymax 架构委员会 |
+
+---
+
+© 2025-2026 SPHARX Ltd. All Rights Reserved.
+"From data intelligence emerges."
