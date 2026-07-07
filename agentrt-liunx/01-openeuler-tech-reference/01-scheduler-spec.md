@@ -4,9 +4,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: 闭源内部参考，openEuler 调度器技术规范全面参考
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1（占位）
+> **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
-> **参考源**: openEuler 社区 + OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **参考源**: openEuler 社区 + OLK-6.6（Linux 6.6 内核源码）
 
 ---
 
@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 来源 | 内容 | 路径 / URL |
 |------|------|-----------|
-| OLK-6.6 源码 | openEuler LTS 6.6 内核源码 | `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/` |
+| OLK-6.6 源码 | openEuler LTS 6.6 内核源码 | Linux 6.6 源码根目录 |
 | openEuler 文档 | 调度器设计文档 | openEuler 社区文档站 |
 | Linux 主线 | sched_ext / EEVDF 主线实现 | kernel.org |
 | Meta sched_ext | BPF 可插拔调度器 | GitHub: sched_ext/sched_ext |
@@ -656,17 +656,17 @@ openEuler LSM（Linux Security Module）调度钩子：
 
 | 路径 | 内容 |
 |------|------|
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/core.c` | 调度核心 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/fair.c` | EEVDF |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/ext.c` | sched_ext |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/ext.h` | sched_ext 内部头 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/include/linux/sched/ext.h` | sched_ext 公共头 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/rt.c` | 实时调度 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/deadline.c` | Deadline |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/kernel/sched/numa_balancing.c` | NUMA 均衡 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/Documentation/scheduler/sched-ext.rst` | sched_ext 文档 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/tools/sched_ext/` | 示例调度器 |
-| `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/Makefile.oever` | openEuler 版本标记 |
+| `kernel/sched/core.c` | 调度核心 |
+| `kernel/sched/fair.c` | EEVDF |
+| `kernel/sched/ext.c` | sched_ext |
+| `kernel/sched/ext.h` | sched_ext 内部头 |
+| `include/linux/sched/ext.h` | sched_ext 公共头 |
+| `kernel/sched/rt.c` | 实时调度 |
+| `kernel/sched/deadline.c` | Deadline |
+| `kernel/sched/numa_balancing.c` | NUMA 均衡 |
+| `Documentation/scheduler/sched-ext.rst` | sched_ext 文档 |
+| `tools/sched_ext/` | 示例调度器 |
+| `Makefile.oever` | openEuler 版本标记 |
 
 ### 12.2 openEuler 社区文档
 

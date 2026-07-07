@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1（文档体系完成）
 > **最后更新**: 2026-07-07
-> **源码基线**: OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **源码基线**: OLK-6.6（Linux 6.6 内核源码）
 > **代码共享边界**: IRON-9 v2——agentrt ↔ AirymaxOS 共享 [SC] 契约层；与 OLK-6.6/Euler 仅技术参考，**不共享代码**
 
 ---
