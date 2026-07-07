@@ -4,9 +4,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: 闭源内部参考，OLK-6.6 `kernel/bpf/` + `include/linux/bpf.h` + `include/uapi/linux/bpf.h` 源码 → AirymaxOS 可编程扩展（eBPF/struct_ops/kfunc）子系统设计映射
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1（占位）
+> **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
-> **源码基线**: OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **源码基线**: OLK-6.6（Linux 6.6 内核源码）
 
 ---
 

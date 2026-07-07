@@ -1,22 +1,22 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# AirymaxOS（agentrt-linux）闭源技术参考文档
+# agentrt-liunx（AirymaxOS）闭源技术参考文档
 
-> **文档定位**: AirymaxOS 内部技术参考文档索引，**闭源不公开**
+> **文档定位**: agentrt-liunx 内部技术参考文档索引，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: 0.1.1
+> **版本**: 0.1.1（文档体系完成）
 > **最后更新**: 2026-07-07
-> **适用范围**: AirymaxOS 架构委员会 + 内核开发组
+> **适用范围**: agentrt-liunx 架构委员会 + 内核开发组
 
 ---
 
 ## 1. 文档定位与保密声明
 
-本目录存放 AirymaxOS（agentrt-linux）的**内部技术参考文档**，这些文档：
+本目录存放 agentrt-liunx（AirymaxOS）的**内部技术参考文档**，这些文档：
 
-1. **全面参考 openEuler 技术规范**：openEuler 社区的技术规范、内核改动、工程实践对 AirymaxOS 设计具有重要参考价值，但参考文档不能公开
+1. **全面参考 Euler 技术规范**：Euler 社区的技术规范、内核改动、工程实践对 agentrt-liunx 设计具有重要参考价值，但参考文档不能公开
 2. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
-3. **开源文档隔离**：开源文档（`docs/AirymaxAgentOS/`）中**严禁**出现对 openEuler 的相关描述；所有 openEuler 参考内容仅限本目录
+3. **开源文档隔离**：开源文档（`docs/AirymaxAgentOS/`）中**严禁**出现对 Euler 参考发行版的相关描述；所有参考内容仅限本目录
 
 ---
 
@@ -48,11 +48,13 @@ docs-closed/agentrt-liunx/
 │   ├── 02-zircon-reference.md         # Zircon 微内核设计参考
 │   ├── 03-minix3-reference.md         # Minix3 微内核设计参考
 │   └── 04-microkernel-strategy.md     # AirymaxOS 微内核化改造策略对照
-└── 04-industry-best-practices/        # 行业最新理论与最佳实践
-    ├── README.md                      # 索引
-    ├── 01-latest-theory.md            # 2026 年最新微内核/OS 理论
-    ├── 02-best-practices.md           # 行业最佳实践汇总
-    └── 03-airymaxos-synthesis.md      # AirymaxOS 技术方案综合（Euler + 最新理论 → AirymaxOS）
+├── 04-industry-best-practices/        # 行业最新理论与最佳实践
+│   ├── README.md                      # 索引
+│   ├── 01-latest-theory.md            # 2026 年最新微内核/OS 理论
+│   ├── 02-best-practices.md           # 行业最佳实践汇总
+│   └── 03-airymaxos-synthesis.md      # AirymaxOS 技术方案综合（Euler + 最新理论 → AirymaxOS）
+├── agentrt-liunx基本工程标准规范.md    # agentrt-liunx 工程标准规范（1026 行）
+└── agentrt-liunx开发路线和进度.md      # agentrt-liunx 开发路线与进度跟踪
 ```
 
 ---
@@ -100,14 +102,20 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 ---
 
-## 5. 文档清单（0.1.1 占位状态）
+## 5. 文档清单（0.1.1 文档体系完成）
 
-0.1.1 版本仅创建本 README 作为目录框架占位。具体闭源参考文档将在以下时机创建：
+0.1.1 版本已完成全部闭源参考文档（26 个文件，~14,131 行）：
 
-1. **M0 阶段**（工程标准框架）：创建 `01-openeuler-tech-reference/08-coding-standard-spec.md`
-2. **M1 阶段**（架构与模块设计）：创建 `01-openeuler-tech-reference/01-07` + `02-olk66-source-mapping/01-05`
-3. **M2-M4 阶段**（测试/可观测/安全）：补充对应子系统的闭源参考
-4. **持续更新**：随开源文档修订同步更新闭源参考
+| 目录 | 文件数 | 行数 | 状态 |
+|------|--------|------|------|
+| 01-openeuler-tech-reference/ | 7 | 4,844 | ✅ 完成（6 子系统技术规范） |
+| 02-olk66-source-mapping/ | 7 | 4,971 | ✅ 完成（6 子系统源码映射） |
+| 03-microkernel-design-ref/ | 5 | 1,366 | ✅ 完成（seL4+Zircon+Minix3+改造策略） |
+| 04-industry-best-practices/ | 4 | 918 | ✅ 完成（最新理论+最佳实践+技术方案综合） |
+| 根级文档 | 3 | 2,032 | ✅ 完成（README+工程标准+开发路线） |
+| **合计** | **26** | **14,131** | **✅ 全部完成** |
+
+后续 1.0.1 开发阶段将随代码实施同步更新闭源参考文档。
 
 ---
 

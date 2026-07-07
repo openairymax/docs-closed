@@ -4,9 +4,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: 闭源内部参考，openEuler 24.03 LTS / 26.03 安全子系统（LSM 框架 + SELinux + AppArmor + Landlock + capability + IMA/EVM + 密钥环 + Lockdown + 国密）工程技术规范全面梳理，作为 AirymaxOS Cupolas 安全穹顶设计的参考底座
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1（占位）
+> **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
-> **源码基线**: OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/security/`）
+> **源码基线**: OLK-6.6（Linux 6.6 内核源码）
 
 ---
 
@@ -860,7 +860,7 @@ CONFIG_LSM="landlock,yama,cupolas"
 | 当前版本 | 0.1.1（占位） |
 | 最后更新 | 2026-07-07 |
 | 维护者 | AirymaxOS 安全工程组 |
-| 源码基线 | OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/security/`） |
+| 源码基线 | OLK-6.6（Linux 6.6 内核源码） |
 | 核心约束 | IRON-9 v2 同源且部分代码共享 |
 
 **变更历史**：

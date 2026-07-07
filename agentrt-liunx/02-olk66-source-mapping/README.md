@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-07
-> **源码基线**: `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6`
+> **源码基线**: Linux 6.6 内核源码
 
 ---
 
@@ -41,7 +41,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 OLK-6.6: kernel/sched/ext.c:1234  — sched_bpf_dispatch()
 ```
 
-- 路径相对于 `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6`
+- 路径相对于 Linux 6.6 内核源码
 - 行号尽量精确（允许 ±20 行误差，因版本微调）
 - 函数/结构体名用 `code` 标记
 

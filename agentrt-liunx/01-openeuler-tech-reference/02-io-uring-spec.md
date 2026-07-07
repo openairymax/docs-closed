@@ -4,9 +4,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: 闭源内部参考，openEuler io_uring 异步 I/O 框架技术规范全面参考
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1（占位）
+> **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
-> **参考源**: openEuler 社区 + OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **参考源**: openEuler 社区 + OLK-6.6（Linux 6.6 内核源码）
 
 ---
 
@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 来源 | 内容 | 路径 / URL |
 |------|------|-----------|
-| OLK-6.6 源码 | openEuler LTS 6.6 内核源码 io_uring 子系统 | `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/io_uring/` |
+| OLK-6.6 源码 | openEuler LTS 6.6 内核源码 io_uring 子系统 | `io_uring/` |
 | openEuler 文档 | io_uring 设计与应用文档 | openEuler 社区文档站 |
 | Linux 主线 | io_uring 主线实现 | kernel.org |
 | liburing | 用户态 io_uring 库 | GitHub: axboe/liburing |

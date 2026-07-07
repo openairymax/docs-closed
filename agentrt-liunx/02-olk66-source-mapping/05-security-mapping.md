@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1（占位）
 > **最后更新**: 2026-07-07
-> **源码基线**: OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`）
+> **源码基线**: OLK-6.6（Linux 6.6 内核源码）
 
 ---
 
@@ -1164,7 +1164,7 @@ sequenceDiagram
 | 当前版本 | 0.1.1（占位） |
 | 最后更新 | 2026-07-07 |
 | 维护者 | AirymaxOS 安全工程组 |
-| 源码基线 | OLK-6.6（`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/`） |
+| 源码基线 | OLK-6.6（Linux 6.6 内核源码） |
 | 同源映射 | agentrt Cupolas + Linux 6.6 LSM/Landlock/capability |
 | 核心约束 | IRON-9 v2 同源且部分代码共享 |
 
