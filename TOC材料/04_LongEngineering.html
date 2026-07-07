@@ -12,297 +12,267 @@
 <div class="fig">
 <svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <filter id="sh"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#1E3A8A12"/></filter>
-  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3866FA"/><stop offset="1" stop-color="#3866FA00"/></linearGradient>
   <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
-  <marker id="arG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#2EC4B6"/></marker>
-  <marker id="arO" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#E8734A"/></marker>
+  <marker id="arK" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#0F172A"/></marker>
 </defs>
 
 <rect x="0" y="0" width="1200" height="900" fill="#FFFFFF"/>
 
-<!-- TITLE -->
-<text x="40" y="48" font-size="22" font-weight="700" fill="#0F172A">长工程的支撑</text>
-<text x="40" y="70" font-size="12" fill="#64748B">分时推理 × 记忆卷载 · 10ms 时间片 · KV缓存 · 四层金字塔 · 艾宾浩斯遗忘 · v0.1.1</text>
-<rect x="40" y="80" width="1120" height="2" fill="url(#accent)"/>
+<!-- ============ TITLE ============ -->
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0F172A">长工程的支撑 · Long Engineering</text>
+<text x="40" y="70" font-size="12" fill="#64748B">TimeSliceInfer × MemoryRovol · 10ms 时间片 · KV 检查点 · 四层金字塔 · 艾宾浩斯遗忘 · v0.1.1</text>
+<rect x="40" y="80" width="1120" height="2" fill="#3866FA"/>
 <text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 4 · Long Engineering</text>
 
-<!-- 核心要点（精简一句话总结） -->
-<rect x="640" y="38" width="120" height="34" rx="4" fill="#F0F5FF" stroke="#3866FA" stroke-width="0.8"/>
-<text x="700" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">TimeSliceInfer</text>
-<text x="700" y="65" text-anchor="middle" font-size="8" fill="#475569">10ms 时间片</text>
-<rect x="770" y="38" width="120" height="34" rx="4" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
-<text x="830" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">KV 缓存</text>
-<text x="830" y="65" text-anchor="middle" font-size="8" fill="#475569">抢占可回溯</text>
-<rect x="900" y="38" width="140" height="34" rx="4" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
-<text x="970" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#6540D0">记忆卷载</text>
-<text x="970" y="65" text-anchor="middle" font-size="8" fill="#475569">层次记忆</text>
-<rect x="1050" y="38" width="110" height="34" rx="4" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
-<text x="1105" y="52" text-anchor="middle" font-size="9" font-weight="700" fill="#A05020">先存后算</text>
-<text x="1105" y="65" text-anchor="middle" font-size="8" fill="#475569">存算分离</text>
-
-<!-- ====== A · Two Pillars ====== -->
+<!-- ============ A · 长工程两大支柱 ============ -->
 <rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
 <text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
-<text x="68" y="106" font-size="13" font-weight="700" fill="#1E3A8A">长工程两大支柱 · 分时推理 + 记忆卷载</text>
-<line x1="40" y1="120" x2="1160" y2="120" stroke="#E2E8F0" stroke-width="1"/>
+<text x="68" y="106" font-size="13" font-weight="700" fill="#0F172A">长工程两大支柱</text>
+<line x1="40" y1="120" x2="1160" y2="120" stroke="#3866FA" stroke-width="1"/>
 
 <!-- Pillar 1: TimeSliceInfer (left) -->
-<rect x="40" y="128" width="540" height="110" rx="8" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="40" y="128" width="4" height="110" rx="2" fill="#2EC4B6"/>
-<text x="60" y="150" font-size="14" font-weight="700" fill="#1AAA9C">① TimeSliceInfer · 分时推理</text>
-<text x="60" y="168" font-size="10" fill="#475569">将全量推理分解为多时间片渐进推理流水线</text>
+<rect x="40" y="132" width="540" height="110" rx="6" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="40" y="132" width="4" height="110" fill="#3866FA"/>
+<text x="60" y="156" font-size="14" font-weight="700" fill="#0F172A">① TimeSliceInfer · 分时推理</text>
+<text x="60" y="174" font-size="10" fill="#475569">将全量推理分解为多时间片渐进推理流水线</text>
 
-<rect x="60" y="178" width="120" height="24" rx="12" fill="#FFFFFF" stroke="#2EC4B6"/>
-<text x="120" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">10ms slices</text>
-<rect x="188" y="178" width="120" height="24" rx="12" fill="#FFFFFF" stroke="#7B5EE6"/>
-<text x="248" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#6540D0">KV-cache ckpt</text>
-<rect x="316" y="178" width="120" height="24" rx="12" fill="#FFFFFF" stroke="#E8734A"/>
-<text x="376" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#A05020">preempt+回溯</text>
+<rect x="60" y="184" width="120" height="24" rx="4" fill="#3866FA" stroke="#3866FA"/>
+<text x="120" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">10ms 时间片</text>
+<rect x="188" y="184" width="120" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="248" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">KV 检查点</text>
+<rect x="316" y="184" width="120" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="376" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">抢占 + 回溯</text>
 
-<text x="60" y="224" font-size="10" fill="#2EC4B6" font-weight="600">→ P99 尾延迟 −68% · 32 并发/核心 · 多租户公平 QoS</text>
+<text x="60" y="228" font-size="10" fill="#3866FA" font-weight="600">→ 抢占式调度 · 检查点可回溯 · 零丢失</text>
 
 <!-- Pillar 2: MemoryRovol (right) -->
-<rect x="600" y="128" width="560" height="110" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="600" y="128" width="4" height="110" rx="2" fill="#7B5EE6"/>
-<text x="620" y="150" font-size="14" font-weight="700" fill="#6540D0">② MemoryRovol · 记忆卷载</text>
-<text x="620" y="168" font-size="10" fill="#475569">四层渐进式记忆架构 · 原始数据到深层模式</text>
+<rect x="600" y="132" width="560" height="110" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+<rect x="600" y="132" width="4" height="110" fill="#0F172A"/>
+<text x="620" y="156" font-size="14" font-weight="700" fill="#0F172A">② MemoryRovol · 记忆卷载</text>
+<text x="620" y="174" font-size="10" fill="#475569">四层渐进式记忆架构 · 原始数据到深层模式</text>
 
-<rect x="620" y="178" width="100" height="24" rx="12" fill="#FFFFFF" stroke="#3866FA"/>
-<text x="670" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">L4 Pattern</text>
-<rect x="728" y="178" width="100" height="24" rx="12" fill="#FFFFFF" stroke="#5078F0"/>
-<text x="778" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#5078F0">L3 Struct</text>
-<rect x="836" y="178" width="100" height="24" rx="12" fill="#FFFFFF" stroke="#6B95FF"/>
-<text x="886" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#6B95FF">L2 Feature</text>
-<rect x="944" y="178" width="100" height="24" rx="12" fill="#FFFFFF" stroke="#8FB0FF"/>
-<text x="994" y="194" text-anchor="middle" font-size="10" font-weight="700" fill="#8FB0FF">L1 Raw</text>
+<rect x="620" y="184" width="100" height="24" rx="4" fill="#0F172A" stroke="#0F172A"/>
+<text x="670" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">L4 模式</text>
+<rect x="728" y="184" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="778" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">L3 结构</text>
+<rect x="836" y="184" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="886" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">L2 特征</text>
+<rect x="944" y="184" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="994" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">L1 原始</text>
 
-<text x="620" y="224" font-size="10" fill="#7B5EE6" font-weight="600">→ &lt;12ms 检索 · 94.2% Recall@10 · 10M+ 向量 · 10:1 压缩</text>
+<text x="620" y="228" font-size="10" fill="#3866FA" font-weight="600">→ &lt;10ms 检索目标 · ≥3:1 压缩 · FAISS 索引</text>
 
-<!-- ====== B · TimeSliceInfer Pipeline ====== -->
-<rect x="40" y="256" width="20" height="16" rx="4" fill="#3866FA"/>
-<text x="50" y="268" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
-<text x="68" y="268" font-size="13" font-weight="700" fill="#1E3A8A">分时推理流水线 · 10ms 时间片渐进推理</text>
-<line x1="40" y1="280" x2="1160" y2="280" stroke="#E2E8F0" stroke-width="1"/>
+<!-- ============ B · 分时推理流水线 ============ -->
+<rect x="40" y="258" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="270" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="68" y="270" font-size="13" font-weight="700" fill="#0F172A">分时推理流水线 · 检查点与抢占回溯</text>
+<line x1="40" y1="284" x2="1160" y2="284" stroke="#3866FA" stroke-width="1"/>
 
-<rect x="40" y="286" width="1120" height="140" rx="8" fill="#F8FAFF" stroke="#D0DCFF" stroke-width="1"/>
+<!-- Pipeline frame -->
+<rect x="40" y="292" width="1120" height="140" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
 
 <!-- rollback arc -->
-<path d="M 500 304 Q 420 288, 340 304" fill="none" stroke="#E8734A" stroke-width="1.4" stroke-dasharray="4,2" marker-end="url(#arO)"/>
-<text x="420" y="298" text-anchor="middle" font-size="8" fill="#E8734A" font-weight="700">↺ 回滚 S₃→S₂</text>
+<path d="M 500 308 Q 420 294, 340 308" fill="none" stroke="#0F172A" stroke-width="1.4" stroke-dasharray="4,2" marker-end="url(#arK)"/>
+<text x="420" y="302" text-anchor="middle" font-size="8" fill="#0F172A" font-weight="700">↺ 回滚 S₃→S₂</text>
 
 <!-- Slice T1 -->
-<rect x="56" y="308" width="156" height="104" rx="8" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1.2"/>
-<rect x="56" y="308" width="4" height="104" rx="2" fill="#7B5EE6"/>
-<text x="134" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#6540D0">T₁ · 10ms</text>
-<text x="134" y="346" text-anchor="middle" font-size="9" fill="#475569">输入: S₀</text>
-<text x="134" y="362" text-anchor="middle" font-size="8" fill="#64748B">提示编码</text>
-<rect x="68" y="372" width="132" height="20" rx="5" fill="#7B5EE6"/>
-<text x="134" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">→ S₁ = {kv₁}</text>
-<text x="134" y="406" text-anchor="middle" font-size="7" fill="#94A3B8">产出 · 保存</text>
+<rect x="56" y="312" width="156" height="104" rx="6" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="56" y="312" width="4" height="104" fill="#3866FA"/>
+<text x="134" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₁ · 10ms</text>
+<text x="134" y="350" text-anchor="middle" font-size="9" fill="#475569">输入: S₀</text>
+<text x="134" y="366" text-anchor="middle" font-size="8" fill="#64748B">提示编码</text>
+<rect x="68" y="376" width="132" height="20" rx="4" fill="#3866FA"/>
+<text x="134" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#FFFFFF">→ S₁ 状态保存</text>
+<text x="134" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">checkpoint</text>
 
-<line x1="216" y1="382" x2="236" y2="382" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
-<text x="226" y="376" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">S₁</text>
+<line x1="216" y1="386" x2="236" y2="386" stroke="#0F172A" stroke-width="1.4" marker-end="url(#arK)"/>
+<text x="226" y="380" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">S₁</text>
 
 <!-- Slice T2 -->
-<rect x="242" y="308" width="156" height="104" rx="8" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1.2"/>
-<rect x="242" y="308" width="4" height="104" rx="2" fill="#2EC4B6"/>
-<text x="320" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">T₂ · 10ms</text>
-<text x="320" y="346" text-anchor="middle" font-size="9" fill="#475569">输入: S₁</text>
-<text x="320" y="362" text-anchor="middle" font-size="8" fill="#64748B">解码 + 更新 KV</text>
-<rect x="254" y="372" width="132" height="20" rx="5" fill="#2EC4B6"/>
-<text x="320" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">→ S₂ = {kv₁,kv₂}</text>
-<text x="320" y="406" text-anchor="middle" font-size="7" fill="#94A3B8">产出 · 保存</text>
+<rect x="242" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="242" y="312" width="4" height="104" fill="#0F172A"/>
+<text x="320" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₂ · 10ms</text>
+<text x="320" y="350" text-anchor="middle" font-size="9" fill="#475569">输入: S₁</text>
+<text x="320" y="366" text-anchor="middle" font-size="8" fill="#64748B">解码 + 更新</text>
+<rect x="254" y="376" width="132" height="20" rx="4" fill="#0F172A"/>
+<text x="320" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#FFFFFF">→ S₂ 状态保存</text>
+<text x="320" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">checkpoint</text>
 
-<line x1="402" y1="382" x2="422" y2="382" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
-<text x="412" y="376" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">S₂</text>
+<line x1="402" y1="386" x2="422" y2="386" stroke="#0F172A" stroke-width="1.4" marker-end="url(#arK)"/>
+<text x="412" y="380" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">S₂</text>
 
 <!-- Slice T3 preempted -->
-<rect x="428" y="308" width="156" height="104" rx="8" fill="#FFFBF0" stroke="#F5B935" stroke-width="1.2" stroke-dasharray="4,2"/>
-<rect x="428" y="308" width="4" height="104" rx="2" fill="#F5B935"/>
-<text x="506" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#B07020">T₃ ⚡ 抢占</text>
-<text x="506" y="346" text-anchor="middle" font-size="9" fill="#A07020" font-weight="600">抢占! → 回滚</text>
-<rect x="440" y="372" width="132" height="20" rx="5" fill="#F5B935"/>
-<text x="506" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">↺ restore S₂</text>
-<text x="506" y="406" text-anchor="middle" font-size="7" fill="#B07020">回溯</text>
+<rect x="428" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" stroke-dasharray="4,2"/>
+<rect x="428" y="312" width="4" height="104" fill="#0F172A"/>
+<text x="506" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₃ ⚡ 抢占</text>
+<text x="506" y="350" text-anchor="middle" font-size="9" fill="#475569" font-weight="600">抢占! → 回滚</text>
+<rect x="440" y="376" width="132" height="20" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="506" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#0F172A">↺ restore S₂</text>
+<text x="506" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">回溯恢复</text>
 
-<line x1="588" y1="382" x2="608" y2="382" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
-<text x="598" y="376" text-anchor="middle" font-size="7" fill="#2EC4B6" font-weight="700">S₂</text>
+<line x1="588" y1="386" x2="608" y2="386" stroke="#0F172A" stroke-width="1.4" marker-end="url(#arK)"/>
+<text x="598" y="380" text-anchor="middle" font-size="7" fill="#0F172A" font-weight="700">S₂</text>
 
 <!-- Slice T4 -->
-<rect x="614" y="308" width="156" height="104" rx="8" fill="#FFF5F0" stroke="#E8734A" stroke-width="1.2"/>
-<rect x="614" y="308" width="4" height="104" rx="2" fill="#E8734A"/>
-<text x="692" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#A05020">T₄ · 10ms</text>
-<text x="692" y="346" text-anchor="middle" font-size="9" fill="#475569">输入: S₂ (恢复)</text>
-<text x="692" y="362" text-anchor="middle" font-size="8" fill="#64748B">合并 KV 缓存</text>
-<rect x="626" y="372" width="132" height="20" rx="5" fill="#E8734A"/>
-<text x="692" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">→ S₄ = {kv₁,kv₂,kv₄}</text>
-<text x="692" y="406" text-anchor="middle" font-size="7" fill="#94A3B8">产出 · 保存</text>
+<rect x="614" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="614" y="312" width="4" height="104" fill="#0F172A"/>
+<text x="692" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₄ · 10ms</text>
+<text x="692" y="350" text-anchor="middle" font-size="9" fill="#475569">输入: S₂ (恢复)</text>
+<text x="692" y="366" text-anchor="middle" font-size="8" fill="#64748B">合并状态</text>
+<rect x="626" y="376" width="132" height="20" rx="4" fill="#0F172A"/>
+<text x="692" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#FFFFFF">→ S₄ 保存</text>
+<text x="692" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">checkpoint</text>
 
-<line x1="774" y1="382" x2="794" y2="382" stroke="#2EC4B6" stroke-width="1.5" marker-end="url(#arG)"/>
+<line x1="774" y1="386" x2="794" y2="386" stroke="#0F172A" stroke-width="1.4" marker-end="url(#arK)"/>
 
 <!-- Tn final -->
-<rect x="800" y="308" width="120" height="104" rx="8" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1.2"/>
-<rect x="800" y="308" width="4" height="104" rx="2" fill="#2EC4B6"/>
-<text x="860" y="326" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">Tₙ 最终</text>
-<text x="860" y="346" text-anchor="middle" font-size="9" fill="#475569">终止 → 完成</text>
-<rect x="812" y="372" width="96" height="20" rx="5" fill="#2EC4B6"/>
-<text x="860" y="386" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">→ 输出 ✓</text>
+<rect x="800" y="312" width="120" height="104" rx="6" fill="#3866FA" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="800" y="312" width="4" height="104" fill="#0F172A"/>
+<text x="860" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">Tₙ 最终</text>
+<text x="860" y="350" text-anchor="middle" font-size="9" fill="#E8EFFD">终止 → 完成</text>
+<rect x="812" y="376" width="96" height="20" rx="4" fill="#FFFFFF"/>
+<text x="860" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#3866FA">→ 输出 ✓</text>
 
 <!-- Output + Concurrent badges -->
-<rect x="940" y="330" width="70" height="48" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
-<text x="975" y="352" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">输出</text>
-<text x="975" y="368" text-anchor="middle" font-size="8" fill="#64748B">tokens ✓</text>
+<rect x="940" y="334" width="80" height="60" rx="6" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.2"/>
+<text x="980" y="356" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">输出</text>
+<text x="980" y="372" text-anchor="middle" font-size="8" fill="#64748B">tokens ✓</text>
+<text x="980" y="386" text-anchor="middle" font-size="7" fill="#94A3B8">4 终止条件</text>
 
-<rect x="1024" y="330" width="120" height="48" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="0.8" stroke-dasharray="2,2"/>
-<text x="1084" y="350" text-anchor="middle" font-size="8" font-weight="700" fill="#475569">并发</text>
-<text x="1084" y="366" text-anchor="middle" font-size="8" fill="#2EC4B6" font-weight="700">32 / 核心</text>
+<rect x="1030" y="334" width="120" height="60" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="0.8" stroke-dasharray="2,2"/>
+<text x="1090" y="356" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">检查点</text>
+<text x="1090" y="372" text-anchor="middle" font-size="8" fill="#64748B">EOS / MaxLen</text>
+<text x="1090" y="386" text-anchor="middle" font-size="8" fill="#64748B">Timeout / Cancel</text>
 
 <!-- Timeline -->
-<line x1="56" y1="420" x2="920" y2="420" stroke="#CBD5E1" stroke-width="0.8"/>
-<text x="56" y="432" font-size="7" fill="#94A3B8">t=0</text>
-<text x="214" y="432" font-size="7" fill="#94A3B8" text-anchor="middle">10ms</text>
-<text x="406" y="432" font-size="7" fill="#94A3B8" text-anchor="middle">20ms</text>
-<text x="596" y="432" font-size="7" fill="#94A3B8" text-anchor="middle">30ms</text>
-<text x="786" y="432" font-size="7" fill="#94A3B8" text-anchor="middle">40ms</text>
-<text x="920" y="432" font-size="7" fill="#94A3B8" text-anchor="middle">N×10ms</text>
+<line x1="56" y1="424" x2="920" y2="424" stroke="#94A3B8" stroke-width="0.8"/>
+<text x="56" y="436" font-size="7" fill="#94A3B8">t=0</text>
+<text x="214" y="436" font-size="7" fill="#94A3B8" text-anchor="middle">10ms</text>
+<text x="406" y="436" font-size="7" fill="#94A3B8" text-anchor="middle">20ms</text>
+<text x="596" y="436" font-size="7" fill="#94A3B8" text-anchor="middle">30ms</text>
+<text x="786" y="436" font-size="7" fill="#94A3B8" text-anchor="middle">40ms</text>
+<text x="920" y="436" font-size="7" fill="#94A3B8" text-anchor="middle">N×10ms</text>
 
-<!-- ====== C · MemoryRovol ====== -->
+<!-- ============ C · 记忆卷载 四层金字塔 + 三明治供应者 ============ -->
 <rect x="40" y="448" width="20" height="16" rx="4" fill="#3866FA"/>
 <text x="50" y="460" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
-<text x="68" y="460" font-size="13" font-weight="700" fill="#1E3A8A">记忆卷载 · 四层金字塔 × 三明治供应者</text>
-<line x1="40" y1="472" x2="1160" y2="472" stroke="#E2E8F0" stroke-width="1"/>
+<text x="68" y="460" font-size="13" font-weight="700" fill="#0F172A">记忆卷载 · 四层金字塔 + 三明治供应者</text>
+<line x1="40" y1="474" x2="1160" y2="474" stroke="#3866FA" stroke-width="1"/>
 
 <!-- Pyramid (left) -->
-<polygon points="200,486 280,486 320,522 160,522" fill="#C0D4FF" stroke="#3866FA" stroke-width="1.2" filter="url(#sh)"/>
-<text x="240" y="503" text-anchor="middle" font-size="11" font-weight="700" fill="#1E3A8A">L4 · Pattern</text>
-<text x="240" y="516" text-anchor="middle" font-size="8" fill="#3866FA">HDBSCAN · 模式层</text>
+<polygon points="200,486 280,486 320,522 160,522" fill="#3866FA" stroke="#3866FA" stroke-width="1.2"/>
+<text x="240" y="505" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">L4 · Pattern</text>
+<text x="240" y="518" text-anchor="middle" font-size="8" fill="#E8EFFD">HDBSCAN · 模式层</text>
 
-<polygon points="160,526 320,526 360,562 120,562" fill="#D6E3FF" stroke="#5078F0" stroke-width="1.2" filter="url(#sh)"/>
-<text x="240" y="543" text-anchor="middle" font-size="11" font-weight="700" fill="#1E3A8A">L3 · Structure</text>
-<text x="240" y="556" text-anchor="middle" font-size="8" fill="#5078F0">知识图谱 · VSA · 结构层</text>
+<polygon points="160,526 320,526 360,562 120,562" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.2"/>
+<text x="240" y="545" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">L3 · Structure</text>
+<text x="240" y="558" text-anchor="middle" font-size="8" fill="#3866FA">知识图谱 · VSA · 结构层</text>
 
-<polygon points="120,566 360,566 400,602 80,602" fill="#E8F0FF" stroke="#6B95FF" stroke-width="1.2" filter="url(#sh)"/>
-<text x="240" y="583" text-anchor="middle" font-size="11" font-weight="700" fill="#1E3A8A">L2 · Feature</text>
-<text x="240" y="596" text-anchor="middle" font-size="8" fill="#6B95FF">HNSW+BM25 · 特征层</text>
+<polygon points="120,566 360,566 400,602 80,602" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<text x="240" y="585" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">L2 · Feature</text>
+<text x="240" y="598" text-anchor="middle" font-size="8" fill="#64748B">HNSW + BM25 · 特征层</text>
 
-<polygon points="80,606 400,606 420,642 60,642" fill="#F0F5FF" stroke="#8FB0FF" stroke-width="1.2" filter="url(#sh)"/>
-<text x="240" y="623" text-anchor="middle" font-size="11" font-weight="700" fill="#1E3A8A">L1 · Raw</text>
-<text x="240" y="636" text-anchor="middle" font-size="8" fill="#8FB0FF">SHA+ZSTD · 原始层</text>
+<polygon points="80,606 400,606 420,642 60,642" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="240" y="625" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">L1 · Raw</text>
+<text x="240" y="638" text-anchor="middle" font-size="8" fill="#64748B">SHA + ZSTD · 原始层</text>
 
 <!-- Consolidation annotation -->
-<text x="350" y="504" font-size="10" font-weight="700" fill="#2EC4B6">↑ 10:1</text>
-<text x="350" y="518" font-size="7" fill="#2EC4B6" font-weight="600">整合压缩</text>
+<text x="350" y="504" font-size="10" font-weight="700" fill="#3866FA">↑ 抽象</text>
+<text x="350" y="518" font-size="7" fill="#3866FA" font-weight="600">逐层压缩</text>
 
 <!-- Sandwich Provider (right) -->
 <!-- Top: Application -->
-<rect x="490" y="486" width="670" height="36" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
-<rect x="490" y="486" width="4" height="36" rx="2" fill="#3866FA"/>
-<text x="510" y="508" font-size="11" font-weight="700" fill="#1E3A8A">① 应用层 · memory_query() · memory_store()</text>
+<rect x="490" y="486" width="670" height="36" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<rect x="490" y="486" width="4" height="36" fill="#0F172A"/>
+<text x="510" y="508" font-size="11" font-weight="700" fill="#0F172A">① 应用层 · memory_query() · memory_store()</text>
 
 <!-- Middle: Provider Abstraction (CORE) -->
-<rect x="490" y="528" width="670" height="50" rx="8" fill="#F0F5FF" stroke="#3866FA" stroke-width="1.5" filter="url(#sh)"/>
-<rect x="490" y="528" width="6" height="50" rx="3" fill="#3866FA"/>
-<text x="510" y="548" font-size="12" font-weight="700" fill="#1E3A8A">② memory_provider.h · 三明治核心</text>
-<text x="510" y="566" font-size="9" fill="#3866FA">供应者抽象层 · 屏蔽后端差异 · 可热插拔 · provider_ops_t</text>
-<rect x="1060" y="536" width="92" height="34" rx="6" fill="#FFFFFF" stroke="#3866FA"/>
+<rect x="490" y="528" width="670" height="50" rx="6" fill="#3866FA" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="490" y="528" width="6" height="50" fill="#0F172A"/>
+<text x="510" y="550" font-size="12" font-weight="700" fill="#FFFFFF">② memory_provider.h · 三明治核心</text>
+<text x="510" y="566" font-size="9" fill="#E8EFFD">供应者抽象层 · 屏蔽后端差异 · 可热插拔 · provider_ops_t</text>
+<rect x="1060" y="536" width="92" height="34" rx="4" fill="#FFFFFF"/>
 <text x="1106" y="557" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">CORE</text>
 
-<!-- Bottom: 6 Backends as pills -->
-<rect x="490" y="584" width="670" height="44" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
-<rect x="490" y="584" width="4" height="44" rx="2" fill="#E8734A"/>
-<text x="510" y="600" font-size="10" font-weight="700" fill="#1E3A8A">③ 6 向量后端</text>
-<rect x="510" y="606" width="96" height="18" rx="9" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
-<text x="558" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Milvus</text>
-<rect x="612" y="606" width="96" height="18" rx="9" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
-<text x="660" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#7B5EE6">Qdrant</text>
-<rect x="714" y="606" width="96" height="18" rx="9" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
-<text x="762" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">Weaviate</text>
-<rect x="816" y="606" width="96" height="18" rx="9" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
-<text x="864" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#1AAA9C">pgvector</text>
-<rect x="918" y="606" width="96" height="18" rx="9" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
-<text x="966" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#A05020">Chroma</text>
-<rect x="1020" y="606" width="96" height="18" rx="9" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
-<text x="1068" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#A05020">FAISS</text>
-
-<!-- Ebbinghaus mini curve -->
-<rect x="490" y="640" width="670" height="46" rx="6" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#sh)"/>
-<text x="510" y="658" font-size="10" font-weight="700" fill="#1E3A8A">艾宾浩斯遗忘 · R(t) = e^(−t/λ) · λ ≈ 3.5天</text>
-<path d="M 740 672 Q 780 676, 820 680 T 920 682 T 1060 684" fill="none" stroke="#E8734A" stroke-width="1.4"/>
-<circle cx="820" cy="680" r="2.5" fill="#2EC4B6"/>
-<text x="820" y="674" text-anchor="middle" font-size="6" fill="#2EC4B6" font-weight="700">重放↑</text>
-<circle cx="960" cy="683" r="2.5" fill="#2EC4B6"/>
-<text x="960" y="677" text-anchor="middle" font-size="6" fill="#2EC4B6" font-weight="700">重放↑</text>
-<text x="1130" y="684" text-anchor="end" font-size="7" fill="#94A3B8">4 策略</text>
-
-<!-- ====== D · Scheduling + Forgetting + Metrics ====== -->
-<rect x="40" y="700" width="20" height="16" rx="4" fill="#3866FA"/>
-<text x="50" y="712" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
-<text x="68" y="712" font-size="13" font-weight="700" fill="#1E3A8A">调度策略 + 关键指标</text>
-<line x1="40" y1="724" x2="1160" y2="724" stroke="#E2E8F0" stroke-width="1"/>
-
-<!-- 2 Scheduling cards -->
-<rect x="40" y="732" width="270" height="48" rx="6" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="1" filter="url(#sh)"/>
-<rect x="40" y="732" width="3" height="48" rx="1.5" fill="#7B5EE6"/>
-<text x="52" y="752" font-size="10" font-weight="700" fill="#6540D0">Static Scheduler · 静态</text>
-<text x="52" y="768" font-size="9" fill="#475569">10ms fixed · O(1) · batch</text>
-
-<rect x="320" y="732" width="270" height="48" rx="6" fill="#FFF5F0" stroke="#E8734A" stroke-width="1" filter="url(#sh)"/>
-<rect x="320" y="732" width="3" height="48" rx="1.5" fill="#E8734A"/>
-<text x="332" y="752" font-size="10" font-weight="700" fill="#A05020">Adaptive Scheduler · 自适应</text>
-<text x="332" y="768" font-size="9" fill="#475569">slice=f(load) · fair QoS · SLA</text>
-
-<!-- 4 Termination in 1 line -->
-<text x="620" y="702" font-size="11" font-weight="700" fill="#1E3A8A">4 终止条件:</text>
-<rect x="830" y="738" width="70" height="20" rx="10" fill="#FFFBF0" stroke="#F5B935" stroke-width="0.8"/>
-<text x="865" y="752" text-anchor="middle" font-size="8" font-weight="700" fill="#B07020">EOS</text>
-<rect x="906" y="738" width="70" height="20" rx="10" fill="#FFF5F0" stroke="#E8734A" stroke-width="0.8"/>
-<text x="941" y="752" text-anchor="middle" font-size="8" font-weight="700" fill="#A05020">MaxLen</text>
-<rect x="982" y="738" width="70" height="20" rx="10" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="0.8"/>
-<text x="1017" y="752" text-anchor="middle" font-size="8" font-weight="700" fill="#1AAA9C">Timeout</text>
-<rect x="1058" y="738" width="92" height="20" rx="10" fill="#F5F0FF" stroke="#7B5EE6" stroke-width="0.8"/>
-<text x="1104" y="752" text-anchor="middle" font-size="8" font-weight="700" fill="#6540D0">Cancel</text>
-
-<!-- 6 Key Metrics chips -->
-<rect x="40" y="796" width="170" height="32" rx="6" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="125" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">10ms Slice</text>
-
-<rect x="220" y="796" width="170" height="32" rx="6" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1"/>
-<text x="305" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#1AAA9C">32 Concurrent</text>
-
-<rect x="400" y="796" width="170" height="32" rx="6" fill="#FFF5F0" stroke="#E8734A" stroke-width="1"/>
-<text x="485" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#A05020">−68% Tail</text>
-
-<rect x="580" y="796" width="170" height="32" rx="6" fill="#F0F5FF" stroke="#3866FA" stroke-width="1"/>
-<text x="665" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">&lt;12ms Retrieval</text>
-
-<rect x="760" y="796" width="170" height="32" rx="6" fill="#FFF5F0" stroke="#E8734A" stroke-width="1"/>
-<text x="845" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#A05020">10:1 Compress</text>
-
-<rect x="940" y="796" width="220" height="32" rx="6" fill="#FFFBF0" stroke="#F5B935" stroke-width="1"/>
-<text x="1050" y="816" text-anchor="middle" font-size="10" font-weight="700" fill="#B07020">10M+ Vectors · 94.2%</text>
+<!-- Bottom: Backends -->
+<rect x="490" y="584" width="670" height="44" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<rect x="490" y="584" width="4" height="44" fill="#0F172A"/>
+<text x="510" y="600" font-size="10" font-weight="700" fill="#0F172A">③ 后端 (vector_store.c · SQLite + FAISS)</text>
+<rect x="510" y="606" width="150" height="18" rx="4" fill="#E8EFFD" stroke="#3866FA" stroke-width="0.8"/>
+<text x="585" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">SQLite</text>
+<rect x="668" y="606" width="150" height="18" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="0.8"/>
+<text x="743" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">FAISS HNSW</text>
+<rect x="826" y="606" width="150" height="18" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="0.8"/>
+<text x="901" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">FAISS IVF</text>
+<rect x="984" y="606" width="150" height="18" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="0.8" stroke-dasharray="2,2"/>
+<text x="1059" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">FLAT (预留)</text>
 
 <!-- Design principle -->
-<text x="600" y="856" text-anchor="middle" font-size="10" fill="#1E3A8A" font-style="italic">"记忆不是存储——它是智能体跨越时间的连续身份。"</text>
+<text x="600" y="654" text-anchor="middle" font-size="10" fill="#0F172A" font-style="italic">"记忆不是存储——它是智能体跨越时间的连续身份。"</text>
 
-<!-- 2 Core Tech Summary -->
-<rect x="40" y="824" width="555" height="70" rx="5" fill="#F0F5FF" stroke="#3866FA" stroke-width="1" filter="url(#sh)"/>
-<rect x="40" y="824" width="4" height="70" rx="2" fill="#3866FA"/>
-<text x="54" y="840" font-size="9" font-weight="700" fill="#1E3A8A">① 分时推理 · 10ms 时间片渐进流水线</text>
-<text x="58" y="854" font-size="7" fill="#475569">• 全量推理分解为多时间片 · P99 尾延迟降低 68%</text>
-<text x="58" y="865" font-size="7" fill="#475569">• KV 缓存检查点 · 抢占可回溯 · 零丢失</text>
-<text x="58" y="876" font-size="7" fill="#475569">• 32 并发/核心 · 静态/自适应双调度器</text>
-<text x="58" y="887" font-size="7" fill="#475569">• 4 终止条件 · EOS/MaxLen/Timeout/Cancel</text>
+<!-- ============ D · 艾宾浩斯遗忘曲线 + 调度 ============ -->
+<rect x="40" y="670" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="68" y="682" font-size="13" font-weight="700" fill="#0F172A">艾宾浩斯遗忘 + 双调度器</text>
+<line x1="40" y1="696" x2="1160" y2="696" stroke="#3866FA" stroke-width="1"/>
 
-<rect x="605" y="824" width="555" height="70" rx="5" fill="#F0FAF8" stroke="#2EC4B6" stroke-width="1" filter="url(#sh)"/>
-<rect x="605" y="824" width="4" height="70" rx="2" fill="#2EC4B6"/>
-<text x="619" y="840" font-size="9" font-weight="700" fill="#1E3A8A">② 记忆卷载 · 四层金字塔 + 三明治供应者</text>
-<text x="623" y="854" font-size="7" fill="#475569">• L1 原始 → L2 特征 → L3 结构 → L4 模式 · 逐层抽象</text>
-<text x="623" y="865" font-size="7" fill="#475569">• 10:1 压缩比 · 10M+ 向量 · 12ms 检索</text>
-<text x="623" y="876" font-size="7" fill="#475569">• 三明治架构 · 6 后端 (Milvus/Qdrant/...) 热切换</text>
-<text x="623" y="887" font-size="7" fill="#475569">• 艾宾浩斯遗忘曲线 · 智能重放 · 越久越精准</text>
+<!-- Forgetting strategies (left) -->
+<rect x="40" y="706" width="556" height="76" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="40" y="706" width="4" height="76" fill="#3866FA"/>
+<text x="56" y="728" font-size="12" font-weight="700" fill="#0F172A">遗忘策略 (forgetting.h)</text>
 
-<text x="600" y="900" text-anchor="middle" font-size="9" fill="#94A3B8" font-style="italic">长工程的支撑 · TimeSliceInfer × MemoryRovol · 10ms 时间片 × KV缓存 × 四层金字塔 × 三明治供应者 × 艾宾浩斯遗忘 · v0.1.1</text>
+<rect x="56" y="738" width="125" height="34" rx="4" fill="#3866FA" stroke="#3866FA"/>
+<text x="118" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">EBBINGHAUS</text>
+<text x="118" y="766" text-anchor="middle" font-size="7" fill="#E8EFFD">艾宾浩斯曲线</text>
+
+<rect x="187" y="738" width="125" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="249" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">LINEAR</text>
+<text x="249" y="766" text-anchor="middle" font-size="7" fill="#64748B">线性衰减</text>
+
+<rect x="318" y="738" width="125" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="380" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">ACCESS_BASED</text>
+<text x="380" y="766" text-anchor="middle" font-size="7" fill="#64748B">访问驱动</text>
+
+<rect x="449" y="738" width="125" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="511" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">NONE</text>
+<text x="511" y="766" text-anchor="middle" font-size="7" fill="#64748B">不遗忘</text>
+
+<!-- Schedulers (right) -->
+<rect x="604" y="706" width="556" height="76" rx="6" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="604" y="706" width="4" height="76" fill="#3866FA"/>
+<text x="620" y="728" font-size="12" font-weight="700" fill="#0F172A">调度器 (task/scheduler)</text>
+
+<rect x="620" y="738" width="160" height="34" rx="4" fill="#3866FA" stroke="#3866FA"/>
+<text x="700" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#FFFFFF">静态调度器</text>
+<text x="700" y="766" text-anchor="middle" font-size="7" fill="#E8EFFD">优先级队列</text>
+
+<rect x="788" y="738" width="160" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="868" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">自适应调度器</text>
+<text x="868" y="766" text-anchor="middle" font-size="7" fill="#64748B">负载感知</text>
+
+<rect x="956" y="738" width="190" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="1051" y="754" text-anchor="middle" font-size="9" font-weight="700" fill="#0F172A">checkpoint_adapter</text>
+<text x="1051" y="766" text-anchor="middle" font-size="7" fill="#64748B">状态快照可回溯</text>
+
+<!-- ============ E · 技术精要 ============ -->
+<rect x="40" y="794" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="806" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">E</text>
+<text x="68" y="806" font-size="13" font-weight="700" fill="#0F172A">技术精要</text>
+<line x1="40" y1="820" x2="1160" y2="820" stroke="#3866FA" stroke-width="1"/>
+
+<rect x="40" y="828" width="555" height="58" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="40" y="828" width="5" height="58" fill="#3866FA"/>
+<text x="56" y="846" font-size="10" font-weight="700" fill="#0F172A">① 分时推理 · 10ms 时间片渐进流水线</text>
+<text x="60" y="858" font-size="8" fill="#475569">• 全量推理分解为多时间片 · 检查点可回溯</text>
+<text x="60" y="869" font-size="8" fill="#475569">• KV 状态检查点 · 抢占可恢复 · 零丢失</text>
+<text x="60" y="880" font-size="8" fill="#475569">• 静态/自适应双调度器 · 4 终止条件</text>
+
+<rect x="605" y="828" width="555" height="58" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="605" y="828" width="5" height="58" fill="#3866FA"/>
+<text x="621" y="846" font-size="10" font-weight="700" fill="#0F172A">② 记忆卷载 · 四层金字塔 + 三明治供应者</text>
+<text x="625" y="858" font-size="8" fill="#475569">• L1 原始 → L2 特征 → L3 结构 → L4 模式 · 逐层抽象</text>
+<text x="625" y="869" font-size="8" fill="#475569">• ≥3:1 压缩比 · &lt;10ms 检索目标 · FAISS HNSW/IVF</text>
+<text x="625" y="880" font-size="8" fill="#475569">• 艾宾浩斯遗忘曲线 · 三明治架构后端可热插拔</text>
 
 </svg>
 </div>
