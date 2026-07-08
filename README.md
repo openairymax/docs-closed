@@ -63,7 +63,7 @@ Feasibility analysis report for the 38-repo split plan.
 
 ### 6. [0.1.1_taskflow_vs_corekern_scheduler_对比报告.md](./0.1.1_taskflow_vs_corekern_scheduler_对比报告.md)
 
-Comparative report on the taskflow vs. corekern scheduler dual-engine design, which finalizes the dual-engine collaboration scheme (graph_engine retains A-class microkernel primitives + taskflow_advanced serves as B-class DAG workflow orchestration + pregel_engine is forced to max_workers=1 downgrade in 0.1.1).
+Comparative report on the taskflow vs. corekern scheduler dual-engine design, which finalizes the dual-engine collaboration scheme (graph_engine retains A-class micro-core primitives + taskflow_advanced serves as B-class DAG workflow orchestration + pregel_engine is forced to max_workers=1 downgrade in 0.1.1).
 
 ### 7. [0.1.1许可证全面审计报告.md](./0.1.1许可证全面审计报告.md)
 

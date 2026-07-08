@@ -47,11 +47,11 @@
 
 <!-- Pillar 2: MemoryRovol (right) -->
 <rect x="600" y="132" width="560" height="110" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
-<rect x="600" y="132" width="4" height="110" fill="#0F172A"/>
+<rect x="600" y="132" width="4" height="110" fill="#3866FA"/>
 <text x="620" y="156" font-size="14" font-weight="700" fill="#0F172A">② MemoryRovol · 记忆卷载</text>
 <text x="620" y="174" font-size="10" fill="#475569">四层渐进式记忆架构 · 原始数据到深层模式</text>
 
-<rect x="620" y="184" width="100" height="24" rx="4" fill="#0F172A" stroke="#0F172A"/>
+<rect x="620" y="184" width="100" height="24" rx="4" fill="#3866FA" stroke="#0F172A"/>
 <text x="670" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">L4 模式</text>
 <rect x="728" y="184" width="100" height="24" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
 <text x="778" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">L3 结构</text>
@@ -90,11 +90,11 @@
 
 <!-- Slice T2 -->
 <rect x="242" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
-<rect x="242" y="312" width="4" height="104" fill="#0F172A"/>
+<rect x="242" y="312" width="4" height="104" fill="#3866FA"/>
 <text x="320" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₂ · 10ms</text>
 <text x="320" y="350" text-anchor="middle" font-size="9" fill="#475569">输入: S₁</text>
 <text x="320" y="366" text-anchor="middle" font-size="8" fill="#64748B">解码 + 更新</text>
-<rect x="254" y="376" width="132" height="20" rx="4" fill="#0F172A"/>
+<rect x="254" y="376" width="132" height="20" rx="4" fill="#3866FA"/>
 <text x="320" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#FFFFFF">→ S₂ 状态保存</text>
 <text x="320" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">checkpoint</text>
 
@@ -103,7 +103,7 @@
 
 <!-- Slice T3 preempted -->
 <rect x="428" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" stroke-dasharray="4,2"/>
-<rect x="428" y="312" width="4" height="104" fill="#0F172A"/>
+<rect x="428" y="312" width="4" height="104" fill="#3866FA"/>
 <text x="506" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₃ ⚡ 抢占</text>
 <text x="506" y="350" text-anchor="middle" font-size="9" fill="#475569" font-weight="600">抢占! → 回滚</text>
 <rect x="440" y="376" width="132" height="20" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
@@ -115,11 +115,11 @@
 
 <!-- Slice T4 -->
 <rect x="614" y="312" width="156" height="104" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
-<rect x="614" y="312" width="4" height="104" fill="#0F172A"/>
+<rect x="614" y="312" width="4" height="104" fill="#3866FA"/>
 <text x="692" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">T₄ · 10ms</text>
 <text x="692" y="350" text-anchor="middle" font-size="9" fill="#475569">输入: S₂ (恢复)</text>
 <text x="692" y="366" text-anchor="middle" font-size="8" fill="#64748B">合并状态</text>
-<rect x="626" y="376" width="132" height="20" rx="4" fill="#0F172A"/>
+<rect x="626" y="376" width="132" height="20" rx="4" fill="#3866FA"/>
 <text x="692" y="390" text-anchor="middle" font-size="8" font-weight="700" fill="#FFFFFF">→ S₄ 保存</text>
 <text x="692" y="410" text-anchor="middle" font-size="7" fill="#94A3B8">checkpoint</text>
 
@@ -127,7 +127,7 @@
 
 <!-- Tn final -->
 <rect x="800" y="312" width="120" height="104" rx="6" fill="#3866FA" stroke="#3866FA" stroke-width="1.2"/>
-<rect x="800" y="312" width="4" height="104" fill="#0F172A"/>
+<rect x="800" y="312" width="4" height="104" fill="#3866FA"/>
 <text x="860" y="330" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">Tₙ 最终</text>
 <text x="860" y="350" text-anchor="middle" font-size="9" fill="#E8EFFD">终止 → 完成</text>
 <rect x="812" y="376" width="96" height="20" rx="4" fill="#FFFFFF"/>
@@ -183,12 +183,12 @@
 <!-- Sandwich Provider (right) -->
 <!-- Top: Application -->
 <rect x="490" y="486" width="670" height="36" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
-<rect x="490" y="486" width="4" height="36" fill="#0F172A"/>
+<rect x="490" y="486" width="4" height="36" fill="#3866FA"/>
 <text x="510" y="508" font-size="11" font-weight="700" fill="#0F172A">① 应用层 · memory_query() · memory_store()</text>
 
 <!-- Middle: Provider Abstraction (CORE) -->
 <rect x="490" y="528" width="670" height="50" rx="6" fill="#3866FA" stroke="#3866FA" stroke-width="1.5"/>
-<rect x="490" y="528" width="6" height="50" fill="#0F172A"/>
+<rect x="490" y="528" width="6" height="50" fill="#3866FA"/>
 <text x="510" y="550" font-size="12" font-weight="700" fill="#FFFFFF">② memory_provider.h · 三明治核心</text>
 <text x="510" y="566" font-size="9" fill="#E8EFFD">供应者抽象层 · 屏蔽后端差异 · 可热插拔 · provider_ops_t</text>
 <rect x="1060" y="536" width="92" height="34" rx="4" fill="#FFFFFF"/>
@@ -196,7 +196,7 @@
 
 <!-- Bottom: Backends -->
 <rect x="490" y="584" width="670" height="44" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
-<rect x="490" y="584" width="4" height="44" fill="#0F172A"/>
+<rect x="490" y="584" width="4" height="44" fill="#3866FA"/>
 <text x="510" y="600" font-size="10" font-weight="700" fill="#0F172A">③ 后端 (vector_store.c · SQLite + FAISS)</text>
 <rect x="510" y="606" width="150" height="18" rx="4" fill="#E8EFFD" stroke="#3866FA" stroke-width="0.8"/>
 <text x="585" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="#3866FA">SQLite</text>

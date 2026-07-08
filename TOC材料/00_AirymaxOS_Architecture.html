@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:900px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+</style>
+</head>
+<body>
+<div class="fig">
+<svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
+  <marker id="arK" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#0F172A"/></marker>
+</defs>
+
+<rect x="0" y="0" width="1200" height="900" fill="#FFFFFF"/>
+
+<!-- ============ TITLE ============ -->
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0F172A">AirymaxOS 系统架构 · 五层分层</text>
+<text x="40" y="70" font-size="12" fill="#64748B">Agent 应用层 → 用户态服务 → 微内核核心 → Linux 6.6 基线 · 同源天然适配 · v0.1.1</text>
+<rect x="40" y="80" width="1120" height="2" fill="#3866FA"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 0 · System Architecture</text>
+
+<!-- ============ L4 · Agent 应用层 ============ -->
+<rect x="40" y="96" width="1120" height="148" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+<rect x="40" y="96" width="6" height="148" fill="#3866FA"/>
+<text x="60" y="118" font-size="13" font-weight="700" fill="#0F172A">L4 · Agent 应用层</text>
+<text x="280" y="118" font-size="9" fill="#94A3B8">同源天然适配 · 多语言 SDK</text>
+
+<!-- 4 Agent types -->
+<rect x="60" y="130" width="262" height="42" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<text x="191" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">科研 Agent</text>
+<text x="191" y="164" text-anchor="middle" font-size="8" fill="#64748B">Research</text>
+
+<rect x="332" y="130" width="262" height="42" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<text x="463" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">客服 Agent</text>
+<text x="463" y="164" text-anchor="middle" font-size="8" fill="#64748B">Customer Service</text>
+
+<rect x="604" y="130" width="262" height="42" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<text x="735" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">工业控制</text>
+<text x="735" y="164" text-anchor="middle" font-size="8" fill="#64748B">Industrial Control</text>
+
+<rect x="876" y="130" width="262" height="42" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<text x="1007" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">具身智能</text>
+<text x="1007" y="164" text-anchor="middle" font-size="8" fill="#64748B">Embodied AI</text>
+
+<!-- Connection lines down to SDK -->
+<line x1="191" y1="172" x2="191" y2="184" stroke="#0F172A" stroke-width="1"/>
+<line x1="463" y1="172" x2="463" y2="184" stroke="#0F172A" stroke-width="1"/>
+<line x1="735" y1="172" x2="735" y2="184" stroke="#0F172A" stroke-width="1"/>
+<line x1="1007" y1="172" x2="1007" y2="184" stroke="#0F172A" stroke-width="1"/>
+
+<!-- SDK layer -->
+<rect x="60" y="186" width="1078" height="50" rx="4" fill="#E8EFFD" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="60" y="186" width="5" height="50" fill="#3866FA"/>
+<text x="80" y="208" font-size="12" font-weight="700" fill="#0F172A">agentrt SDK</text>
+<text x="200" y="208" font-size="10" fill="#3866FA" font-weight="600">Python · Go · Rust · TypeScript</text>
+<text x="80" y="226" font-size="9" fill="#475569">CognitionClient · SafetyClient · ToolClient · ChatClient</text>
+
+<!-- Arrow: 同源天然适配 -->
+<line x1="600" y1="244" x2="600" y2="262" stroke="#0F172A" stroke-width="1.5" marker-end="url(#arK)"/>
+<rect x="556" y="246" width="88" height="16" rx="2" fill="#FFFFFF"/>
+<text x="600" y="258" text-anchor="middle" font-size="9" fill="#0F172A" font-weight="700">同源天然适配</text>
+
+<!-- ============ L3 · airymaxos-services 用户态服务层 ============ -->
+<rect x="40" y="266" width="1120" height="200" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+<rect x="40" y="266" width="6" height="200" fill="#3866FA"/>
+<text x="60" y="288" font-size="13" font-weight="700" fill="#0F172A">L3 · 用户态服务层</text>
+<text x="200" y="288" font-size="10" fill="#3866FA" font-weight="600">airymaxos-services</text>
+<text x="380" y="288" font-size="9" fill="#94A3B8">12 daemons · OS 级守护进程</text>
+
+<!-- Row 1: Basic services -->
+<rect x="60" y="300" width="1078" height="44" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<rect x="60" y="300" width="5" height="44" fill="#3866FA"/>
+
+<rect x="78" y="308" width="200" height="30" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="178" y="327" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">VFS 用户态</text>
+
+<rect x="286" y="308" width="200" height="30" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="386" y="327" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">网络栈 用户态</text>
+
+<rect x="494" y="308" width="200" height="30" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="594" y="327" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">驱动框架 用户态</text>
+
+<rect x="702" y="308" width="200" height="30" rx="4" fill="#E8EFFD" stroke="#3866FA"/>
+<text x="802" y="327" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">12 daemons</text>
+
+<rect x="910" y="308" width="208" height="30" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="1014" y="327" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">systemd 集成</text>
+
+<!-- Row 2: cognition (CORE) -->
+<rect x="60" y="350" width="1078" height="50" rx="4" fill="#3866FA" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="60" y="350" width="5" height="50" fill="#3866FA"/>
+<text x="80" y="372" font-size="12" font-weight="700" fill="#FFFFFF">airymaxos-cognition · 认知运行时</text>
+<rect x="450" y="358" width="120" height="34" rx="4" fill="#FFFFFF"/>
+<text x="510" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">CoreLoopThree</text>
+<text x="582" y="380" font-size="9" fill="#E8EFFD">kthread</text>
+<rect x="640" y="358" width="120" height="34" rx="4" fill="#FFFFFF"/>
+<text x="700" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">Wasm runtime</text>
+<rect x="770" y="358" width="120" height="34" rx="4" fill="#FFFFFF"/>
+<text x="830" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">LLM 调度</text>
+<rect x="1000" y="358" width="120" height="34" rx="4" fill="#3866FA"/>
+<text x="1060" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">CORE</text>
+
+<!-- Row 3: cloudnative -->
+<rect x="60" y="406" width="1078" height="50" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1"/>
+<rect x="60" y="406" width="5" height="50" fill="#3866FA"/>
+<text x="80" y="428" font-size="12" font-weight="700" fill="#0F172A">airymaxos-cloudnative · 云原生</text>
+
+<rect x="350" y="414" width="120" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="410" y="436" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">K8s</text>
+<rect x="478" y="414" width="120" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="538" y="436" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">containerd</text>
+<rect x="606" y="414" width="120" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="666" y="436" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">OCI</text>
+<rect x="734" y="414" width="120" height="34" rx="4" fill="#FFFFFF" stroke="#0F172A"/>
+<text x="794" y="436" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">CNI</text>
+<rect x="862" y="414" width="120" height="34" rx="4" fill="#E8EFFD" stroke="#3866FA"/>
+<text x="922" y="436" text-anchor="middle" font-size="10" font-weight="700" fill="#3866FA">agentctl</text>
+
+<!-- Arrow: 系统调用 (syscall) -->
+<line x1="600" y1="466" x2="600" y2="484" stroke="#0F172A" stroke-width="1.5" marker-end="url(#arK)"/>
+<rect x="556" y="468" width="88" height="16" rx="2" fill="#FFFFFF"/>
+<text x="600" y="480" text-anchor="middle" font-size="9" fill="#0F172A" font-weight="700">系统调用 syscall</text>
+
+<!-- ============ L2 · airymaxos-kernel 微内核核心 (HIGHLIGHTED) ============ -->
+<rect x="40" y="488" width="1120" height="120" rx="6" fill="#E8EFFD" stroke="#3866FA" stroke-width="2"/>
+<rect x="40" y="488" width="6" height="120" fill="#3866FA"/>
+<text x="60" y="510" font-size="13" font-weight="700" fill="#0F172A">L2 · 微内核核心</text>
+<text x="200" y="510" font-size="10" fill="#3866FA" font-weight="600">airymaxos-kernel</text>
+<rect x="1040" y="496" width="100" height="22" rx="4" fill="#3866FA"/>
+<text x="1090" y="512" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">CORE</text>
+
+<!-- 5 kernel modules -->
+<rect x="60" y="524" width="208" height="70" rx="4" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="60" y="524" width="4" height="70" fill="#3866FA"/>
+<text x="164" y="548" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">sched_ext</text>
+<text x="164" y="566" text-anchor="middle" font-size="9" fill="#3866FA" font-weight="600">SCHED_AGENT</text>
+<text x="164" y="582" text-anchor="middle" font-size="8" fill="#64748B">调度类</text>
+
+<rect x="278" y="524" width="208" height="70" rx="4" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="278" y="524" width="4" height="70" fill="#3866FA"/>
+<text x="382" y="548" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">io_uring</text>
+<text x="382" y="566" text-anchor="middle" font-size="9" fill="#3866FA" font-weight="600">零拷贝</text>
+<text x="382" y="582" text-anchor="middle" font-size="8" fill="#64748B">异步 I/O</text>
+
+<rect x="496" y="524" width="208" height="70" rx="4" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="496" y="524" width="4" height="70" fill="#3866FA"/>
+<text x="600" y="548" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">内存管理</text>
+<text x="600" y="566" text-anchor="middle" font-size="9" fill="#3866FA" font-weight="600">基本能力</text>
+<text x="600" y="582" text-anchor="middle" font-size="8" fill="#64748B">三层分配器</text>
+
+<rect x="714" y="524" width="208" height="70" rx="4" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="714" y="524" width="4" height="70" fill="#3866FA"/>
+<text x="818" y="548" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">IPC</text>
+<text x="818" y="566" text-anchor="middle" font-size="9" fill="#3866FA" font-weight="600">agent_ipc syscall</text>
+<text x="818" y="582" text-anchor="middle" font-size="8" fill="#64748B">进程间通信</text>
+
+<rect x="932" y="524" width="208" height="70" rx="4" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="932" y="524" width="4" height="70" fill="#3866FA"/>
+<text x="1036" y="548" text-anchor="middle" font-size="11" font-weight="700" fill="#0F172A">Rust 模块</text>
+<text x="1036" y="566" text-anchor="middle" font-size="9" fill="#3866FA" font-weight="600">安全驱动</text>
+<text x="1036" y="582" text-anchor="middle" font-size="8" fill="#64748B">内存安全</text>
+
+<!-- Arrow: connection -->
+<line x1="600" y1="608" x2="600" y2="626" stroke="#0F172A" stroke-width="1.5" marker-end="url(#arK)"/>
+<rect x="556" y="610" width="88" height="16" rx="2" fill="#FFFFFF"/>
+<text x="600" y="622" text-anchor="middle" font-size="9" fill="#0F172A" font-weight="700">内核基线</text>
+
+<!-- ============ L1 · Linux 内核基线 ============ -->
+<rect x="40" y="630" width="1120" height="80" rx="6" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.2"/>
+<rect x="40" y="630" width="6" height="80" fill="#94A3B8"/>
+<text x="60" y="652" font-size="13" font-weight="700" fill="#0F172A">L1 · Linux 内核基线</text>
+<text x="240" y="652" font-size="10" fill="#94A3B8" font-weight="600">Linux 6.6</text>
+<text x="340" y="652" font-size="9" fill="#94A3B8">微内核化改造基础（非从零开发）</text>
+
+<rect x="60" y="664" width="208" height="38" rx="4" fill="#FFFFFF" stroke="#94A3B8"/>
+<text x="164" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">EEVDF 调度器</text>
+<text x="164" y="696" text-anchor="middle" font-size="7" fill="#64748B">新调度算法</text>
+
+<rect x="278" y="664" width="208" height="38" rx="4" fill="#FFFFFF" stroke="#94A3B8"/>
+<text x="382" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">XFS 在线 fsck</text>
+<text x="382" y="696" text-anchor="middle" font-size="7" fill="#64748B">文件系统校验</text>
+
+<rect x="496" y="664" width="208" height="38" rx="4" fill="#FFFFFF" stroke="#94A3B8"/>
+<text x="600" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">Btrfs</text>
+<text x="600" y="696" text-anchor="middle" font-size="7" fill="#64748B">写时复制</text>
+
+<rect x="714" y="664" width="208" height="38" rx="4" fill="#FFFFFF" stroke="#94A3B8"/>
+<text x="818" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">网络协议栈</text>
+<text x="818" y="696" text-anchor="middle" font-size="7" fill="#64748B">TCP/IP</text>
+
+<rect x="932" y="664" width="208" height="38" rx="4" fill="#FFFFFF" stroke="#94A3B8"/>
+<text x="1036" y="682" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">驱动</text>
+<text x="1036" y="696" text-anchor="middle" font-size="7" fill="#64748B">硬件抽象</text>
+
+<!-- ============ Side annotation: layer direction ============ -->
+<line x1="22" y1="656" x2="22" y2="170" stroke="#0F172A" stroke-width="1.5" marker-end="url(#arK)"/>
+<text x="12" y="416" font-size="9" fill="#0F172A" font-weight="700" transform="rotate(-90 12 416)">应用 → 硬件</text>
+
+<!-- ============ Tech Essentials ============ -->
+<rect x="40" y="726" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="738" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">★</text>
+<text x="68" y="738" font-size="13" font-weight="700" fill="#0F172A">技术精要</text>
+<line x1="40" y1="752" x2="1160" y2="752" stroke="#3866FA" stroke-width="1"/>
+
+<rect x="40" y="760" width="370" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="40" y="760" width="5" height="118" fill="#3866FA"/>
+<text x="56" y="780" font-size="10" font-weight="700" fill="#0F172A">① 五层分层 · 微内核化改造</text>
+<text x="60" y="796" font-size="8" fill="#475569">• 基于 Linux 6.6 改造而非从零开发</text>
+<text x="60" y="808" font-size="8" fill="#475569">• 应用 → 服务 → 微内核 → Linux 基线</text>
+<text x="60" y="820" font-size="8" fill="#475569">• 同源天然适配 · SDK 与服务同根</text>
+<text x="60" y="832" font-size="8" fill="#475569">• 系统调用 syscall 作为层间契约</text>
+<text x="60" y="844" font-size="8" fill="#475569">• 用户态 + 内核态清晰隔离</text>
+<text x="60" y="858" font-size="8" fill="#475569">• 12 daemons OS 级守护</text>
+<text x="60" y="870" font-size="8" fill="#475569">• Rust 模块保障内存安全</text>
+
+<rect x="420" y="760" width="370" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="420" y="760" width="5" height="118" fill="#3866FA"/>
+<text x="436" y="780" font-size="10" font-weight="700" fill="#0F172A">② 微内核核心五模块</text>
+<text x="440" y="796" font-size="8" fill="#475569">• sched_ext SCHED_AGENT 调度类</text>
+<text x="440" y="808" font-size="8" fill="#475569">• io_uring 零拷贝异步 I/O</text>
+<text x="440" y="820" font-size="8" fill="#475569">• 三层分配器内存管理</text>
+<text x="440" y="832" font-size="8" fill="#475569">• agent_ipc syscall 进程间通信</text>
+<text x="440" y="844" font-size="8" fill="#475569">• Rust 安全驱动模块</text>
+<text x="440" y="858" font-size="8" fill="#475569">• 用户态故障天然隔离</text>
+<text x="440" y="870" font-size="8" fill="#475569">• EEVDF 调度器底座支撑</text>
+
+<rect x="800" y="760" width="360" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="800" y="760" width="5" height="118" fill="#3866FA"/>
+<text x="816" y="780" font-size="10" font-weight="700" fill="#0F172A">③ 认知运行时 + 云原生</text>
+<text x="820" y="796" font-size="8" fill="#475569">• airymaxos-cognition 认知运行时</text>
+<text x="820" y="808" font-size="8" fill="#475569">• CoreLoopThree kthread 内核线程</text>
+<text x="820" y="820" font-size="8" fill="#475569">• Wasm runtime 沙箱化执行</text>
+<text x="820" y="832" font-size="8" fill="#475569">• LLM 调度集成</text>
+<text x="820" y="844" font-size="8" fill="#475569">• K8s + containerd + OCI 云原生</text>
+<text x="820" y="858" font-size="8" fill="#475569">• CNI 网络插件 + agentctl 工具</text>
+<text x="820" y="870" font-size="8" fill="#475569">• systemd 集成管理</text>
+
+</svg>
+</div>
+</body>
+</html>
