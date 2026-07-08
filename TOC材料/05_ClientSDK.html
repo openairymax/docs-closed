@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{margin:0;padding:0;background:#FFFFFF}
+  .fig{width:1200px;height:900px;background:#FFFFFF;font-family:'Helvetica Neue',Arial,'PingFang SC',sans-serif}
+</style>
+</head>
+<body>
+<div class="fig">
+<svg width="1200" height="900" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3866FA"/></marker>
+</defs>
+
+<rect x="0" y="0" width="1200" height="900" fill="#FFFFFF"/>
+
+<!-- TITLE -->
+<text x="40" y="48" font-size="22" font-weight="700" fill="#0F172A">AirymaxClient · 四语言统一 SDK</text>
+<text x="40" y="70" font-size="12" fill="#64748B">4 语言 × 4 客户端 × 3 传输模式 · 同源 agentrt · 统一错误处理 · v0.1.1</text>
+<rect x="40" y="80" width="1120" height="2" fill="#3866FA"/>
+<text x="1160" y="48" text-anchor="end" font-size="10" fill="#94A3B8" font-style="italic">Figure 5 · Client SDK</text>
+
+<!-- ====== A · 4 语言矩阵 ====== -->
+<rect x="40" y="94" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="106" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">A</text>
+<text x="68" y="106" font-size="13" font-weight="700" fill="#0F172A">四语言 SDK 矩阵</text>
+<line x1="40" y1="120" x2="1160" y2="120" stroke="#E2E8F0" stroke-width="1"/>
+
+<!-- Python -->
+<rect x="40" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="40" y="128" width="4" height="64" fill="#3866FA"/>
+<text x="60" y="148" font-size="12" font-weight="700" fill="#0F172A">Python</text>
+<text x="60" y="164" font-size="9" fill="#3866FA">agentrt</text>
+<text x="60" y="180" font-size="8" fill="#64748B">应用层 Agent · 同步/异步 API</text>
+
+<!-- Rust -->
+<rect x="326" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="326" y="128" width="4" height="64" fill="#3866FA"/>
+<text x="346" y="148" font-size="12" font-weight="700" fill="#0F172A">Rust</text>
+<text x="346" y="164" font-size="9" fill="#3866FA">agentrt</text>
+<text x="346" y="180" font-size="8" fill="#64748B">系统级 Agent · 性能敏感</text>
+
+<!-- Go -->
+<rect x="612" y="128" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="612" y="128" width="4" height="64" fill="#3866FA"/>
+<text x="632" y="148" font-size="12" font-weight="700" fill="#0F172A">Go</text>
+<text x="632" y="164" font-size="9" fill="#3866FA">github.com/openairymax/agentrt-go</text>
+<text x="632" y="180" font-size="8" fill="#64748B">云原生 Agent · Operator</text>
+
+<!-- TypeScript -->
+<rect x="898" y="128" width="262" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.5"/>
+<rect x="898" y="128" width="4" height="64" fill="#3866FA"/>
+<text x="918" y="148" font-size="12" font-weight="700" fill="#0F172A">TypeScript</text>
+<text x="918" y="164" font-size="9" fill="#3866FA">@openairymax/agentrt</text>
+<text x="918" y="180" font-size="8" fill="#64748B">Web/Node.js Agent</text>
+
+<!-- ====== B · 4 嵌套客户端 ====== -->
+<rect x="40" y="208" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="220" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">B</text>
+<text x="68" y="220" font-size="13" font-weight="700" fill="#0F172A">四嵌套客户端 · AirymaxClient</text>
+<line x1="40" y1="234" x2="1160" y2="234" stroke="#E2E8F0" stroke-width="1"/>
+
+<!-- AirymaxClient entry -->
+<rect x="40" y="242" width="1120" height="50" rx="8" fill="#3866FA" stroke="#3866FA" stroke-width="1.5"/>
+<text x="600" y="272" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">AirymaxClient · 统一入口</text>
+
+<!-- 4 nested clients -->
+<rect x="40" y="300" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="40" y="300" width="4" height="64" fill="#3866FA"/>
+<text x="60" y="320" font-size="11" font-weight="700" fill="#0F172A">CognitionClient</text>
+<text x="60" y="336" font-size="9" fill="#3866FA">认知层</text>
+<text x="60" y="352" font-size="8" fill="#64748B">提交任务 · CoreLoopThree</text>
+
+<rect x="326" y="300" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="326" y="300" width="4" height="64" fill="#3866FA"/>
+<text x="346" y="320" font-size="11" font-weight="700" fill="#0F172A">SafetyClient</text>
+<text x="346" y="336" font-size="9" fill="#3866FA">安全层</text>
+<text x="346" y="352" font-size="8" fill="#64748B">capability 校验 · 策略查询</text>
+
+<rect x="612" y="300" width="274" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="612" y="300" width="4" height="64" fill="#3866FA"/>
+<text x="632" y="320" font-size="11" font-weight="700" fill="#0F172A">ToolClient</text>
+<text x="632" y="336" font-size="9" fill="#3866FA">工具层</text>
+<text x="632" y="352" font-size="8" fill="#64748B">web_search · 文件读写</text>
+
+<rect x="898" y="300" width="262" height="64" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="898" y="300" width="4" height="64" fill="#3866FA"/>
+<text x="918" y="320" font-size="11" font-weight="700" fill="#0F172A">ChatClient</text>
+<text x="918" y="336" font-size="9" fill="#3866FA">对话层</text>
+<text x="918" y="352" font-size="8" fill="#64748B">LLM 补全 · 流式响应</text>
+
+<!-- ====== C · 3 种传输模式 ====== -->
+<rect x="40" y="380" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="392" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">C</text>
+<text x="68" y="392" font-size="13" font-weight="700" fill="#0F172A">三种传输模式</text>
+<line x1="40" y1="406" x2="1160" y2="406" stroke="#E2E8F0" stroke-width="1"/>
+
+<rect x="40" y="414" width="370" height="70" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="40" y="414" width="4" height="70" fill="#3866FA"/>
+<text x="60" y="434" font-size="11" font-weight="700" fill="#0F172A">① 本地传输</text>
+<text x="60" y="450" font-size="9" fill="#3866FA">Unix socket + io_uring</text>
+<text x="60" y="466" font-size="8" fill="#64748B">同节点 Agent · 零拷贝 · &lt;10μs</text>
+<text x="60" y="478" font-size="8" fill="#64748B">endpoint: unix:///var/run/agentrt.sock</text>
+
+<rect x="420" y="414" width="370" height="70" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="420" y="414" width="4" height="70" fill="#3866FA"/>
+<text x="440" y="434" font-size="11" font-weight="700" fill="#0F172A">② 远程传输</text>
+<text x="440" y="450" font-size="9" fill="#3866FA">gRPC over mTLS（国密 TLS）</text>
+<text x="440" y="466" font-size="8" fill="#64748B">跨节点 Agent · 零信任网络</text>
+<text x="440" y="478" font-size="8" fill="#64748B">endpoint: https://host:8080</text>
+
+<rect x="800" y="414" width="360" height="70" rx="8" fill="#FFFFFF" stroke="#3866FA" stroke-width="1.2"/>
+<rect x="800" y="414" width="4" height="70" fill="#3866FA"/>
+<text x="820" y="434" font-size="11" font-weight="700" fill="#0F172A">③ 沙箱传输</text>
+<text x="820" y="450" font-size="9" fill="#3866FA">Wasm 3.0 runtime</text>
+<text x="820" y="466" font-size="8" fill="#64748B">沙箱内 Agent · 安全隔离</text>
+<text x="820" y="478" font-size="8" fill="#64748B">endpoint: wasm://sandbox</text>
+
+<!-- ====== D · 代码示例 ====== -->
+<rect x="40" y="500" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="512" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">D</text>
+<text x="68" y="512" font-size="13" font-weight="700" fill="#0F172A">Python 代码示例</text>
+<line x1="40" y1="526" x2="1160" y2="526" stroke="#E2E8F0" stroke-width="1"/>
+
+<rect x="40" y="534" width="1120" height="180" rx="8" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1"/>
+<text x="60" y="554" font-size="9" font-weight="700" fill="#3866FA">from agentrt import AirymaxClient</text>
+<text x="60" y="570" font-size="9" fill="#475569">client = AirymaxClient(endpoint="unix:///var/run/agentrt.sock")</text>
+<text x="60" y="590" font-size="9" font-weight="700" fill="#3866FA"># CognitionClient - 认知层</text>
+<text x="60" y="606" font-size="9" fill="#475569">task_id = client.cognition.submit_task(description="分析论文", priority=10)</text>
+<text x="60" y="626" font-size="9" font-weight="700" fill="#3866FA"># SafetyClient - 安全层</text>
+<text x="60" y="642" font-size="9" fill="#475569">perm = client.safety.check_capability(action="file.read", resource="/etc/config.yaml")</text>
+<text x="60" y="662" font-size="9" font-weight="700" fill="#3866FA"># ToolClient - 工具层</text>
+<text x="60" y="678" font-size="9" fill="#475569">result = client.tool.execute(name="web_search", args={"query": "agentrt"})</text>
+<text x="60" y="698" font-size="9" font-weight="700" fill="#3866FA"># ChatClient - 对话层</text>
+<text x="60" y="714" font-size="9" fill="#475569">response = client.chat.complete(messages=[{"role": "user", "content": "解释微内核"}], model="gpt-4")</text>
+
+<!-- ====== 技术精要 ====== -->
+<rect x="40" y="730" width="20" height="16" rx="4" fill="#3866FA"/>
+<text x="50" y="742" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">★</text>
+<text x="68" y="742" font-size="13" font-weight="700" fill="#0F172A">技术精要</text>
+<line x1="40" y1="756" x2="1160" y2="756" stroke="#3866FA" stroke-width="1"/>
+
+<rect x="40" y="764" width="370" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="40" y="764" width="5" height="118" fill="#3866FA"/>
+<text x="56" y="784" font-size="10" font-weight="700" fill="#0F172A">① 四语言同源 SDK</text>
+<text x="60" y="800" font-size="8" fill="#475569">• Python/Rust/Go/TypeScript 统一接口</text>
+<text x="60" y="812" font-size="8" fill="#475569">• 同步 + 异步双 API 模式</text>
+<text x="60" y="824" font-size="8" fill="#475569">• 上下文管理器自动资源释放</text>
+<text x="60" y="836" font-size="8" fill="#475569">• 覆盖应用层/系统级/云原生/Web</text>
+<text x="60" y="848" font-size="8" fill="#475569">• 同源 agentrt SDK 升级为 OS 级</text>
+<text x="60" y="860" font-size="8" fill="#475569">• 统一错误码对齐 agentrt_errno.h</text>
+
+<rect x="420" y="764" width="370" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="420" y="764" width="5" height="118" fill="#3866FA"/>
+<text x="436" y="784" font-size="10" font-weight="700" fill="#0F172A">② 四嵌套客户端</text>
+<text x="440" y="800" font-size="8" fill="#475569">• CognitionClient 认知层任务提交</text>
+<text x="440" y="812" font-size="8" fill="#475569">• SafetyClient 安全层 capability 校验</text>
+<text x="440" y="824" font-size="8" fill="#475569">• ToolClient 工具层执行</text>
+<text x="440" y="836" font-size="8" fill="#475569">• ChatClient 对话层 LLM 补全</text>
+<text x="440" y="848" font-size="8" fill="#475569">• 流式响应支持（TypeScript）</text>
+<text x="440" y="860" font-size="8" fill="#475569">• 覆盖 Agent 开发全部场景</text>
+
+<rect x="800" y="764" width="360" height="118" rx="6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2"/>
+<rect x="800" y="764" width="5" height="118" fill="#3866FA"/>
+<text x="816" y="784" font-size="10" font-weight="700" fill="#0F172A">③ 三传输 + 智能重试</text>
+<text x="820" y="800" font-size="8" fill="#475569">• 本地：Unix socket + io_uring 零拷贝</text>
+<text x="820" y="812" font-size="8" fill="#475569">• 远程：gRPC over mTLS 国密 TLS</text>
+<text x="820" y="824" font-size="8" fill="#475569">• 沙箱：Wasm 3.0 安全隔离</text>
+<text x="820" y="836" font-size="8" fill="#475569">• 指数退避重试（EAGAIN/ETIMEOUT/EBUSY）</text>
+<text x="820" y="848" font-size="8" fill="#475569">• 默认 30s 超时 · 支持取消</text>
+<text x="820" y="860" font-size="8" fill="#475569">• OpenTelemetry trace_id 注入</text>
+
+</svg>
+</div>
+</body>
+</html>

@@ -68,7 +68,7 @@ AirymaxOS 的 8 个子仓对应不同的内核子系统，各自承担不同的�
 | `airymaxos-kernel` | atoms/corekern | 内核极简（K-1）、接口契约化（K-2）、资源确定性（E-3）、临界区锁规则 | OS-KER、OS-IRON |
 | `airymaxos-services` | daemons | 服务隔离（K-3）、跨平台一致性（E-4）、用户态内存安全 | OS-STD、OS-DRV |
 | `airymaxos-security` | cupolas | 安全内生（E-1）、最小权限、LSM 钩子注册规则、capability 派生 | OS-SEC、OS-IRON |
-| `airymaxos-memory` | heapstore + memoryrovol | 内存管理规范、池化与泄漏检测、MGLRU 2.0、CXL/PMEM 分级 | OS-KER、OS-STD |
+| `airymaxos-memory` | heapstore + memoryrovol | 内存管理规范、池化与泄漏检测、MGLRU 多代 LRU、CXL/PMEM 分级 | OS-KER、OS-STD |
 | `airymaxos-cognition` | coreloopthree + frameworks | 双系统协同（C-1）、增量演化（C-2）、调度策略可插拔（K-4） | OS-STD、OS-ACC |
 | `airymaxos-cloudnative` | gateway + sdk | 接口契约化（K-2）、可观测性（E-2）、API 版本管理 | OS-STD、OS-ABI |
 | `airymaxos-system` | commons | 命名语义化（E-5）、错误可追溯（E-6）、文档即代码（E-7） | OS-STD、OS-BUILD |
@@ -1007,7 +1007,7 @@ AirymaxOS 工程标准每一条规则都可以追溯到 Airymax 五维正交 24 
 | 内核观 | 可插拔策略 | K-4 | sched_ext BPF 调度器、LSM 钩子（§4.3） |
 | 认知观 | 双系统协同 | C-1 | 快慢路径分层（热路径 C / 慢路径 Rust） |
 | 认知观 | 增量演化 | C-2 | 补丁序列中点可编译运行、git bisect 友好（§4.4） |
-| 认知观 | 记忆卷载 | C-3 | MGLRU 2.0、CXL/PMEM 分级 |
+| 认知观 | 记忆卷载 | C-3 | MGLRU 多代 LRU、CXL/PMEM 分级 |
 | 认知观 | 遗忘机制 | C-4 | 弃用接口清单、ABI 弃用流程 |
 | 工程观 | 安全内生 | E-1 | 强制安全编码、fault injection、LSM 集成 |
 | 工程观 | 可观测性 | E-2 | ftrace + eBPF + perf + 7 层自动化验证 |

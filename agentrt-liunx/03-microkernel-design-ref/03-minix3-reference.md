@@ -276,7 +276,7 @@ Minix3 将每个设备驱动作为一个独立的用户态进程运行。驱动�
 
 ### 6.3 AirymaxOS 的定位
 
-AirymaxOS 不是微内核，而是**微内核设计理念在 Linux 用户态的应用实践**。它从 Minix3 借鉴自愈和服务化思想，从 Zircon 借鉴 Capability 模型和内存抽象，从 seL4 借鉴形式化设计思维，最终在 Linux 生态上构建 Agent 操作系统。
+AirymaxOS 当前采用微内核化改造策略（基于 Linux 6.6 演进，非从零开发），最终目标是成为真正的微内核。它从 Minix3 借鉴自愈和服务化思想，从 Zircon 借鉴 Capability 模型和内存抽象，从 seL4 借鉴形式化设计思维，最终在 Linux 生态上构建 Agent 操作系统。
 
 ---
 

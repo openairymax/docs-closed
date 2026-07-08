@@ -63,7 +63,7 @@
 
 ### 6. [0.1.1_taskflow_vs_corekern_scheduler_对比报告.md](./0.1.1_taskflow_vs_corekern_scheduler_对比报告.md)
 
-taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方案（graph_engine 留 A 类微内核原语 + taskflow_advanced 作为 B 类 DAG 工作流编排 + pregel_engine 0.1.1 强制 max_workers=1 降级）。
+taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方案（graph_engine 留 A 类微核心原语 + taskflow_advanced 作为 B 类 DAG 工作流编排 + pregel_engine 0.1.1 强制 max_workers=1 降级）。
 
 ### 7. [0.1.1许可证全面审计报告.md](./0.1.1许可证全面审计报告.md)
 
