@@ -141,7 +141,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|
 | **问题** | 17 处文档将 agentrt（用户态）的 MicroCoreRT 误称为"微内核"，应为"微核心" |
 | **修复方案** | agentrt → "微核心"（micro-core）；agentrt-linux → "微内核"（micro-kernel） |
-| **修改文件** | [20-modules/01-kernel.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/20-modules/01-kernel.md)（5 处）、[Capital_Specifications/TERMINOLOGY.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/Capital_Specifications/TERMINOLOGY.md)（9 处）、[Capital_Specifications/are_standards/L1_runtime_interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/Capital_Specifications/are_standards/L1_runtime_interface.md)（4 处）、[Capital_Specifications/are_standards/README.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/Capital_Specifications/are_standards/README.md)（1 处） |
+| **修改文件** | [20-modules/01-kernel.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/20-modules/01-kernel.md)（5 处）、[50-specifications/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/10-terminology.md)（9 处）、[50-specifications/20-are-standards/01-l1-runtime-interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/20-are-standards/01-l1-runtime-interface.md)（4 处）、[50-specifications/20-are-standards/README.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/20-are-standards/README.md)（1 处） |
 | **修复状态** | ✅ 已修复（17 处） |
 
 #### P0-11: grep 自匹配修复
@@ -199,7 +199,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P1-04 | 文档版本控制机制未建立 | 中 | M0 第 2 周 | 文档完整性验证 |
 | P1-05 | 17 个文件仍缺少 Copyright 声明（后台 Agent 统计） | 高 | M0 第 1 周 | 文档完整性 Agent |
 | P1-06 | 39 个文件缺少 Linux 6.6 基线声明 | 中 | M0 第 2 周 | 文档完整性 Agent |
-| P1-07 | TERMINOLOGY.md 把 MicroCoreRT 称为"微内核运行时"（9 行） | 高 | M0 第 1 周 | 微核心概念 Agent |
+| P1-07 | 10-terminology.md 把 MicroCoreRT 称为"微内核运行时"（9 行） | 高 | M0 第 1 周 | 微核心概念 Agent |
 | P1-08 | 20-modules/01-kernel.md 把 agentrt 描述为有"微内核化"哲学（3 行） | 高 | M0 第 1 周 | 微核心概念 Agent |
 | P1-09 | README.md "正式英文名：AirymaxOS" 应为 "AirymaxAgentOS" | 中 | M0 第 2 周 | 命名体系 Agent |
 | P1-10 | 00-requirements/README.md "正式全称: AirymaxOS" 应为 "AirymaxAgentOS" | 中 | M0 第 2 周 | 命名体系 Agent |
@@ -214,7 +214,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ┌─────────────────────────────────────────────────────────────┐
 │ 高优先级（M0 第 1 周）—— 影响技术正确性与合规性           │
 │  P1-05 Copyright 补齐（17 文件）                           │
-│  P1-07 MicroCoreRT 微内核→微核心（TERMINOLOGY.md 9 行）    │
+│  P1-07 MicroCoreRT 微内核→微核心（10-terminology.md 9 行）    │
 │  P1-08 agentrt 微内核化→微核心（01-kernel.md 3 行）        │
 │  P1-01 核心设计文档扩至 400+ 行                            │
 │  P1-02 模块文档补充 Mermaid 图                              │
@@ -263,7 +263,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **微核心概念** | agentrt（用户态）使用"微核心"（micro-core） |
 | **微内核概念** | agentrt-linux（OS 发行版）使用"微内核"（micro-kernel） |
 | **开源文档已修复** | 17 处微核心/微内核概念误用已修正 |
-| **待修复（P1）** | TERMINOLOGY.md 中 MicroCoreRT 标准名称、README.md 正式英文名等（见第 3 章） |
+| **待修复（P1）** | 10-terminology.md 中 MicroCoreRT 标准名称、README.md 正式英文名等（见第 3 章） |
 
 ---
 
@@ -331,9 +331,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 13 | 120-development-process/02-maintainer-hierarchy.md | 合规性 | 1 | MGLRU 2.0 清零 |
 | 14 | 130-roadmap/06-acceptance-criteria.md | 就绪度 | 1 | grep 自匹配修复 |
 | 15 | 170-performance/README.md | 合规性 | 2 | MGLRU 2.0 清零 |
-| 16 | Capital_Specifications/TERMINOLOGY.md | 合规性 | 9 | 微核心/微内核概念修正 |
-| 17 | Capital_Specifications/are_standards/L1_runtime_interface.md | 合规性 | 4 | 微核心概念修正 |
-| 18 | Capital_Specifications/are_standards/README.md | 合规性 | 1 | 微核心概念修正 |
+| 16 | 50-specifications/10-terminology.md | 合规性 | 9 | 微核心/微内核概念修正 |
+| 17 | 50-specifications/20-are-standards/01-l1-runtime-interface.md | 合规性 | 4 | 微核心概念修正 |
+| 18 | 50-specifications/20-are-standards/README.md | 合规性 | 1 | 微核心概念修正 |
 | 19 | _review_0.1.1/comprehensive-review-report.md | 交付成果 | 新建 | 437 行完整审查报告 |
 
 ### 6.2 闭源文档修改清单（2 文件）
@@ -361,11 +361,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 10 | 30-interfaces/01-syscalls.md |
 | 11 | 30-interfaces/02-ipc-protocol.md |
 | 12 | 30-interfaces/03-sdk-api.md |
-| 13 | Capital_Specifications/are_standards/L1_runtime_interface.md |
-| 14 | Capital_Specifications/are_standards/L2_service_protocol.md |
-| 15 | Capital_Specifications/are_standards/L3_security_governance.md |
-| 16 | Capital_Specifications/project_erp/README.md |
-| 17 | Capital_Specifications/project_erp/manuals_module_requirements.md |
+| 13 | 50-specifications/20-are-standards/01-l1-runtime-interface.md |
+| 14 | 50-specifications/20-are-standards/02-l2-service-protocol.md |
+| 15 | 50-specifications/20-are-standards/03-l3-security-governance.md |
+| 16 | 50-specifications/70-project-erp/README.md |
+| 17 | 50-specifications/70-project-erp/03-manuals-module-requirements.md |
 
 > **注**：后台 Agent 统计显示仍有 17 个文件缺少 Copyright（P1-05），这是因为 Agent 在不同时间点统计，部分文件可能在 Agent 统计后被修改。待 M0 第 1 周最终确认。
 
@@ -423,8 +423,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | docs-closed "微内核原语"→"微核心原语" | ~30 处 | 7 个闭源文档文件 |
 | P1-10: "正式全称: AirymaxOS"→"AirymaxAgentOS" | 1 处 | 00-requirements/README.md |
 | P1-11: "正式英文名：AirymaxOS"→"AirymaxAgentOS" | 2 处 | README.md(L6,L13) |
-| P1-12: 仓库名 + agentos 遗留命名 | 7 处 | TERMINOLOGY.md + 60-driver-model/ + Capital_Specifications/ |
-| "AirymaxOS 不是微内核"表述调和 | 3 处 | 01-system-architecture.md + 03-minix3-reference.md + TERMINOLOGY.md |
+| P1-12: 仓库名 + agentos 遗留命名 | 7 处 | 10-terminology.md + 60-driver-model/ + 50-specifications/ |
+| "AirymaxOS 不是微内核"表述调和 | 3 处 | 01-system-architecture.md + 03-minix3-reference.md + 10-terminology.md |
 
 ### 8.3 微核心/微内核概念区分（Agent: 4c174328）
 
@@ -433,7 +433,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 01-kernel.md "微核心化"→"微核心"（L43,L85） | ✅ 已修复 |
 | handbook 内部矛盾（L344 vs L345） | ✅ 已修复 |
 | handbook 过时注记（L347） | ✅ 已修复 |
-| MicroCoreRT 命名统一（TERMINOLOGY.md + L1_runtime_interface.md） | ✅ 已在之前会话修复 |
+| MicroCoreRT 命名统一（10-terminology.md + L1_runtime_interface.md） | ✅ 已在之前会话修复 |
 
 **结论**：源文档中微核心/微内核概念误用已清零 ✅
 
@@ -462,11 +462,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 11 | docs-closed/README_zh.md | 微内核原语→微核心原语 | 1 处 |
 | 12 | docs/AirymaxAgentOS/README.md | 正式英文名修正 | 2 处 |
 | 13 | docs/AirymaxAgentOS/00-requirements/README.md | 正式全称修正 + Copyright 格式 | 2 处 |
-| 14 | docs/AirymaxAgentOS/Capital_Specifications/TERMINOLOGY.md | 仓库名 + 微内核表述调和 | 2 处 |
+| 14 | docs/AirymaxAgentOS/50-specifications/10-terminology.md | 仓库名 + 微内核表述调和 | 2 处 |
 | 15 | docs/AirymaxAgentOS/60-driver-model/01-device-model.md | agentos→agentrt | 2 处 |
 | 16 | docs/AirymaxAgentOS/60-driver-model/02-platform-driver.md | agentos→agentrt | 1 处 |
-| 17 | docs/AirymaxAgentOS/Capital_Specifications/README.md | 邮件域名修正 | 4 处 |
-| 18 | docs/AirymaxAgentOS/Capital_Specifications/agentrt_contract/README.md | agentrt_contract→agentrt_contract | 2 处 |
+| 17 | docs/AirymaxAgentOS/50-specifications/README.md | 邮件域名修正 | 4 处 |
+| 18 | docs/AirymaxAgentOS/50-specifications/10-contracts/README.md | agentrt_contract→agentrt_contract | 2 处 |
 | 19 | docs/AirymaxAgentOS/20-modules/01-kernel.md | 微核心化→微核心 | 2 处 |
 | 20 | docs/AirymaxAgentOS/10-architecture/01-system-architecture.md | "不是微内核"表述调和 | 1 处 |
 | 21 | docs-closed/agentrt-linux/03-microkernel-design-ref/03-minix3-reference.md | "不是微内核"表述调和 | 1 处 |

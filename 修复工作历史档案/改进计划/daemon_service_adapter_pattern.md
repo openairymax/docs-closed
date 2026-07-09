@@ -186,7 +186,7 @@ int protocol_decode(
 
 ## 📚 相关文档
 
-1. [AgentOS 架构设计原则](../ARCHITECTURAL_PRINCIPLES.md)
+1. [AgentOS 架构设计原则](../00-architectural-principles.md)
 2. [服务管理框架设计](./service_management_framework.md)
 3. [系统调用接口设计](./syscall_api_contract.md)
 

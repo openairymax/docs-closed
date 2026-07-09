@@ -152,7 +152,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | **问题** | 17 处概念误用——14 处将 MicroCoreRT（agentrt 用户态微核心）误称"微内核运行时"，3 处将 agentrt 误称"微内核化" |
 | **正确概念** | 微核心（MicroCoreRT，agentrt 用户态运行时）≠ 微内核（agentrt-linux OS 发行版的内核设计思想） |
 | **修复** | 批量替换：14 处 "微内核运行时" → "微核心运行时"；3 处 agentrt "微内核化" → "微核心化" |
-| **涉及文件** | TERMINOLOGY.md（9 处）、are_standards/L1_runtime_interface.md（4 处）、are_standards/README.md（1 处）、20-modules/01-kernel.md（3 处） |
+| **涉及文件** | 10-terminology.md（9 处）、are_standards/L1_runtime_interface.md（4 处）、are_standards/README.md（1 处）、20-modules/01-kernel.md（3 处） |
 
 #### P0-9: SSoT 规则编号注册表——OS-KER-001 四重冲突（工程标准）✅ 已修复
 
@@ -213,14 +213,14 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | P1-4 | strncpy 矛盾：OS-STD-CODE-003 禁止 strncpy，但安全编码示例中使用 strncpy | 01-coding-standards.md + C_Cpp_secure_coding_standard.md | 编码规范一致性 | M0 第 3 周 |
 | P1-5 | 缩进规则矛盾：OS-KER-005（Tab 8）与 OS-STD-FMT-001（Tab 8）重复但表述不一致 | 02-code-format.md | 规则表述统一 | M0 第 3 周 |
 | P1-6 | 覆盖率阈值矛盾：不同文档中代码覆盖率阈值不一致（80% vs 90%） | 06-toolchain-and-automation.md + 08-compliance-checklist.md | 验收标准一致性 | M0 第 3 周 |
-| P1-7 | [SC] 头文件数量矛盾：TERMINOLOGY.md 声称 4 个 [SC] 头文件，其他文档引用 6 个 | TERMINOLOGY.md + 10-architecture/05-adrs.md | IRON-9 v2 共享契约层定义 | M0 第 3 周 |
+| P1-7 | [SC] 头文件数量矛盾：10-terminology.md 声称 4 个 [SC] 头文件，其他文档引用 6 个 | 10-terminology.md + 10-architecture/05-adrs.md | IRON-9 v2 共享契约层定义 | M0 第 3 周 |
 | P1-8 | CoreLoopThree kthread 实现替代方案论述不足 | 10-architecture/05-adrs.md | 设计决策可追溯性 | M1 第 1 周 |
 | P1-9 | 3 篇核心设计文档行数不足 400 行 | 20-modules/06-cloudnative.md + 07-system.md + 08-tests.md | 设计详细度 | M1 第 1 周 |
 | P1-10 | 2 篇模块文档缺失 Mermaid 图 | 20-modules/07-system.md + 08-tests.md | 可视化表达 | M1 第 1 周 |
 | P1-11 | 命名体系：README.md "正式英文名：AirymaxOS" 应为 "AirymaxAgentOS" | README.md | 命名规范性 | M0 第 1 周 |
-| P1-12 | 命名体系：TERMINOLOGY.md L246 "代码仓库名 AirymaxOS" 与 README.md L7 "仓库名 agentrt-linux" 矛盾 | TERMINOLOGY.md | 命名规范性 | M0 第 1 周 |
+| P1-12 | 命名体系：10-terminology.md L246 "代码仓库名 AirymaxOS" 与 README.md L7 "仓库名 agentrt-linux" 矛盾 | 10-terminology.md | 命名规范性 | M0 第 1 周 |
 | P1-13 | agentrt README 使用"微内核原语"描述 agentrt（应为"微核心原语"） | agentrt/README.md + README_zh.md | 跨项目概念一致性 | M0 第 1 周 |
-| P1-14 | AirymaxOS "不是微内核"表述与用户标准"微内核（是真正的内核）"矛盾 | 10-architecture/ + TERMINOLOGY.md | 产品定位准确性 | M0 第 2 周（需用户确认定位） |
+| P1-14 | AirymaxOS "不是微内核"表述与用户标准"微内核（是真正的内核）"矛盾 | 10-architecture/ + 10-terminology.md | 产品定位准确性 | M0 第 2 周（需用户确认定位） |
 
 ### 4.2 P1 修复优先级
 
@@ -366,7 +366,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 ### 8.1 M0 阶段收尾工作（第 1 周）
 
 1. **修复工时 4 倍矛盾**（P0-13）：统一开源/闭源工时基准
-2. **修复命名体系 3 项 P1**（P1-11/P1-12/P1-13）：README.md 正式英文名、TERMINOLOGY.md 仓库名、agentrt README 微核心原语
+2. **修复命名体系 3 项 P1**（P1-11/P1-12/P1-13）：README.md 正式英文名、10-terminology.md 仓库名、agentrt README 微核心原语
 3. **完成 OS-ACC-110 CI 集成**：将自动化验证脚本集成 CI/CD
 
 ### 8.2 M0 阶段后续工作（第 2-3 周）
@@ -403,9 +403,9 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | 9 | 20-modules/01-kernel.md | P0 技术+概念 | SCHED_EXT 复用（2 处）+ 微核心概念（3 处） |
 | 10 | 40-dataflows/02-memory-flow.md | P0 技术 | float→Q16.16 定点数（5 处 + 新增类型定义） |
 | 11 | 40-dataflows/01-cognition-flow.md | P0 技术 | io_uring→kfifo+wait_event（3 处） |
-| 12 | Capital_Specifications/TERMINOLOGY.md | 概念修正 | 微内核运行时→微核心运行时（9 处） |
-| 13 | Capital_Specifications/are_standards/L1_runtime_interface.md | 概念修正 | 微内核运行时→微核心运行时（4 处） |
-| 14 | Capital_Specifications/are_standards/README.md | 概念修正 | 微内核核心原语→微核心原语（1 处） |
+| 12 | 50-specifications/10-terminology.md | 概念修正 | 微内核运行时→微核心运行时（9 处） |
+| 13 | 50-specifications/20-are-standards/01-l1-runtime-interface.md | 概念修正 | 微内核运行时→微核心运行时（4 处） |
+| 14 | 50-specifications/20-are-standards/README.md | 概念修正 | 微内核核心原语→微核心原语（1 处） |
 | 15 | 50-engineering-standards/07-maintainers-and-governance.md | SSoT | 第 10 章全面重写 + OS-KER-008 新增 |
 | 16 | 50-engineering-standards/01-coding-standards.md | SSoT | 旧编号引用更新（4 处）+ OS-KER-008 新增 |
 | 17 | 50-engineering-standards/02-code-format.md | SSoT | OS-KER-001→OS-KER-005（5 处 replace_all） |

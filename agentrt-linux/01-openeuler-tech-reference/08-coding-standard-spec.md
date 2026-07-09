@@ -51,7 +51,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | Linux 内核提交规范 | `Documentation/process/submitting-patches.rst` | OLK-6.6 内核文档 |
 | Linux 内核测试文档 | `Documentation/dev-tools/` | OLK-6.6 内核文档 |
 | agentrt-linux 工程标准 | `agentrt-linux基本工程标准规范.md` | `docs-closed/agentrt-linux/` |
-| 五维正交 24 原则 | `ARCHITECTURAL_PRINCIPLES.md` | agentrt 开源文档 |
+| 五维正交 24 原则 | `00-architectural-principles.md` | agentrt 开源文档 |
 
 ### 1.3 三段式参考方法落地
 
@@ -1082,7 +1082,7 @@ agentrt-linux 与参考发行版编码规范的核心差异可以归纳为"三�
 - [闭源 参考发行版 IPC 规范](06-ipc-spec.md)
 - [闭源 参考发行版 Rust 支持规范](07-rust-support-spec.md)
 - [开源 工程标准文档](../../docs/AirymaxAgentOS/50-engineering-standards/)
-- [开源 五维正交 24 原则](../../docs/ARCHITECTURAL_PRINCIPLES.md)
+- [开源 五维正交 24 原则](../../docs/00-architectural-principles.md)
 
 ### 17.2 版本与维护
 

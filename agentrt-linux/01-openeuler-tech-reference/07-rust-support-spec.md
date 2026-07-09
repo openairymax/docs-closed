@@ -1331,8 +1331,8 @@ Rust 内核模块的设计遵循"零成本抽象"美学原则。从设计美学�
 - `../02-olk66-source-mapping/07-rust-mapping.md` — Rust 子系统源码映射
 
 **编码规范**：
-- `docs/AirymaxAgentRT/Capital_Specifications/coding_standard/Rust_coding_style_standard.md` — Rust 编码风格标准
-- `docs/AirymaxAgentRT/Capital_Specifications/coding_standard/Rust_secure_coding_standard.md` — Rust 安全编码标准
+- `docs/AirymaxAgentRT/50-specifications/30-coding-standard/13-rust-coding-style.md` — Rust 编码风格标准
+- `docs/AirymaxAgentRT/50-specifications/30-coding-standard/14-rust-secure-coding.md` — Rust 安全编码标准
 
 ### 13.2 版本维护
 

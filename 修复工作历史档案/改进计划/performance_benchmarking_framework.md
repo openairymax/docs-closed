@@ -530,10 +530,10 @@ AGENTOS_API agentos_error_t agentos_benchmark_detect_regression(
 
 ### A.1 相关文档
 
-- [service_management_framework.md](../Capital_Architecture/service_management_framework.md) - 服务管理框架设计
-- [performance-tuning.md](../Capital_Guides/performance-tuning.md) - 性能调优指南
-- [testing.md](../Capital_Guides/testing.md) - 测试指南
-- [ARCHITECTURAL_PRINCIPLES.md](../ARCHITECTURAL_PRINCIPLES.md) - 架构原则
+- [service_management_framework.md](../10-architecture/service_management_framework.md) - 服务管理框架设计
+- [performance-tuning.md](../60-guides/performance-tuning.md) - 性能调优指南
+- [testing.md](../60-guides/testing.md) - 测试指南
+- [00-architectural-principles.md](../00-architectural-principles.md) - 架构原则
 
 ### A.2 参考实现
 

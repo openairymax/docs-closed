@@ -123,7 +123,7 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 - 开源设计文档：`docs/AirymaxAgentOS/README.md`（19 模块三层体系）
 - 工程标准规范：`docs/AirymaxAgentOS/50-engineering-standards/README.md`（IRON-9 v2 定义）
-- Airymax 架构原则：`docs/ARCHITECTURAL_PRINCIPLES.md`（五维正交 24 原则）
+- Airymax 架构原则：`docs/00-architectural-principles.md`（五维正交 24 原则）
 - agentrt 工程标准：`docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
 
 ---

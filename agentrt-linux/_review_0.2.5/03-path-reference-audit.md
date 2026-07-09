@@ -22,24 +22,24 @@
 
 共发现 **29 处**断链，归为 7 组。
 
-### 组 A：`../../ARCHITECTURAL_PRINCIPLES.md` 路径错误（10 处）
+### 组 A：`../../00-architectural-principles.md` 路径错误（10 处）
 
-实际文件位于 `docs/AirymaxRT/ARCHITECTURAL_PRINCIPLES.md`，但链接解析到 `docs/ARCHITECTURAL_PRINCIPLES.md`（不存在）。正确相对路径应为 `../../AirymaxRT/ARCHITECTURAL_PRINCIPLES.md`。
+实际文件位于 `docs/AirymaxRT/00-architectural-principles.md`，但链接解析到 `docs/00-architectural-principles.md`（不存在）。正确相对路径应为 `../../AirymaxRT/00-architectural-principles.md`。
 
 | 文件 | 行号 | 链接文本 | 错误目标 |
 |------|------|----------|----------|
-| `00-requirements/01-business-requirements.md` | 552 | Airymax 架构设计原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `00-requirements/02-functional-requirements.md` | 353 | Airymax 架构设计原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `00-requirements/03-non-functional-requirements.md` | 822 | Airymax 架构设计原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `00-requirements/README.md` | 402 | Airymax 架构设计原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `10-architecture/02-five-dimensional-principles.md` | 9 | ARCHITECTURAL_PRINCIPLES.md | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `10-architecture/02-five-dimensional-principles.md` | 557 | 架构原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `10-architecture/04-engineering-baseline.md` | 414 | 架构原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `10-architecture/05-adrs.md` | 1073 | 架构原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `10-architecture/README.md` | 276 | 架构原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
-| `40-dataflows/README.md` | 148 | Airymax 架构设计原则 | `../../ARCHITECTURAL_PRINCIPLES.md` |
+| `00-requirements/01-business-requirements.md` | 552 | Airymax 架构设计原则 | `../../00-architectural-principles.md` |
+| `00-requirements/02-functional-requirements.md` | 353 | Airymax 架构设计原则 | `../../00-architectural-principles.md` |
+| `00-requirements/03-non-functional-requirements.md` | 822 | Airymax 架构设计原则 | `../../00-architectural-principles.md` |
+| `00-requirements/README.md` | 402 | Airymax 架构设计原则 | `../../00-architectural-principles.md` |
+| `10-architecture/02-five-dimensional-principles.md` | 9 | 00-architectural-principles.md | `../../00-architectural-principles.md` |
+| `10-architecture/02-five-dimensional-principles.md` | 557 | 架构原则 | `../../00-architectural-principles.md` |
+| `10-architecture/04-engineering-baseline.md` | 414 | 架构原则 | `../../00-architectural-principles.md` |
+| `10-architecture/05-adrs.md` | 1073 | 架构原则 | `../../00-architectural-principles.md` |
+| `10-architecture/README.md` | 276 | 架构原则 | `../../00-architectural-principles.md` |
+| `40-dataflows/README.md` | 148 | Airymax 架构设计原则 | `../../00-architectural-principles.md` |
 
-**建议修复**：将上述 10 处 `../../ARCHITECTURAL_PRINCIPLES.md` 统一改为 `../../AirymaxRT/ARCHITECTURAL_PRINCIPLES.md`。
+**建议修复**：将上述 10 处 `../../00-architectural-principles.md` 统一改为 `../../AirymaxRT/00-architectural-principles.md`。
 
 ### 组 B：`../_review_0.1.1/` 目录不存在（2 处）
 
@@ -95,20 +95,20 @@
 
 ### 组 F：`AirymaxAgentRT/agentrt_contract/` 双重命名错误（1 处）
 
-`50-engineering-standards/20-contracts/README.md:276` 引用 `../../../AirymaxAgentRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。实际路径为 `docs/AirymaxRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。存在 **两处**命名错误：
+`50-engineering-standards/20-contracts/README.md:276` 引用 `../../../AirymaxAgentRT/50-specifications/10-contracts/03-protocol-contract.md`。实际路径为 `docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md`。存在 **两处**命名错误：
 - 目录名 `AirymaxAgentRT` 应为 `AirymaxRT`
 - 子目录名 `agentrt_contract` 应为 `agentrt_contract`
 
-正确相对路径应为 `../../../AirymaxRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。
+正确相对路径应为 `../../../AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md`。
 
-### 组 G：`../../AirymaxAgentRT/Basic_Theories/` 目录名错误（2 处）
+### 组 G：`../../AirymaxAgentRT/00-basic-theories/` 目录名错误（2 处）
 
-`50-engineering-standards/30-runtime-interfaces/README.md` 引用 `../../AirymaxAgentRT/Basic_Theories/`。实际目录为 `docs/AirymaxRT/Basic_Theories/`（`AirymaxRT` 而非 `AirymaxAgentRT`）。两个被引用文件本身存在，仅目录名错误。
+`50-engineering-standards/30-runtime-interfaces/README.md` 引用 `../../AirymaxAgentRT/00-basic-theories/`。实际目录为 `docs/AirymaxRT/00-basic-theories/`（`AirymaxRT` 而非 `AirymaxAgentRT`）。两个被引用文件本身存在，仅目录名错误。
 
 | 文件 | 行号 | 链接文本 | 错误目标 |
 |------|------|----------|----------|
-| `50-engineering-standards/30-runtime-interfaces/README.md` | 503 | 体系并行论 | `../../AirymaxAgentRT/Basic_Theories/CN_01_体系并行.md` |
-| `50-engineering-standards/30-runtime-interfaces/README.md` | 504 | 系统设计原则 | `../../AirymaxAgentRT/Basic_Theories/CN_04_系统设计原则.md` |
+| `50-engineering-standards/30-runtime-interfaces/README.md` | 503 | 体系并行论 | `../../AirymaxAgentRT/00-basic-theories/01-mcis-cn.md` |
+| `50-engineering-standards/30-runtime-interfaces/README.md` | 504 | 系统设计原则 | `../../AirymaxAgentRT/00-basic-theories/04-design-principles-cn.md` |
 
 **建议修复**：将 `../../AirymaxAgentRT/` 改为 `../../AirymaxRT/`。
 
@@ -179,7 +179,7 @@
 
 ### 4.1 `docs/AirymaxAgentOS/` 应为 `docs/AirymaxOS/`（148 处，16 个文件）
 
-**严重问题**：实际物理目录为 `docs/AirymaxOS/`（短名），但文档中 148 处使用 `docs/AirymaxAgentOS/`（正式英文名）作为路径引用。`AirymaxAgentOS` 是文档中规定的"正式英文名"，`AirymaxOS` 是"简称"（见 `README.md:6`、`TERMINOLOGY.md:246-248`），但物理目录使用的是简称。**当 `AirymaxAgentOS` 出现在路径上下文（尤其是可执行 shell 命令）中时，全部失效。**
+**严重问题**：实际物理目录为 `docs/AirymaxOS/`（短名），但文档中 148 处使用 `docs/AirymaxAgentOS/`（正式英文名）作为路径引用。`AirymaxAgentOS` 是文档中规定的"正式英文名"，`AirymaxOS` 是"简称"（见 `README.md:6`、`10-terminology.md:246-248`），但物理目录使用的是简称。**当 `AirymaxAgentOS` 出现在路径上下文（尤其是可执行 shell 命令）中时，全部失效。**
 
 按文件分布（按频次降序）：
 
@@ -187,7 +187,7 @@
 |------|----------|----------|
 | `130-roadmap/06-acceptance-criteria.md` | 101 | **高**（验收命令，`find`/`grep` 会直接失败） |
 | `50-engineering-standards/08-compliance-checklist.md` | 15 | **高**（合规检查脚本，`find`/`grep`/`for` 循环会失败） |
-| `TERMINOLOGY.md` | 7 | 中（路径元信息 + 参考文献引用） |
+| `10-terminology.md` | 7 | 中（路径元信息 + 参考文献引用） |
 | `50-engineering-standards/00-engineering-standards-handbook.md` | 5 | 中 |
 | `50-engineering-standards/README.md` | 3 | 中 |
 | `50-engineering-standards/50-project-erp/README.md` | 3 | 中 |
@@ -217,25 +217,25 @@
 
 | 文件 | 行号 | 错误路径引用 |
 |------|------|--------------|
-| `TERMINOLOGY.md` | 816 | `docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md` |
-| `TERMINOLOGY.md` | 817 | `docs/AirymaxAgentRT/Capital_Specifications/README.md` |
-| `50-engineering-standards/20-contracts/README.md` | 30 | `docs/AirymaxAgentRT/Capital_Specifications/agentrt_contract/` |
+| `10-terminology.md` | 816 | `docs/AirymaxAgentRT/50-specifications/10-terminology.md` |
+| `10-terminology.md` | 817 | `docs/AirymaxAgentRT/50-specifications/README.md` |
+| `50-engineering-standards/20-contracts/README.md` | 30 | `docs/AirymaxAgentRT/50-specifications/10-contracts/` |
 
 **建议修复**：将路径上下文中的 `AirymaxAgentRT` 改为 `AirymaxRT`。其中第 30 行同时存在 `agentrt_contract` 应为 `agentrt_contract` 的错误（见 4.3）。
 
 ### 4.3 `agentrt_contract` 应为 `agentrt_contract`（命名不一致）
 
-实际子目录为 `Capital_Specifications/agentrt_contract/`，但文档中多处使用 `agentrt_contract`。
+实际子目录为 `50-specifications/10-contracts/`，但文档中多处使用 `agentrt_contract`。
 
 | 文件 | 行号 | 类型 | 内容 |
 |------|------|------|------|
-| `50-engineering-standards/20-contracts/README.md` | 30 | 路径引用 | `docs/AirymaxAgentRT/Capital_Specifications/agentrt_contract/` |
+| `50-engineering-standards/20-contracts/README.md` | 30 | 路径引用 | `docs/AirymaxAgentRT/50-specifications/10-contracts/` |
 | `50-engineering-standards/20-contracts/README.md` | 276 | 断链（见组 F） | `../../../AirymaxAgentRT/Capital_Specificates/agentrt_contract/protocol_contract.md` |
-| `50-engineering-standards/README.md` | 115 | 迁移说明（散文） | `原 Capital_Specifications/agentrt_contract/` |
+| `50-engineering-standards/README.md` | 115 | 迁移说明（散文） | `原 50-specifications/10-contracts/` |
 | `50-engineering-standards/20-contracts/syscall_api_contract.md` | 8, 412 | 链接文本 | `[agentrt_contract README](README.md)` |
 | `50-engineering-standards/20-contracts/ipc_protocol_contract.md` | 8, 397 | 链接文本 | `[agentrt_contract README](README.md)` |
 
-**说明**：`20-contracts/README.md:115` 的"原 Capital_Specifications/agentrt_contract/"是迁移历史描述，可能记录的是旧名；但当前实际目录名为 `agentrt_contract`，建议核实迁移前的真实目录名后统一表述。`syscall_api_contract.md` 与 `ipc_protocol_contract.md` 的链接文本"agentrt_contract README"指向本地 `README.md`（链接本身有效），但文本使用了与实际子目录名（`20-contracts`）不一致的历史名，建议改为"契约规范 README"或"20-contracts README"。
+**说明**：`20-contracts/README.md:115` 的"原 50-specifications/10-contracts/"是迁移历史描述，可能记录的是旧名；但当前实际目录名为 `agentrt_contract`，建议核实迁移前的真实目录名后统一表述。`syscall_api_contract.md` 与 `ipc_protocol_contract.md` 的链接文本"agentrt_contract README"指向本地 `README.md`（链接本身有效），但文本使用了与实际子目录名（`20-contracts`）不一致的历史名，建议改为"契约规范 README"或"20-contracts README"。
 
 ### 4.4 `50-engineering-standards/` 文档计数过时
 
@@ -407,7 +407,7 @@
 | 优先级 | 问题 | 理由 |
 |--------|------|------|
 | **P0** | `docs/AirymaxAgentOS/` 路径错误（148 处） | 直接导致 `130-roadmap/06-acceptance-criteria.md`（101 处）与 `08-compliance-checklist.md`（15 处）的验收/合规命令运行失败 |
-| **P0** | 29 处断链 | 文档导航失效，特别是 `../../ARCHITECTURAL_PRINCIPLES.md`（10 处）跨 4 个核心目录 |
+| **P0** | 29 处断链 | 文档导航失效，特别是 `../../00-architectural-principles.md`（10 处）跨 4 个核心目录 |
 | **P1** | ADR 描述错位（`01-system-architecture.md`） | 架构决策摘要与权威定义矛盾，误导读者 |
 | **P1** | "10 个核心 ADR"过时计数（4 处） | 与实际 14 个 ADR 不符 |
 | **P1** | 5 处 TOC 锚点错误 | 目录跳转失效 |

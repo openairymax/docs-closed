@@ -3,7 +3,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 # agentrt-linux（AirymaxOS）技术标准与规范问题点审查报告
 
 > **审查日期**: 2026-07-09
-> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agentrt-linux/（闭源文档）+ docs/AirymaxAgentRT/Capital_Specifications/
+> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agentrt-linux/（闭源文档）+ docs/AirymaxAgentRT/50-specifications/
 > **参考基线**:
 > - Linux 6.6 内核源码：`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6`
 > - seL4 微内核源码：`/home/spharx/SpharxWorks/01Reference/seL4-master`
@@ -58,7 +58,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 文档类别 | 文件数 | 总行数 | 覆盖率 |
 |---------|--------|--------|--------|
 | 开源文档（docs/AirymaxAgentOS/） | 125 | ~80,000+ | 100% |
-| RT 侧文档（docs/AirymaxAgentRT/Capital_Specifications/） | ~15 | ~8,000+ | 100% |
+| RT 侧文档（docs/AirymaxAgentRT/50-specifications/） | ~15 | ~8,000+ | 100% |
 | 闭源文档（docs-closed/agentrt-linux/） | ~35 | ~20,000+ | 100% |
 | OLK-6.6 源码验证路径 | 12 | — | 关键路径全覆盖 |
 | seL4 源码验证路径 | 10 | — | 关键路径全覆盖 |
@@ -298,23 +298,23 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 命名体系一致性 / IRON-9 v2 跨项目共享 |
-| **问题描述** | 项目记忆明确要求"agentos_ → agentrt_ 改名彻底决策（不留兼容别名头）"，但 AirymaxAgentOS 文档中仍存在三种代码前缀混用：(1) `agentrt_*`（OS 侧主流前缀）；(2) `agentos_*`（RT 侧 Capital_Specifications/agentrt_contract/ 目录名残留）；(3) `are_*`（L2_service_protocol.md 中 IPC 消息头类型名 `are_ipc_msg_header_t`、错误码前缀 `EAGENTRT_` 变体）。三种前缀导致 IRON-9 v2 [SC] 共享契约层无法实现"两端代码字面一致"。 |
-| **验证命令** | `grep -rn "agentos_\|are_ipc\|EAGENTRT_" docs/AirymaxAgentOS/ docs/AirymaxAgentRT/Capital_Specifications/` |
-| **涉及文件** | docs/AirymaxAgentRT/Capital_Specifications/agentrt_contract/ + [L2_service_protocol.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L2_service_protocol.md) + [L1_runtime_interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L1_runtime_interface.md) |
+| **问题描述** | 项目记忆明确要求"agentos_ → agentrt_ 改名彻底决策（不留兼容别名头）"，但 AirymaxAgentOS 文档中仍存在三种代码前缀混用：(1) `agentrt_*`（OS 侧主流前缀）；(2) `agentos_*`（RT 侧 50-specifications/10-contracts/ 目录名残留）；(3) `are_*`（L2_service_protocol.md 中 IPC 消息头类型名 `are_ipc_msg_header_t`、错误码前缀 `EAGENTRT_` 变体）。三种前缀导致 IRON-9 v2 [SC] 共享契约层无法实现"两端代码字面一致"。 |
+| **验证命令** | `grep -rn "agentos_\|are_ipc\|EAGENTRT_" docs/AirymaxAgentOS/ docs/AirymaxAgentRT/50-specifications/` |
+| **涉及文件** | docs/AirymaxAgentRT/50-specifications/10-contracts/ + [L2_service_protocol.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L2_service_protocol.md) + [L1_runtime_interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L1_runtime_interface.md) |
 | **修复方案** | 统一为 `agentrt_` 前缀（与改名决策一致）：(1) 将 RT 侧 `agentrt_contract/` 目录重命名为 `agentrt_contract/`；(2) 将 `are_ipc_msg_header_t` 改为 `airymax_ipc_msg_hdr_t`（与 TS-P0-01 修复一致）；(3) 将 `EAGENTRT_*` 错误码前缀改为 `AGENTRT_E*`（与 TS-P0-02 修复一致）。 |
 
 ---
 
-### TS-P0-11: 两份"唯一权威"TERMINOLOGY.md 互相冲突
+### TS-P0-11: 两份"唯一权威"10-terminology.md 互相冲突
 
 | 属性 | 内容 |
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 命名体系一致性 / 文档完整性 |
-| **问题描述** | 存在两份均声称"唯一权威"的 TERMINOLOGY.md：(1) `docs/AirymaxAgentOS/TERMINOLOGY.md`（OS 侧，列出 6 个 [SC] 头文件）；(2) `docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md`（RT 侧，仍列 4 个 [SC] 头文件，且将 MicroCoreRT 称为"微内核运行时"）。两份文档对同一术语的定义存在冲突，违反 SSoT 单一事实源原则。 |
-| **验证命令** | `diff docs/AirymaxAgentOS/TERMINOLOGY.md docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md` |
-| **涉及文件** | [docs/AirymaxAgentOS/TERMINOLOGY.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/TERMINOLOGY.md) + [docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md) |
-| **修复方案** | 以 OS 侧 TERMINOLOGY.md 为唯一权威（已修复 6 个 [SC] 头文件 + 微核心概念），删除或重定向 RT 侧 TERMINOLOGY.md。根据 v0.2.0 报告，Capital_Specifications 内容应已整合到 50-engineering-standards，需确认 RT 侧文件是否已清理。 |
+| **问题描述** | 存在两份均声称"唯一权威"的 10-terminology.md：(1) `docs/AirymaxAgentOS/10-terminology.md`（OS 侧，列出 6 个 [SC] 头文件）；(2) `docs/AirymaxAgentRT/50-specifications/10-terminology.md`（RT 侧，仍列 4 个 [SC] 头文件，且将 MicroCoreRT 称为"微内核运行时"）。两份文档对同一术语的定义存在冲突，违反 SSoT 单一事实源原则。 |
+| **验证命令** | `diff docs/AirymaxAgentOS/10-terminology.md docs/AirymaxAgentRT/50-specifications/10-terminology.md` |
+| **涉及文件** | [docs/AirymaxAgentOS/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/10-terminology.md) + [docs/AirymaxAgentRT/50-specifications/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentRT/50-specifications/10-terminology.md) |
+| **修复方案** | 以 OS 侧 10-terminology.md 为唯一权威（已修复 6 个 [SC] 头文件 + 微核心概念），删除或重定向 RT 侧 10-terminology.md。根据 v0.2.0 报告，Capital_Specifications 内容应已整合到 50-engineering-standards，需确认 RT 侧文件是否已清理。 |
 
 ---
 
@@ -324,9 +324,9 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | IRON-9 v2 跨项目共享 / 架构原则一致性 |
-| **问题描述** | IRON-9 v2 三层共享模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层）在 OS 侧文档中定义完整（[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md)），但在 RT 侧（AirymaxAgentRT/Capital_Specifications/）完全缺失。RT 侧文档未提及 [SC]/[SS]/[IND] 标注，导致 agentrt 开发者无法知道哪些代码需要与 agentrt-linux 共享。 |
-| **验证命令** | `grep -rn "\[SC\]\|\[SS\]\|\[IND\]" docs/AirymaxAgentRT/Capital_Specifications/` |
-| **涉及文件** | docs/AirymaxAgentRT/Capital_Specifications/ 全部文件 |
+| **问题描述** | IRON-9 v2 三层共享模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层）在 OS 侧文档中定义完整（[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md)），但在 RT 侧（AirymaxAgentRT/50-specifications/）完全缺失。RT 侧文档未提及 [SC]/[SS]/[IND] 标注，导致 agentrt 开发者无法知道哪些代码需要与 agentrt-linux 共享。 |
+| **验证命令** | `grep -rn "\[SC\]\|\[SS\]\|\[IND\]" docs/AirymaxAgentRT/50-specifications/` |
+| **涉及文件** | docs/AirymaxAgentRT/50-specifications/ 全部文件 |
 | **修复方案** | 在 RT 侧文档中补充 IRON-9 v2 三层共享模型说明，明确标注 agentrt 中哪些头文件属于 [SC] 层（6 个）、哪些 API 属于 [SS] 层、哪些组件属于 [IND] 层。与 OS 侧 [120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md) 保持一致。 |
 
 ---
@@ -416,7 +416,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 | 属性 | 内容 |
 |------|------|
 | **严重级别** | P1 |
-| **问题描述** | OS 侧文档已修复 17 处微核心/微内核概念误用，但 RT 侧 [Capital_Specifications/TERMINOLOGY.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentRT/Capital_Specifications/TERMINOLOGY.md) 仍有 9 行将 MicroCoreRT 称为"微内核运行时"（应为"微核心运行时"）。 |
+| **问题描述** | OS 侧文档已修复 17 处微核心/微内核概念误用，但 RT 侧 [50-specifications/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentRT/50-specifications/10-terminology.md) 仍有 9 行将 MicroCoreRT 称为"微内核运行时"（应为"微核心运行时"）。 |
 | **修复方案** | RT 侧同步修复：agentrt → "微核心"（micro-core）；agentrt-linux → "微内核"（micro-kernel）。 |
 | **修复计划** | M0 第 1 周 |
 
@@ -623,7 +623,7 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 | 前缀 | 使用位置 | 应统一为 | 修复项 |
 |------|---------|---------|--------|
 | `agentrt_*` | OS 侧主流前缀 | `agentrt_*`（保留） | — |
-| `agentos_*` | RT 侧 Capital_Specifications/agentrt_contract/ | `agentrt_*` | TS-P0-10 |
+| `agentos_*` | RT 侧 50-specifications/10-contracts/ | `agentrt_*` | TS-P0-10 |
 | `are_*` | L2_service_protocol.md IPC 头 + L1_runtime_interface.md 错误码 | `airymax_*` / `AGENTRT_E*` | TS-P0-01 + TS-P0-02 |
 
 ---
@@ -836,7 +836,7 @@ grep -rn "0x41475453\|AGTS" docs/AirymaxAgentOS/
 | P0 | 消解 OS-KER-013/014/015 三重冲突 | 4h | TS-P0-08 |
 | P0 | 修复 08-compliance-checklist.md 4/4→6/6 | 1h | TS-P0-09 |
 | P0 | 统一代码前缀为 agentrt_ | 8h | TS-P0-10 |
-| P0 | 统一 TERMINOLOGY.md 为唯一权威 | 2h | TS-P0-11 |
+| P0 | 统一 10-terminology.md 为唯一权威 | 2h | TS-P0-11 |
 | P0 | RT 侧补充 IRON-9 v2 三层模型 | 6h | TS-P0-12 |
 | P0 | 修复工时 4 倍矛盾 | 2h | TS-P0-13 |
 | **合计** | — | **49h** | — |
@@ -893,7 +893,7 @@ grep -rn "0x41475453\|AGTS" docs/AirymaxAgentOS/
 | 8 | OS-KER 编号无冲突 | `grep -rn "OS-KER-013\|OS-KER-014\|OS-KER-015" docs/` | 每编号仅 1 种含义 |
 | 9 | [SC] 头文件 6/6 一致 | `grep -rn "4/4 headers" docs/` | 0 处 |
 | 10 | 代码前缀统一 | `grep -rn "agentos_\|are_ipc\|EAGENTRT_" docs/` | 0 处 |
-| 11 | TERMINOLOGY.md 唯一 | `find docs/ -name "TERMINOLOGY.md"` | 仅 1 个权威 |
+| 11 | 10-terminology.md 唯一 | `find docs/ -name "10-terminology.md"` | 仅 1 个权威 |
 | 12 | RT 侧有 [SC]/[SS]/[IND] | `grep -rn "\[SC\]\|\[SS\]\|\[IND\]" docs/AirymaxAgentRT/` | 有标注 |
 | 13 | 工时一致 | `grep -rn "580h\|2290h" docs/` | 关系明确 |
 | 14 | capability 数量一致 | `grep -rn "capability.*38\|capability.*41" docs/` | 统一为 41 |
@@ -950,7 +950,7 @@ grep -rn "0x41475453\|AGTS" docs/AirymaxAgentOS/
 | TS-P0-08 | P0 | OS-KER-013/014/015 编号三重冲突 | 待修复 |
 | TS-P0-09 | P0 | 08-compliance-checklist 仍报告 4/4 | 待修复 |
 | TS-P0-10 | P0 | 代码前缀三重冲突 | 待修复 |
-| TS-P0-11 | P0 | 两份 TERMINOLOGY.md 互相冲突 | 待修复 |
+| TS-P0-11 | P0 | 两份 10-terminology.md 互相冲突 | 待修复 |
 | TS-P0-12 | P0 | IRON-9 v2 三层模型 RT 侧缺失 | 待修复 |
 | TS-P0-13 | P0 | 工时 4 倍矛盾 | 待修复 |
 | TS-P1-01~14 | P1 | 14 项开发障碍 | 待修复 |

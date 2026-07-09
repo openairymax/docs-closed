@@ -8,7 +8,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **最后更新**: 2026-07-09
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 > **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
-> **同源映射**: agentrt `docs/ARCHITECTURAL_PRINCIPLES.md`（五维正交 24 原则）+ `docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
+> **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ `docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
 > **理论根基**: Linux 6.6（OLK-6.6）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 OLK-6.6（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
 > **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）
@@ -54,7 +54,7 @@ AirymaxOS 工程标准建立在三大支柱之上，缺一不可。
 | 支柱 | 思想来源 | 核心贡献 |
 |------|---------|---------|
 | **Linux 内核工程思想** | Linux 6.6（OLK-6.6）内核源代码深度研究提炼 | 双层稳定性哲学、策略机制分离、渐进式开发、审查优先文化、补丁生命周期、维护者层级制度 |
-| **Airymax 五维正交 24 原则** | `ARCHITECTURAL_PRINCIPLES.md`（S/K/C/E/A 五维） | 体系并行论、反馈闭环、层次分解、内核极简、接口契约化、服务隔离、可插拔策略、安全内生、可观测性、资源确定性等 24 条核心原则 |
+| **Airymax 五维正交 24 原则** | `00-architectural-principles.md`（S/K/C/E/A 五维） | 体系并行论、反馈闭环、层次分解、内核极简、接口契约化、服务隔离、可插拔策略、安全内生、可观测性、资源确定性等 24 条核心原则 |
 | **agentrt 17 类规则编号体系** | `0.1.1工程标准规范手册.md`（IRON/BAN/STD/ACC/FOUND 等） | 17 类规则骨架、自动化强制执行哲学、四层自动化铁律、三层集成验证、验收标准量化 |
 
 **三大支柱的正交耦合关系**：Linux 内核工程思想提供严肃性基底（内核工程的普遍规律），五维正交 24 原则提供 Airymax 自身的设计语言（Airymax 在这些规律上的立场），17 类规则编号体系提供可执行性骨架（这些立场如何被强制执行）。三者并非简单叠加，而是正交耦合——每条规则都可以同时追溯到：一份 Linux 内核工程传统的沉淀 + 一条五维正交原则的支撑 + 一个 17 类规则编号。
@@ -739,7 +739,7 @@ include/airymax/  @airymaxos/contract-maintainers
 | STD-DOC-05 | 文档链接有效性 | `scripts/check_doc_links.py` | P1-MAJOR | 是 |
 | STD-DOC-06 | Mermaid 图表完整性 | 架构文档必须有至少 1 个 Mermaid 图表 | P2-MINOR | 否 |
 | STD-DOC-07 | 文档行数超限检查 | 单文档 > 1500 行需拆分 | P2-MINOR | 否 |
-| STD-DOC-08 | 术语一致性 | 对照 TERMINOLOGY.md 检查 | P2-MINOR | 否 |
+| STD-DOC-08 | 术语一致性 | 对照 10-terminology.md 检查 | P2-MINOR | 否 |
 
 ### 8.2 STD-CODE 代码规范检查（5 项）
 

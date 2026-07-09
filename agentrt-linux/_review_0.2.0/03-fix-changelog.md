@@ -77,7 +77,7 @@ IRON-9 v2 [SC] 共享契约层头文件于 2026-07-07 确立基础 4 个（`bpf_
 |------|---------|------|
 | `20-modules/README.md` | 数量修复 | "4 个" → "6 个" |
 | `40-dataflows/README.md` | 数量修复 | "4 个" → "6 个" |
-| `TERMINOLOGY.md` | 数量+清单 | "4 个" → "6 个" + 添加 sched.h/ipc.h |
+| `10-terminology.md` | 数量+清单 | "4 个" → "6 个" + 添加 sched.h/ipc.h |
 | `10-coding-style/README.md` | 数量+表格 | 2 处修复 + 表格从 4 行扩展为 6 行 |
 | `C_coding_style_standard.md` | 层级+表格 | 错误码 [SC]→[SS] 修正 + 表格替换 |
 | `Rust_coding_style_standard.md` | Mermaid 图 | 4 节点 → 6 节点 |
@@ -132,19 +132,19 @@ IRON-9 v2 [SC] 共享契约层头文件于 2026-07-07 确立基础 4 个（`bpf_
 **修复日期**: 2026-07-09
 
 **问题描述**：
-`Capital_Specifications` 内容已于 2026-07-08 迁移至 `50-engineering-standards/`，但 5 处 AirymaxAgentOS 文档仍引用旧路径 `docs/Capital_Specifications/coding_standard/`。
+`Capital_Specifications` 内容已于 2026-07-08 迁移至 `50-engineering-standards/`，但 5 处 AirymaxAgentOS 文档仍引用旧路径 `docs/50-specifications/30-coding-standard/`。
 
 **修复文件（5 个）**：
 
 | 文件 | 修复前 | 修复后 |
 |------|--------|--------|
-| `30-interfaces/04-coding-standard.md:14` | `docs/Capital_Specifications/coding_standard/` | `50-engineering-standards/10-coding-style/` |
-| `30-interfaces/04-coding-standard.md:482` | `docs/Capital_Specifications/coding_standard/` | `50-engineering-standards/10-coding-style/` |
-| `10-architecture/04-engineering-baseline.md:271` | `docs/Capital_Specifications/coding_standard/` | `50-engineering-standards/10-coding-style/` |
-| `10-architecture/02-five-dimensional-principles.md:387` | `docs/Capital_Specifications/coding_standard/` | `50-engineering-standards/10-coding-style/` |
-| `TERMINOLOGY.md:8` | `AirymaxAgentOS/Capital_Specifications/TERMINOLOGY.md` | `AirymaxAgentOS/TERMINOLOGY.md` |
+| `30-interfaces/04-coding-standard.md:14` | `docs/50-specifications/30-coding-standard/` | `50-engineering-standards/10-coding-style/` |
+| `30-interfaces/04-coding-standard.md:482` | `docs/50-specifications/30-coding-standard/` | `50-engineering-standards/10-coding-style/` |
+| `10-architecture/04-engineering-baseline.md:271` | `docs/50-specifications/30-coding-standard/` | `50-engineering-standards/10-coding-style/` |
+| `10-architecture/02-five-dimensional-principles.md:387` | `docs/50-specifications/30-coding-standard/` | `50-engineering-standards/10-coding-style/` |
+| `10-terminology.md:8` | `AirymaxAgentOS/50-specifications/10-terminology.md` | `AirymaxAgentOS/10-terminology.md` |
 
-**保留引用**：`50-engineering-standards/README.md` 中 6 处历史迁移说明（`原 Capital_Specifications/...`）为合法追溯记录。
+**保留引用**：`50-engineering-standards/README.md` 中 6 处历史迁移说明（`原 50-specifications/...`）为合法追溯记录。
 
 ---
 
