@@ -3,7 +3,7 @@ title: AirymaxOS 微内核化改造策略（闭源版）
 confidentiality: SPHARX Ltd 内部参考，闭源不公开
 version: 1.0.1 (开发) / 0.1.1 (文档体系完成)
 last_updated: 2026-07-07
-theory_source: seL4 + Zircon + Minix3 综合对照
+theory_source: seL4（唯一来源，ADR-014）
 open_source_reference: docs/AirymaxAgentOS/10-architecture/03-microkernel-strategy.md
 copyright: Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ---
@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **保密级别**：SPHARX Ltd 内部参考，闭源不公开  
 **版本**：0.1.1（文档体系完成）/ 1.0.1（开发）  
 **最后更新**：2026-07-07  
-**理论来源**：seL4 + Zircon + Minix3 综合对照  
+**理论来源**：seL4（唯一来源，ADR-014）  
 **关联文档**：`docs/AirymaxAgentOS/10-architecture/03-microkernel-strategy.md`（开源版）
 
 > 本文档是开源版 `10-architecture/03-microkernel-strategy.md` 的闭源深化版，包含内部技术决策、详细的实施路线、验收标准和风险评估。
@@ -84,18 +84,20 @@ AirymaxOS 的微内核化改造遵循以下核心哲学：
 
 ## 2. 三代微内核横向对比表
 
+> ⚠️ **历史对比声明**：本对比表仅用于历史参考，展示选择 seL4 作为唯一微内核思想来源的技术依据。agentrt-linux 微内核设计思想来源为 seL4 唯一（ADR-014），不从 Zircon 或 Minix3 借鉴设计思想。Zircon/Minix3 列仅作对照展示，不代表设计参考。
+
 ### 2.1 核心特性对比
 
 | 维度 | seL4 | Zircon | Minix3 | AirymaxOS | 备注 |
 |------|------|--------|--------|-----------|------|
 | **代码规模** | ~10K LOC | ~200K LOC | ~15K LOC | 目标 <80K LOC | 微内核越小越好，但 AI 场景需要适度扩展 |
 | **形式化验证** | 全内核 Isabelle/HOL | 无 | 无 | 关键路径 Isabelle/HOL | 全内核验证成本过高，聚焦关键路径 |
-| **安全模型** | Capability | Handle + Capability | POSIX 权限 | Capability 增强 | 结合 seL4 的严格性 + Zircon 的实用性 |
-| **驱动模型** | 无原生驱动 | 用户态驱动框架 | 用户态驱动 | 用户态驱动框架 | 参考 Zircon 的 devhost 设计 |
+| **安全模型** | Capability | Handle + Capability | POSIX 权限 | Capability 增强 | 基于 seL4 capability 单一模型（ES-SEL4-2） |
+| **驱动模型** | 无原生驱动 | 用户态驱动框架 | 用户态驱动 | 用户态驱动框架 | 参考 seL4 用户态服务框架（ES-SEL4-3） |
 | **IPC 机制** | 同步 | 同步 + 异步 | 消息传递 | 同步 + 异步 + io_uring 零拷贝 | 同时支持低延迟同步和零拷贝大块传输 |
 | **调度模型** | MCS | 公平调度 | 轮询 | MCS + Agent 感知 | 混合关键度 + Agent 工作负载优化 |
 | **内存管理** | 分区内存 | VMO 零拷贝 | 简单页表 | VMO 零拷贝 + KV 分页 | AI 推理场景的特殊需求 |
-| **故障恢复** | 无内置 | 组件重启 | 自愈合 | 自愈合 + 优雅降级 | 参考 Minix3，增强 AI 场景 |
+| **故障恢复** | 无内置 | 组件重启 | 自愈合 | 自愈合 + 优雅降级 | seL4 形式化验证驱动的故障预防（ES-SEL4-5） |
 | **开发语言** | C | C/C++ | C | Rust | 内存安全由类型系统保证 |
 | **适用场景** | 安全关键系统 | 消费设备 | 教学/嵌入式 | AI Agent 运行时 | 面向 AI 时代的 OS |
 
@@ -134,7 +136,7 @@ AirymaxOS 的微内核化改造遵循以下核心哲学：
 |--------|------|----------|--------|
 | SCHED_AGENT 策略 | 基于 sched_ext 理念，实现 Agent 感知调度（复用 SCHED_EXT=7） | Linux sched_ext | 大 |
 | AgentsIPC 框架 | 基于 io_uring 的高性能 Agent 间通信 | Linux io_uring | 大 |
-| Cupolas 框架 | 用户态服务组织架构 | seL4 root task + Zircon component | 中 |
+| Cupolas 框架 | 用户态服务组织架构 | seL4 root task 模型（ES-SEL4-3） | 中 |
 | eBPF 调度策略 | 用户态 BPF 程序实现自定义调度 | Linux eBPF | 中 |
 | 内核裁剪 | 移除不需要的宏内核模块 | 自主 | 中 |
 
@@ -352,7 +354,7 @@ AirymaxOS 的五维设计原则与微内核化改造的映射关系：
 ```
 开源版（10-architecture/03-microkernel-strategy.md）
   ├── 提供：微内核设计思想的理论基础
-  ├── 提供：seL4/Zircon/Minix3 的公开参考
+  ├── 提供：seL4 微内核设计思想的公开参考
   ├── 提供：微内核化改造的高层策略
   └── 受众：开源社区、合作伙伴
 
@@ -367,7 +369,7 @@ AirymaxOS 的五维设计原则与微内核化改造的映射关系：
 
 ## 总结
 
-AirymaxOS 的微内核化改造是一场渐进式的架构演进，而非推翻重来。我们充分吸收 seL4 的安全模型、Zircon 的现代内核设计、Minix3 的可靠性工程，同时保持与 Linux 宏内核的兼容性。四阶段改造路线（内核态机制最小化 → 用户态服务化 → 驱动用户态化 → 形式化验证）确保了每一步都有可交付的成果，每个阶段都有明确的验收标准，每项风险都有对应的缓解策略。
+AirymaxOS 的微内核化改造是一场渐进式的架构演进，而非推翻重来。我们充分吸收 seL4 的微内核设计思想（ES-SEL4-1~5：极简原则/capability 单一模型/服务用户态化/消息传递 IPC/形式化验证），同时保持与 Linux 宏内核的兼容性。四阶段改造路线（内核态机制最小化 → 用户态服务化 → 驱动用户态化 → 形式化验证）确保了每一步都有可交付的成果，每个阶段都有明确的验收标准，每项风险都有对应的缓解策略。
 
 ---
 
