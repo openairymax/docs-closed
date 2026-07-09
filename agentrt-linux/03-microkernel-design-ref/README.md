@@ -19,7 +19,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 文档 | 主题 | 参考来源 | AirymaxOS 对应 |
 |------|------|---------|---------------|
-| `01-sel4-reference.md` | seL4 微内核设计参考 | seL4 形式化验证 + capability | Cupolas capability + airymaxos-tests 形式化验证 |
+| `01-sel4-reference.md` | seL4 微内核设计参考 | seL4 形式化验证 + capability | Cupolas capability + airymaxos-tests-linux 形式化验证 |
 | `02-zircon-reference.md` | Zircon 微内核设计参考 | Zircon handle/channel/VMO | AgentsIPC 消息传递 + MemoryRovol VMO 抽象 |
 | `03-minix3-reference.md` | Minix3 微内核设计参考 | Minix3 用户态服务 + 自愈 | airymaxos-services 用户态服务化 |
 | `04-microkernel-strategy.md` | AirymaxOS 微内核化改造策略对照 | 上述三者 + Liedtke minimality | 10-architecture/03-microkernel-strategy（开源） |

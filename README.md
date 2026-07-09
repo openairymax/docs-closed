@@ -91,7 +91,7 @@ docs-closed/
 │   ├── contract_B_C.h                           # B-C team contract
 │   └── contract_test.c                          # Contract tests
 ├── subsystems/                                  # Subsystem design documents
-│   ├── SUBSYSTEM_corekern.md                    # MicroCoreRT microkernel
+│   ├── SUBSYSTEM_corekern.md                    # MicroCoreRT micro-core
 │   ├── SUBSYSTEM_coreloopthree.md               # Three-layer cognitive loop
 │   ├── SUBSYSTEM_cupolas.md                     # Security cupola
 │   ├── SUBSYSTEM_memory.md                      # Memory volume loading

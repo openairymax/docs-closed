@@ -24,7 +24,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [第 7 章 airymaxos-cognition（cognition/）](#第-7-章-airymaxos-cognitioncognition)
 - [第 8 章 airymaxos-cloudnative（cloudnative/）](#第-8-章-airymaxos-cloudnativecloudnative)
 - [第 9 章 airymaxos-system（system/）](#第-9-章-airymaxos-systemsystem)
-- [第 10 章 airymaxos-tests（tests-linux/）](#第-10-章-airymaxos-teststests-linux)
+- [第 10 章 airymaxos-tests-linux（tests-linux/）](#第-10-章-airymaxos-tests-linuxtests-linux)
 - [第 11 章 跨子仓一致性约束（修正版）](#第-11-章-跨子仓一致性约束修正版)
 - [附录 A：双源映射对照表（v0.2.4 修正版）](#附录-a双源映射对照表v024-修正版)
 - [附录 B：规则编号映射](#附录-b规则编号映射)
@@ -222,7 +222,7 @@ agentrt-linux/                    # 管理仓（main 分支）
 ├── cognition/                    # [submodule] airymaxos-cognition
 ├── cloudnative/                  # [submodule] airymaxos-cloudnative
 ├── system/                       # [submodule] airymaxos-system
-├── tests-linux/                  # [submodule] airymaxos-tests
+├── tests-linux/                  # [submodule] airymaxos-tests-linux
 │
 ├── tools/                        # 跨子仓工具聚合 [v0.2.4 P2-DIR-04 新增]
 │   │                             # [对齐 OLK-6.6 顶层 tools/：含 testing/scripts/build/perf]
@@ -1508,7 +1508,7 @@ system/                           # airymaxos-system（feature/official-hubs-01�
 
 ---
 
-## 第 10 章 airymaxos-tests（tests-linux/）
+## 第 10 章 airymaxos-tests-linux（tests-linux/）
 
 ### 10.1 设计依据
 
@@ -1527,7 +1527,7 @@ system/                           # airymaxos-system（feature/official-hubs-01�
 > - **NEW-P1-03**: `formal-verification/` 位置说明（Isabelle/HOL 重依赖说明）
 
 ```
-tests-linux/                      # airymaxos-tests（feature/official-hubs-01）
+tests-linux/                      # airymaxos-tests-linux（feature/official-hubs-01）
 ├── README.md
 ├── README_zh.md
 ├── LICENSE

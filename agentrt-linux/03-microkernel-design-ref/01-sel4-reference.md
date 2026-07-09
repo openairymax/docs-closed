@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
 > **理论来源**: seL4 形式化验证论文、Proofcraft 2026 最新进展、seL4 基金会白皮书
-> **AirymaxOS 对应**: Cupolas capability 安全模型 + airymaxos-tests 形式化验证
+> **AirymaxOS 对应**: Cupolas capability 安全模型 + airymaxos-tests-linux 形式化验证
 
 ---
 
@@ -30,7 +30,7 @@ seL4 是全球首个（也是唯一）通过**完整代码级功能正确性形�
 
 | 能力 | 描述 | AirymaxOS 借鉴 |
 |------|------|---------------|
-| **功能正确性形式化证明** | C 实现严格遵循抽象规范，数学证明覆盖所有代码路径 | airymaxos-tests 形式化验证目标 |
+| **功能正确性形式化证明** | C 实现严格遵循抽象规范，数学证明覆盖所有代码路径 | airymaxos-tests-linux 形式化验证目标 |
 | **CIA 三元组证明** | 机密性/完整性/可用性在形式化规范层面已证明 | Cupolas 安全模型 |
 | **Capability 安全** | 不可伪造的权限令牌，最小权限原则 | Cupolas capability 派生模型 |
 | **MCS 混合关键性** | 实时/非实时任务时间隔离（2026年6月 RISC-V 验证完成） | SCHED_AGENT 时间隔离 |

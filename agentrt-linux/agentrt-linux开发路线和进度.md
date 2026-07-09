@@ -132,7 +132,7 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
   - security/：安全子系统架构（Cupolas 安全框架）
   - memory/：内存管理架构（MemoryRovol）
   - cognition/：认知子系统架构（CoreLoopThree）
-  - clouds/：云原生集成架构
+  - cloudnative/：云原生集成架构
   - system/：系统级集成架构（systemd 适配）
   - tests/：测试框架架构
 - 模块间接口定义（API 契约）
@@ -301,7 +301,7 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
 | 2.3 | security/ 安全子系统架构设计 | 64h | 内核开发组 | M0 |
 | 2.4 | memory/ 内存管理架构设计 | 64h | 内核开发组 | M0 |
 | 2.5 | cognition/ 认知子系统架构设计 | 64h | 内核开发组 | M0 |
-| 2.6 | clouds/ 云原生集成架构设计 | 40h | 内核开发组 | M0 |
+| 2.6 | cloudnative/ 云原生集成架构设计 | 40h | 内核开发组 | M0 |
 | 2.7 | system/ 系统级集成架构设计 | 40h | 内核开发组 | M0 |
 | 2.8 | tests/ 测试框架架构设计 | 24h | 测试组 | M0 |
 | 2.9 | 模块间接口定义（API 契约） | 40h | 架构委员会 | 2.1-2.8 |
@@ -402,9 +402,9 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
 | security | security/ | 30h | 64h | 40h | 48h | 40h | 30h | 24h | 18h | 294h |
 | memory | memory/ | 30h | 64h | 40h | 48h | 40h | 30h | 24h | 18h | 294h |
 | cognition | cognition/ | 30h | 64h | 40h | 48h | 40h | 30h | 24h | 18h | 294h |
-| clouds | clouds/ | 30h | 40h | 40h | 48h | 40h | 30h | 24h | 18h | 270h |
+| cloudnative | cloudnative/ | 30h | 40h | 40h | 48h | 40h | 30h | 24h | 18h | 270h |
 | system | system/ | 30h | 40h | 40h | 48h | 40h | 30h | 24h | 18h | 270h |
-| tests | tests/ | 30h | 24h | 40h | 44h | 40h | 30h | 32h | 24h | 264h |
+| tests-linux | tests/ | 30h | 24h | 40h | 44h | 40h | 30h | 32h | 24h | 264h |
 | **合计** | | **240h** | **440h** | **320h** | **380h** | **320h** | **240h** | **200h** | **150h** | **2,290h** |
 
 ### 3.11 文档编写工时分配
@@ -680,7 +680,7 @@ Part 1 (M0: 工程标准)
 | security/ | cupolas | 接口契约 | 安全策略 API |
 | memory/ | memory | 接口契约 | 内存分配 API |
 | cognition/ | coreloopthree, llm_d | 接口契约 | 认知模型 API |
-| clouds/ | openlab, market_d | 接口契约 | 云服务 API |
+| cloudnative/ | openlab, market_d | 接口契约 | 云服务 API |
 | system/ | manager, orchestrator | 接口契约 | 系统管理 API |
 | tests/ | 全部模块 | 测试数据 | 测试用例与 Mock |
 

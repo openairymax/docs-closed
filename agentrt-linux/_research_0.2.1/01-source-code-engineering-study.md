@@ -459,7 +459,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | **架构组织** | arch/ 隔离 | arch/machine/plat 三层 | **融合** | 借鉴 seL4 三层适配 |
 | **接口契约** | 无统一 XML | syscall.xml codegen | **借鉴 seL4** | 接口契约 XML 化 |
 | **bitfield** | 手写 | structures.bf codegen | **借鉴 seL4** | 位域 codegen |
-| **形式化** | 无 | Isabelle/HOL | **借鉴思想** | tests 子仓形式化验证框架 |
+| **形式化** | 无 | Isabelle/HOL | **借鉴思想** | tests-linux 子仓形式化验证框架 |
 | **capability** | LSM 钩子 | capability 单一模型 | **融合** | security 子仓 capability + LSM |
 | **IPC** | 多种 | endpoint/notification/fastpath | **融合** | io_uring + 借鉴 fastpath 优化 |
 
@@ -476,7 +476,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
    - **ES-SEL4-4 消息传递 IPC**: 影响 io_uring 消息传递机制设计（含 fastpath 优化思路）。
    - **ES-SEL4-6 接口契约 XML**: 建议为 IRON-9 v2 [SC] 共享契约层引入 syscall.xml 式接口契约定义。
    - **ES-SEL4-8 bitfield codegen**: 建议为 [SC] 头文件中的位域定义引入 structures.bf 式 codegen。
-   - **ES-SEL4-5 形式化验证**: 影响 airymaxos-tests 的形式化验证框架（seL4 风格）。
+   - **ES-SEL4-5 形式化验证**: 影响 airymaxos-tests-linux 的形式化验证框架（seL4 风格）。
 
 4. **双源融合的边界**: agentrt-linux 的工程取向是"**Linux 6.6 为基、seL4 为鉴**"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。这一边界在 `docs/AirymaxAgentOS/50-engineering-standards/04-engineering-philosophy.md` 的三大支柱表述中已明确：**第一支柱（微内核设计原则）= seL4 思想借鉴；第二支柱（Euler 标准兼容）/ 第三支柱（Airymax 同源）= Linux 6.6 基线**。
 
