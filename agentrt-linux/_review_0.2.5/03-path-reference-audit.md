@@ -95,11 +95,11 @@
 
 ### 组 F：`AirymaxAgentRT/agentrt_contract/` 双重命名错误（1 处）
 
-`50-engineering-standards/20-contracts/README.md:276` 引用 `../../../AirymaxAgentRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。实际路径为 `docs/AirymaxRT/Capital_Specifications/agentos_contract/protocol_contract.md`。存在 **两处**命名错误：
+`50-engineering-standards/20-contracts/README.md:276` 引用 `../../../AirymaxAgentRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。实际路径为 `docs/AirymaxRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。存在 **两处**命名错误：
 - 目录名 `AirymaxAgentRT` 应为 `AirymaxRT`
-- 子目录名 `agentrt_contract` 应为 `agentos_contract`
+- 子目录名 `agentrt_contract` 应为 `agentrt_contract`
 
-正确相对路径应为 `../../../AirymaxRT/Capital_Specifications/agentos_contract/protocol_contract.md`。
+正确相对路径应为 `../../../AirymaxRT/Capital_Specifications/agentrt_contract/protocol_contract.md`。
 
 ### 组 G：`../../AirymaxAgentRT/Basic_Theories/` 目录名错误（2 处）
 
@@ -221,11 +221,11 @@
 | `TERMINOLOGY.md` | 817 | `docs/AirymaxAgentRT/Capital_Specifications/README.md` |
 | `50-engineering-standards/20-contracts/README.md` | 30 | `docs/AirymaxAgentRT/Capital_Specifications/agentrt_contract/` |
 
-**建议修复**：将路径上下文中的 `AirymaxAgentRT` 改为 `AirymaxRT`。其中第 30 行同时存在 `agentrt_contract` 应为 `agentos_contract` 的错误（见 4.3）。
+**建议修复**：将路径上下文中的 `AirymaxAgentRT` 改为 `AirymaxRT`。其中第 30 行同时存在 `agentrt_contract` 应为 `agentrt_contract` 的错误（见 4.3）。
 
-### 4.3 `agentrt_contract` 应为 `agentos_contract`（命名不一致）
+### 4.3 `agentrt_contract` 应为 `agentrt_contract`（命名不一致）
 
-实际子目录为 `Capital_Specifications/agentos_contract/`，但文档中多处使用 `agentrt_contract`。
+实际子目录为 `Capital_Specifications/agentrt_contract/`，但文档中多处使用 `agentrt_contract`。
 
 | 文件 | 行号 | 类型 | 内容 |
 |------|------|------|------|
@@ -235,7 +235,7 @@
 | `50-engineering-standards/20-contracts/syscall_api_contract.md` | 8, 412 | 链接文本 | `[agentrt_contract README](README.md)` |
 | `50-engineering-standards/20-contracts/ipc_protocol_contract.md` | 8, 397 | 链接文本 | `[agentrt_contract README](README.md)` |
 
-**说明**：`20-contracts/README.md:115` 的"原 Capital_Specifications/agentrt_contract/"是迁移历史描述，可能记录的是旧名；但当前实际目录名为 `agentos_contract`，建议核实迁移前的真实目录名后统一表述。`syscall_api_contract.md` 与 `ipc_protocol_contract.md` 的链接文本"agentrt_contract README"指向本地 `README.md`（链接本身有效），但文本使用了与实际子目录名（`20-contracts`）不一致的历史名，建议改为"契约规范 README"或"20-contracts README"。
+**说明**：`20-contracts/README.md:115` 的"原 Capital_Specifications/agentrt_contract/"是迁移历史描述，可能记录的是旧名；但当前实际目录名为 `agentrt_contract`，建议核实迁移前的真实目录名后统一表述。`syscall_api_contract.md` 与 `ipc_protocol_contract.md` 的链接文本"agentrt_contract README"指向本地 `README.md`（链接本身有效），但文本使用了与实际子目录名（`20-contracts`）不一致的历史名，建议改为"契约规范 README"或"20-contracts README"。
 
 ### 4.4 `50-engineering-standards/` 文档计数过时
 
@@ -397,7 +397,7 @@
 | **ADR 标题不一致** | **1 处** | ADR-010 标题缺"v2" |
 | **`cloud-native` 历史命名 bug** | **0** | 已修复，无残留 |
 | **子仓命名变体** | **0** | 命名一致（仅 1 处 CLI 工具名待确认） |
-| **`agentrt_contract` 命名不一致** | **多处** | 应为 `agentos_contract`（路径/链接文本/迁移说明） |
+| **`agentrt_contract` 命名不一致** | **多处** | 应为 `agentrt_contract`（路径/链接文本/迁移说明） |
 | **工程标准文档计数过时** | **2 处** | "8 文档"应为 18 |
 | **重复编号文件** | **6 个文件** | 180-i18n 与 190-distribution 各 2 对 |
 | **05-adrs.md 版本历史缺条目** | **1 处** | 缺 ADR-011~014 新增版本记录 |
@@ -411,7 +411,7 @@
 | **P1** | ADR 描述错位（`01-system-architecture.md`） | 架构决策摘要与权威定义矛盾，误导读者 |
 | **P1** | "10 个核心 ADR"过时计数（4 处） | 与实际 14 个 ADR 不符 |
 | **P1** | 5 处 TOC 锚点错误 | 目录跳转失效 |
-| **P2** | `agentrt_contract`→`agentos_contract` 命名 | 跨仓引用一致性 |
+| **P2** | `agentrt_contract`→`agentrt_contract` 命名 | 跨仓引用一致性 |
 | **P2** | ADR-011~014 未被外部引用 | 重要决策缺少传播 |
 | **P3** | 跨目录引用非对称（3 对） | 导航闭环优化 |
 | **P3** | 重复编号文件（6 个） | 编号唯一性 |
