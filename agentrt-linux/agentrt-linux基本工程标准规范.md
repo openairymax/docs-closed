@@ -80,7 +80,7 @@ AirymaxOS 的 8 个子仓对应不同的内核子系统，各自承担不同的�
 | `airymaxos-cognition` | coreloopthree + frameworks | 双系统协同（C-1）、增量演化（C-2）、调度策略可插拔（K-4） | OS-STD、OS-ACC |
 | `airymaxos-cloudnative` | gateway + sdk | 接口契约化（K-2）、可观测性（E-2）、API 版本管理 | OS-STD、OS-ABI |
 | `airymaxos-system` | commons | 命名语义化（E-5）、错误可追溯（E-6）、文档即代码（E-7） | OS-STD、OS-BUILD |
-| `airymaxos-tests` | 全模块测试 | 可测试性（E-8）、覆盖率门槛、契约测试、模糊测试 | OS-TEST、OS-ACC |
+| `airymaxos-tests-linux` | 全模块测试 | 可测试性（E-8）、覆盖率门槛、契约测试、模糊测试 | OS-TEST、OS-ACC |
 
 ### 1.5 规则编号体系
 
@@ -1429,7 +1429,7 @@ seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方�
 | 12 | **架构组织** | arch/ 单层隔离 | arch/machine/plat 三层 | **融合（借鉴 seL4）** | 借鉴 seL4 三层适配（架构无关核心 + 机器相关 + 平台相关） | OS-STD-061 |
 | 13 | **接口契约** | 无统一 XML | syscall.xml codegen | **借鉴 seL4（P2）** | 接口契约 XML 化，R-01 在 M1 落地 | OS-STD-070 |
 | 14 | **bitfield** | 手写位域 | structures.bf codegen | **借鉴 seL4（P2）** | 位域 codegen，R-02 在 M1 落地 | OS-STD-071 |
-| 15 | **形式化** | 无 | Isabelle/HOL | **借鉴 seL4** | tests 子仓形式化验证框架（spec/proof/capDL 三段式） | OS-TEST-010 |
+| 15 | **形式化** | 无 | Isabelle/HOL | **借鉴 seL4** | tests-linux 子仓形式化验证框架（spec/proof/capDL 三段式） | OS-TEST-010 |
 | 16 | **capability + IPC** | LSM 钩子 + 多种 IPC | capability 单一模型 + endpoint/notification/fastpath | **融合** | security 子仓 capability + LSM；kernel 子仓 io_uring + fastpath 优化 | OS-IRON-013 |
 
 **裁决统计**:
