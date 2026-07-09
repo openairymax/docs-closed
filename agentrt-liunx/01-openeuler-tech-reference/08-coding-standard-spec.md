@@ -7,7 +7,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-07
 > **参考源**: 参考发行版社区 + OLK-6.6（Linux 6.6 内核源码）
-> **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 4 个头文件落地于 `include/airymax/`
+> **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
 > **关联文档**: `agentrt-liunx基本工程标准规范.md`（11 类规则编号前缀，1026 行）
 
 ---
@@ -1010,9 +1010,9 @@ agentrt-liunx 的编码规范体系中，每一条增强或差异化决策都可
 
 ### 15.2 共享契约层编码规范
 
-[SC] 共享契约层 4 个头文件（`include/airymax/`）中的代码必须同时满足 agentrt-liunx 与 agentrt 的编码规范要求。这意味着：
+[SC] 共享契约层 6 个头文件（`include/airymax/`）中的代码必须同时满足 agentrt-liunx 与 agentrt 的编码规范要求。这意味着：
 
-- 4 个头文件中的代码必须通过两端 CI 的格式检查（双向校验）
+- 6 个头文件中的代码必须通过两端 CI 的格式检查（双向校验）
 - kernel-doc 注释格式必须一致，两端都能通过 `scripts/kernel-doc` 验证
 - 命名必须使用 `agentrt_*` 前缀（共享契约层属于 agentrt 同源 API）
 - 任何变更必须通过双向 CI 验证（agentrt + agentrt-liunx CI 同时通过）

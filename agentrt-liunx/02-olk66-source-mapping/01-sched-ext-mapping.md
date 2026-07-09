@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档建立 OLK-6.6 sched_ext（可插拔 BPF 调度器框架）源码到 AirymaxOS SCHED_AGENT 调度类设计的精确映射，标注 IRON-9 v2 三层共享模型边界：
+本文档建立 OLK-6.6 sched_ext（可插拔 BPF 调度器框架）源码到 AirymaxOS SCHED_AGENT 策略设计的精确映射，标注 IRON-9 v2 三层共享模型边界：
 
 | 标注 | 含义 | 共享程度 |
 |------|------|----------|
@@ -446,8 +446,11 @@ SCX_OPS_DEFINE(simple_ops,
 #ifndef AIRYMAX_SCHED_H
 #define AIRYMAX_SCHED_H
 
-/* 调度类编号 */
-#define SCHED_AGENT 7
+/*
+ * 复用内核 SCHED_EXT=7 调度类编号（include/uapi/linux/sched.h:121）。
+ * 禁止定义 SCHED_AGENT 宏——SCHED_AGENT 仅作为 sched_ext BPF 策略名称。
+ */
+#define SCHED_AGENT_NAME  "sched_agent"  /* BPF 策略名称，非调度类编号 */
 
 /* 任务描述符 magic（独立于 IPC 消息头） */
 #define AGENTRT_TASK_DESC_MAGIC  0x41475453u  /* 'AGTS' */
@@ -568,7 +571,7 @@ agentrt 专属（AirymaxOS 不涉及）：
 | 维度 | agentrt | AirymaxOS SCHED_AGENT | 一致性 |
 |------|---------|------------------------|--------|
 | 任务描述符 | `agentrt_task_desc_t` | `agentrt_task_desc_t` | ✅ 共享契约 |
-| 调度类编号 | （用户态无） | `SCHED_AGENT 7` | ✅ AirymaxOS 专属 |
+| 调度类编号 | （用户态无） | `SCHED_EXT=7`（复用内核，SCHED_AGENT 为 BPF 策略名） | ✅ AirymaxOS 专属 |
 | magic | `0x41475453 'AGTS'` | `0x41475453 'AGTS'` | ✅ 共享契约 |
 | 优先级 | 0-139 | 0-139 | ✅ 共享契约 |
 | vtime 类型 | `airymax_vtime_t` (u64) | `airymax_vtime_t` (u64) | ✅ 共享契约 |

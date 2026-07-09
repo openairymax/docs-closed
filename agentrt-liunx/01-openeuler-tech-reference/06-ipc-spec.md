@@ -1111,7 +1111,7 @@ io_uring 的批量提交特性在 IPC 场景下优势显著：
 | 共享内存（本地节点） | 0.4 μs | N/A | 0% |
 | 共享内存（跨 NUMA） | 0.4 μs | 0.9 μs | +125% |
 
-跨 NUMA 通信延迟主要来自缓存一致性协议开销。agentrt-liunx 通过 SCHED_AGENT 调度类优先将通信密集型 Agent 调度到同一 NUMA 节点，最小化跨 NUMA IPC 开销。
+跨 NUMA 通信延迟主要来自缓存一致性协议开销。agentrt-liunx 通过 SCHED_AGENT 策略优先将通信密集型 Agent 调度到同一 NUMA 节点，最小化跨 NUMA IPC 开销。
 
 ---
 

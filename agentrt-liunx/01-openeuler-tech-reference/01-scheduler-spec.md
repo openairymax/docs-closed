@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档全面参考 openEuler 社区的调度器技术规范，作为 AirymaxOS SCHED_AGENT 调度类设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxAgentOS/`）中。
+本文档全面参考 openEuler 社区的调度器技术规范，作为 AirymaxOS SCHED_AGENT 策略设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxAgentOS/`）中。
 
 ### 1.2 参考来源
 
