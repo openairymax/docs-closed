@@ -84,7 +84,7 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 **AirymaxOS 决策建议**（OS-COG-DEC-01）：
 - CoreLoopThree 的 3 个 kthread（cognition / execution / memory）**必须使用 `kthread_create_on_node` + `wake_up_process`** 而非 `kthread_run`，原因：
   - (a) NUMA 感知——认知 kthread 应绑定到 GPU/NPU 所在 NUMA 节点
-  - (b) 需在 `wake_up_process` 前完成 `kthread_bind` + `sched_setscheduler`（设 SCHED_AGENT 优先级）
+  - (b) 需在 `wake_up_process` 前完成 `kthread_bind` + `sched_setscheduler`（设 SCHED_EXT 策略优先级，加载 SCHED_AGENT BPF 策略）
 - `kthread_run` 仅适合"创建即跑"的简单场景（如 drm_sched 的 helper）
 
 ### 2.2 优先级与 CPU 亲和性规范
@@ -203,7 +203,7 @@ return 0;
 4. **per-CPU kthread 与 SCX**：per-CPU kthread（`KTHREAD_IS_PER_CPU`）有 migration 限制，sched_ext 的 `ops.select_cpu()` 不应为它选别的 CPU
 
 **AirymaxOS 决策建议**（OS-COG-DEC-05）：
-- CoreLoopThree kthread 用 SCHED_AGENT 调度类，**但需注意**：
+- CoreLoopThree kthread 用 SCHED_AGENT 策略（sched_ext BPF 策略，调度类编号为 SCHED_EXT=7），**但需注意**：
   - 默认（不设 SCX_OPS_SWITCH_PARTIAL）下，SCHED_NORMAL kthread 也会进 SCX
   - 若 CoreLoopThree kthread 设 SCHED_FIFO/RT（如 drm_sched 那样），则**绕过 sched_ext**（RT 类优先级高于 SCX）
   - **建议**：cognition/execution kthread 用 SCHED_AGENT（经 sched_ext），memory kthread 用 SCHED_NORMAL
@@ -556,7 +556,7 @@ return 0;
 
 **对齐 `01-cognition-flow.md` §4 三 kthread 分工**，基于 OLK-6.6 kthread 机制的编排建议：
 
-| kthread | 创建方式 | 调度类 | CPU 亲和 | NUMA | 停止协议 |
+| kthread | 创建方式 | 调度策略 | CPU 亲和 | NUMA | 停止协议 |
 |---------|----------|--------|----------|------|----------|
 | `coreloop_cognition_kthread` | kthread_create_on_node(GPU node) + wake | SCHED_AGENT 高 | GPU/NPU 所在 NUMA CPU | 是 | kthread_should_stop + park |
 | `coreloop_execution_kthread` | kthread_create_on_node + wake | SCHED_AGENT 中 | 同上或独立 | 是 | 同上 |
@@ -635,7 +635,7 @@ static int coreloop_cognition_kthread(void *data)
 
 | 子模块 | 采纳决策 | 实现要点 |
 |--------|----------|----------|
-| `gpu-scheduler` | OS-COG-DEC-07 drm_sched 模板 | kthread + wait_event + kthread_should_stop，调度类换 SCHED_AGENT |
+| `gpu-scheduler` | OS-COG-DEC-07 drm_sched 模板 | kthread + wait_event + kthread_should_stop，调度策略换 SCHED_EXT（加载 SCHED_AGENT BPF 策略） |
 | `npu-scheduler` | OS-COG-DEC-19 drivers/accel/ | 国产加速器统一接入 |
 | `mps` | OS-COG-DEC-17/18 | NVIDIA MPS / ROCm MPS 抽象统一 |
 | `mig` | OS-COG-DEC-17 | MIG instance 分配，按租户 |
@@ -660,7 +660,7 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 | 加速器接入 | `drivers/accel/`（habanalabs/ivpu/qaic） | 参考设计（[IND] 独立实现） | ✅ 兼容 |
 | GPU 调度器 | `drm_sched`（kthread + wait_event + fifo_low） | 参考模板（[IND] 独立实现） | ✅ 兼容 |
 | 模块化 | `CONFIG_DRM_ACCEL` / `CONFIG_DRM_GPU_SCHED` | 同源 Kconfig 风格 | ✅ 兼容 |
-| 调度类 | SCHED_NORMAL / SCHED_FIFO / SCHED_EXT | 新增 SCHED_AGENT（编号 7，不冲突） | ✅ 兼容 |
+| 调度策略 | SCHED_NORMAL / SCHED_FIFO / SCHED_EXT | 复用 SCHED_EXT=7，SCHED_AGENT 为 BPF 策略名 | ✅ 兼容 |
 
 **代码共享边界澄清**（IRON-9 v2）：
 - agentrt ↔ AirymaxOS：[SC] 共享契约层完全共享代码（`include/airymax/cognition_types.h`）

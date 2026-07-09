@@ -138,7 +138,7 @@ seL4 的 IPC 性能是微内核工程的标杆，其设计精髓：
 - 下一步：通过 DARPA PROVERS 项目移植到 AArch64
 
 **AirymaxOS 借鉴**：
-- SCHED_AGENT 调度类需要时间隔离能力
+- SCHED_AGENT 策略需要时间隔离能力
 - Agent 工作负载（System1 快速 + System2 慢速）天然是混合关键性场景
 - 参考 MCS 的时间预算 + 优先级继承机制
 
@@ -319,7 +319,7 @@ seL4 的 IPC 性能是微内核工程的标杆，其设计精髓：
 | 五维原则 | seL4 体现 | AirymaxOS 落地 |
 |---------|----------|---------------|
 | **K-1 内核极简** | 10,000 SLOC，仅 4 原子机制 | MicroCoreRT 极简内核 |
-| **K-2 接口契约化** | 形式化规范 + 二进制验证 | [SC] 4 个头文件契约 |
+| **K-2 接口契约化** | 形式化规范 + 二进制验证 | [SC] 6 个头文件契约 |
 | **K-3 服务隔离** | 用户态服务 + capability | Cupolas + 用户态 services |
 | **K-4 可插拔策略** | Domain Scheduler | sched_ext + LSM |
 | **E-1 安全内生** | CIA 三元组证明 | Cupolas 安全模型 |

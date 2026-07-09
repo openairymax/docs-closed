@@ -599,7 +599,7 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 | 加速器接入 | `drivers/accel/`（habanalabs/ivpu/qaic） | 参考设计（[IND] 独立实现） | ✅ 兼容 |
 | GPU 调度器 | `drm_sched`（kthread + wait_event + fifo_low） | 参考模板（[IND] 独立实现） | ✅ 兼容 |
 | 模块化 | `CONFIG_DRM_ACCEL` / `CONFIG_DRM_GPU_SCHED` | 同源 Kconfig 风格 | ✅ 兼容 |
-| 调度类 | SCHED_NORMAL / SCHED_FIFO / SCHED_EXT | 新增 SCHED_AGENT（编号 7，不冲突） | ✅ 兼容 |
+| 调度类 | SCHED_NORMAL / SCHED_FIFO / SCHED_EXT | 复用 SCHED_EXT=7，SCHED_AGENT 为 BPF 策略名 | ✅ 兼容 |
 
 **代码共享边界澄清**：
 - agentrt ↔ AirymaxOS：[SC] 共享契约层完全共享代码（cognition_types.h）

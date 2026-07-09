@@ -132,7 +132,7 @@ AirymaxOS 的微内核化改造遵循以下核心哲学：
 
 | 工作项 | 说明 | 参考来源 | 工作量 |
 |--------|------|----------|--------|
-| SCHED_AGENT 调度类 | 基于 sched_ext 理念，实现 Agent 感知调度 | Linux sched_ext | 大 |
+| SCHED_AGENT 策略 | 基于 sched_ext 理念，实现 Agent 感知调度（复用 SCHED_EXT=7） | Linux sched_ext | 大 |
 | AgentsIPC 框架 | 基于 io_uring 的高性能 Agent 间通信 | Linux io_uring | 大 |
 | Cupolas 框架 | 用户态服务组织架构 | seL4 root task + Zircon component | 中 |
 | eBPF 调度策略 | 用户态 BPF 程序实现自定义调度 | Linux eBPF | 中 |
@@ -140,7 +140,7 @@ AirymaxOS 的微内核化改造遵循以下核心哲学：
 
 **关键设计决策**：
 
-- SCHED_AGENT 作为新的调度类注册到内核，与 CFS、EEVDF 共存
+- SCHED_AGENT 作为 sched_ext BPF 策略加载到内核（复用 SCHED_EXT=7 调度类），与 CFS、EEVDF 共存
 - AgentsIPC 基于 io_uring 的共享环形缓冲，支持零拷贝消息传递
 - Cupolas 作为用户态 root task，管理所有 Agent 和服务的生命周期
 

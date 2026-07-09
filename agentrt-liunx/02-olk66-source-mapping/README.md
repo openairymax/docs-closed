@@ -23,7 +23,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 文档 | OLK-6.6 源码 | AirymaxOS 对应 | 优先级 |
 |------|-------------|---------------|--------|
-| `01-sched-ext-mapping.md` | `kernel/sched/ext.c` + `include/linux/sched/ext.h` | SCHED_AGENT 调度类 + MicroCoreRT 调度语义 | P0 |
+| `01-sched-ext-mapping.md` | `kernel/sched/ext.c` + `include/linux/sched/ext.h` | SCHED_AGENT BPF 策略 + MicroCoreRT 调度语义 | P0 |
 | `02-io-uring-mapping.md` | `io_uring/io_uring.c` + `include/uapi/linux/io_uring.h` | AgentsIPC IPC 传输 + io_uring OP 扩展 | P0 |
 | `03-bpf-mapping.md` | `kernel/bpf/core.c` + `kernel/bpf/syscall.c` | eBPF 可观测探针 + Cupolas L1 规则层 | P0 |
 | `04-mm-mapping.md` | `mm/mmap.c` + `mm/vmscan.c` + `include/linux/mm.h` | MemoryRovol L1-L4 记忆卷载 | P1 |

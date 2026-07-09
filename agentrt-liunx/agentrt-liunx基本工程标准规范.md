@@ -4,12 +4,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-liunx（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
-> **最后更新**: 2026-07-07
+> **版本**: 0.2.1（融入源代码深度研究成果）/ 1.0.1（开发）
+> **最后更新**: 2026-07-09
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 4 个头文件落地于 `include/airymax/`
+> **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
 > **同源映射**: agentrt `docs/ARCHITECTURAL_PRINCIPLES.md`（五维正交 24 原则）+ `docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
-> **理论根基**: Linux 6.6（OLK-6.6）内核工程思想 + Airymax 体系并行论（Multibody Cybernetic Intelligent System）
+> **理论根基**: Linux 6.6（OLK-6.6）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 OLK-6.6（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
+> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.1/01-agentrt-linux-directory-structure.md`（1160 行）
 
 ---
 
@@ -26,8 +28,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [第 9 章 IRON-9 v2 三层共享模型](#第-9-章-iron-9-v2-三层共享模型)
 - [第 10 章 Euler 标准兼容性](#第-10-章-euler-标准兼容性)
 - [第 11 章 禁词清单与处罚机制](#第-11-章-禁词清单与处罚机制)
+- [第 12 章 "Linux 6.6 为基、seL4 为鉴"工程取向](#第-12-章-linux-66-为基-sel4-为鉴工程取向)
+- [第 13 章 8 子仓目录结构工程标准](#第-13-章-8-子仓目录结构工程标准)
+- [第 14 章 P2 增强建议落地规划](#第-14-章-p2-增强建议落地规划)
 - [附录 A 规则编号注册表](#附录-a-规则编号注册表)
 - [附录 B 五维正交 24 原则映射](#附录-b-五维正交-24-原则映射)
+- [附录 C ES-OLK-1~13 工程思想映射](#附录-c-es-olk-1-13-工程思想映射)
+- [附录 D ES-SEL4-1~10 工程思想借鉴映射](#附录-d-es-sel4-1-10-工程思想借鉴映射)
+- [附录 E 双源融合裁决 16 维度](#附录-e-双源融合裁决-16-维度)
 
 ---
 
@@ -646,7 +654,7 @@ PR 提交
 格式参考 Linux 内核 `MAINTAINERS`：
 
 ```
-AIRYMAXOS SCHEDULER (SCHED_AGENT)
+AIRYMAXOS SCHEDULER (SCHED_EXT 策略)
 M:  Maintainer Name <maintainer@airymaxos.dev>
 L:  os-sched@airymaxos.dev
 S:  Mainlined
@@ -766,13 +774,13 @@ IRON-9 v2（2026-07-07 用户决策变更）确立了 agentrt 与 AirymaxOS **�
 
 | 层次 | 共享程度 | 内容 | 组织方式 |
 |------|---------|------|---------|
-| **[SC] 共享契约层** | 完全共享代码 | 4 个核心头文件 | `include/airymax/` 独立头文件库，两端共同依赖 |
+| **[SC] 共享契约层** | 完全共享代码 | 6 个核心头文件 | `include/airymax/` 独立头文件库，两端共同依赖 |
 | **[SS] 语义同源层** | API 签名相同，实现独立 | 调度、安全、IPC、记忆模型 | 各自独立实现，通过契约层保证互操作 |
 | **[IND] 完全独立层** | 完全独立 | 驱动、运行时、硬件相关 | 各自独立仓库，无依赖关系 |
 
-### 9.2 [SC] 共享契约层：4 个头文件
+### 9.2 [SC] 共享契约层：6 个头文件
 
-> **OS-IRON-008**: 共享契约层 4 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。
+> **OS-IRON-008**: 共享契约层 6 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。
 
 | 头文件 | 内容 | 变更审批 |
 |--------|------|---------|
@@ -780,6 +788,8 @@ IRON-9 v2（2026-07-07 用户决策变更）确立了 agentrt 与 AirymaxOS **�
 | `memory_types.h` | MemoryRovol L1-L4 数据结构 + GFP 掩码语义 + PMEM 持久化接口 | 架构委员会 + 两端维护者 |
 | `security_types.h` | POSIX capability 38 ID + LSM 钩子 254 ID + Cupolas blob 布局 + capability 派生模型 + Vault backend + 策略裁决 4 值枚举 | 架构委员会 + 两端维护者 |
 | `cognition_types.h` | CoreLoopThree 阶段枚举 + Thinkdual 模式枚举 + LLM 推理阶段枚举 + 上下文结构 + Token 能效指标 + GPU/NPU 描述符 | 架构委员会 + 两端维护者 |
+| `sched.h` | SCHED_EXT 调度类编号约束（复用内核 SCHED_EXT=7，禁止 SCHED_AGENT 宏）+ 任务描述符（magic 0x41475453 'AGTS'）+ vtime 类型与衰减公式 + 优先级范围 0-139 + AIRYMAX_SLICE_DFL（20ms） | 架构委员会 + 两端维护者 |
+| `ipc.h` | IPC magic（0x41524531 'ARE1'）+ 128B 消息头结构（agentrt_ipc_msg_hdr_t）+ SQE/CQE 操作码与标志位 | 架构委员会 + 两端维护者 |
 
 ### 9.3 [SS] 语义同源层
 
@@ -866,7 +876,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 | 加速器接入一致性 | 核对 drivers/accel/ 模式 | 接入模式一致（[IND] 独立实现） |
 | Kconfig 风格一致性 | 核对 CONFIG_ 前缀命名 | 与 Euler Kconfig 风格一致 |
 | 模块化一致性 | 核对 Makefile/Kbuild 结构 | 与 Euler 构建结构一致 |
-| 调度类编号不冲突 | 核对 SCHED_AGENT 编号 | 不与 Euler 已有调度类冲突 |
+| 调度类编号不冲突 | 核对 SCHED_EXT 策略名（禁止 SCHED_AGENT 宏） | 不与 Euler 已有调度类冲突 |
 
 ---
 
@@ -913,6 +923,310 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 ---
 
+## 第 12 章 "Linux 6.6 为基、seL4 为鉴"工程取向
+
+### 12.1 工程取向总纲
+
+> **OS-IRON-010**: agentrt-liunx 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
+
+本章基于 v0.2.1 源代码深度研究（`_research_0.2.1/01-source-code-engineering-study.md`，489 行），将研究成果正式固化为工程标准。研究的范围与方法：
+
+| 维度 | OLK-6.6 | seL4 |
+|------|---------|------|
+| 研究对象 | `01Reference/kernel-OLK-6.6`（28 顶层目录全量源码） | `01Reference/seL4-master`（src/ + include/ + libsel4/ + tools/ + manual/ 全量源码） |
+| 代表性精读 | `Documentation/process/coding-style.rst`（1-700 行） | `src/object/tcb.c`（1-120 行） |
+| 工程思想提取 | 13 项（ES-OLK-1~13） | 10 项（ES-SEL4-1~10） |
+| 双源融合裁决 | 16 维度逐项裁决 | 同左 |
+
+### 12.2 双源边界声明
+
+> **OS-IRON-011**: OLK-6.6 与 seL4 的源码仅在本地参考路径（`01Reference/`）中作为研究对象；agentrt-liunx 与两者的关系是"技术参考"而非"代码共享"。代码共享仅限 agentrt ↔ AirymaxOS 之间的 IRON-9 v2 [SC] 共享契约层 6 个头文件。
+
+```
+agentrt ←→ AirymaxOS:  IRON-9 v2 [SC] 共享契约层 6 个头文件（完全共享代码）
+AirymaxOS ←→ OLK-6.6:  技术参考（编码风格 + 工程思想），不共享代码
+AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
+```
+
+### 12.3 编码风格层裁决（7 维度全采纳 OLK-6.6）
+
+编码风格层是 agentrt-liunx 与 Linux 6.6 上游保持一致性的关键。seL4 的编码约定因与 Linux 6.6 基线冲突被整体拒绝。
+
+| 维度 | OLK-6.6 | seL4 | agentrt-liunx 裁决 | 裁决理由 |
+|------|---------|------|-------------------|---------|
+| 缩进 | Tab 8 字符 | 空格 4 | **OLK-6.6** | 与上游一致便于 backport；8 字符 Tab 嵌套警告价值已被验证 |
+| 命名 | snake_case | camelCase | **OLK-6.6** | C/Unix 生态主流；seL4 camelCase 源于 Haskell 形式化传统 |
+| typedef | 最小（5 种例外） | 重度 | **OLK-6.6** | typedef 隐藏类型信息增加阅读成本；5 种例外覆盖所有合理用例 |
+| 大括号 | K&R | K&R | **一致** | 两者相同，直接采纳 |
+| 行宽 | 80 列 | ~100 | **OLK-6.6** | 与上游一致；字符串禁止断行（保护 grep） |
+| 错误处理 | 负 errno + goto 集中出口 | exception_t 枚举 | **OLK-6.6** | goto 集中出口是多出口函数资源释放最佳模式 |
+| 注释 | kernel-doc 强制 | 普通 | **OLK-6.6** | kernel-doc 是文档即代码的核心机制 |
+
+> **OS-STD-060**: 编码风格层 7 维度必须全部与 OLK-6.6 对齐。seL4 编码约定（4 空格 / camelCase / 重度 typedef）在 agentrt-liunx 中禁止使用。
+
+### 12.4 工程思想层：ES-OLK-1~13 全部采纳
+
+OLK-6.6 的 13 项工程思想（ES-OLK-1~13）是 agentrt-liunx 工程基线层的基石。每项工程思想都映射到本规范的具体规则（详见附录 C）。
+
+| 编号 | 工程思想 | 核心内涵 | 在本规范的体现 |
+|------|---------|---------|---------------|
+| ES-OLK-1 | 关注点分离 | 每个顶层目录对应独立关注点 | §1.4 8 子仓差异化要求 |
+| ES-OLK-2 | 架构正交 | arch/ 是唯一架构相关根目录 | §13.3 kernel 子仓 arch/machine/plat 三层 |
+| ES-OLK-3 | UAPI 与内核内部 API 分离 | include/uapi/ 是用户空间 ABI 唯一来源 | §4.1 双层稳定性哲学 |
+| ES-OLK-4 | 特性可配置 | Kconfig 开关控制特性 | §13.5 Kbuild/Kconfig 强制 |
+| ES-OLK-5 | 条件编译规范化 | IS_ENABLED() 替代 #ifdef | §2.2 多语言栈规范 |
+| ES-OLK-6 | UAPI 物理隔离 | uapi/ 目录物理隔离 | §13.3 kernel 子仓 include/uapi/ |
+| ES-OLK-7 | 声明式配置 + 命令式构建分离 | Kconfig 声明 + Makefile 命令 | §13.5 构建系统 |
+| ES-OLK-8 | 维护者制度文档化 | MAINTAINERS 文件 | §7.1 MAINTAINERS 文件规范 |
+| ES-OLK-9 | 规范可执行 | checkpatch.pl 机器检查 | §6.2 checkpatch 集成 |
+| ES-OLK-10 | regression 零容忍 | 回归必须在当前周期修复 | §4.6 不破坏用户空间 |
+| ES-OLK-11 | 用户空间 ABI 永久稳定 | 接口导出后永久支持 | §4.1.1 OS-IRON-001 |
+| ES-OLK-12 | 运行时可加载 | EXPORT_SYMBOL + 模块机制 | §13.3 kernel 子仓模块化 |
+| ES-OLK-13 | 文档即代码 | Documentation/ 与代码同仓库 | §8 规范符合性检查 |
+
+### 12.5 架构层借鉴 seL4（5 项选择性借鉴）
+
+seL4 的工程思想在架构层被选择性借鉴——仅借鉴其设计哲学与架构组织，不借鉴其编码风格。每项借鉴都有明确的落地子仓和工程标准体现（详见附录 D）。
+
+| 编号 | seL4 工程思想 | 借鉴方式 | 落地子仓 | 在本规范的体现 |
+|------|-------------|---------|---------|---------------|
+| ES-SEL4-1 | 极简原则（Liedtke minimality） | 影响内核机制最小化取向 | airymaxos-kernel | §13.3 corekern 仅 4 原子机制 |
+| ES-SEL4-2 | capability 单一权限模型 | 影响 capability 设计 | airymaxos-security | §13.4 capability + LSM 融合 |
+| ES-SEL4-3 | 服务用户态化 | 影响 VFS/网络/驱动用户态化 | airymaxos-services | §13.4 用户态服务架构 |
+| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 影响 io_uring 消息传递 | airymaxos-kernel | §13.3 IPC 子系统 |
+| ES-SEL4-5 | 形式化验证驱动 | 影响形式化验证框架 | airymaxos-tests-linux | §13.6 formal-verification 三段式 |
+
+### 12.6 架构层借鉴 seL4 的边界
+
+> **OS-IRON-012**: seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5），不包括编码风格层（4 空格 / camelCase / 重度 typedef）和接口契约层（syscall.xml / structures.bf codegen —— 这两项作为 P2 增强建议 R-01/R-02 在 1.0.1 阶段增量落地，详见第 14 章）。
+
+以下 seL4 特性因与 Linux 6.6 基线冲突被拒绝：
+
+| seL4 特性 | 拒绝理由 |
+|-----------|---------|
+| 4 空格缩进 | 与 OLK-6.6 Tab 8 冲突 |
+| camelCase 命名 | 与 OLK-6.6 snake_case 冲突 |
+| 重度 typedef | 与 OLK-6.6 最小 typedef 冲突 |
+| 内核非抢占无并发模型 | 宏内核必须有并发控制（spinlock/rcu） |
+| 无动态内存分配 | 宏内核必须有 kmalloc/kzalloc |
+| exception_t 错误码 | 与 OLK-6.6 负 errno 冲突 |
+
+### 12.7 双源融合裁决总表（16 维度）
+
+双源融合裁决覆盖 16 个维度，其中 11 维度采纳 OLK-6.6、5 维度借鉴 seL4 或融合。完整裁决表见附录 E。
+
+### 12.8 ES-SEL4-6~10 的落地方式
+
+ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 现代构建系统）不作为架构层强制借鉴，而是作为 P2 增强建议在 1.0.1 阶段增量落地：
+
+| seL4 工程思想 | 落地方式 | 对应 P2 建议 |
+|-------------|---------|-------------|
+| ES-SEL4-6 接口契约 XML | syscall.xml 式接口契约定义 | R-01（§14.1） |
+| ES-SEL4-8 bitfield codegen | structures.bf 式位域 codegen | R-02（§14.2） |
+| ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已在 airymaxos-cloudnative 落地 |
+| ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已在 services/cloudnative 落地 |
+| ES-SEL4-7 架构正交分层 | arch/machine/plat 三层适配 | 已在 kernel 子仓落地（借鉴 seL4 而非 OLK-6.6 单 arch/） |
+
+---
+
+## 第 13 章 8 子仓目录结构工程标准
+
+### 13.1 8 子仓总览
+
+> **OS-IRON-013**: agentrt-liunx 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理。8 子仓的目录结构设计基于 OLK-6.6（28 顶层目录）+ seL4（src/{api,kernel,object,fastpath,arch,machine,plat}）+ Airymax 同源（atoms/corekern 复用）三大设计支柱。
+
+8 子仓及其依赖层次：
+
+| 子仓 | 依赖层次 | 对应 agentrt 模块 | 构建系统 | 参考来源 |
+|------|---------|------------------|---------|---------|
+| `airymaxos-kernel` | L2（基础） | atoms/corekern | Kbuild + Kconfig | OLK-6.6 + seL4 |
+| `airymaxos-services` | L3 | daemons | Meson | OLK-6.6 + seL4 libsel4 |
+| `airymaxos-security` | L3 | cupolas | Kbuild（内核态）+ Meson（用户态） | OLK-6.6 security/ + seL4 capability |
+| `airymaxos-memory` | L3 | heapstore + memoryrovol | Kbuild | OLK-6.6 mm/ |
+| `airymaxos-cognition` | L4 | coreloopthree + frameworks | Cargo（Rust） | OLK-6.6 + Airymax 同源 |
+| `airymaxos-cloudnative` | L5 | gateway + sdk | Go Modules | OLK-6.6 + 现代云原生 |
+| `airymaxos-system` | L6 | commons | Kbuild + Meson | OLK-6.6 init/ + systemd |
+| `airymaxos-tests-linux` | L7（横向） | 全模块测试 | KUnit + kselftest + Isabelle/HOL | OLK-6.6 tools/testing + seL4 proof/ |
+
+### 13.2 目录结构设计原则
+
+8 子仓的目录结构设计遵循以下原则（源自 v0.2.1 设计文档 `_design_0.2.1/01-agentrt-linux-directory-structure.md`，1160 行）：
+
+> **OS-STD-061**: 8 子仓目录结构必须遵循以下 6 项设计原则：
+
+1. **关注点分离（ES-OLK-1）**：每个子仓对应一个独立关注点，跨子仓耦合通过 [SC] 共享契约层进行
+2. **架构正交（ES-OLK-2 + ES-SEL4-7）**：kernel 子仓采用 arch/machine/plat 三层架构适配（借鉴 seL4 而非 OLK-6.6 单 arch/）
+3. **[SC] 单一数据源**：6 个 [SC] 头文件物理宿主在 `airymaxos-kernel/include/airymax/`，其他子仓通过 `-I` 引用确保单一数据源
+4. **corekern 极简（ES-SEL4-1）**：corekern/ 仅 4 原子机制（sched/ipc/taskflow/memory/time），对应 seL4 极简原则
+5. **构建系统混合**：内核态子仓采 Kbuild（ES-OLK-7），用户态子仓采 Meson（services）/ Go Modules（cloudnative）/ Cargo（cognition Rust）
+6. **formal-verification 三段式（ES-SEL4-5）**：tests-linux 子仓采 seL4 三段式 spec/proof/capDL
+
+### 13.3 airymaxos-kernel 子仓目录结构
+
+airymaxos-kernel 是 8 子仓的基础（L2），其目录结构融合 OLK-6.6 与 seL4：
+
+```
+airymaxos-kernel/
+├── arch/                    # 架构相关（借鉴 seL4 三层）
+│   ├── x86/                 # x86 架构
+│   │   ├── machine/         # 机器相关原语（seL4 风格）
+│   │   └── plat/            # 平台相关（seL4 风格）
+│   ├── arm64/
+│   │   ├── machine/
+│   │   └── plat/
+│   └── riscv/
+│       ├── machine/
+│       └── plat/
+├── include/                 # 头文件
+│   ├── uapi/                # 用户空间 ABI（ES-OLK-3/ES-OLK-6）
+│   │   ├── linux/           # UAPI 头文件
+│   │   └── asm-generic/     # 架构无关 UAPI
+│   ├── linux/               # 内核内部 API
+│   └── airymax/             # [SC] 共享契约层 6 个头文件（单一数据源）
+│       ├── bpf_struct_ops.h
+│       ├── memory_types.h
+│       ├── security_types.h
+│       ├── cognition_types.h
+│       ├── sched.h
+│       └── ipc.h
+├── corekern/                # 极简核心（ES-SEL4-1，仅 4 原子机制）
+│   ├── sched/               # 调度原语
+│   ├── ipc/                 # IPC 原语
+│   ├── taskflow/            # 任务流原语
+│   ├── memory/              # 内存原语
+│   └── time/                # 时间原语
+├── kernel/                  # 内核核心子系统（OLK-6.6 风格）
+│   ├── sched/               # 调度子系统（含 sched_ext）
+│   ├── locking/             # 锁子系统
+│   ├── entry/               # 入口子系统
+│   ├── irq/                 # 中断子系统
+│   └── bpf/                 # BPF 子系统
+├── io_uring/                # 异步 I/O（OLK-6.6 风格独立子系统）
+├── mm/                      # 内存管理（OLK-6.6 风格）
+├── Kbuild                   # 递归构建（ES-OLK-7）
+├── Kconfig                  # 声明式配置（ES-OLK-7）
+├── Makefile                 # 命令式构建
+├── MAINTAINERS              # 维护者文档（ES-OLK-8，R-03）
+└── Documentation/           # 文档即代码（ES-OLK-13）
+```
+
+### 13.4 其他 7 子仓目录结构概要
+
+> **OS-STD-062**: 其余 7 子仓的完整目录结构见 `_design_0.2.1/01-agentrt-linux-directory-structure.md`（1160 行）。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
+
+| 子仓 | 关键目录 | 构建系统 | seL4 借鉴点 |
+|------|---------|---------|------------|
+| services | userland-{vfs,net,drivers}/ + 12 daemons | Meson | ES-SEL4-3 服务用户态化 |
+| security | capability/ + cupolas/{rules,policy,sanitize,audit}/ | Kbuild + Meson | ES-SEL4-2 capability 单一模型 |
+| memory | MemoryRovol L1-L4 + PMEM + CXL | Kbuild | OLK-6.6 mm/ |
+| cognition | CoreLoopThree + Thinkdual + LLM | Cargo | Airymax 同源 |
+| cloudnative | k8s-crd + containerd-shim + cni | Go Modules | ES-SEL4-9 libsel4 独立 |
+| system | systemd 适配 + init + commons | Kbuild + Meson | OLK-6.6 init/ |
+| tests-linux | formal-verification/{spec,proof,capdl}/ + KUnit | Isabelle/HOL + KUnit | ES-SEL4-5 形式化验证 |
+
+### 13.5 构建系统工程标准
+
+> **OS-BUILD-010**: 内核态子仓（kernel/security/memory/system）必须采用 Kbuild + Kconfig + Makefile 三层构建系统（ES-OLK-7）。用户态子仓采用各自生态主流构建系统：services 用 Meson、cloudnative 用 Go Modules、cognition 用 Cargo。
+
+构建系统差异化设计：
+
+| 子仓类型 | 构建系统 | 理由 |
+|---------|---------|------|
+| 内核态 | Kbuild + Kconfig | 与 OLK-6.6 一致，ES-OLK-7 |
+| 用户态 C/C++ | Meson | 现代构建系统，比 Make 更强大 |
+| 用户态 Rust | Cargo | Rust 生态主流 |
+| 用户态 Go | Go Modules | Go 生态主流 |
+
+### 13.6 形式化验证工程标准
+
+> **OS-TEST-010**: airymaxos-tests-linux 子仓必须包含 formal-verification/ 目录，采用 seL4 三段式结构（ES-SEL4-5）：
+
+```
+formal-verification/
+├── spec/        # 抽象规约（内核"应该做什么"的数学描述）
+├── proof/       # Isabelle/HOL 证明（C 实现满足抽象规约）
+└── capdl/       # capability 分布语言（系统初始 capability 状态描述）
+```
+
+形式化验证范围（1.0.1 阶段）：仅覆盖关键路径（调度器核心、IPC fastpath、capability 派生模型），不覆盖全部内核代码。
+
+---
+
+## 第 14 章 P2 增强建议落地规划
+
+### 14.1 R-01：syscall.xml 式接口契约定义
+
+> **OS-STD-070**（建议，1.0.1 M1 落地）: 为 IRON-9 v2 [SC] 共享契约层引入 seL4 风格的 syscall.xml 接口契约定义，由代码生成器自动生成用户态 stub 与内核态 entry 表。
+
+| 维度 | 详情 |
+|------|------|
+| 借鉴来源 | seL4 `tools/syscall.xml` + `tools/syscall_generator.py`（ES-SEL4-6） |
+| 落地范围 | 6 个 [SC] 头文件的接口契约 XML 化 |
+| 预计工时 | ~16h |
+| 落地里程碑 | 1.0.1 M1（架构与模块设计完善） |
+| 依赖 | 无 |
+| 收益 | 接口契约与实现分离，自动生成 stub 减少手写错误，CI 可校验契约与实现一致性 |
+
+### 14.2 R-02：structures.bf 式 bitfield codegen
+
+> **OS-STD-071**（建议，1.0.1 M1 落地）: 为 [SC] 头文件中的位域定义引入 seL4 风格的 structures.bf codegen，由代码生成器自动生成 C 结构体与访问函数。
+
+| 维度 | 详情 |
+|------|------|
+| 借鉴来源 | seL4 `structures.bf` + `tools/bitfield_gen.py`（ES-SEL4-8） |
+| 落地范围 | [SC] 头文件中的位域结构（如 IPC 消息头标志位、capability 权限位） |
+| 预计工时 | ~12h |
+| 落地里程碑 | 1.0.1 M1（架构与模块设计完善） |
+| 依赖 | 无（与 R-01 可并行） |
+| 收益 | 避免手写位域操作的错误，位域定义集中管理 |
+
+### 14.3 R-03：8 子仓 MAINTAINERS 文件
+
+> **OS-STD-072**（建议，1.0.1 M5 落地）: 8 个子仓均必须包含 MAINTAINERS 文件，记录该子系统的维护者信息、邮件列表、状态、相关文件路径（ES-OLK-8）。
+
+| 维度 | 详情 |
+|------|------|
+| 借鉴来源 | OLK-6.6 根目录 MAINTAINERS 文件（ES-OLK-8） |
+| 落地范围 | 8 个子仓各 1 个 MAINTAINERS 文件 |
+| 预计工时 | ~8h |
+| 落地里程碑 | 1.0.1 M5（开发流程与治理） |
+| 依赖 | 8 子仓目录结构骨架已创建（M0 完成） |
+| 收益 | 每个子系统有明确责任归属，CODEOWNERS 可基于 MAINTAINERS 自动生成 |
+
+### 14.4 R-04：合规检查增补 4 项规则
+
+> **OS-STD-073**（建议，依赖 R-01/R-02/R-03 落地后增补）: 在 08-compliance-checklist.md 增补 4 项 seL4 借鉴检查规则。
+
+| 规则编号 | 检查项 | 检查方法 | 依赖 |
+|---------|--------|---------|------|
+| STD-DOC-18 | syscall.xml 契约与实现一致性 | `scripts/check-syscall-contract.py` | R-01 |
+| STD-DOC-19 | structures.bf codegen 输出一致性 | `scripts/check-bitfield-codegen.py` | R-02 |
+| STD-IRON-18 | MAINTAINERS 文件存在性 | `scripts/check-maintainers.sh` | R-03 |
+| STD-CODE-08 | [SC] 头文件位域使用 codegen | `scripts/check-sc-bitfield.py` | R-02 |
+
+| 维度 | 详情 |
+|------|------|
+| 借鉴来源 | seL4 + OLK-6.6 工程思想（ES-SEL4-6/8 + ES-OLK-8/9） |
+| 落地范围 | 08-compliance-checklist.md + 4 个检查脚本 |
+| 预计工时 | ~4h |
+| 落地里程碑 | R-01/R-02/R-03 全部落地后 |
+| 依赖 | R-01 + R-02 + R-03 |
+| 收益 | seL4 借鉴检查规则纳入 CI 强制执行 |
+
+### 14.5 P2 增强建议工时与里程碑汇总
+
+| 建议 | 工时 | 里程碑 | 依赖 | 合计 |
+|------|------|--------|------|------|
+| R-01 syscall.xml | ~16h | M1 | 无 | |
+| R-02 structures.bf | ~12h | M1 | 无 | |
+| R-03 MAINTAINERS | ~8h | M5 | M0 目录骨架 | |
+| R-04 合规检查增补 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | |
+| **合计** | | | | **~40h** |
+
+> **注**: 4 项 P2 增强建议合计 ~40h，非阻断项，在 1.0.1 开发阶段增量落地。落地后 agentrt-liunx 综合成熟度将从 100/100（A+）进一步提升至工程思想深度落地的新高度。
+
+---
+
 ## 附录 A 规则编号注册表
 
 ### A.1 OS-IRON 工程铁律（不可妥协）
@@ -926,8 +1240,12 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 | OS-IRON-005 | 审查优先文化 | §4.5 |
 | OS-IRON-006 | 不破坏用户空间原则 | §4.6 |
 | OS-IRON-007 | DCO 强制 | §5.3.3 |
-| OS-IRON-008 | 共享契约层 4 个头文件双向 CI 验证 | §9.2 |
+| OS-IRON-008 | 共享契约层 6 个头文件双向 CI 验证 | §9.2 |
 | OS-IRON-009 | 代码共享边界：仅 agentrt ↔ AirymaxOS | §10.6 |
+| OS-IRON-010 | "Linux 6.6 为基、seL4 为鉴"工程取向 | §12.1 |
+| OS-IRON-011 | 双源边界声明（技术参考非代码共享） | §12.2 |
+| OS-IRON-012 | seL4 借鉴仅限架构层（ES-SEL4-1~5） | §12.6 |
+| OS-IRON-013 | 8 子仓独立 git 仓库 + submodule 管理 | §13.1 |
 
 ### A.2 OS-BAN 禁止规则
 
@@ -1021,6 +1339,86 @@ AirymaxOS 工程标准每一条规则都可以追溯到 Airymax 五维正交 24 
 | 设计美学 | 细节关注 | A-2 | 行尾禁止空白（§3.5）、函数原型元素顺序（§2.2.2） |
 | 设计美学 | 人文关怀 | A-3 | 敏感术语禁用（§2.1.4）、审查礼仪（§5.4.2） |
 | 设计美学 | 完美主义 | A-4 | 7 层验证（§6.1）、24 项提交检查清单 |
+
+---
+
+## 附录 C ES-OLK-1~13 工程思想映射
+
+OLK-6.6 的 13 项工程思想（ES-OLK-1~13）在本规范中的完整映射。每项工程思想都追溯到一个或多个具体规则编号，确保工程思想不悬空。
+
+| 编号 | 工程思想 | 核心内涵 | 在本规范的规则映射 | 章节定位 |
+|------|---------|---------|-------------------|---------|
+| ES-OLK-1 | 关注点分离 | 每个顶层目录对应独立关注点，跨关注点耦合通过明确接口 | OS-IRON-013（8 子仓）、OS-STD-061（设计原则 1） | §1.4、§13.2 |
+| ES-OLK-2 | 架构正交 | arch/ 是唯一架构相关根目录，其他顶层目录架构无关 | OS-STD-061（设计原则 2）、OS-STD-062 | §13.2、§13.3 |
+| ES-OLK-3 | UAPI 与内核内部 API 分离 | include/uapi/ 是用户空间 ABI 唯一来源 | OS-IRON-001（ABI 永不破坏）、OS-IRON-002 | §4.1、§13.3 |
+| ES-OLK-4 | 特性可配置 | Kconfig 开关控制特性，发行版可按需裁剪 | OS-BUILD-010（构建系统） | §13.5 |
+| ES-OLK-5 | 条件编译规范化 | IS_ENABLED() 替代 #ifdef，#endif 标注 #ifdef 名 | OS-STD-008（kernel-doc）、OS-STD-060 | §2.2、§12.3 |
+| ES-OLK-6 | UAPI 物理隔离 | uapi/ 目录物理隔离，变更流程/许可证/稳定性均不同 | OS-IRON-001、OS-STD-062 | §4.1、§13.3 |
+| ES-OLK-7 | 声明式配置 + 命令式构建分离 | Kconfig 声明"有哪些可选项"，Makefile 命令式定义"如何构建" | OS-BUILD-010 | §13.5 |
+| ES-OLK-8 | 维护者制度文档化 | 每个子系统维护者/审查者/状态文档化于 MAINTAINERS | OS-STD-040（MAINTAINERS 规范）、OS-STD-072（R-03） | §7.1、§14.3 |
+| ES-OLK-9 | 规范可执行 | 每条编码规范有对应检查脚本，规范若无法机器检查等同不存在 | OS-STD-030（checkpatch 强制）、OS-STD-050~052 | §6.2、§8.4 |
+| ES-OLK-10 | regression 零容忍 | regression 是"特别坏的 bug"，必须当前周期修复或 revert | OS-IRON-006（不破坏用户空间） | §4.6 |
+| ES-OLK-11 | 用户空间 ABI 永久稳定 | 一旦接口导出至用户空间，必须永久支持 | OS-IRON-001 | §4.1.1 |
+| ES-OLK-12 | 运行时可加载 | 机制留在内核，实现可作为模块运行时加载/卸载 | OS-IRON-003（策略与机制分离） | §4.3、§13.3 |
+| ES-OLK-13 | 文档即代码 | 文档与代码同仓库同步演进，/proc 文档化、kernel-doc、make htmldocs | OS-STD-008（kernel-doc 强制）、OS-STD-062 | §2.3.1、§13.4 |
+
+---
+
+## 附录 D ES-SEL4-1~10 工程思想借鉴映射
+
+seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-liunx 中的借鉴方式。ES-SEL4-1~5 在架构层强制借鉴，ES-SEL4-6~10 作为 P2 增强建议增量落地。
+
+| 编号 | seL4 工程思想 | 核心内涵 | 借鉴方式 | 落地规则/子仓 | 章节定位 |
+|------|-------------|---------|---------|-------------|---------|
+| ES-SEL4-1 | 极简原则（Liedtke minimality） | 微内核只保留无法在用户空间高效实现的最小原语集 | 架构层强制 | corekern/ 仅 4 原子机制、OS-STD-061（设计原则 4） | §13.2、§13.3 |
+| ES-SEL4-2 | capability 单一权限模型 | 所有权限通过 capability 令牌表达，可 mint/mintcopy/derive/revoke | 架构层强制 | airymaxos-security capability/ | §13.4 |
+| ES-SEL4-3 | 服务用户态化 | 所有非必要服务运行在用户空间 | 架构层强制 | airymaxos-services userland-{vfs,net,drivers}/ | §13.4 |
+| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 进程间通信唯一机制是消息传递，有 endpoint/notification/fastpath | 架构层强制 | airymaxos-kernel io_uring/ + IPC fastpath | §13.3 |
+| ES-SEL4-5 | 形式化验证驱动 | 内核实现必须可被形式化证明满足抽象规约 | 架构层强制 | airymaxos-tests-linux formal-verification/{spec,proof,capdl}/、OS-TEST-010 | §13.6 |
+| ES-SEL4-6 | 接口契约 XML 定义 | 通过 syscall.xml 定义系统调用接口契约，codegen 生成 stub | P2 增强建议（R-01） | OS-STD-070 | §14.1 |
+| ES-SEL4-7 | 架构正交分层 | 内核核心逻辑与架构相关代码物理隔离，arch/machine/plat 三层 | 架构层强制（已落地） | airymaxos-kernel arch/{x86,arm64,riscv}/{machine,plat}/、OS-STD-061 | §13.2、§13.3 |
+| ES-SEL4-8 | 结构定义代码生成 | 复杂位域通过 DSL（.bf 文件）定义，codegen 生成 C 代码 | P2 增强建议（R-02） | OS-STD-071 | §14.2 |
+| ES-SEL4-9 | 用户态 API 库独立 | 用户态 API 库与内核源码树物理分离 | 已落地 | airymaxos-cloudnative（SDK 层借鉴 libsel4 模型） | §13.4 |
+| ES-SEL4-10 | 现代构建系统 | CMake 支持多编译器/多架构/多平台/多配置 | 已落地（用户态子仓） | services 用 Meson、cloudnative 用 Go Modules、cognition 用 Cargo | §13.5 |
+
+**借鉴边界声明**:
+
+- **架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）**: 6 项，已在 1.0.1 架构设计中落地
+- **P2 增强建议（ES-SEL4-6 + ES-SEL4-8）**: 2 项，1.0.1 M1 阶段增量落地（R-01/R-02）
+- **已落地（ES-SEL4-9 + ES-SEL4-10）**: 2 项，用户态子仓构建系统已采纳
+
+---
+
+## 附录 E 双源融合裁决 16 维度
+
+双源融合裁决覆盖 16 个维度，是 agentrt-liunx 工程标准的核心决策表。11 维度采纳 OLK-6.6、5 维度借鉴 seL4 或融合。
+
+| # | 维度 | OLK-6.6 | seL4 | agentrt-liunx 裁决 | 裁决理由 | 落地规则 |
+|---|------|---------|------|-------------------|---------|---------|
+| 1 | 缩进 | Tab 8 字符 | 空格 4 | **OLK-6.6** | 与 Linux 6.6 基线一致便于 backport；8 字符 Tab 嵌套警告价值已被验证 | OS-FMT-001 |
+| 2 | 命名 | snake_case | camelCase | **OLK-6.6** | C/Unix 生态主流；seL4 camelCase 源于 Haskell 形式化传统 | OS-STD-001 |
+| 3 | typedef | 最小（5 种例外） | 重度 | **OLK-6.6** | typedef 隐藏类型信息增加阅读成本；5 种例外覆盖所有合理用例 | OS-STD-010 |
+| 4 | 大括号 | K&R | K&R | **一致** | 两者相同，直接采纳 | OS-FMT-003 |
+| 5 | 行宽 | 80 列 | ~100 | **OLK-6.6** | 与上游一致；字符串禁止断行（保护 grep） | OS-FMT-002 |
+| 6 | 错误处理 | 负 errno + goto 集中出口 | exception_t 枚举 | **OLK-6.6** | goto 集中出口是多出口函数资源释放最佳模式 | OS-KER-001 |
+| 7 | 注释 | kernel-doc 强制 | 普通 | **OLK-6.6** | kernel-doc 是文档即代码的核心机制 | OS-STD-008 |
+| 8 | UAPI | include/uapi/ 物理隔离 | libsel4 独立 | **OLK-6.6 + 借鉴 libsel4** | UAPI 保留（与上游一致），SDK 借鉴 libsel4 模型 | OS-IRON-001 |
+| 9 | 并发 | spinlock/rcu/seqlock | 无（内核非抢占） | **OLK-6.6** | 宏内核必须有并发控制；seL4 "无并发"模型不适用 | OS-KER-001 |
+| 10 | 内存 | kmalloc/kzalloc/vmalloc | 无动态分配 | **OLK-6.6** | 宏内核必须有动态内存分配；seL4 "无动态"源于形式化约束 | OS-BAN-003 |
+| 11 | 字符串拷贝 | strscpy（强制） | strncpy | **OLK-6.6** | strscpy 是 Linux 内核强制；strncpy 已弃用 | OS-BAN-004 |
+| 12 | **架构组织** | arch/ 单层隔离 | arch/machine/plat 三层 | **融合（借鉴 seL4）** | 借鉴 seL4 三层适配（架构无关核心 + 机器相关 + 平台相关） | OS-STD-061 |
+| 13 | **接口契约** | 无统一 XML | syscall.xml codegen | **借鉴 seL4（P2）** | 接口契约 XML 化，R-01 在 M1 落地 | OS-STD-070 |
+| 14 | **bitfield** | 手写位域 | structures.bf codegen | **借鉴 seL4（P2）** | 位域 codegen，R-02 在 M1 落地 | OS-STD-071 |
+| 15 | **形式化** | 无 | Isabelle/HOL | **借鉴 seL4** | tests 子仓形式化验证框架（spec/proof/capDL 三段式） | OS-TEST-010 |
+| 16 | **capability + IPC** | LSM 钩子 + 多种 IPC | capability 单一模型 + endpoint/notification/fastpath | **融合** | security 子仓 capability + LSM；kernel 子仓 io_uring + fastpath 优化 | OS-IRON-013 |
+
+**裁决统计**:
+
+| 裁决类型 | 维度数量 | 维度编号 |
+|---------|---------|---------|
+| 采纳 OLK-6.6 | 11 | #1-#11 |
+| 借鉴 seL4（架构层） | 3 | #12、#15、#16 |
+| 借鉴 seL4（P2 增强） | 2 | #13、#14 |
 
 ---
 

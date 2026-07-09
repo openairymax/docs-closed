@@ -67,7 +67,7 @@ seL4 内核仅提供 4 个原子机制，源码组织精简：
 
 | 机制 | seL4 源码 | 说明 | agentrt-liunx 对应 |
 |------|-----------|------|---------------------|
-| 线程（TCB） | `src/kernel/thread.c:1` / `include/object/tcb.h:1` | 执行单元 + 调度上下文 | sched_ext 调度类（SCHED_AGENT） |
+| 线程（TCB） | `src/kernel/thread.c:1` / `include/object/tcb.h:1` | 执行单元 + 调度上下文 | sched_ext 调度类（SCHED_AGENT BPF 策略） |
 | 地址空间（VSpace） | `include/object/structures.h` | 页表薄封装 | Linux mm（MemoryRovol） |
 | IPC（Endpoint） | `src/object/endpoint.c:1` | 同步消息传递 | AgentsIPC（io_uring + 128B 头） |
 | 通知（Notification） | `src/object/notification.c:1` | 二进制信号量 | taskflow 事件（kfifo + wait_event） |
