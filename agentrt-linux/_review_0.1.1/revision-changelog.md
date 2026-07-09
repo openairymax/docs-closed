@@ -466,7 +466,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 15 | docs/AirymaxAgentOS/60-driver-model/01-device-model.md | agentos→agentrt | 2 处 |
 | 16 | docs/AirymaxAgentOS/60-driver-model/02-platform-driver.md | agentos→agentrt | 1 处 |
 | 17 | docs/AirymaxAgentOS/Capital_Specifications/README.md | 邮件域名修正 | 4 处 |
-| 18 | docs/AirymaxAgentOS/Capital_Specifications/agentrt_contract/README.md | agentos_contract→agentrt_contract | 2 处 |
+| 18 | docs/AirymaxAgentOS/Capital_Specifications/agentrt_contract/README.md | agentrt_contract→agentrt_contract | 2 处 |
 | 19 | docs/AirymaxAgentOS/20-modules/01-kernel.md | 微核心化→微核心 | 2 处 |
 | 20 | docs/AirymaxAgentOS/10-architecture/01-system-architecture.md | "不是微内核"表述调和 | 1 处 |
 | 21 | docs-closed/agentrt-linux/03-microkernel-design-ref/03-minix3-reference.md | "不是微内核"表述调和 | 1 处 |

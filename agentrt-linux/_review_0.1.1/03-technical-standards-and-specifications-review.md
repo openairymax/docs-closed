@@ -298,10 +298,10 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 命名体系一致性 / IRON-9 v2 跨项目共享 |
-| **问题描述** | 项目记忆明确要求"agentos_ → agentrt_ 改名彻底决策（不留兼容别名头）"，但 AirymaxAgentOS 文档中仍存在三种代码前缀混用：(1) `agentrt_*`（OS 侧主流前缀）；(2) `agentos_*`（RT 侧 Capital_Specifications/agentos_contract/ 目录名残留）；(3) `are_*`（L2_service_protocol.md 中 IPC 消息头类型名 `are_ipc_msg_header_t`、错误码前缀 `EAGENTRT_` 变体）。三种前缀导致 IRON-9 v2 [SC] 共享契约层无法实现"两端代码字面一致"。 |
+| **问题描述** | 项目记忆明确要求"agentos_ → agentrt_ 改名彻底决策（不留兼容别名头）"，但 AirymaxAgentOS 文档中仍存在三种代码前缀混用：(1) `agentrt_*`（OS 侧主流前缀）；(2) `agentos_*`（RT 侧 Capital_Specifications/agentrt_contract/ 目录名残留）；(3) `are_*`（L2_service_protocol.md 中 IPC 消息头类型名 `are_ipc_msg_header_t`、错误码前缀 `EAGENTRT_` 变体）。三种前缀导致 IRON-9 v2 [SC] 共享契约层无法实现"两端代码字面一致"。 |
 | **验证命令** | `grep -rn "agentos_\|are_ipc\|EAGENTRT_" docs/AirymaxAgentOS/ docs/AirymaxAgentRT/Capital_Specifications/` |
-| **涉及文件** | docs/AirymaxAgentRT/Capital_Specifications/agentos_contract/ + [L2_service_protocol.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L2_service_protocol.md) + [L1_runtime_interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L1_runtime_interface.md) |
-| **修复方案** | 统一为 `agentrt_` 前缀（与改名决策一致）：(1) 将 RT 侧 `agentos_contract/` 目录重命名为 `agentrt_contract/`；(2) 将 `are_ipc_msg_header_t` 改为 `airymax_ipc_msg_hdr_t`（与 TS-P0-01 修复一致）；(3) 将 `EAGENTRT_*` 错误码前缀改为 `AGENTRT_E*`（与 TS-P0-02 修复一致）。 |
+| **涉及文件** | docs/AirymaxAgentRT/Capital_Specifications/agentrt_contract/ + [L2_service_protocol.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L2_service_protocol.md) + [L1_runtime_interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/30-runtime-interfaces/L1_runtime_interface.md) |
+| **修复方案** | 统一为 `agentrt_` 前缀（与改名决策一致）：(1) 将 RT 侧 `agentrt_contract/` 目录重命名为 `agentrt_contract/`；(2) 将 `are_ipc_msg_header_t` 改为 `airymax_ipc_msg_hdr_t`（与 TS-P0-01 修复一致）；(3) 将 `EAGENTRT_*` 错误码前缀改为 `AGENTRT_E*`（与 TS-P0-02 修复一致）。 |
 
 ---
 
@@ -623,7 +623,7 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 | 前缀 | 使用位置 | 应统一为 | 修复项 |
 |------|---------|---------|--------|
 | `agentrt_*` | OS 侧主流前缀 | `agentrt_*`（保留） | — |
-| `agentos_*` | RT 侧 Capital_Specifications/agentos_contract/ | `agentrt_*` | TS-P0-10 |
+| `agentos_*` | RT 侧 Capital_Specifications/agentrt_contract/ | `agentrt_*` | TS-P0-10 |
 | `are_*` | L2_service_protocol.md IPC 头 + L1_runtime_interface.md 错误码 | `airymax_*` / `AGENTRT_E*` | TS-P0-01 + TS-P0-02 |
 
 ---
