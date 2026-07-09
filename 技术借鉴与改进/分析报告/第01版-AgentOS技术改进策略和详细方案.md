@@ -708,7 +708,7 @@ AgentOS正处于从优秀到卓越的关键转折点。当前项目拥有坚实�
 
 ### 9.1 AgentOS相关文档
 1. `d:\SPHARX-CN\SpharxWorks\OpenAirymax\Docs\Basic_Theories\CN_01_体系并行论.md`
-2. `d:\SPHARX-CN\SpharxWorks\OpenAirymax\Docs\ARCHITECTURAL_PRINCIPLES.md`
+2. `d:\SPHARX-CN\SpharxWorks\OpenAirymax\Docs\00-architectural-principles.md`
 3. `d:\SPHARX-CN\SpharxWorks\OpenAirymax\Docs\Capital_Architecture\coreloopthree.md`
 4. `d:\SPHARX-CN\SpharxWorks\OpenAirymax\AgentOS`项目源代码
 

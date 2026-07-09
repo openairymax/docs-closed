@@ -199,7 +199,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|
 | **规则** | Capital_Specifications 内容已迁移至 50-engineering-standards，AirymaxAgentOS 内部不再引用旧路径 |
 | **验证方法** | `grep -rn "Capital_Specifications" docs/AirymaxAgentOS/ \| grep -v AirymaxAgentRT` |
-| **验证结果** | 6 处，全部为合法历史迁移说明（`50-engineering-standards/README.md` 中的注释 `原 Capital_Specifications/...`） |
+| **验证结果** | 6 处，全部为合法历史迁移说明（`50-engineering-standards/README.md` 中的注释 `原 50-specifications/...`） |
 | **状态** | ✅ 通过（全部合法历史追溯记录） |
 
 ---

@@ -411,7 +411,7 @@ timeline
 2. **[20260411-10次-AgentOS务实开发计划.md](./项目阶段性改进计划/20260411-10次-AgentOS务实开发计划.md)** — 6个月务实开发计划
 3. **[openJiuwen_AgentOS_对比分析报告.md](./项目阶段性改进计划/openJiuwen_AgentOS_对比分析报告.md)** — openJiuwen技术深度分析
 4. **[AgentOS_全行业生态兼容性可行性分析报告.md](./项目阶段性改进计划/AgentOS_全行业生态兼容性可行性分析报告.md)** — 生态兼容性战略分析
-5. **[ARCHITECTURAL_PRINCIPLES.md](../docs/ARCHITECTURAL_PRINCIPLES.md)** — AgentOS架构原则
+5. **[00-architectural-principles.md](../docs/00-architectural-principles.md)** — AgentOS架构原则
 
 ### B. 外部标准与规范
 

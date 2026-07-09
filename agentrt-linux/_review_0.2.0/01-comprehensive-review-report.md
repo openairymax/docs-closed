@@ -133,7 +133,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **影响文件（12 个）**：
 1. `20-modules/README.md`
 2. `40-dataflows/README.md`
-3. `TERMINOLOGY.md`
+3. `10-terminology.md`
 4. `50-engineering-standards/10-coding-style/README.md`
 5. `50-engineering-standards/10-coding-style/C_coding_style_standard.md`
 6. `50-engineering-standards/10-coding-style/Rust_coding_style_standard.md`
@@ -169,9 +169,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 1. `30-interfaces/04-coding-standard.md`（2 处）
 2. `10-architecture/04-engineering-baseline.md`（1 处）
 3. `10-architecture/02-five-dimensional-principles.md`（1 处）
-4. `TERMINOLOGY.md`（1 处路径修正）
+4. `10-terminology.md`（1 处路径修正）
 
-**保留引用**：`50-engineering-standards/README.md` 中 6 处历史迁移说明（`原 Capital_Specifications/...`）为合法追溯记录，保留不动。
+**保留引用**：`50-engineering-standards/README.md` 中 6 处历史迁移说明（`原 50-specifications/...`）为合法追溯记录，保留不动。
 
 ### 3.5 SCHED_AGENT 宏违规（02-posix-compat.md）
 
@@ -299,7 +299,7 @@ agentrt-linux 0.1.1 文档体系经第二轮全面审查与完善后，已达到
 
 ### 7.1 Capital_Specifications 目录（agentrt 侧）
 
-**现状**：`docs/AirymaxAgentRT/Capital_Specifications/` 目录仍存在（agentrt 用户态文档区）。其内容已复制迁移至 `docs/AirymaxAgentOS/50-engineering-standards/`。
+**现状**：`docs/AirymaxAgentRT/50-specifications/` 目录仍存在（agentrt 用户态文档区）。其内容已复制迁移至 `docs/AirymaxAgentOS/50-engineering-standards/`。
 
 **建议**：此目录属于 agentrt（用户态）文档范畴，应在 agentrt 专项审查中处理。agentrt-linux 侧的交叉引用已全部更新，不再依赖该目录。
 

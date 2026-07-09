@@ -31,7 +31,7 @@
 ### 任务3.1：服务框架完善 ✅ 完成度 100%
 
 #### 3.1.1 守护进程间协作机制优化
-- **交付物**: 服务管理框架设计文档 [`service_management_framework.md`](../Capital_Architecture/service_management_framework.md)
+- **交付物**: 服务管理框架设计文档 [`service_management_framework.md`](../10-architecture/service_management_framework.md)
 - **实现**: `agentos/commons/svc_common.h/.c` - 统一的服务生命周期管理
 - **功能**: 服务注册、发现、状态同步、协作机制
 - **验证**: Gateway服务适配器 [`gateway_svc_adapter.c/h`](../../agentos/daemon/gateway_d/)
@@ -52,7 +52,7 @@
 - **功能**: 配置验证、默认值、环境变量支持、热重载
 
 #### 3.1.5 服务部署和升级流程
-- **交付物**: 部署指南更新 [`deployment.md`](../Capital_Guides/deployment.md)
+- **交付物**: 部署指南更新 [`deployment.md`](../60-guides/deployment.md)
 - **流程**: 容器化部署、配置管理、版本升级、回滚策略
 - **工具**: Docker Compose、Kubernetes manifests、部署脚本
 
@@ -105,12 +105,12 @@
 - **修复建议**: 自动检测常见问题并提供解决方案
 
 #### 3.3.4 创建常见问题解决方案库
-- **交付物**: 常见问题指南 [`common-issues.md`](../Capital_Guides/common-issues.md)
+- **交付物**: 常见问题指南 [`common-issues.md`](../60-guides/common-issues.md)
 - **覆盖范围**: 安装、配置、运行时、性能、安全等问题
 - **解决方案**: 逐步指导、命令示例、故障排除
 
 #### 3.3.5 开发者文档更新和优化
-- **更新文档**: 快速入门指南 [`getting_started.md`](../Capital_Guides/getting_started.md)
+- **更新文档**: 快速入门指南 [`getting_started.md`](../60-guides/01-getting-started.md)
 - **新增章节**: "开发工具" - 介绍第三阶段新增工具
 - **内容**: 统一代码质量分析器、交互式教程、性能基准测试框架等
 
@@ -270,7 +270,7 @@
 ## 📋 交付物清单
 
 ### 设计文档（docs/目录）
-1. [`service_management_framework.md`](../Capital_Architecture/service_management_framework.md) - 服务管理框架设计
+1. [`service_management_framework.md`](../10-architecture/service_management_framework.md) - 服务管理框架设计
 2. [`performance_benchmarking_framework.md`](performance_benchmarking_framework.md) - 性能基准测试框架设计
 3. [`developer_experience_enhancement.md`](developer_experience_enhancement.md) - 开发体验增强设计
 4. [`open_source_governance.md`](open_source_governance.md) - 开源治理设计
@@ -286,9 +286,9 @@
 6. **技术演示**: `scripts/demo/phase3_technology_demo.py` - 技术演示脚本
 
 ### 更新文档
-1. [`getting_started.md`](../Capital_Guides/getting_started.md) - 添加"开发工具"章节
-2. [`common-issues.md`](../Capital_Guides/common-issues.md) - 常见问题解决方案库
-3. [`deployment.md`](../Capital_Guides/deployment.md) - 服务部署指南（已有）
+1. [`getting_started.md`](../60-guides/01-getting-started.md) - 添加"开发工具"章节
+2. [`common-issues.md`](../60-guides/common-issues.md) - 常见问题解决方案库
+3. [`deployment.md`](../60-guides/deployment.md) - 服务部署指南（已有）
 
 ---
 
