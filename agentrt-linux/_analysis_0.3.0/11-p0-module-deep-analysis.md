@@ -493,17 +493,21 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **执行方式**：在对应模块的"agentrt-linux 专属扩展"章节或"同源 agentrt 映射"章节后增补深化内容，不修改现有章节编号。
 
-**执行进度**（2026-07-10）:
+**执行进度**（2026-07-10，全部完成 ✅）:
 
-| # | 模块 | 深化内容 | 增补位置 | 新增规则 | 处理者 | 状态 |
-|---|------|---------|---------|---------|--------|------|
-| 1 | 60-driver-model/01 | agent_device 结构 + agent_driver_register() 签名 + agent_bus_match 逻辑 + 生命周期图 | §8.4 | OS-DRV-016~018 | 助手 | ✅ |
-| 2 | 70-build-system/01 | 8 子仓构建依赖图 + 交叉构建配置矩阵 | IRON-9 v2 章后 | OS-BLD-XXX | Agent J | 🔄 |
-| 3 | 80-testing/01 | Agent 行为契约测试矩阵（4 角色 × 8 行为） | §11.3 | OS-TST-XXX | Agent K | 🔄 |
-| 4 | 100-operations/01 | 12 daemons systemd 生命周期管理 | IRON-9 v2 章后 | OS-OPS-XXX | Agent K | 🔄 |
-| 5 | 110-security/01 | LSM ↔ Cupolas 钩子映射表 + 策略下发 + 审计格式 | §11.2 | OS-SEC-XXX | Agent L | 🔄 |
-| 6 | 110-security/02 | Landlock 域叠加 + 访问掩码合并算法 | §11.2 | OS-SEC-XXX | Agent L | 🔄 |
-| 7 | 120-development-process/01 | 8 子仓补丁流转路径图 + 跨仓依赖排序 | IRON-9 v2 章后 | OS-DEV-XXX | Agent J | 🔄 |
+| # | 模块 | 深化内容 | 增补位置 | 新增规则 | 行数增量 | 处理者 | 状态 |
+|---|------|---------|---------|---------|---------|--------|------|
+| 1 | 60-driver-model/01 | agent_device 结构 + agent_driver_register() 签名 + agent_bus_match 逻辑 + 生命周期图 | §8.4 | OS-DRV-016~018 | +162 行 | 助手 | ✅ |
+| 2 | 70-build-system/01 | 8 子仓构建依赖图 + 交叉构建配置矩阵 | §8.2 | OS-BUILD-013~016 | +77 行 | Agent J | ✅ |
+| 3 | 80-testing/01 | Agent 行为契约测试矩阵（4 角色 × 8 行为 = 32 用例） | §11.3 | OS-TST-013~016 | +153 行 | Agent K | ✅ |
+| 4 | 100-operations/01 | 12 daemons systemd 生命周期管理 + 崩溃恢复 + target 依赖 | §13.4 | OS-OPS-025~028 | +114 行 | Agent K | ✅ |
+| 5 | 110-security/01 | LSM ↔ Cupolas 7 子系统钩子映射 + 策略下发 + 审计事件格式 | §11.2 | OS-SEC-008~011 | +63 行 | Agent L | ✅ |
+| 6 | 110-security/02 | Landlock L0/L1/L2 三层域叠加 + 访问掩码交集合并算法 | §11.2 | OS-SEC-012~015 | +78 行 | Agent L | ✅ |
+| 7 | 120-development-process/01 | 8 子仓补丁流转路径图 + 跨仓依赖排序算法 + submodule 触发 | §13.3 | OS-DEV-191~194 | +79 行 | Agent J | ✅ |
+
+**汇总**：7/7 模块全部完成，共新增 7 个深化子章节，合计 26 条新规则（OS-DRV-016~018 + OS-BUILD-013~016 + OS-TST-013~016 + OS-OPS-025~028 + OS-SEC-008~015 + OS-DEV-191~194），总行数增量约 +726 行。所有增补均采用非破坏性模式，在 IRON-9 v2 章节后插入新子章节，未修改任何现有章节编号。深化内容涵盖：Agent 虚拟设备驱动完整结构体与匹配逻辑、8 子仓构建依赖与交叉构建矩阵、Agent 行为契约 32 用例测试矩阵、12 daemons systemd 生命周期与崩溃恢复、LSM ↔ Cupolas 钩子映射与审计事件、Landlock 域叠加与掩码合并算法、8 子仓补丁流转与跨仓依赖排序。
+
+**Batch-4 完成时间**：2026-07-10
 
 ### 5.5 Batch-5: 版本声明与前向引用修复（P2，~2h）
 
