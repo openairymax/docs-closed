@@ -42,7 +42,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
     ┌──────▼──────┐   ┌───────────▼──────────┐   ┌───────▼──────┐
     │ Agent 1 (A1)│   │ Agent 2 (A2)         │   │ Agent 3 (A3)│
     │ OLK-6.6     │   │ seL4-master          │   │ AirymaxOS   │
-    │ 源码深度阅读 │   │ 源码深度阅读          │   │ 核心文档阅读 │
+    │ 源码深度阅读  │   │ 源码深度阅读           │   │ 核心文档阅读 │
     │             │   │                       │   │             │
     │ coding-style │   │ syscall.xml           │   │ 10-arch     │
     │ .rst 全22章  │   │ errors.h              │   │ 20-modules  │

@@ -1,13 +1,13 @@
 # CoreKern 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-17 | **团队**: A（核心引擎）
-> **代码路径**: `agentos/atoms/corekern/`
+> **代码路径**: `agentrt/atoms/corekern/`
 
 ---
 
 ## 1. 职责边界
 
-CoreKern 是 AgentRT 的微内核，提供 Agent 运行时最底层的基础设施服务。它不包含任何 AI/LLM 逻辑，仅负责操作系统级别的资源管理。
+CoreKern 是 AgentRT 的微核心（MicroCoreRT），提供 Agent 运行时最底层的基础设施服务。它不包含任何 AI/LLM 逻辑，仅负责操作系统级别的资源管理。
 
 ### 核心职责
 
@@ -40,13 +40,13 @@ CoreKern 是 AgentRT 的微内核，提供 Agent 运行时最底层的基础设�
 
 | 头文件 | 用途 | 公开 API 数量 |
 |--------|------|:---:|
-| `agentos.h` | 统一入口，包含所有子模块头文件 | — |
-| `export.h` | AGENTOS_API 导出宏定义 | — |
+| `airy_rt.h` | 统一入口，包含所有子模块头文件 | — |
+| `export.h` | AIRY_API 导出宏定义 | — |
 | `mem.h` | 内存管理 API | 15+ |
 | `oom_handler.h` | OOM 处理框架 API | 20+ |
 | `task.h` | 任务调度 API | 12+ |
 | `ipc.h` | 进程间通信 API | 10+ |
-| `agentos_time.h` | 时间服务 API | 8+ |
+| `airy_time.h` | 时间服务 API | 8+ |
 | `error.h` | 错误码定义 + 日志宏 | 5+ |
 | `arena.h` | Arena 线性分配器 | 6 |
 | `tcache.h` | 线程本地缓存 | 5 |
@@ -59,55 +59,55 @@ CoreKern 是 AgentRT 的微内核，提供 Agent 运行时最底层的基础设�
 
 ```c
 // 核心初始化
-agentos_error_t agentos_core_init(void);
-void agentos_core_shutdown(void);
+airy_err_t airy_core_init(void);
+void airy_core_shutdown(void);
 
 // 内存管理
-void *agentos_mem_alloc(size_t size);
-void *agentos_mem_calloc(size_t count, size_t size);
-void agentos_mem_free(void *ptr);
-void *agentos_mem_realloc(void *ptr, size_t size);
-void agentos_mem_check_leaks(void);
-void agentos_mem_cleanup(void);
+void *airy_mem_alloc(size_t size);
+void *airy_mem_calloc(size_t count, size_t size);
+void airy_mem_free(void *ptr);
+void *airy_mem_realloc(void *ptr, size_t size);
+void airy_mem_check_leaks(void);
+void airy_mem_cleanup(void);
 
 // OOM 处理
-agentos_error_t agentos_oom_init(size_t total_system_memory);
-void agentos_oom_destroy(void);
-agentos_mem_pressure_level_t agentos_oom_get_pressure(void);
-void agentos_oom_set_pressure(agentos_mem_pressure_level_t level);
-int agentos_oom_check_allocation(size_t requested_size);
-agentos_error_t agentos_register_degradation(degradation_handler_t *handler);
-void agentos_unregister_degradation(degradation_handler_t *handler);
-void agentos_oom_degrade(watermark_level_t old_level, watermark_level_t new_level);
+airy_err_t airy_oom_init(size_t total_system_memory);
+void airy_oom_destroy(void);
+airy_mem_pressure_level_t airy_oom_get_pressure(void);
+void airy_oom_set_pressure(airy_mem_pressure_level_t level);
+int airy_oom_check_allocation(size_t requested_size);
+airy_err_t airy_register_degradation(degradation_handler_t *handler);
+void airy_unregister_degradation(degradation_handler_t *handler);
+void airy_oom_degrade(watermark_level_t old_level, watermark_level_t new_level);
 
 // 任务调度
-agentos_error_t agentos_task_create(agentos_task_t *task, ...);
-agentos_error_t agentos_task_yield(void);
-agentos_error_t agentos_task_sleep(uint32_t ms);
+airy_err_t airy_task_create(airy_task_t *task, ...);
+airy_err_t airy_task_yield(void);
+airy_err_t airy_task_sleep(uint32_t ms);
 
 // IPC
-agentos_error_t agentos_ipc_channel_create(agentos_ipc_channel_t *ch, ...);
-agentos_error_t agentos_ipc_send(agentos_ipc_channel_t *ch, const void *data, size_t size);
-agentos_error_t agentos_ipc_recv(agentos_ipc_channel_t *ch, void *buf, size_t *size);
+airy_err_t airy_ipc_channel_create(airy_ipc_channel_t *ch, ...);
+airy_err_t airy_ipc_send(airy_ipc_channel_t *ch, const void *data, size_t size);
+airy_err_t airy_ipc_recv(airy_ipc_channel_t *ch, void *buf, size_t *size);
 
 // 时间服务
-uint64_t agentos_clock_monotonic_ms(void);
-uint64_t agentos_clock_realtime_ms(void);
-void agentos_sleep_ms(uint32_t ms);
+uint64_t airy_clock_monotonic_ms(void);
+uint64_t airy_clock_realtime_ms(void);
+void airy_sleep_ms(uint32_t ms);
 ```
 
 ### 2.3 错误码（部分）
 
 | 错误码 | 值 | 含义 |
 |--------|:---:|------|
-| `AGENTOS_SUCCESS` | 0 | 成功 |
-| `AGENTOS_EINVAL` | -1 | 无效参数 |
-| `AGENTOS_ENOMEM` | -2 | 内存不足 |
-| `AGENTOS_ENOTINIT` | -3 | 未初始化 |
-| `AGENTOS_EEXIST` | -4 | 已存在 |
-| `AGENTOS_EBUSY` | -5 | 资源忙 |
-| `AGENTOS_ENOENT` | -6 | 不存在 |
-| `AGENTOS_EALREADY` | -7 | 已完成/已操作 |
+| `AIRY_OK` | 0 | 成功 |
+| `AIRY_EINVAL` | -1 | 无效参数 |
+| `AIRY_ENOMEM` | -2 | 内存不足 |
+| `AIRY_ENOTINIT` | -3 | 未初始化 |
+| `AIRY_EEXIST` | -4 | 已存在 |
+| `AIRY_EBUSY` | -5 | 资源忙 |
+| `AIRY_ENOENT` | -6 | 不存在 |
+| `AIRY_ERR_ALREADY_EXISTS` | -7 | 已存在/已完成 |
 
 ---
 
@@ -117,16 +117,16 @@ void agentos_sleep_ms(uint32_t ms);
 
 ```
 corekern
-  ├── agentos_atoms (atoms 公共接口)
-  └── agentos_common (commons 公共库)
+  ├── airy_atoms (atoms 公共接口)
+  └── airy_common (commons 公共库)
        ├── utils/memory/    — memory_compat.h, memory_common.h, memory_prealloc.h
        ├── utils/error/     — error_compat.h, error_types.h
-       ├── utils/types/     — agentos_types.h, basic_types.h
+       ├── utils/types/     — airy_types.h, basic_types.h
        ├── utils/string/    — string_compat.h, safe_string.h
        ├── utils/compliance/— banned_functions.h
        ├── utils/logging/   — logging_compat.h
        ├── utils/sync/      — 互斥锁/信号量
-       └── platform/        — platform.h, agentos_sleep_ms
+       └── platform/        — platform.h, airy_sleep_ms
 ```
 
 ### 3.2 运行时依赖
@@ -203,10 +203,10 @@ corekern
 
 | 函数 | 用途 | 消费者 |
 |------|------|--------|
-| `agentos_oom_get_handler()` | 获取 OOM handler 内部状态 | 测试 |
-| `agentos_oom_set_pressure()` | 手动设置压力级别 | 测试 |
-| `agentos_oom_get_pressure()` | 获取当前压力级别 | 测试/监控 |
-| `agentos_oom_report_stats()` | 输出统计报告 | 测试/监控 |
+| `airy_oom_get_handler()` | 获取 OOM handler 内部状态 | 测试 |
+| `airy_oom_set_pressure()` | 手动设置压力级别 | 测试 |
+| `airy_oom_get_pressure()` | 获取当前压力级别 | 测试/监控 |
+| `airy_oom_report_stats()` | 输出统计报告 | 测试/监控 |
 
 ---
 
@@ -216,7 +216,7 @@ corekern
 @owner: team-A
 ```
 
-所有 `agentos/atoms/corekern/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/atoms/corekern/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 
