@@ -4,14 +4,16 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.2.4（融入 v0.2.4 生产级目录结构：模型 A 完整 Linux 6.6 fork + security 方案 A 扁平 + memory 三方边界 + tests 对齐 kunit/selftests）/ 1.0.1（开发）
-> **最后更新**: 2026-07-09
+> **版本**: 0.2.5（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正）/ 1.0.1（开发）
+> **最后更新**: 2026-07-13
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，本次 v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）
 > **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
-> **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ `docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
-> **理论根基**: Linux 6.6（OLK-6.6）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 OLK-6.6（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
-> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）
+> **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ 开源手册 `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（17 类规则编号体系）
+> **理论根基**: Linux 6.6 内核基线（openEuler OLK-6.6 标杆）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
+> **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 Linux 6.6 内核基线（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
+> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`_review_0.9.0/` 7 份报告）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
 
 ---
 
@@ -34,7 +36,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [附录 A 规则编号注册表](#附录-a-规则编号注册表)
 - [附录 B 五维正交 24 原则映射](#附录-b-五维正交-24-原则映射)
 - [附录 C ES-OLK-1~13 工程思想映射](#附录-c-es-olk-1-13-工程思想映射)
-- [附录 D ES-SEL4-1~10 工程思想借鉴映射](#附录-d-es-sel4-1-10-工程思想借鉴映射)
+- [附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）](#附录-d-es-sel4-工程思想借鉴映射es-sel4-1-5-强制--es-sel4-6-10-p2-增强)
 - [附录 E 双源融合裁决 16 维度](#附录-e-双源融合裁决-16-维度)
 
 ---
@@ -45,7 +47,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 本规范是 AirymaxOS（agentrt-linux）**闭源工程标准规范的总纲**，面向 SPHARX Ltd 内部架构委员会与内核开发组。它定义了 AirymaxOS 在工程实践层面的全部强制性规则、禁止性规则、验收标准与铁律，是 8 子仓代码开发、审查、测试、发布全生命周期中不可妥协的执行基线。
 
-本规范与开源文档 `docs/AirymaxAgentOS/50-engineering-standards/` 构成**闭源总纲 + 开源子文档**的双层结构：闭源总纲包含完整规则定义、禁词清单、Euler 兼容性声明、内部治理机制；开源子文档面向公众贡献者，仅包含工程标准的核心规则与实施指南，不包含任何专有信息。
+本规范与开源文档 `docs/AirymaxOS/50-engineering-standards/` 构成**闭源总纲 + 开源子文档**的双层结构：闭源总纲包含完整规则定义、禁词清单、Euler 兼容性声明、内部治理机制；开源子文档面向公众贡献者，仅包含工程标准的核心规则与实施指南，不包含任何专有信息。
 
 ### 1.2 工程标准三大支柱
 
@@ -905,7 +907,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 ### 11.1 禁词清单
 
-以下词汇在**开源文档**（`docs/AirymaxAgentOS/`）中**严禁出现**。闭源文档（`docs-closed/agentrt-linux/`）中允许引用，但应避免不必要的泄露。
+以下词汇在**开源文档**（`docs/AirymaxOS/`）中**严禁出现**。闭源文档（`docs-closed/agentrt-linux/`）中允许引用，但应避免不必要的泄露。
 
 > **OS-BAN-010**: 开源文档中严禁出现以下禁词。
 
@@ -948,7 +950,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 ### 12.1 工程取向总纲
 
-> **OS-IRON-010**: agentrt-linux 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
+> **OS-IRON-010**: agentrt-linux 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 Linux 6.6 内核基线工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
 
 本章基于 v0.2.1 源代码深度研究（`_research_0.2.1/01-source-code-engineering-study.md`，489 行），将研究成果正式固化为工程标准。研究的范围与方法：
 
@@ -956,7 +958,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 |------|---------|------|
 | 研究对象 | `01Reference/kernel-OLK-6.6`（24 顶层目录全量源码） | `01Reference/seL4-master`（src/ + include/ + libsel4/ + tools/ + manual/ 全量源码） |
 | 代表性精读 | `Documentation/process/coding-style.rst`（1-700 行） | `src/object/tcb.c`（1-120 行） |
-| 工程思想提取 | 13 项（ES-OLK-1~13） | 10 项（ES-SEL4-1~10） |
+| 工程思想提取 | 13 项（ES-OLK-1~13） | 5 项强制（ES-SEL4-1~5）+ 5 项 P2 增强（ES-SEL4-6~10）= 10 项 |
 | 双源融合裁决 | 16 维度逐项裁决 | 同左 |
 
 ### 12.2 双源边界声明
@@ -969,7 +971,7 @@ AirymaxOS ←→ OLK-6.6:  技术参考（编码风格 + 工程思想），不�
 AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
 ```
 
-### 12.3 编码风格层裁决（7 维度全采纳 OLK-6.6）
+### 12.3 编码风格层裁决（7 维度全采纳 Linux 6.6 内核基线）
 
 编码风格层是 agentrt-linux 与 Linux 6.6 上游保持一致性的关键。seL4 的编码约定因与 Linux 6.6 基线冲突被整体拒绝。
 
@@ -983,11 +985,11 @@ AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
 | 错误处理 | 负 errno + goto 集中出口 | exception_t 枚举 | **OLK-6.6** | goto 集中出口是多出口函数资源释放最佳模式 |
 | 注释 | kernel-doc 强制 | 普通 | **OLK-6.6** | kernel-doc 是文档即代码的核心机制 |
 
-> **OS-STD-060**: 编码风格层 7 维度必须全部与 OLK-6.6 对齐。seL4 编码约定（4 空格 / camelCase / 重度 typedef）在 agentrt-linux 中禁止使用。
+> **OS-STD-060**: 编码风格层 7 维度必须全部与 Linux 6.6 内核基线对齐。seL4 编码约定（4 空格 / camelCase / 重度 typedef）在 agentrt-linux 中禁止使用。
 
 ### 12.4 工程思想层：ES-OLK-1~13 全部采纳
 
-OLK-6.6 的 13 项工程思想（ES-OLK-1~13）是 agentrt-linux 工程基线层的基石。每项工程思想都映射到本规范的具体规则（详见附录 C）。
+Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）是 agentrt-linux 工程基线层的基石。每项工程思想都映射到本规范的具体规则（详见附录 C）。
 
 | 编号 | 工程思想 | 核心内涵 | 在本规范的体现 |
 |------|---------|---------|---------------|
@@ -1034,7 +1036,7 @@ seL4 的工程思想在架构层被选择性借鉴——仅借鉴其设计哲学
 
 ### 12.7 双源融合裁决总表（16 维度）
 
-双源融合裁决覆盖 16 个维度，其中 11 维度采纳 OLK-6.6、5 维度借鉴 seL4 或融合。完整裁决表见附录 E。
+双源融合裁决覆盖 16 个维度，其中 11 维度采纳 Linux 6.6 内核基线、5 维度借鉴 seL4 或融合。完整裁决表见附录 E。
 
 ### 12.8 ES-SEL4-6~10 的落地方式
 
@@ -1054,7 +1056,7 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 ### 13.1 8 子仓总览
 
-> **OS-IRON-013**: agentrt-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理。8 子仓的目录结构设计基于 OLK-6.6（24 顶层目录）+ seL4（src/{api,kernel,object,fastpath,arch,machine,plat}）+ Airymax 同源（atoms/corekern 复用）三大设计支柱。[v0.2.4-review P0-R01 修正：28→24，详见 _design_0.2.4 附录 D.5]
+> **OS-IRON-013**: agentrt-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理。8 子仓的目录结构设计基于 Linux 6.6 内核基线（24 顶层目录）+ seL4（src/{api,kernel,object,fastpath,arch,machine,plat}）+ Airymax 同源（atoms/corekern 复用）三大设计支柱。[v0.2.4-review P0-R01 修正：28→24，详见 _design_0.2.4 附录 D.5]
 
 > **OS-IRON-014**: [SC] 共享契约层 6 个头文件（bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h）仅物理宿主于 `airymaxos-kernel/include/airymax/`，是唯一物理副本。其他子仓通过 `-I../kernel/include` 构建路径引用，**禁止**在任何子仓的 `include/airymax/<sub>/` 下创建 [SC] 头文件的物理副本。子仓内部头文件以 `_internal.h` 后缀区分（如 `capability_internal.h`）。此铁律对齐 IRON-9 v2 [SC] 共享契约层单一数据源约束，CI 强制检查规则见 STD-IRON-19。违反此铁律将导致 [SC] 头文件出现多份物理副本，破坏编译期类型一致性，是 agentrt-linux 工程体系中最严重的架构违规之一。
 
@@ -1114,7 +1116,7 @@ airymaxos-kernel/
 ├── mm/                      # [模型 A] 完整继承上游内存管理（Airymax 扩展直接写入）
 ├── security/                # [模型 A] 完整继承上游 LSM 框架（Airymax agent_lsm 直接写入）
 ├── sound/ certs/ ipc/ samples/ usr/ virt/ kernel/ tools/ LICENSES/ rust/  # [模型 A] 其余上游子系统完整继承（v0.2.4-review P0-R02 补全 4 目录，共 24 目录）
-├── io_uring/                # 异步 I/O（OLK-6.6 风格独立子系统）
+├── io_uring/                # 异步 I/O（Linux 6.6 内核基线风格独立子系统）
 ├── crypto/ init/ lib/ machine/ Documentation/ scripts/ tests/
 ├── Kbuild                   # 递归构建（ES-OLK-7）
 ├── Kconfig                  # 声明式配置（ES-OLK-7）
@@ -1148,7 +1150,7 @@ airymaxos-kernel/
 
 | 子仓类型 | 构建系统 | 理由 |
 |---------|---------|------|
-| 内核态 | Kbuild + Kconfig | 与 OLK-6.6 一致，ES-OLK-7 |
+| 内核态 | Kbuild + Kconfig | 与 Linux 6.6 内核基线一致，ES-OLK-7 |
 | 用户态 C/C++ | Meson | 现代构建系统，比 Make 更强大 |
 | 用户态 Rust | Cargo | Rust 生态主流 |
 | 用户态 Go | Go Modules | Go 生态主流 |
@@ -1223,7 +1225,7 @@ formal-verification/
 
 | 维度 | 详情 |
 |------|------|
-| 借鉴来源 | seL4 + OLK-6.6 工程思想（ES-SEL4-6/8 + ES-OLK-8/9） |
+| 借鉴来源 | seL4 + Linux 6.6 内核基线工程思想（ES-SEL4-6/8 + ES-OLK-8/9） |
 | 落地范围 | 08-compliance-checklist.md + 4 个检查脚本 |
 | 预计工时 | ~4h |
 | 落地里程碑 | R-01/R-02/R-03 全部落地后 |
@@ -1364,7 +1366,7 @@ AirymaxOS 工程标准每一条规则都可以追溯到 Airymax 五维正交 24 
 
 ## 附录 C ES-OLK-1~13 工程思想映射
 
-OLK-6.6 的 13 项工程思想（ES-OLK-1~13）在本规范中的完整映射。每项工程思想都追溯到一个或多个具体规则编号，确保工程思想不悬空。
+Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）在本规范中的完整映射。每项工程思想都追溯到一个或多个具体规则编号，确保工程思想不悬空。
 
 | 编号 | 工程思想 | 核心内涵 | 在本规范的规则映射 | 章节定位 |
 |------|---------|---------|-------------------|---------|
@@ -1384,7 +1386,9 @@ OLK-6.6 的 13 项工程思想（ES-OLK-1~13）在本规范中的完整映射。
 
 ---
 
-## 附录 D ES-SEL4-1~10 工程思想借鉴映射
+## 附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）
+
+> **v0.2.5 修正（P0-CRITICAL-02 + P1-MAJOR-06 + P2-MINOR-05）**：附录 D 标题原为"ES-SEL4-1~10 工程思想借鉴映射"，与 §12.6 OS-IRON-012"ES-SEL4-1~5"声明和 §12.8"ES-SEL4-6~10 作为 P2 增强建议"定位矛盾。现已修正为"ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）"，消解三重冲突。ES-SEL4 借鉴范围三作用域：5 项强制（OS-IRON-012 架构层）/ 10 项强制+P2（本附录）/ 54 项研究（`_research_0.2.5/01-sel4-deep-analysis.md` 研究范围，非借鉴范围）。
 
 seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方式。ES-SEL4-1~5 在架构层强制借鉴，ES-SEL4-6~10 作为 P2 增强建议增量落地。
 
@@ -1411,7 +1415,7 @@ seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方�
 
 ## 附录 E 双源融合裁决 16 维度
 
-双源融合裁决覆盖 16 个维度，是 agentrt-linux 工程标准的核心决策表。11 维度采纳 OLK-6.6、5 维度借鉴 seL4 或融合。
+双源融合裁决覆盖 16 个维度，是 agentrt-linux 工程标准的核心决策表。11 维度采纳 Linux 6.6 内核基线、5 维度借鉴 seL4 或融合。
 
 | # | 维度 | OLK-6.6 | seL4 | agentrt-linux 裁决 | 裁决理由 | 落地规则 |
 |---|------|---------|------|-------------------|---------|---------|
@@ -1436,7 +1440,7 @@ seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方�
 
 | 裁决类型 | 维度数量 | 维度编号 |
 |---------|---------|---------|
-| 采纳 OLK-6.6 | 11 | #1-#11 |
+| 采纳 Linux 6.6 内核基线 | 11 | #1-#11 |
 | 借鉴 seL4（架构层） | 3 | #12、#15、#16 |
 | 借鉴 seL4（P2 增强） | 2 | #13、#14 |
 
