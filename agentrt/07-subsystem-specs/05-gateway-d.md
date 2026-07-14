@@ -1,7 +1,7 @@
 # Gateway Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-17 | **团队**: A（核心引擎）
-> **代码路径**: `agentos/daemon/gateway_d/`
+> **代码路径**: `agentrt/daemon/gateway_d/`
 
 ---
 
@@ -14,7 +14,7 @@ Gateway Daemon（gateway_d）是 AgentRT 的 API 网关守护进程，作为整�
 | 模块 | 职责 | 源文件 |
 |------|------|--------|
 | **网关服务核心** | 管理 HTTP/WebSocket/Stdio 三种网关实例的生命周期（create/init/start/stop/destroy），配置加载，状态查询，健康检查 | `src/service.c` (`gateway_service.h`) |
-| **服务适配器** | 将网关服务包装为统一的 AgentOS 服务管理框架接口，支持服务注册表、服务发现、统一生命周期管理 | `src/gateway_svc_adapter.c` (`gateway_svc_adapter.h`) |
+| **服务适配器** | 将网关服务包装为统一的 AgentRT 服务管理框架接口，支持服务注册表、服务发现、统一生命周期管理 | `src/gateway_svc_adapter.c` (`gateway_svc_adapter.h`) |
 | **协议路由** | 根据请求的 Content-Type + Path + Body 自动检测协议类型（MCP/A2A/OpenAI/JSON-RPC），分发到对应协议处理器 | `src/protocol/gateway_protocol_router.c` (`gateway_protocol_router.h`) |
 | **MCP 服务端** | Model Context Protocol 服务端实现，允许 MCP 客户端通过网关与 AgentRT 后端服务交互 | `src/protocol/gateway_mcp_server.c` |
 | **A2A 处理器** | Agent-to-Agent 协议处理，支持 Agent 间通信 | `src/protocol/gateway_a2a_handler.c` |
@@ -58,9 +58,9 @@ Gateway Daemon（gateway_d）是 AgentRT 的 API 网关守护进程，作为整�
 - 不负责 LLM 推理（属于 llm_d）
 - 不负责工具执行（属于 tool_d）
 - 不负责 Agent 市场管理（属于 market_d）
-- 不负责底层协议转换实现（属于 `agentos/gateway/` 协议转换层）
+- 不负责底层协议转换实现（属于 `agentrt/gateway/` 协议转换层）
 - 不负责输入净化/网络安全过滤（属于 Cupolas）
-- 不负责系统调用实现（属于 `agentos/atoms/syscall/`）
+- 不负责系统调用实现（属于 `agentrt/atoms/syscall/`）
 
 ---
 
@@ -81,60 +81,60 @@ Gateway Daemon（gateway_d）是 AgentRT 的 API 网关守护进程，作为整�
 // === 网关服务生命周期 (gateway_service.h) ===
 
 // 创建/销毁
-agentos_error_t gateway_service_create(gateway_service_t *service,
+airy_err_t gateway_service_create(gateway_service_t *service,
                                        const gateway_service_config_t *config);
 void gateway_service_destroy(gateway_service_t service);
 
 // 生命周期
-agentos_error_t gateway_service_init(gateway_service_t service);
-agentos_error_t gateway_service_start(gateway_service_t service);
-agentos_error_t gateway_service_stop(gateway_service_t service, bool force);
+airy_err_t gateway_service_init(gateway_service_t service);
+airy_err_t gateway_service_start(gateway_service_t service);
+airy_err_t gateway_service_stop(gateway_service_t service, bool force);
 
 // 状态查询
-agentos_svc_state_t gateway_service_get_state(gateway_service_t service);
+airy_svc_state_t gateway_service_get_state(gateway_service_t service);
 bool gateway_service_is_running(gateway_service_t service);
-agentos_error_t gateway_service_get_stats(gateway_service_t service,
-                                          agentos_svc_stats_t *stats);
-agentos_error_t gateway_service_healthcheck(gateway_service_t service);
+airy_err_t gateway_service_get_stats(gateway_service_t service,
+                                          airy_svc_stats_t *stats);
+airy_err_t gateway_service_healthcheck(gateway_service_t service);
 
 // 配置管理
-agentos_error_t gateway_service_load_config(gateway_service_config_t *config,
+airy_err_t gateway_service_load_config(gateway_service_config_t *config,
                                             const char *config_path);
 void gateway_service_get_default_config(gateway_service_config_t *config);
 
 // === 服务适配器 (gateway_svc_adapter.h) ===
 
 // 创建/包装
-agentos_error_t gateway_service_adapter_create(agentos_service_t *out_service,
-                                               const agentos_svc_config_t *config);
-agentos_error_t gateway_service_adapter_wrap(agentos_service_t *out_service,
+airy_err_t gateway_service_adapter_create(airy_service_t *out_service,
+                                               const airy_svc_config_t *config);
+airy_err_t gateway_service_adapter_wrap(airy_service_t *out_service,
                                              gateway_service_t gateway_svc,
-                                             const agentos_svc_config_t *config);
-agentos_error_t gateway_service_adapter_create_from_config(
-    agentos_service_t *out_service, const char *config_path);
+                                             const airy_svc_config_t *config);
+airy_err_t gateway_service_adapter_create_from_config(
+    airy_service_t *out_service, const char *config_path);
 
 // 生命周期
-agentos_error_t gateway_service_adapter_init(agentos_service_t service);
-agentos_error_t gateway_service_adapter_start(agentos_service_t service);
-agentos_error_t gateway_service_adapter_stop(agentos_service_t service, bool force);
-void gateway_service_adapter_destroy(agentos_service_t service);
+airy_err_t gateway_service_adapter_init(airy_service_t service);
+airy_err_t gateway_service_adapter_start(airy_service_t service);
+airy_err_t gateway_service_adapter_stop(airy_service_t service, bool force);
+void gateway_service_adapter_destroy(airy_service_t service);
 
 // 查询
-agentos_error_t gateway_service_adapter_healthcheck(agentos_service_t service);
-agentos_svc_state_t gateway_service_adapter_get_state(agentos_service_t service);
-bool gateway_service_adapter_is_running(agentos_service_t service);
-agentos_error_t gateway_service_adapter_get_stats(agentos_service_t service,
-                                                  agentos_svc_stats_t *stats);
-gateway_service_t gateway_service_adapter_get_original(agentos_service_t service);
+airy_err_t gateway_service_adapter_healthcheck(airy_service_t service);
+airy_svc_state_t gateway_service_adapter_get_state(airy_service_t service);
+bool gateway_service_adapter_is_running(airy_service_t service);
+airy_err_t gateway_service_adapter_get_stats(airy_service_t service,
+                                                  airy_svc_stats_t *stats);
+gateway_service_t gateway_service_adapter_get_original(airy_service_t service);
 
 // 注册/配置
-agentos_error_t gateway_service_adapter_register(agentos_service_t service);
-agentos_error_t gateway_service_adapter_unregister(agentos_service_t service);
-agentos_error_t gateway_service_adapter_reload_config(agentos_service_t service,
+airy_err_t gateway_service_adapter_register(airy_service_t service);
+airy_err_t gateway_service_adapter_unregister(airy_service_t service);
+airy_err_t gateway_service_adapter_reload_config(airy_service_t service,
                                                       const char *config_path);
-agentos_error_t gateway_service_adapter_set_type_enabled(
-    agentos_service_t service, gateway_daemon_type_t type, bool enabled);
-bool gateway_service_adapter_supports_type(agentos_service_t service,
+airy_err_t gateway_service_adapter_set_type_enabled(
+    airy_service_t service, gateway_daemon_type_t type, bool enabled);
+bool gateway_service_adapter_supports_type(airy_service_t service,
                                            gateway_daemon_type_t type);
 
 // === 协议路由 (gateway_protocol_router.h) ===
@@ -201,12 +201,12 @@ bool gw_forward_is_healthy(gw_forward_t *fw);
 
 | 错误码 | 含义 |
 |--------|------|
-| `AGENTOS_SUCCESS` (0) | 成功 |
-| `AGENTOS_EINVAL` | 无效参数 |
-| `AGENTOS_ENOMEM` | 内存不足 |
-| `AGENTOS_ENOTINIT` | 未初始化 |
-| `AGENTOS_EBUSY` | 服务忙 |
-| `AGENTOS_ERR_OUT_OF_MEMORY` | 内存不足（OOM） |
+| `AIRY_SUCCESS` (0) | 成功 |
+| `AIRY_EINVAL` | 无效参数 |
+| `AIRY_ENOMEM` | 内存不足 |
+| `AIRY_ENOTINIT` | 未初始化 |
+| `AIRY_EBUSY` | 服务忙 |
+| `AIRY_ERR_OUT_OF_MEMORY` | 内存不足（OOM） |
 
 ---
 
@@ -219,11 +219,11 @@ daemon/gateway_d/
   ├── daemon/common/                    — svc_common.h, svc_logger, svc_config, svc_auth
   ├── daemon/common/ipc/                — ipc_service_bus（IPC 服务总线）
   ├── daemon/common/                     — method_dispatcher, jsonrpc_helpers, circuit_breaker
-  ├── agentos/gateway/                  — 底层协议转换层（HTTP/WS/Stdio 实现）
-  ├── agentos/protocols/                — 协议适配器（MCP/A2A/OpenAI）
-  ├── agentos/atoms/syscall/            — 系统调用接口
-  ├── agentos/commons/utils/memory/     — 统一内存管理（Arena 分配器用于请求处理路径）
-  └── agentos/commons/utils/compliance/ — banned_functions.h（通过 CMake -include 注入）
+  ├── agentrt/gateway/                  — 底层协议转换层（HTTP/WS/Stdio 实现）
+  ├── agentrt/protocols/                — 协议适配器（MCP/A2A/OpenAI）
+  ├── agentrt/atoms/syscall/            — 系统调用接口
+  ├── agentrt/commons/utils/memory/     — 统一内存管理（Arena 分配器用于请求处理路径）
+  └── agentrt/commons/utils/compliance/ — banned_functions.h（通过 CMake -include 注入）
 ```
 
 ### 3.2 运行时依赖
@@ -293,7 +293,7 @@ daemon/gateway_d/
 | 变量 | 说明 |
 |------|------|
 | `TEST_GATEWAY_HTTP_PORT` | 测试环境 HTTP 端口（默认 8080） |
-| `AGENTOS_TEST_MODE` | 测试模式标志 |
+| `AIRY_TEST_MODE` | 测试模式标志 |
 
 ---
 
@@ -302,7 +302,7 @@ daemon/gateway_d/
 ### 5.1 合约文件
 
 - `contracts/contract_A_C_gateway_d.h` — 团队A（Gateway Daemon）与团队C（测试/质量）的接口合约
-- `agentos/daemon/gateway_d/tests/` — 网关守护进程单元测试
+- `agentrt/daemon/gateway_d/tests/` — 网关守护进程单元测试
 
 ### 5.2 测试接口
 
@@ -328,7 +328,7 @@ daemon/gateway_d/
 @owner: team-A
 ```
 
-所有 `agentos/daemon/gateway_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemon/gateway_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

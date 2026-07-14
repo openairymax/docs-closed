@@ -1,7 +1,7 @@
 # Tool Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（核心引擎）
-> **代码路径**: `agentos/daemon/tool_d/`
+> **代码路径**: `agentrt/daemon/tool_d/`
 
 ---
 
@@ -21,7 +21,7 @@ Tool Daemon 是 AgentRT 的工具执行守护进程，负责外部工具的注�
 | **结果缓存** | 基于工具 ID + 参数哈希的缓存键，LRU 缓存，可配置容量和 TTL，仅缓存标记为可缓存的工具结果 | `src/cache.c` |
 | **配置管理** | 工具定义、缓存容量、执行器线程池、沙箱类型（process / container）的配置加载 | `src/config.c` |
 | **服务核心** | 编排 registry、executor、validator、cache、approval，处理请求生命周期 | `src/service.c` |
-| **服务适配器** | 将工具服务适配到 AgentOS 统一服务管理框架（svc_common） | `src/tool_svc_adapter.c` |
+| **服务适配器** | 将工具服务适配到 AgentRT 统一服务管理框架（svc_common） | `src/tool_svc_adapter.c` |
 | **守护进程入口** | JSON-RPC 2.0 服务端，Unix Socket / TCP 双模式，事件驱动框架，注册 `register`、`list_tools`、`get_tool`、`execute_tool` 四个 RPC 方法 | `src/main.c` |
 | **工具辅助函数** | ID 校验、名称净化、版本解析 | `src/utils/tool_helpers.c` |
 
@@ -148,17 +148,17 @@ char *tool_result_to_json(const tool_result_t *res);
 tool_result_t *tool_result_from_json(const char *json);
 
 // ── 服务适配器 ──
-agentos_error_t tool_service_adapter_create(agentos_service_t *out_service,
-                                            const agentos_svc_config_t *config);
-agentos_error_t tool_service_adapter_wrap(agentos_service_t *out_service,
+airy_err_t tool_service_adapter_create(airy_service_t *out_service,
+                                            const airy_svc_config_t *config);
+airy_err_t tool_service_adapter_wrap(airy_service_t *out_service,
                                           tool_service_t tool_svc,
-                                          const agentos_svc_config_t *config);
-tool_service_t tool_service_adapter_get_original(agentos_service_t service);
-agentos_error_t tool_service_adapter_init(agentos_service_t service);
-agentos_error_t tool_service_adapter_start(agentos_service_t service);
-agentos_error_t tool_service_adapter_stop(agentos_service_t service, bool force);
-void tool_service_adapter_destroy(agentos_service_t service);
-agentos_error_t tool_service_adapter_healthcheck(agentos_service_t service);
+                                          const airy_svc_config_t *config);
+tool_service_t tool_service_adapter_get_original(airy_service_t service);
+airy_err_t tool_service_adapter_init(airy_service_t service);
+airy_err_t tool_service_adapter_start(airy_service_t service);
+airy_err_t tool_service_adapter_stop(airy_service_t service, bool force);
+void tool_service_adapter_destroy(airy_service_t service);
+airy_err_t tool_service_adapter_healthcheck(airy_service_t service);
 ```
 
 ### 2.3 JSON-RPC 2.0 方法
@@ -211,15 +211,15 @@ agentos_error_t tool_service_adapter_healthcheck(agentos_service_t service);
 
 ```
 tool_d
-  ├── agentos_common (commons 公共库)
+  ├── airy_common (commons 公共库)
   │    ├── platform/          — platform.h
-  │    ├── utils/memory/      — memory_compat.h, AGENTOS_MALLOC/FREE/STRDUP
+  │    ├── utils/memory/      — memory_compat.h, AIRY_MALLOC/FREE/STRDUP
   │    ├── utils/error/       — error.h
   │    ├── utils/logging/     — logging.h, logging_compat.h
-  │    ├── utils/sync/        — sync_compat.h, agentos_mutex_t
+  │    ├── utils/sync/        — sync_compat.h, airy_mutex_t
   │    ├── utils/atomic/      — atomic_compat.h
   │    ├── utils/cache/       — 缓存基础设施
-  │    ├── utils/network/     — agentos_socket_t, agentos_socket_*
+  │    ├── utils/network/     — airy_socket_t, airy_socket_*
   │    └── utils/ipc/         — ipc_service_bus
   ├── svc_common (daemon 通用服务层)
   │    ├── svc_logger         — SVC_LOG_* 宏
@@ -261,7 +261,7 @@ tool_d
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|:---:|------|
-| `daemon.socket_path` | string | `/var/run/agentos/tool.sock` | Unix Socket 路径 |
+| `daemon.socket_path` | string | `/var/run/agentrt/tool.sock` | Unix Socket 路径 |
 | `daemon.tcp_port` | uint16 | 8081 | TCP 监听端口（启用 TCP 时） |
 | `daemon.max_clients` | int | 64 | 最大客户端连接数 |
 
@@ -359,7 +359,7 @@ tool_d
 @owner: team-A
 ```
 
-所有 `agentos/daemon/tool_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemon/tool_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

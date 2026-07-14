@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档全面参考 openEuler 社区的 io_uring 异步 I/O 框架技术规范，作为 AirymaxOS IPC 子系统设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxAgentOS/`）中。
+本文档全面参考 openEuler 社区的 io_uring 异步 I/O 框架技术规范，作为 AirymaxOS IPC 子系统设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxOS/`）中。
 
 ### 1.2 参考来源
 
@@ -50,7 +50,7 @@ OLK-6.6 的 io_uring 子系统基于 Linux 6.6 主线，包含以下关键特性
 
 1. **先参考 Euler**：查阅本文档对应章节的 openEuler io_uring 规范
 2. **再参考行业最新理论**：查阅 `04-industry-best-practices/02-best-practices.md` 中的最新 I/O 多路复用与零拷贝理论
-3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/AirymaxAgentOS/40-dataflows/03-ipc-flow.md`
+3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/AirymaxOS/40-dataflows/03-ipc-flow.md`
 
 ---
 
@@ -695,7 +695,7 @@ AirymaxOS 在 openEuler io_uring 基础上：
 
 - [OLK-6.6 io_uring 源码映射](../02-olk66-source-mapping/02-io-uring-mapping.md)
 - [openEuler 调度器技术规范](01-scheduler-spec.md)
-- [开源 IPC 消息流设计](../../docs/AirymaxAgentOS/40-dataflows/03-ipc-flow.md)
+- [开源 IPC 消息流设计](../../docs/AirymaxOS/40-dataflows/03-ipc-flow.md)
 - [行业最佳实践汇总](../04-industry-best-practices/02-best-practices.md)
 
 ---

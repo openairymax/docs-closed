@@ -10,6 +10,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-3 | UAPI 分离（双层稳定性） | §9 capability 系统映射（`include/uapi/linux/capability.h` 38 个 POSIX cap ID）；§9.2 POSIX capability 集合 |
+| ES-OLK-11 | 用户空间 ABI 永久稳定（OS-IRON-001） | §14 IRON-9 v2 三层共享边界汇总（[SC] 共享契约层稳定接口）；§15.5 agentrt 一致性检查（15 项全 PASS） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -1147,10 +1158,10 @@ sequenceDiagram
 ### 16.1 相关文档
 
 - [闭源 openEuler 安全技术规范](../01-openeuler-tech-reference/05-security-spec.md)
-- [开源安全穹顶模块设计](../../docs/AirymaxAgentOS/20-modules/03-security.md)
-- [开源 LSM 框架详解](../../docs/AirymaxAgentOS/110-security/01-lsm-framework.md)
-- [开源 Landlock 用户态沙箱](../../docs/AirymaxAgentOS/110-security/02-landlock-sandbox.md)
-- [开源安全加固主索引](../../docs/AirymaxAgentOS/110-security/README.md)
+- [开源安全穹顶模块设计](../../docs/AirymaxOS/20-modules/03-security.md)
+- [开源 LSM 框架详解](../../docs/AirymaxOS/110-security/01-lsm-framework.md)
+- [开源 Landlock 用户态沙箱](../../docs/AirymaxOS/110-security/02-landlock-sandbox.md)
+- [开源安全加固主索引](../../docs/AirymaxOS/110-security/README.md)
 - [闭源源码映射 README](README.md)
 - [闭源 OLK-6.6 内存管理源码映射](04-mm-mapping.md)
 - [闭源 OLK-6.6 eBPF 源码映射](03-bpf-mapping.md)

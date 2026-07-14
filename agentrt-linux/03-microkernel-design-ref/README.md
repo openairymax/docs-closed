@@ -19,9 +19,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 文档 | 主题 | 参考来源 | AirymaxOS 对应 |
 |------|------|---------|---------------|
-| `01-sel4-reference.md` | seL4 微内核设计参考 | seL4 形式化验证 + capability | Cupolas capability + airymaxos-tests-linux 形式化验证 |
+| `01-sel4-reference.md` | seL4 微内核设计参考 | seL4 形式化验证 + capability | Cupolas capability + tests-linux 形式化验证 |
 | `02-zircon-reference.md` | Zircon 微内核设计参考 | Zircon handle/channel/VMO | AgentsIPC 消息传递 + MemoryRovol VMO 抽象 |
-| `03-minix3-reference.md` | Minix3 微内核设计参考 | Minix3 用户态服务 + 自愈 | airymaxos-services 用户态服务化 |
+| `03-minix3-reference.md` | Minix3 微内核设计参考 | Minix3 用户态服务 + 自愈 | services 用户态服务化 |
 | `04-microkernel-strategy.md` | AirymaxOS 微内核化改造策略对照 | 上述三者 + Liedtke minimality | 10-architecture/03-microkernel-strategy（开源） |
 
 ---
@@ -48,7 +48,7 @@ AirymaxOS 落地：MicroCoreRT 极简内核只保留 IPC、内存、任务、时
 
 ## 5. 与开源文档的关系
 
-- `04-microkernel-strategy.md` 是 `docs/AirymaxAgentOS/10-architecture/03-microkernel-strategy.md` 的闭源深化版
+- `04-microkernel-strategy.md` 是 `docs/AirymaxOS/10-architecture/03-microkernel-strategy.md` 的闭源深化版
 - 闭源版可引用具体微内核源码与论文，开源版只能用 AirymaxOS 自身语言
 - seL4/Zircon/Minix3 名称在开源文档中可保留（公开学术资料），但其内部实现细节参考仅限本目录
 

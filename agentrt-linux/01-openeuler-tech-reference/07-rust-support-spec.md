@@ -24,7 +24,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 与 agentrt-linux 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxAgentOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
+本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -1323,9 +1323,9 @@ Rust 内核模块的设计遵循"零成本抽象"美学原则。从设计美学�
 - [04-memory-spec.md](04-memory-spec.md) — 内存管理规范（Rust MemoryRovol 感知分配器基础）
 
 **同模块开源文档**：
-- `docs/AirymaxAgentOS/40-dataflows/04-scheduling-flow.md` — SCHED_AGENT 调度流
-- `docs/AirymaxAgentOS/90-observability/02-ebpf-probes.md` — eBPF 可编程探针
-- `docs/AirymaxAgentOS/110-security/` — Cupolas 安全穹顶
+- `docs/AirymaxOS/40-dataflows/04-scheduling-flow.md` — SCHED_AGENT 调度流
+- `docs/AirymaxOS/90-observability/02-ebpf-probes.md` — eBPF 可编程探针
+- `docs/AirymaxOS/110-security/` — Cupolas 安全穹顶
 
 **源码映射**：
 - `../02-olk66-source-mapping/07-rust-mapping.md` — Rust 子系统源码映射

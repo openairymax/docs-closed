@@ -1,7 +1,7 @@
 # Cupolas 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（核心引擎）
-> **代码路径**: `agentos/cupolas/`
+> **代码路径**: `agentrt/cupolas/`
 
 ---
 
@@ -97,7 +97,7 @@ Cupolas 是 AgentRT 的安全穹顶模块，为所有 Agent 操作提供统一�
 
 ```c
 // ==================== 模块生命周期 ====================
-int cupolas_init(const char *config_path, agentos_error_t *error);
+int cupolas_init(const char *config_path, airy_err_t *error);
 void cupolas_cleanup(void);
 const char *cupolas_version(void);
 
@@ -178,7 +178,7 @@ int guard_disable(guard_t *guard);
 int guard_update_rules(guard_t *guard, const guard_rule_t *rules, size_t count);
 int guard_get_stats(guard_t *guard, guard_stats_t *stats);
 
-// ==================== SafetyGuard V2（可选，需定义 AGENTOS_ENABLE_V2_API） ====================
+// ==================== SafetyGuard V2（可选，需定义 AIRY_ENABLE_V2_API） ====================
 safety_guard_context_t *safety_guard_create(void);
 void safety_guard_destroy(safety_guard_context_t *ctx);
 int safety_guard_register_guard(safety_guard_context_t *ctx,
@@ -286,9 +286,9 @@ cupolas_error_t cupolas_error_from_runtime(cupolas_runtime_error_t runtime_error
 ### 3.1 内部依赖（编译时）
 
 ```
-agentos/cupolas/
-  ├── agentos/atoms/corekern/     — agentos.h, error.h, agentos_error_t
-  ├── agentos/commons/            — agentos_types.h, 基础类型定义
+agentrt/cupolas/
+  ├── agentrt/atoms/corekern/     — airy_rt.h, error.h, airy_err_t
+  ├── agentrt/commons/            — airy_types.h, 基础类型定义
   │   ├── utils/error/            — error.h（统一错误码）
   │   └── utils/                  — 通用工具
   ├── 标准 C 库                   — stddef.h, stdint.h, stdbool.h, stdatomic.h
@@ -436,7 +436,7 @@ agentos/cupolas/
 @owner: team-A
 ```
 
-所有 `agentos/cupolas/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/cupolas/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

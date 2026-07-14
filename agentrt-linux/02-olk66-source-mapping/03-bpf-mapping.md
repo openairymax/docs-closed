@@ -10,6 +10,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-4 | 策略机制分离（sched_ext BPF 可插拔） | §3 struct_ops 注册机制映射；§3.2 sched_ext 注册实例；§1.4 三大集成路径 |
+| ES-OLK-12 | 运行时可加载（EXPORT_SYMBOL） | §8 kfunc 机制映射（`__bpf_kfunc` 导出 + BTF_KFUNCS 注册）；§2.1 struct bpf_struct_ops（运行时注册） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -341,7 +352,7 @@ graph LR
     style D fill:#fde68a,stroke:#b45309
 ```
 
-AirymaxOS trampoline 机制完全独立实现——JIT 后端、参数布局编码、本机码生成都依赖 airymaxos-kernel 架构后端（x86_64/arm64），不与 agentrt 用户态共享。
+AirymaxOS trampoline 机制完全独立实现——JIT 后端、参数布局编码、本机码生成都依赖 kernel 架构后端（x86_64/arm64），不与 agentrt 用户态共享。
 
 ---
 
@@ -628,7 +639,7 @@ agentrt 用户态策略引擎通过此头解析 struct_ops map 的 `state` 字�
 
 | 维度 | agentrt 用户态 | AirymaxOS 内核态 |
 |------|----------------|------------------|
-| JIT 后端 | 不适用（用户态解释器/LLVM） | airymaxos-kernel x86_64/arm64 JIT |
+| JIT 后端 | 不适用（用户态解释器/LLVM） | kernel x86_64/arm64 JIT |
 | trampoline 机制 | 不适用 | `arch_prepare_bpf_trampoline()` 本机码生成 |
 | verifier 实现 | 不适用 | 内核 verifier.c（21091 行） |
 | BPF_SCHED CFS 钩子 | 不适用 | AirymaxOS 独立实现（不移植 openEuler BPF_SCHED） |
@@ -687,7 +698,7 @@ eBPF 与 io_uring 在 AirymaxOS 中协同：
 ### 13.1 相关文档
 
 **同模块闭源文档**：[`01-sched-ext-mapping.md`](01-sched-ext-mapping.md)（调度器源码映射）、[`02-io-uring-mapping.md`](02-io-uring-mapping.md)（IPC 源码映射）。
-**同模块开源文档**：`docs/AirymaxAgentOS/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）、`docs/AirymaxAgentOS/40-dataflows/03-ipc-flow.md`（IPC 数据流）、`docs/AirymaxAgentOS/40-dataflows/04-scheduling-flow.md`（调度数据流）。
+**同模块开源文档**：`docs/AirymaxOS/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）、`docs/AirymaxOS/40-dataflows/03-ipc-flow.md`（IPC 数据流）、`docs/AirymaxOS/40-dataflows/04-scheduling-flow.md`（调度数据流）。
 **openEuler 技术规范**：[`../01-openeuler-tech-reference/03-ebpf-spec.md`](../01-openeuler-tech-reference/03-ebpf-spec.md)。
 **内核源码**：OLK-6.6 `kernel/bpf/{syscall.c,verifier.c,bpf_struct_ops.c,helpers.c,btf.c,ringbuf.c,hashtab.c,arraymap.c}`、`include/linux/bpf.h`、`include/uapi/linux/bpf.h`、`kernel/sched/ext.c`。
 
@@ -697,7 +708,7 @@ eBPF 与 io_uring 在 AirymaxOS 中协同：
 |------|------|----------|
 | 0.1.1 | 2026-07-07 | 初稿，覆盖 eBPF 核心数据结构 + struct_ops 注册机制 + 生命周期 + 验证器 + map/prog 类型 + kfunc + BPF_SCHED + bpf() syscall + IRON-9 v2 三层共享边界 |
 
-**维护责任**：文档负责人为 AirymaxOS 可观测性工程组；代码负责人为 airymaxos-kernel BPF 维护者；每个 LTS 小版本发布前重新核对 BPF 接口与 [SC]/[SS]/[IND] 边界有效性。
+**维护责任**：文档负责人为 AirymaxOS 可观测性工程组；代码负责人为 kernel BPF 维护者；每个 LTS 小版本发布前重新核对 BPF 接口与 [SC]/[SS]/[IND] 边界有效性。
 
 ---
 

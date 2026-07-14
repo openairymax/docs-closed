@@ -6,7 +6,7 @@
 > **最后更新**: 2026-07-06
 > **前版**: v25.0 (2026-07-04, 唯一奠基版本工程规范)
 >
-> **v26.0 变动说明**: v4.0 用户确立 0.1.1 目标扩展为**"奠基 + 29 仓拆分 + 生产就绪"三大支柱**（0.1.1 后直接过渡到 1.0.1，无中间版本，一切以生产就绪为目标）。新增 **第三十六章：29 仓 git 拆分工程规范（SPLIT-01~SPLIT-08）** 和 **第三十七章：生产就绪工程规范（PROD-01~PROD-06）**。关键决策落实：(1) **29 仓 git 拆分**：1 伞仓 + 4 管理仓 + 21 叶子仓 + 3 顶层仓；伞仓 airymaxhub.git 地址 `git@atomgit.com:openairymax/airymaxhub.git`；agentrt 管理仓继承原 AgentRT 仓库 `git@atomgit.com:openairymax/agentos.git` 保留全部 git 历史；sdk 模块下子仓采用 `sdk-xx` 命名；全部目录名小写。(2) **agentos_ → agentrt_ 改名彻底**：不留兼容别名头（不生成 `agentos_compat_aliases.h`），7 个层面全部直接改（源码目录/CMake target/运行时路径/安装路径/C ABI/C 宏/SDK 包名），涉及 472 个 .c/.h 文件、13037 次 agentos_ 前缀。(3) **daemon → daemons 改名**：模块名、目录、CMake target、仓库名统一改名；进程二进制名 `*_d` 保持不变。(4) **5 处跨层耦合解耦**：coreloopthree←daemons/common/checkpoint+orchestrator + coreloopthree←cupolas/yaml_minimal.c + coreloopthree←daemons/hook_d/9 文件 + protocols←daemons/common/safe_string_utils.c + cupolas←gateway。(5) **生产就绪**：CI/CD 全仓 + SBOM + 跨平台打包 + 性能 Soak 72h + 安全审计 + 发布验收。新增 BAN-341~BAN-356 共 16 项 v4.0 BAN 规则（改名彻底 4 项 + 拆分顺序 4 项 + 拆分构建 2 项 + 生产就绪 6 项）。BAN 规则从 340 项扩展为 356 项（+16）。配套：详细任务清单 v2.0 + 技术改进方案 v4.0 + taskflow 对比报告 v1.0。
+> **v26.0 变动说明**: v4.0 用户确立 0.1.1 目标扩展为**"奠基 + 29 仓拆分 + 生产就绪"三大支柱**（0.1.1 后直接过渡到 1.0.1，无中间版本，一切以生产就绪为目标）。新增 **第三十六章：29 仓 git 拆分工程规范（SPLIT-01~SPLIT-08）** 和 **第三十七章：生产就绪工程规范（PROD-01~PROD-06）**。关键决策落实：(1) **29 仓 git 拆分**：1 伞仓 + 4 管理仓 + 21 叶子仓 + 3 顶层仓；伞仓 airymaxhub.git 地址 `git@atomgit.com:openairymax/airymaxhub.git`；agentrt 管理仓继承原 AgentRT 仓库 `git@atomgit.com:openairymax/agentos.git` 保留全部 git 历史；sdk 模块下子仓采用 `sdk-xx` 命名；全部目录名小写。(2) **airy_ → agentrt_ 改名彻底**：不留兼容别名头（不生成 `airy_compat_aliases.h`），7 个层面全部直接改（源码目录/CMake target/运行时路径/安装路径/C ABI/C 宏/SDK 包名），涉及 472 个 .c/.h 文件、13037 次 airy_ 前缀。(3) **daemon → daemons 改名**：模块名、目录、CMake target、仓库名统一改名；进程二进制名 `*_d` 保持不变。(4) **5 处跨层耦合解耦**：coreloopthree←daemons/common/checkpoint+orchestrator + coreloopthree←cupolas/yaml_minimal.c + coreloopthree←daemons/hook_d/9 文件 + protocols←daemons/common/safe_string_utils.c + cupolas←gateway。(5) **生产就绪**：CI/CD 全仓 + SBOM + 跨平台打包 + 性能 Soak 72h + 安全审计 + 发布验收。新增 BAN-341~BAN-356 共 16 项 v4.0 BAN 规则（改名彻底 4 项 + 拆分顺序 4 项 + 拆分构建 2 项 + 生产就绪 6 项）。BAN 规则从 340 项扩展为 356 项（+16）。配套：详细任务清单 v2.0 + 技术改进方案 v4.0 + taskflow 对比报告 v1.0。（注：v27.0 已迁移至 38 仓，详见 line 19；本条为 v26.0 历史记录）
 
 ### v28.0 变动说明（AirymaxOS Linux 6.6 兼容性规范，v4.2 对应）
 
@@ -17,12 +17,12 @@
 - **AirymaxOS（agentrt-linux）决策（用户决策 2026-07-06）**: agentrt-linux 正式全称 "AirymaxOS"（极境智能体操作系统），与 agentrt（AirymaxAgentRT / 极境智能体运行底座平台工程）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范，兼容 Euler 标准。agentrt 和 AirymaxOS **同源**（共享 Airymax 设计理念），agentrt 在 AirymaxOS 上运行**天然更稳健和适配**（架构同源，无适配层）。天然云原生亲和力（对标 Ubuntu/openEuler）。
 - **8 子仓设计（基于微内核设计思想 + openEuler 标准 + Airymax 同源）**: 每个子仓明确对应 agentrt 模块：(1) airymaxos-kernel 复用 atoms/corekern (2) airymaxos-services 复用 daemons (3) airymaxos-security 复用 cupolas (4) airymaxos-memory 复用 heapstore+memoryrovol (5) airymaxos-cognition 复用 coreloopthree+frameworks (6) airymaxos-cloudnative 复用 gateway+sdk (7) airymaxos-system 复用 commons (8) airymaxos-tests-linux 复用全模块测试。基于 2026-07-06 CS 最新理论。
 - **仓库总数变更**: 29 仓 → **38 仓**（+9）。1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓。
-- **OS 文档位置决策**: OS 设计文档全部在 `docs/AirymaxAgentOS/` 模块内（含 12 个设计文档），RT 文档继续在 `docs-closed/`，物理分开。
-- **新增 IRON-9 v2 工程铁律**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 4 个头文件完全共享：bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净，AirymaxOS 是完整发行版。代码共享边界澄清：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准的发行版工具链。
+- **OS 文档位置决策**: OS 设计文档全部在 `docs/AirymaxOS/` 模块内（含 12 个设计文档），RT 文档继续在 `docs-closed/`，物理分开。
+- **新增 IRON-9 v2 工程铁律**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净，AirymaxOS 是完整发行版。代码共享边界澄清：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准的发行版工具链。
 - **新增第三十八章：AirymaxOS（agentrt-linux）工程规范**。
 - **新增 BAN-357~BAN-360（4 项）**: AirymaxOS 仓库占位/OS 文档分离/内核态污染/子仓命名。BAN 规则从 356 项扩展为 360 项。
 > **v25.0 变动说明**: v3.5 用户确立 **0.1.1 是唯一奠基版本**（无 0.1.2/0.2.0/0.3.0 计划，直接过渡到 1.0.1），所有架构、标准、许可证、质量和生态工作必须在 0.1.1 内完成。新增**第三十五章：奠基性版本工程规范（FOUND-01~FOUND-10）**，含 5 大核心决策的工程规范落实：(1) **CoreKern 精简方案 C**（FOUND-01/02）：从 7,522 行精简至 ~4,000 行的硬性行数约束 + 5 类移出范围清单 + ops 钩子保留原则；(2) **taskflow 双引擎协同方案**（FOUND-03/04）：A/B 类语义重新分类规范 + 6 类 BUG 修复规范 + 0.1.1 强制 max_workers=1 降级约束；(3) **SDK 双层 API 4 语言**（FOUND-05/06）：4×4 嵌套客户端矩阵规范 + L1 C ABI + L2 语言原生包装双层架构；(4) **AGPL v3 + Apache 2.0 双许可证**（FOUND-07）：SPDX 表达式 `AGPL-3.0-or-later OR Apache-2.0` 强制规范 + 版权人 SPHARX Ltd. 统一；(5) **静态分析基线**（FOUND-08/09）：lizard v1.23.0 CCN 阈值 + 重复检测器阈值 + 拆分操作规范；(6) **唯一奠基版本工程铁律**（FOUND-10）：禁止新特性、禁止桩函数、禁止绕开功能限制、禁止简化功能。新增 BAN-328~BAN-340 共 13 项 v3.5 BAN 规则。BAN 规则从 327 项扩展为 340 项（+13）。配套：详细任务清单 v1.7.0 + 技术改进方案 v3.5 + taskflow 对比报告 v1.0。
-> **v24.7 变动说明**: v3.4 用户 7 项关键决策落实。(1) **第三十三章 ARC-01~ARC-08 方案 A 修正**：原方案 B（物理迁移 coreloopthree/frameworks/taskflow 到 daemons 层）已否决，改为方案 A（接口反转）——引入 ops 抽象表（`agentos_checkpoint_ops_t`/`agentos_hook_ops_t`/`agentos_orch_ops_t`），daemons init 时注入，atoms 文件物理位置不变，消除全部 17 处反向依赖。taskflow 保留在 atoms（是通用 Pregel/DAG 核心原语）。BAN-313/315 撤销，新增 BAN-319（ops 注入点为空时优雅降级）。(2) **新增第三十四章（开放标准规范 STD-01~STD-08）**：覆盖 SDK 双层 API、IPC 128 字节消息头、服务发现多后端适配器、JSON-RPC 命名空间、统一错误码、ARE Standards 三层标准、独立仓库可行性、开放标准 BAN 规则（BAN-320~BAN-327）。(3) **新增 LOG-26 全功能统一打印/日志系统定义**。BAN 规则从 318 项扩展为 327 项（+9）。
+> **v24.7 变动说明**: v3.4 用户 7 项关键决策落实。(1) **第三十三章 ARC-01~ARC-08 方案 A 修正**：原方案 B（物理迁移 coreloopthree/frameworks/taskflow 到 daemons 层）已否决，改为方案 A（接口反转）——引入 ops 抽象表（`airy_checkpoint_ops_t`/`airy_hook_ops_t`/`airy_orch_ops_t`），daemons init 时注入，atoms 文件物理位置不变，消除全部 17 处反向依赖。taskflow 保留在 atoms（是通用 Pregel/DAG 核心原语）。BAN-313/315 撤销，新增 BAN-319（ops 注入点为空时优雅降级）。(2) **新增第三十四章（开放标准规范 STD-01~STD-08）**：覆盖 SDK 双层 API、IPC 128 字节消息头、服务发现多后端适配器、JSON-RPC 命名空间、统一错误码、ARE Standards 三层标准、独立仓库可行性、开放标准 BAN 规则（BAN-320~BAN-327）。(3) **新增 LOG-26 全功能统一打印/日志系统定义**。BAN 规则从 318 项扩展为 327 项（+9）。
 > **v24.6 变动说明**: v3.3 综合审计。新增第三十二章（开源许可证规范 LC-01~LC-08，覆盖 ~~AGPL v3 + Apache 2.0 + SPHARX-Proprietary 三许可证体系~~ → **v25.0 已修正为 AGPL-3.0-or-later OR Apache-2.0 双许可证**）和第三十三章（微内核架构规范 ARC-01~ARC-08，覆盖 atoms 边界、反向依赖禁止、层级倒置修复）。许可证变更由用户明确决策（版权归属人 SPHARX Ltd.），为 v0.1.1 发行前阻断性最高优先级任务。架构规范源自 v3.3 三轮审计发现 atoms 层非真正微内核（corekern 仅 15K LOC 而 atoms 总计 84K LOC，coreloopthree 50K LOC 应上移）。
 > **v24.5 变动说明**: v3.2 二次验证修正。更新统一打印/日志系统实际数据（统一率 98.2%，~3150 统一调用 vs ~58 裸调用，打印完整度 82%，日志完整度 62%）。5 项缺陷已修复降级（A1/A5/F1/F2/G1 REFUTED），新增 PRT-16~PRT-18（protocols 模块迁移、atoms/memory 迁移、heapstore_migration 迁移）和 LOG-21~LOG-25（异步日志连通、JSON 格式化、syslog 后端、时间轮转、监控数据采集）。
 > **v24.3 变动说明**: 新增 5 条工程教训 L-49~L-53（源自 .gitignore 系统性更新、AgentOS→AgentRT 改名方案执行核查、任务状态一致性审查）。涵盖 IDE 配置排除规范、跨子仓库改名同步、TypeScript SDK 包名遗漏、任务状态三文档一致性、配置文件标题品牌统一五项新教训。
@@ -37,7 +37,7 @@
 > **每一条写在规范文档里的规则，都必须有对应的自动化工具来强制执行。**
 > 违反规则 = 编译失败 或 CI 红灯。不存在"建议遵守"这种灰色地带。
 
-> **连接即功能。** v0.1.1 的核心任务不是"新建模块"，而是将已有 16 个 daemon 和 atoms 子系统完成端到端连接。每条连接线必须有集成测试证明其功能正确。
+> **连接即功能。** v0.1.1 的核心任务不是"新建模块"，而是将已有 12 个 daemon 和 atoms 子系统完成端到端连接。每条连接线必须有集成测试证明其功能正确。
 
 > **先连接已有资产，再补齐缺失能力。** 源代码审计揭示了 18 项参考项目资产中 12 项（67%）已实现。0.1.1 的战略重心是"连接"，而非"重建"。
 
@@ -95,20 +95,20 @@ Layer 7: 发布验证    67 项 ACC 验收标准             → 全量发布就
 
 | 标准名称 | 标准英文 | 代码前缀 | 禁止使用的旧称 |
 |---------|---------|---------|---------------|
-| 原子核心 | CoreKern | `agentos_core_*` | "原子内核" |
-| 三层认知循环 | CoreLoopThree | `agentos_loop_*` | "第三循环内核"、"三层循环运行时"、"三层一体架构" |
-| 记忆卷载 | MemoryRovol | `agentos_layer*_*` | "记忆漩涡引擎" |
+| 原子核心 | CoreKern | `airy_*` | "原子内核" |
+| 三层认知循环 | CoreLoopThree | `airy_*` | "第三循环内核"、"三层循环运行时"、"三层一体架构" |
+| 记忆卷载 | MemoryRovol | `airy_*` | "记忆漩涡引擎" |
 | 安全穹顶 | Cupolas | `cupolas_*` | "Cupolas安全模块" |
 | 用户态服务层 | Daemon | `*_d` 进程 | "守护进程"、"后端服务层"、"daemon进程" |
-| 微核心 | MicroCoreRT | `agentos_core_*` | "微内核"、"Microkernel" |
+| 微核心 | MicroCoreRT | `airy_*` | "微内核"、"Microkernel" |
 | 双思考系统 | Thinkdual | `tc_*`/`mc_*`/`sc_*` | "认知双思系统"、"双系统认知模型" |
-| 任务流引擎 | TaskFlow | `agentos_taskflow_*` | — |
-| 系统调用层 | AirymaxSyscall | `agentos_sys_*` | "Syscall Layer" |
+| 任务流引擎 | TaskFlow | `airy_*` | — |
+| 系统调用层 | AirymaxSyscall | `airy_sys_*` | "Syscall Layer" |
 | 多智能体协作框架 | MAC | `mac_*` | "Multi-Agent System" |
 | 分时推理框架 | TimeSliceInfer | `ts_*` | "时间切片推理" |
-| 记忆交换算法 | MemorySwap | `agentos_memory_swap_*` | — |
+| 记忆交换算法 | MemorySwap | `airy_*` | — |
 | 协议适配层 | Protocols | — | — |
-| 统一错误码体系 | ErrorCodeSystem | `AGENTOS_E*` | — |
+| 统一错误码体系 | ErrorCodeSystem | `AIRY_E*` | — |
 
 ### 1.7 架构原则→章节映射
 
@@ -130,7 +130,7 @@ Layer 7: 发布验证    67 项 ACC 验收标准             → 全量发布就
 | 遗忘机制 | C-4 | §13.6 遗忘机制 |
 | 安全内生 | E-1 | §4.5 安全编码、§15 安全规范 |
 | 可观测性 | E-2 | §16 可观测性 |
-| 资源确定性 | E-3 | §4.1 内存管理、§4.7 AgentOS 安全宏 |
+| 资源确定性 | E-3 | §4.1 内存管理、§4.7 AgentRT 安全宏 |
 | 跨平台一致性 | E-4 | §4.6 CROSS 跨平台规范 |
 | 命名语义化 | E-5 | §11.3 命名规范 |
 | 错误可追溯 | E-6 | §4.2 错误处理、§4.8 错误链、§4.14 错误消息模板 |
@@ -248,9 +248,9 @@ grep -qP "\bstrcpy\s*\(" "$file"
 
 #### 教训7：错误码统一注册
 
-**BAN-196**：所有错误码必须在 `agentos_types.h` 的 `agentos_error_t` 中注册，禁止局部 `#define`。
+**BAN-196**：所有错误码必须在 `airy_types.h` 的 `airy_err_t` 中注册，禁止局部 `#define`。
 
-**检测方式**：`check_error_codes.sh` 扫描 `#define AGENTOS_E` 并与 `agentos_types.h` 交叉校验。
+**检测方式**：`check_error_codes.sh` 扫描 `#define AIRY_E` 并与 `airy_types.h` 交叉校验。
 
 ### 3.2 v0.1.1 团队专用 CI Job
 
@@ -336,15 +336,15 @@ protocol-tests ─────────────────────�
 
 ### 3.7 硬编码路径预防规则（v24.1 新增，源自 v2.5 §3.5）
 
-> **背景**: 对 AgentOS 子仓库全量源代码进行硬编码路径审计后，发现 5 处轻度泄露（SpharxWorks 标识符），无严重本地开发路径泄露。为防止未来引入，新增以下强制规则。
+> **背景**: 对 AgentRT 子仓库全量源代码进行硬编码路径审计后，发现 5 处轻度泄露（SpharxWorks 标识符），无严重本地开发路径泄露。为防止未来引入，新增以下强制规则。
 
 #### PATH-BAN-1~PATH-BAN-5 硬编码禁止规则
 
 | 规则 | 内容 | 检测方式 |
 |------|------|---------|
 | **PATH-BAN-1** | 禁止在源代码中硬编码形如 `/home/<user>/`、`C:\Users\<user>\`、`D:\SPHARX-CN\` 的绝对路径 | CI grep 扫描（`quality-gate.sh` 的 `[PATH-SCAN]` 步骤） |
-| **PATH-BAN-2** | 所有运行时路径必须通过 `agentos.yaml` 配置或 `commons/path_manager.h` 获取，禁止硬编码 | Code review |
-| **PATH-BAN-3** | CMake 跨子仓库引用必须使用 `get_filename_component` 相对推导，不得硬编码 `../AgentOS/` 等 | CI CMake 审计 |
+| **PATH-BAN-2** | 所有运行时路径必须通过 `agentrt.yaml` 配置或 `commons/path_manager.h` 获取，禁止硬编码 | Code review |
+| **PATH-BAN-3** | CMake 跨子仓库引用必须使用 `get_filename_component` 相对推导，不得硬编码 `../agentrt/` 等 | CI CMake 审计 |
 | **PATH-BAN-4** | 禁止在 git commit 中包含本机用户名或主机名 | pre-commit hook |
 | **PATH-BAN-5** | `.env` 和 `.env.example` 中的路径必须使用相对路径或环境变量占位符 | pre-commit hook |
 
@@ -396,9 +396,9 @@ echo "[PATH-SCAN] PASS: No hardcoded dev paths found"
 
 #### 4.1.1 核心分配规则（BAN-001~BAN-006）
 
-- **BAN-001**：禁止裸 `malloc`，统一使用 `AGENTOS_MALLOC`
-- **BAN-002**：禁止裸 `free`，统一使用 `AGENTOS_FREE`
-- **BAN-003**：`AGENTOS_MALLOC(count * sizeof(...))` 必须有溢出检查（BAN-151）
+- **BAN-001**：禁止裸 `malloc`，统一使用 `AIRY_MALLOC`
+- **BAN-002**：禁止裸 `free`，统一使用 `AIRY_FREE`
+- **BAN-003**：`AIRY_MALLOC(count * sizeof(...))` 必须有溢出检查（BAN-151）
 - **BAN-004**：`strncpy` 必须后置 null 终止（BAN-152）
 - **BAN-005**：`memcpy` 动态长度必须有前置校验（BAN-153）
 - **BAN-006**：错误路径必须释放已分配内存（BAN-154）
@@ -411,16 +411,16 @@ AgentRT 采用三层分配器架构，各层职责明确：
 ┌─────────────────────────────────────────────────────────┐
 │ Layer 3: 应用层分配器                                     │
 │  • arena_alloc/arena_reset  — 请求作用域零碎片分配        │
-│  • agentos_mem_pool_alloc   — 固定大小块池分配            │
-│  • agentos_slab_alloc       — 对象缓存（构造/析构复用）    │
-│  • AGENTOS_MALLOC/FREE      — 通用分配（回退到 Layer 2）  │
+│  • airy_mem_pool_alloc   — 固定大小块池分配            │
+│  • airy_slab_alloc       — 对象缓存（构造/析构复用）    │
+│  • AIRY_MALLOC/FREE      — 通用分配（回退到 Layer 2）  │
 ├─────────────────────────────────────────────────────────┤
 │ Layer 2: 中间层（memory_compat.h + memory_pool.h）        │
 │  • 安全宏封装 + 统计追踪 + 调试标记                       │
 │  • 内存池管理（8 字节对齐、双重释放检测、指针归属验证）     │
 │  • OOM 水位监控 + 预分配紧急缓冲区                        │
 ├─────────────────────────────────────────────────────────┤
-│ Layer 1: 底层分配器（agentos_memory.h + memory.c）        │
+│ Layer 1: 底层分配器（airy_memory.h + memory.c）        │
 │  • 封装标准 C 库 malloc/free/posix_memalign              │
 │  • 线程安全锁 + 标签追踪 + 统计上报                       │
 │  • memory_stats_reporter 后台线程每 60s 上报              │
@@ -431,12 +431,12 @@ AgentRT 采用三层分配器架构，各层职责明确：
 
 | 场景 | 推荐分配器 | 理由 |
 |------|-----------|------|
-| IPC 消息块（高频固定大小） | `agentos_slab_alloc` | 对象复用，避免重复构造/析构 |
+| IPC 消息块（高频固定大小） | `airy_slab_alloc` | 对象复用，避免重复构造/析构 |
 | 请求作用域临时内存 | `arena_alloc` + `arena_reset` | O(1) 分配/释放，零碎片 |
-| 固定大小对象池 | `agentos_mem_pool_alloc` | 双重释放检测、指针归属验证 |
-| 通用分配 | `AGENTOS_MALLOC` | 带统计追踪的安全分配 |
-| 大块内存（>1MB） | `agentos_mem_aligned_alloc` 或 mmap | 避免堆碎片，对齐保证 |
-| 敏感数据（密钥/令牌） | `AGENTOS_MALLOC` + `AGENTOS_SECURE_ZERO` | 释放前安全清零 |
+| 固定大小对象池 | `airy_mem_pool_alloc` | 双重释放检测、指针归属验证 |
+| 通用分配 | `AIRY_MALLOC` | 带统计追踪的安全分配 |
+| 大块内存（>1MB） | `airy_mem_aligned_alloc` 或 mmap | 避免堆碎片，对齐保证 |
+| 敏感数据（密钥/令牌） | `AIRY_MALLOC` + `AIRY_SECURE_ZERO` | 释放前安全清零 |
 
 #### 4.1.3 所有权模型
 
@@ -445,7 +445,7 @@ AgentRT 采用三层分配器架构，各层职责明确：
 ```c
 /**
  * @brief 创建 IPC 消息
- * @ownership 返回的指针由调用者拥有，需通过 agentos_mem_free() 释放
+ * @ownership 返回的指针由调用者拥有，需通过 airy_mem_free() 释放
  */
 ipc_message_t *ipc_msg_create(msg_type_t type);
 
@@ -493,7 +493,7 @@ refcount_release(buf);  /* 发送方 -1 */
 refcount_release(buf);  /* 接收方 -1 → 触发 free */
 ```
 
-**BAN-247**：共享内存对象禁止裸 `agentos_mem_free`，必须通过 `refcount_release` 释放。
+**BAN-247**：共享内存对象禁止裸 `airy_mem_free`，必须通过 `refcount_release` 释放。
 
 **BAN-248**：引用计数操作必须使用 `_Atomic` + `memory_order_acq_rel`，禁止裸 `++`/`--`。
 
@@ -504,11 +504,11 @@ refcount_release(buf);  /* 接收方 -1 → 触发 free */
 **模式一：goto cleanup（Linux 内核标准，跨平台兼容）**
 
 ```c
-agentos_error_t process_task(task_t *task) {
+airy_err_t process_task(task_t *task) {
     char *buffer = NULL;
     ipc_msg_t *msg = NULL;
 
-    buffer = AGENTOS_MALLOC(BUF_SIZE);
+    buffer = AIRY_MALLOC(BUF_SIZE);
     if (!buffer) goto fail_buffer;
 
     msg = ipc_msg_create(task->type);
@@ -516,13 +516,13 @@ agentos_error_t process_task(task_t *task) {
 
     /* 正常处理 */
     process(buffer, msg);
-    AGENTOS_FREE(buffer);
-    return AGENTOS_SUCCESS;
+    AIRY_FREE(buffer);
+    return AIRY_SUCCESS;
 
 fail_msg:
-    AGENTOS_FREE(buffer);
+    AIRY_FREE(buffer);
 fail_buffer:
-    return AGENTOS_ENOMEM;
+    return AIRY_ENOMEM;
 }
 ```
 
@@ -532,11 +532,11 @@ fail_buffer:
 /* 定义在 memory_compat.h 中 */
 #define AUTO_FREE __attribute__((cleanup(auto_free_fn)))
 
-agentos_error_t safe_handler(void) {
-    AUTO_FREE char *buf = AGENTOS_MALLOC(1024);
-    AUTO_FREE char *name = AGENTOS_STRDUP("agent");
+airy_err_t safe_handler(void) {
+    AUTO_FREE char *buf = AIRY_MALLOC(1024);
+    AUTO_FREE char *name = AIRY_STRDUP("agent");
 
-    if (!buf || !name) return AGENTOS_ENOMEM;
+    if (!buf || !name) return AIRY_ENOMEM;
 
     /* 函数返回时 buf 和 name 自动释放 */
     return process(buf, name);
@@ -561,23 +561,23 @@ agentos_error_t safe_handler(void) {
 
 ```c
 /* 每个 daemon 启动时注册 */
-agentos_oom_register_callback(WATERMARK_WARNING,  my_daemons_drop_cache);
-agentos_oom_register_callback(WATERMARK_DEGRADED, my_daemons_defer_ops);
-agentos_oom_register_callback(WATERMARK_CRITICAL, my_daemons_reject_requests);
-agentos_oom_register_callback(WATERMARK_FATAL,    my_daemons_graceful_shutdown);
+airy_oom_register_callback(WATERMARK_WARNING,  my_daemons_drop_cache);
+airy_oom_register_callback(WATERMARK_DEGRADED, my_daemons_defer_ops);
+airy_oom_register_callback(WATERMARK_CRITICAL, my_daemons_reject_requests);
+airy_oom_register_callback(WATERMARK_FATAL,    my_daemons_graceful_shutdown);
 ```
 
 **分配失败重试策略**：
 
 ```c
 /* 带重试的分配 — 关键路径使用 */
-void *agentos_mem_alloc_with_retry(size_t size, int max_retries) {
+void *airy_mem_alloc_with_retry(size_t size, int max_retries) {
     for (int i = 0; i < max_retries; i++) {
-        void *ptr = agentos_mem_alloc(size);
+        void *ptr = airy_mem_alloc(size);
         if (ptr) return ptr;
         /* 触发 OOM 降级后重试 */
-        agentos_oom_trigger_recovery(i);
-        agentos_sleep_ms(10 * (i + 1));  /* 指数退避 */
+        airy_oom_trigger_recovery(i);
+        airy_sleep_ms(10 * (i + 1));  /* 指数退避 */
     }
     return NULL;
 }
@@ -585,7 +585,7 @@ void *agentos_mem_alloc_with_retry(size_t size, int max_retries) {
 
 **BAN-250**：daemon 启动时必须注册至少 WARNING 和 CRITICAL 两级 OOM 回调。
 
-**BAN-251**：关键路径（IPC 消息分配）必须使用 `agentos_mem_alloc_with_retry` 或预分配缓冲区，不得在 OOM 时直接崩溃。
+**BAN-251**：关键路径（IPC 消息分配）必须使用 `airy_mem_alloc_with_retry` 或预分配缓冲区，不得在 OOM 时直接崩溃。
 
 #### 4.1.7 安全释放与敏感数据清零
 
@@ -593,12 +593,12 @@ void *agentos_mem_alloc_with_retry(size_t size, int max_retries) {
 
 ```c
 /* 安全释放宏 — 定义在 memory_compat.h */
-#define AGENTOS_SECURE_FREE(ptr, size) do {                    \
+#define AIRY_SECURE_FREE(ptr, size) do {                    \
     if (ptr) {                                                  \
         __builtin_memset((ptr), 0xFF, (size));                 \
         __builtin_memset((ptr), 0x00, (size));                 \
         __builtin_memset((ptr), 0xFF, (size));                 \
-        agentos_mem_free(ptr);                                  \
+        airy_mem_free(ptr);                                  \
         (ptr) = NULL;                                           \
     }                                                           \
 } while (0)
@@ -608,15 +608,15 @@ void *agentos_mem_alloc_with_retry(size_t size, int max_retries) {
 
 ```c
 /* 调试模式下：释放后填充 0xDA 标记，延迟真正释放 */
-#ifdef AGENTOS_DEBUG
-void agentos_debug_free(void *ptr, size_t size) {
+#ifdef AIRY_DEBUG
+void airy_debug_free(void *ptr, size_t size) {
     __builtin_memset(ptr, 0xDA, size);  /* "Dead Access" 标记 */
     deferred_free_enqueue(ptr, size);    /* 延迟释放队列 */
 }
 #endif
 ```
 
-**BAN-252**：敏感数据释放禁止使用 `AGENTOS_FREE`，必须使用 `AGENTOS_SECURE_FREE` 或 `AGENTOS_SECURE_ZERO` + `AGENTOS_FREE`。
+**BAN-252**：敏感数据释放禁止使用 `AIRY_FREE`，必须使用 `AIRY_SECURE_FREE` 或 `AIRY_SECURE_ZERO` + `AIRY_FREE`。
 
 #### 4.1.8 内存对齐与缓存行优化
 
@@ -630,7 +630,7 @@ typedef struct {
 } per_cpu_counters_t;
 
 /* 大块内存对齐分配 */
-void *ptr = agentos_mem_aligned_alloc(size, 64);  /* 64 字节缓存行对齐 */
+void *ptr = airy_mem_aligned_alloc(size, 64);  /* 64 字节缓存行对齐 */
 ```
 
 **BAN-253**：并发计数器结构体中，不同线程写入的字段必须 `_Alignas(64)` 分离到不同缓存行。
@@ -647,23 +647,23 @@ void *ptr = agentos_mem_aligned_alloc(size, 64);  /* 64 字节缓存行对齐 */
 | LeakSanitizer (LSan) | 内存泄漏 | 每次 PR（已集成） |
 | MemorySanitizer (MSan) | 未初始化内存读取 | CI 独立构建 |
 | Valgrind memcheck | 内存泄漏、越界、未初始化 | 每周全量 |
-| `agentos_mem_check_leaks()` | 运行时泄漏扫描 | 后台每 60s |
+| `airy_mem_check_leaks()` | 运行时泄漏扫描 | 后台每 60s |
 | `memory_debug.h` 边界检查 | canary 越界、释放后使用 | Debug 构建 |
 
 **BAN-254**：daemon 24 小时 soak test RSS 增长超过 5% 视为内存泄漏，禁止合并。
 
-**BAN-255**：所有 `AGENTOS_MALLOC`/`AGENTOS_FREE` 必须在 `memory_stats_reporter` 统计覆盖内，禁止绕过统计的分配。
+**BAN-255**：所有 `AIRY_MALLOC`/`AIRY_FREE` 必须在 `memory_stats_reporter` 统计覆盖内，禁止绕过统计的分配。
 
 ### 4.2 错误处理（保留 BAN-073~BAN-085）
 
-- **BAN-073**：禁止 `return -1`，必须使用 `AGENTOS_E_*` 错误码
-- **BAN-074**：错误必须通过 `agentos_error_push_ex()` 传播上下文
+- **BAN-073**：禁止 `return -1`，必须使用 `AIRY_E_*` 错误码
+- **BAN-074**：错误必须通过 `airy_error_push_ex()` 传播上下文
 - **BAN-075**：每个函数必须显式声明和检查返回值
 
 ### 4.3 日志系统（保留 BAN-060~BAN-072）
 
 - daemons 层统一使用 `SVC_LOG_*` 宏
-- atoms/gateway/protocols 统一使用 `AGENTOS_LOG_*` 宏
+- atoms/gateway/protocols 统一使用 `AIRY_LOG_*` 宏
 - 全面禁止 `printf`/`fprintf`
 
 ### 4.4 禁止模式清单（BAN-01~BAN-13 + BAN-70~BAN-74）
@@ -672,7 +672,7 @@ void *ptr = agentos_mem_aligned_alloc(size, 64);  /* 64 字节缓存行对齐 */
 
 | 编号 | 禁止模式 | 检测命令 |
 |------|---------|----------|
-| BAN-01 | `return AGENTOS_SUCCESS` 占位返回 | `grep -rn "return AGENTOS_SUCCESS" --include="*.c"` |
+| BAN-01 | `return AIRY_SUCCESS` 占位返回 | `grep -rn "return AIRY_SUCCESS" --include="*.c"` |
 | BAN-02 | `(void)param` 忽略参数 | `grep -rn "(void)" --include="*.c"` |
 | BAN-03 | 空函数体 `{}` | 代码审查 |
 | BAN-04 | TODO/FIXME 无关联 Issue | `grep -rn "TODO\|FIXME" --include="*.c"` |
@@ -691,31 +691,31 @@ void *ptr = agentos_mem_aligned_alloc(size, 64);  /* 64 字节缓存行对齐 */
 | BAN-73 | 使用 `strcpy`/`strcat`/`sprintf` | `grep -rn "\bstrcpy\b\|\bstrcat\b\|\bsprintf\b" --include="*.c" --include="*.h"` |
 | BAN-74 | 使用 `memset` 清零敏感数据 | `grep -rn "memset.*key\|memset.*password\|memset.*secret\|memset.*token" --include="*.c"` |
 
-### 4.5 AgentOS 安全宏完整列表（源自 memory_compat.h）
+### 4.5 AgentRT 安全宏完整列表（源自 memory_compat.h）
 
 所有 C 代码必须优先使用以下安全宏（定义在 `memory_compat.h`）：
 
 | 宏名称 | 功能 | 替代的不安全函数 |
 |--------|------|----------------|
-| `AGENTOS_MALLOC(size)` | 带返回值检查的 malloc | `malloc` |
-| `AGENTOS_CALLOC(nmemb, size)` | 带返回值检查的 calloc（零初始化） | `calloc` |
-| `AGENTOS_REALLOC(ptr, size)` | 安全 realloc（使用临时指针，避免原指针丢失） | `realloc` |
-| `AGENTOS_FREE(ptr)` | 安全释放（释放后置 NULL） | `free` |
-| `AGENTOS_STRDUP(s)` | 带返回值检查的 strdup | `strdup` |
-| `AGENTOS_STRNDUP(s, n)` | 带返回值检查的 strndup | `strndup` |
-| `AGENTOS_STRNCPY_TERM(dst, src, dst_size)` | 安全字符串拷贝（保证 null 终止） | `strncpy` |
-| `AGENTOS_MEMCPY_SAFE(dst, dst_size, src, src_size)` | 安全内存拷贝（带边界检查） | `memcpy` |
+| `AIRY_MALLOC(size)` | 带返回值检查的 malloc | `malloc` |
+| `AIRY_CALLOC(nmemb, size)` | 带返回值检查的 calloc（零初始化） | `calloc` |
+| `AIRY_REALLOC(ptr, size)` | 安全 realloc（使用临时指针，避免原指针丢失） | `realloc` |
+| `AIRY_FREE(ptr)` | 安全释放（释放后置 NULL） | `free` |
+| `AIRY_STRDUP(s)` | 带返回值检查的 strdup | `strdup` |
+| `AIRY_STRNDUP(s, n)` | 带返回值检查的 strndup | `strndup` |
+| `AIRY_STRNCPY_TERM(dst, src, dst_size)` | 安全字符串拷贝（保证 null 终止） | `strncpy` |
+| `AIRY_MEMCPY_SAFE(dst, dst_size, src, src_size)` | 安全内存拷贝（带边界检查） | `memcpy` |
 | `SAFE_MALLOC_ARRAY(type, count)` | 安全数组分配（带整数溢出检查） | `malloc(count * sizeof(type))` |
-| `AGENTOS_SECURE_ZERO(ptr, size)` | 安全内存清零（防止编译器优化，跨平台替代 `explicit_bzero`） | `memset`（用于敏感数据） |
+| `AIRY_SECURE_ZERO(ptr, size)` | 安全内存清零（防止编译器优化，跨平台替代 `explicit_bzero`） | `memset`（用于敏感数据） |
 
-**安全释放宏**（定义在 `agentos_memory.h`）：
+**安全释放宏**（定义在 `airy_memory.h`）：
 
 | 宏名称 | 功能 | 用法 |
 |--------|------|------|
 | `MEMORY_FREE_SAFE(pptr)` | 安全释放宏，接受**指针的指针**，释放后自动将原指针置 NULL | `MEMORY_FREE_SAFE(&buf)` |
 
 ```c
-char* buf = AGENTOS_MALLOC(1024);
+char* buf = AIRY_MALLOC(1024);
 // ... 使用 buf ...
 MEMORY_FREE_SAFE(&buf);  // 释放并置 buf = NULL
 // 此时 buf 一定为 NULL，不会误用
@@ -728,17 +728,17 @@ MEMORY_FREE_SAFE(&buf);  // 释放并置 buf = NULL
 #### CROSS-01：禁止直接使用 POSIX 线程 API
 
 **违规示例**: `pthread_create()`, `pthread_mutex_lock()`, `pthread_cond_wait()`
-**正确做法**: 全部替换为 `platform.h` 提供的 `agentos_thread_create()`, `agentos_mutex_lock()`, `agentos_cond_wait()`
+**正确做法**: 全部替换为 `platform.h` 提供的 `airy_thread_create()`, `airy_mutex_lock()`, `airy_cond_wait()`
 
 #### CROSS-02：禁止使用 C99 VLA 变长数组
 
 **违规示例**: `int arr[n]`
-**正确做法**: `int* arr = AGENTOS_MALLOC(n * sizeof(int))` + 对应 `AGENTOS_FREE`
+**正确做法**: `int* arr = AIRY_MALLOC(n * sizeof(int))` + 对应 `AIRY_FREE`
 
 #### CROSS-03：禁止直接使用 POSIX 时间函数
 
 **违规示例**: `clock_gettime(CLOCK_MONOTONIC, &ts)`
-**正确做法**: 使用 `agentos_time_ns()`, `agentos_time_ms()`
+**正确做法**: 使用 `airy_time_ns()`, `airy_time_ms()`
 
 #### CROSS-04：禁止使用 GCC 扩展语法
 
@@ -761,7 +761,7 @@ MEMORY_FREE_SAFE(&buf);  // 释放并置 buf = NULL
 | 编号 | 规范 |
 |------|------|
 | REQ-01 | 所有公共 API 必须使用 Doxygen 风格注释，明确 ownership、线程语义、错误语义 |
-| REQ-02 | 返回值优先使用 `agentos_error_t`（int32_t），或返回指针（失败返回 NULL 并记录日志） |
+| REQ-02 | 返回值优先使用 `airy_err_t`（int32_t），或返回指针（失败返回 NULL 并记录日志） |
 | REQ-03 | 所有资源按 create/destroy 成对管理，API 文档中明确释放责任 |
 | REQ-04 | 优先使用 C11 atomics（`stdatomic.h`），避免遗留 `_sync*` |
 | REQ-05 | 热路径优先无锁/原子实现，并提供锁保护的安全回退（System 2） |
@@ -771,7 +771,7 @@ MEMORY_FREE_SAFE(&buf);  // 释放并置 buf = NULL
 
 ### 4.8 错误链规范（源自 ARCHITECTURAL_PRINCIPLES E-6）
 
-**规范**：错误传播必须使用 `agentos_error_wrap()` 形成错误链，包含模块名、函数名、行号和附加消息。
+**规范**：错误传播必须使用 `airy_error_wrap()` 形成错误链，包含模块名、函数名、行号和附加消息。
 
 ```c
 /**
@@ -783,8 +783,8 @@ MEMORY_FREE_SAFE(&buf);  // 释放并置 buf = NULL
  * @param message 附加消息
  * @return 包装后的错误链句柄
  */
-agentos_error_chain_t agentos_error_wrap(
-    agentos_error_t err,
+airy_err_chain_t airy_err_wrap(
+    airy_err_t err,
     const char* module,
     const char* function,
     int line,
@@ -796,19 +796,21 @@ agentos_error_chain_t agentos_error_wrap(
 
 ### 4.9 错误码分段表（源自 10-terminology.md ErrorCodeSystem）
 
-| 段 | 范围 | 含义 |
-|----|------|------|
-| 成功 | 0 | `AGENTOS_SUCCESS` |
-| 通用 | -1 ~ -999 | `AGENTOS_ERR_UNKNOWN` 等 |
-| Task | -1001 ~ -1099 | 任务相关错误 |
-| Memory | -2001 ~ -2099 | 记忆相关错误 |
-| Session | -3001 ~ -3099 | 会话相关错误 |
-| Telemetry | -4001 ~ -4099 | 遥测相关错误 |
-| Internal | -5001 ~ -5099 | 内部通用错误 |
-| Skill | -6001 ~ -6099 | 技能相关错误 |
-| Agent | -7001 ~ -7099 | Agent 相关错误 |
-| Sandbox | -8001 ~ -8099 | 沙箱相关错误 |
-| Security | -9001 ~ -9099 | 安全相关错误 |
+> **SSoT 对齐说明（v4.0 修正）**：本分段表已对齐 SSoT 方案 A（POSIX errno 负值 + 扩展码迁移），权威源为 `agentrt/commons/utils/error/include/error.h`。原 v3.0 的 -1001~-9099 千位分段方案已废止，统一采用百位分段（-1~-99/-100~-199/.../-900~-909）。`AIRY_E*` POSIX 风格码（如 `AIRY_EINVAL=-22`/`AIRY_ENOMEM=-12`/`AIRY_ETIMEDOUT=-110`）权威定义位于 `airy_types.h`（硬定义，无 `#ifndef` 保护）；`AIRY_ERR_*` 扩展码定义位于 `error.h`。v3.0 SSoT 统一收敛将原与 POSIX errno 冲突的扩展码迁移至 -40~-48 区间，将原与 `ECONNRESET`/`ENOTCONN`/`ETIMEDOUT`/`ECONNREFUSED` 冲突的系统码迁移至 -120~-123。
+
+| 段 | 范围 | 用途 | 关键示例 |
+|----|------|------|---------|
+| 成功 | 0 | `AIRY_EOK`/`AIRY_OK`/`AIRY_SUCCESS`（等价，均定义于 `airy_types.h`） | `AIRY_EOK=0` |
+| 通用基础 | -1 ~ -99 | 基础错误（参数/内存/超时等）+ POSIX errno 负值 + -40~-48 扩展迁移码 | `AIRY_EPERM=-1`、`AIRY_ERR_NULL_POINTER=-3`、`AIRY_ERR_INVALID_PARAM=-40`、`AIRY_ERR_BUSY=-48`、`AIRY_ERR_UNKNOWN=-99` |
+| 系统与平台 | -100 ~ -199 | 系统与平台错误（含 -120~-123 迁移系统码） | `AIRY_ERR_SYS_BASE=-100`、`AIRY_ERR_SYS_THREAD=-120`、`AIRY_ERR_SYS_CONDITION=-121`、`AIRY_ERR_SYS_PIPE=-122`、`AIRY_ERR_SYS_PROCESS=-123` |
+| 内核层 | -200 ~ -299 | 内核层错误（IPC/任务/同步/锁/内存/调度/定时器/中断） | `AIRY_ERR_KERN_BASE=-200`、`AIRY_ERR_KERN_IPC=-201` |
+| 服务层 | -300 ~ -399 | 服务层错误（未就绪/忙/停止/配置/依赖/健康/负载均衡） | `AIRY_ERR_SVC_BASE=-300`、`AIRY_ERR_SVC_NOT_READY=-301` |
+| LLM/AI 服务 | -400 ~ -499 | LLM/AI 服务错误（无 Provider/Provider 失败/限流/上下文/模型/鉴权/Token/解析/空响应/成本） | `AIRY_ERR_LLM_BASE=-400`、`AIRY_ERR_LLM_NO_PROVIDER=-401` |
+| 执行/工具 | -500 ~ -599 | 执行/工具错误（未找到/失败/超时/校验/沙箱/权限/参数/环境） | `AIRY_ERR_EXEC_BASE=-500`、`AIRY_ERR_EXEC_NOT_FOUND=-501` |
+| 记忆/存储 | -600 ~ -699 | 记忆/存储错误（写/读/查询/演化/满/损坏/未初始化） | `AIRY_ERR_MEM_BASE=-600`、`AIRY_ERR_MEM_WRITE=-601` |
+| 安全/沙箱 | -700 ~ -799 | 安全/沙箱错误（含 Cupolas 安全穹顶 -712~-799 专属段） | `AIRY_ERR_SEC_BASE=-700`、`AIRY_ERR_CUPOLAS_BASE=-712`、`AIRY_ERR_CUPOLAS_DENIED=-713` |
+| 协调/规划 | -800 ~ -899 | 协调/规划错误（计划失败/同步失败/调度/意图/补偿/重试超限） | `AIRY_ERR_COORD_BASE=-800`、`AIRY_ERR_COORD_PLAN_FAIL=-801` |
+| 协议/校验 | -900 ~ -909 | 协议/校验错误（IPC 消息头校验/CRC32 校验和，消息必须丢弃） | `AIRY_ERR_PROTOCOL=-900`、`AIRY_ERR_CHECKSUM=-901` |
 
 **BAN-231**：新增错误码必须在其所属分段范围内注册，禁止跨段分配。
 
@@ -844,7 +846,7 @@ agentos_error_chain_t agentos_error_wrap(
  * @param out_id [out] 输出任务 ID（调用者负责 free）。
  * @ownership out_id 由调用者释放
  * @threadsafe 否
- * @return AGENTOS_OK (0) 成功；其他值为错误码。
+ * @return AIRY_EOK (0) 成功；其他值为错误码。
  * @since v0.1.0
  */
 int cognition_schedule(cognition_engine_t* engine,
@@ -857,9 +859,9 @@ int cognition_schedule(cognition_engine_t* engine,
 **规范**：所有可插拔策略必须实现统一的三函数模式：
 
 ```c
-struct agentos_plan_strategy {
-    agentos_plan_func_t plan;       /* 核心算法函数 */
-    agentos_plan_destroy_t destroy; /* 资源释放函数 */
+struct airy_plan_strategy {
+    airy_plan_func_t plan;       /* 核心算法函数 */
+    airy_plan_destroy_t destroy; /* 资源释放函数 */
     void* data;                     /* 私有数据指针 */
 };
 ```
@@ -888,7 +890,7 @@ struct agentos_plan_strategy {
 
 **示例**：
 ```
-[ERROR] AGENTOS_ENOMEM: 内存分配失败 (context: requested=256MB, available=128MB, process=agentos_llm_d, pid=1234, used=2.1GB). Suggestion: 1) 减少批量大小 2) 启用内存压缩 3) 增加系统内存
+[ERROR] AIRY_ENOMEM: 内存分配失败 (context: requested=256MB, available=128MB, process=airy_llm_d, pid=1234, used=2.1GB). Suggestion: 1) 减少批量大小 2) 启用内存压缩 3) 增加系统内存
 ```
 
 **BAN-232**：错误消息禁止仅包含错误码，必须包含上下文和修复建议。
@@ -933,7 +935,7 @@ if (access(filepath, R_OK) == 0) {
 
 // ✅ 正确 — 直接操作 + O_NOFOLLOW
 int fd = open(filepath, O_RDONLY | O_NOFOLLOW);
-if (fd < 0) return AGENTOS_EINVAL;
+if (fd < 0) return AIRY_EINVAL;
 ```
 
 **检测方式**：`ban_scan.sh` 检测 `access()` + `open()` 组合模式。
@@ -1067,7 +1069,7 @@ module/
 
 **BAN-200**：`manager/` 和 `openlab/` 从 `agentos/` 迁移到 `ecosystem/` 后，所有 `import` 路径必须更新并通过 `python -m pytest` 验证。
 
-**BAN-201**：`manager/` 的 11 Schema 必须与 `agentos.yaml` 统一配置中心的 Schema 保持一致，新增字段需要双向同步。
+**BAN-201**：`manager/` 的 11 Schema 必须与 `agentrt.yaml` 统一配置中心的 Schema 保持一致，新增字段需要双向同步。
 
 **BAN-202**：OpenLab Markets 的 `market_client.py` 必须实现与 `market_d` C 服务的一致性契约。
 
@@ -1091,11 +1093,11 @@ module/
 
 **规范**：FFI 框架选择：简单绑定用 `ctypes`，复杂绑定用 `cffi`。
 
-**规范**：绑定文件命名：`agentos_<module>_ffi.py`。
+**规范**：绑定文件命名：`airy_<module>_ffi.py`。
 
 **规范**：FFI 模块仅暴露 Pythonic 接口，不暴露原始 C 指针。
 
-**规范**：所有 `AGENTOS_E*` C 错误码必须转换为 Python 异常。
+**规范**：所有 `AIRY_E*` C 错误码必须转换为 Python 异常。
 
 **FFI 内存所有权规则**：
 
@@ -1218,12 +1220,12 @@ MemoryRovol 生命周期:
 
 ### 7.2 Hook 注册接口规范
 
-**BAN-209**：Hook 注册必须通过 `agentos_hook_register()` 统一接口，禁止直接操作内部注册表。
+**BAN-209**：Hook 注册必须通过 `airy_hook_register()` 统一接口，禁止直接操作内部注册表。
 
 ```c
 typedef struct {
     const char *name;              // 唯一标识符，格式: [a-z][a-z0-9_]*  最长64字符
-    agentos_hook_type_t type;      // Hook 类型: SHELL/PYTHON/WEBHOOK
+    airy_hook_type_t type;      // Hook 类型: SHELL/PYTHON/WEBHOOK
     const char *entrypoint;        // 脚本路径 / URL / Python 模块路径
     const char **events;           // 监听的事件列表，1~16
     size_t event_count;
@@ -1231,11 +1233,11 @@ typedef struct {
     bool blocking;                 // true=可拦截操作，false=仅观察
     uint32_t timeout_ms;           // 超时时间，默认5000ms
     bool enabled;                  // 启用/禁用状态，默认true
-} agentos_hook_descriptor_t;
+} airy_hook_descriptor_t;
 
-int agentos_hook_register(agentos_hook_descriptor_t *desc);
-int agentos_hook_unregister(const char *name);
-int agentos_hook_trigger(const char *event, const char *context_json,
+int airy_hook_register(airy_hook_descriptor_t *desc);
+int airy_hook_unregister(const char *name);
+int airy_hook_trigger(const char *event, const char *context_json,
                          bool *blocked, char **result_json);
 ```
 
@@ -1257,7 +1259,7 @@ int agentos_hook_trigger(const char *event, const char *context_json,
 
 | 优先级 | 来源 | 目录 |
 |:---:|------|------|
-| 1 | config | `agentos.yaml` 中声明 |
+| 1 | config | `agentrt.yaml` 中声明 |
 | 2 | global | `~/.agentos/hooks/` |
 | 3 | bundled | `ecosystem/hooks/` |
 | 4 | workspace | `.agentos/hooks/` |
@@ -1280,7 +1282,7 @@ int agentos_hook_trigger(const char *event, const char *context_json,
 
 ### 7.8 Hook 配置格式
 
-Hook 支持 3 种配置格式：TOML ScriptHook、TOML Webhook、agentos.yaml 内联。详见 v22.0 §7.8。
+Hook 支持 3 种配置格式：TOML ScriptHook、TOML Webhook、agentrt.yaml 内联。详见 v22.0 §7.8。
 
 ---
 
@@ -1308,7 +1310,7 @@ Hook 支持 3 种配置格式：TOML ScriptHook、TOML Webhook、agentos.yaml �
 ### 8.3 Plugin 自动发现
 
 ```
-1. 扫描 agentos.yaml 中 plugins.plugin_dirs 列出的目录
+1. 扫描 agentrt.yaml 中 plugins.plugin_dirs 列出的目录
 2. 每个目录下查找 plugin.json
 3. 解析 plugin.json → 注册 Command/Agent/Hook/Skill 入口
 4. 扫描 commands/ → 注册斜杠命令
@@ -1376,23 +1378,23 @@ Layer 3: Auxiliary Client Routing → 降级到 fallback_chain
 
 ### 10.1 统一配置中心
 
-**规范**：所有子系统配置通过一个 `agentos.yaml` 文件管理。
+**规范**：所有子系统配置通过一个 `agentrt.yaml` 文件管理。
 
 ### 10.2 配置优先级
 
 ```
-1. 环境变量覆盖        AGENTOS_LLM_PROVIDERS_OPENAI_API_KEY=sk-xxx
+1. 环境变量覆盖        AIRY_LLM_PROVIDERS_OPENAI_API_KEY=sk-xxx
 2. 命令行参数覆盖      agentrt config set llm.default_provider anthropic
-3. agentos.yaml 配置   llm.default_provider: "openai"
+3. agentrt.yaml 配置   llm.default_provider: "openai"
 4. Plugin 默认值       Plugin manifest 中的默认配置
-5. 系统内置默认值      代码中的 AGENTOS_DEFAULT_* 常量
+5. 系统内置默认值      代码中的 AIRY_DEFAULT_* 常量
 ```
 
-**规范**：环境变量覆盖格式为 `AGENTOS_` + 配置路径（`_` 分隔，全大写）。
+**规范**：环境变量覆盖格式为 `AIRY_` + 配置路径（`_` 分隔，全大写）。
 
 ### 10.3 SecretRef 机制
 
-**BAN-224**：配置中的敏感信息必须通过 SecretRef 机制引用，禁止明文写入 `agentos.yaml`。
+**BAN-224**：配置中的敏感信息必须通过 SecretRef 机制引用，禁止明文写入 `agentrt.yaml`。
 
 SecretRef 支持三种提供者：`${env:VAR}`、`${file:/path}`、`${exec:command}`
 
@@ -1436,9 +1438,9 @@ SecretRef 支持三种提供者：`${env:VAR}`、`${file:/path}`、`${exec:comma
 |------|---------|------|
 | 目录名 | kebab-case | `coreloopthree/` |
 | C 文件名 | snake_case | `hook_registry.c` |
-| C 函数名 | snake_case + 模块前缀 | `agentos_hook_register()` |
-| C 类型名 | snake_case + `_t` | `agentos_hook_descriptor_t` |
-| C 枚举值 | UPPER_SNAKE_CASE | `AGENTOS_TASK_STATE_READY` |
+| C 函数名 | snake_case + 模块前缀 | `airy_hook_register()` |
+| C 类型名 | snake_case + `_t` | `airy_hook_descriptor_t` |
+| C 枚举值 | UPPER_SNAKE_CASE | `AIRY_TASK_STATE_READY` |
 | Python 文件名 | snake_case | `audit_hook.py` |
 | Python 类名 | PascalCase | `PromptEvaluator` |
 | Python 函数名 | snake_case | `select_provider` |
@@ -1463,13 +1465,13 @@ SecretRef 支持三种提供者：`${env:VAR}`、`${file:/path}`、`${exec:comma
 
 ### 11.5 独立子仓库路径引用安全规范（v24.1 新增）
 
-> **背景**: `OpenAirymax/` 下的 `AgentOS`、`Desktop`、`Docker`、`Docs`、`MemoryRovol`、`DocsClosed` 均为**独立的 Git 子仓库**，各自拥有独立的 `.git/`、commit 历史、CI/CD 流程。跨子仓库的路径引用必须使用相对推导机制。
+> **背景**: `OpenAirymax/` 下的 `AgentRT`、`Desktop`、`Docker`、`Docs`、`MemoryRovol`、`DocsClosed` 均为**独立的 Git 子仓库**，各自拥有独立的 `.git/`、commit 历史、CI/CD 流程。跨子仓库的路径引用必须使用相对推导机制。
 
 #### 11.5.1 子仓库清单与职责边界
 
 | 子仓库 | Git 远程 | 职责 | 改名后路径 |
 |--------|---------|------|----------|
-| **AgentOS** | `origin` (独立) | C 核心引擎 + 所有源代码 | `OpenAirymax/AgentRT/` |
+| **AgentRT** | `origin` (独立) | C 核心引擎 + 所有源代码 | `OpenAirymax/agentrt/` |
 | **Desktop** | `origin` (独立) | Tauri 桌面应用（前端） | 不变 |
 | **Docker** | `origin` (独立) | 生产 Docker 部署配置 | 不变 |
 | **Docs** | `origin` (独立) | 公开文档 | 不变 |
@@ -1482,17 +1484,17 @@ SecretRef 支持三种提供者：`${env:VAR}`、`${file:/path}`、`${exec:comma
 
 ```cmake
 # ✅ 正确 — 相对推导（不受父目录改名影响）
-get_filename_component(_agentos_root "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
-get_filename_component(_workspace_root "${_agentos_root}/.." ABSOLUTE)
+get_filename_component(_airy_root "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
+get_filename_component(_workspace_root "${_airy_root}/.." ABSOLUTE)
 set(_mr_candidate "${_workspace_root}/MemoryRovol")
 
 # ❌ 禁止 — 硬编码同级目录名
 set(_mr_candidate "${CMAKE_SOURCE_DIR}/../MemoryRovol")  # NA-4 违反
 ```
 
-**验证（v2.5 已验证通过）**：AgentOS 改名后 `CMAKE_CURRENT_SOURCE_DIR` 从 `...AgentOS/agentos/...` 变为 `...AgentRT/agentos/...`，但 `get_filename_component(.../../../..)` 的相对层级不变，推导出的 `MemoryRovol/` 子仓库路径解析**不受改名影响**。
+**验证（v2.5 已验证通过）**：AgentOS 改名后 `CMAKE_CURRENT_SOURCE_DIR` 从 `...AgentOS/agentos/...` 变为 `...agentrt/agentrt/...`，但 `get_filename_component(.../../../..)` 的相对层级不变，推导出的 `MemoryRovol/` 子仓库路径解析**不受改名影响**。
 
-**规范**：Desktop 和 Docker 子仓库中的 AgentOS 交叉引用必须分别在其自有 CI 中验证，确保独立子仓库更新后跨库集成仍然正常。
+**规范**：Desktop 和 Docker 子仓库中的 AgentRT 交叉引用必须分别在其自有 CI 中验证，确保独立子仓库更新后跨库集成仍然正常。
 
 #### 11.5.3 子仓库间改名协调时序
 
@@ -1506,20 +1508,31 @@ set(_mr_candidate "${CMAKE_SOURCE_DIR}/../MemoryRovol")  # NA-4 违反
 步骤 7: 全子仓库交叉验证 — docker-compose up + Desktop 连接 AgentRT 后端
 ```
 
-### 11.6 agentos_ → agentrt_ 彻底改名规范（v26.0 重写）
+### 11.6 airy_ → agentrt_ 彻底改名规范（v26.0 重写）
 
-> **核心决策 §v4.0**: `agentos_` → **`agentrt_`** 彻底改名，**不留兼容别名头**（不生成 `agentos_compat_aliases.h`）。0.1.1 是唯一奠基版本（无 0.2.0/0.3.0/1.0.0 过渡，直接到 1.0.1），兼容别名头无价值。同时 `daemon` → **`daemons`** 改名（模块名、目录、CMake target、仓库名统一改）。进程二进制名 `*_d`（gateway_d/llm_d/tool_d/sched_d/market_d/monit_d/channel_d/info_d/notify_d/observe_d/hook_d/plugin_d）保持不变。
+> ⚠️ **历史决策记录（未执行）**：本节记录的是 v26.0 阶段的一项历史改名决策，**该决策未实际执行**。
+>
+> **当前前缀规范**以 SSoT `docs/AirymaxRT/10-architecture/06-iron9-shared-model.md` §3.12 为准：
+> - `airy_*` 是 [SC] 共享契约层 + 应用层的**正确前缀**（源码 1788 处使用）
+> - `agentrt_*` **不使用**（源码 0 处使用）
+> - `agentos_*` **已废弃**（源码 0 处使用）
+>
+> 本节保留作为历史决策记录，BAN-341~BAN-344 规则中关于 `daemon/` → `daemons/` 改名部分仍然有效，但关于 `airy_` → `agentrt_` 改名部分**已废止**。
+>
+> **附加说明**：本节 L5 改名矩阵中出现的 `airy_error_t` 本身为错误命名，正确的错误码类型名应为 `airy_err_t`（定义于 `agentrt/commons/include/airy_types.h`），参见 SSoT `docs/AirymaxRT/10-architecture/00-architectural-principles.md`。本节中 `airy_error_t` → `agentrt_error_t` 的改名建议同样已废止，正确的类型名维持 `airy_err_t`。
+
+> **核心决策 §v4.0**: `airy_` → **`agentrt_`** 彻底改名，**不留兼容别名头**（不生成 `airy_compat_aliases.h`）。0.1.1 是唯一奠基版本（无 0.2.0/0.3.0/1.0.0 过渡，直接到 1.0.1），兼容别名头无价值。同时 `daemon` → **`daemons`** 改名（模块名、目录、CMake target、仓库名统一改）。进程二进制名 `*_d`（gateway_d/llm_d/tool_d/sched_d/market_d/monit_d/channel_d/info_d/notify_d/observe_d/hook_d/plugin_d）保持不变。
 
 #### 11.6.1 七层面彻底改名矩阵
 
 | 层面 | 旧名 | 新名 | 影响范围 | 必改 |
 |------|------|------|---------|:---:|
 | **L1 源码目录** | `agentos/` | `agentrt/` | 顶层目录 | ✅ |
-| **L2 CMake target** | `agentos_common`、`agentos_atoms`、`agentos_daemon` 等 15+ 个 | `agentrt_common`、`agentrt_atoms`、`agentrt_daemons` 等 | 全部 CMakeLists.txt | ✅ |
-| **L3 运行时路径** | `/etc/agentos`、`AGENTOS_CONFIG_DIR` | `/etc/agentrt`、`AGENTRT_CONFIG_DIR` | 全部配置文件 + 环境变量 | ✅ |
+| **L2 CMake target** | `airy_common`、`airy_atoms`、`airy_daemon` 等 15+ 个 | `agentrt_common`、`agentrt_atoms`、`agentrt_daemons` 等 | 全部 CMakeLists.txt | ✅ |
+| **L3 运行时路径** | `/etc/agentos`、`AIRY_CONFIG_DIR` | `/etc/agentrt`、`AGENTRT_CONFIG_DIR` | 全部配置文件 + 环境变量 | ✅ |
 | **L4 安装路径** | `include/agentos/` | `include/agentrt/` | 全部 CMake install() + #include | ✅ |
-| **L5 C 公开 ABI** | `agentos_error_t`、`agentos_syscalls_init()` 等数千处 | `agentrt_error_t`、`agentrt_syscalls_init()` | 472 个 .c/.h 文件、13037 处前缀 | ✅ |
-| **L6 C 宏** | `AGENTOS_API`、`AGENTOS_VERSION` | `AGENTRT_API`、`AGENTRT_VERSION` | 全部公开头文件 | ✅ |
+| **L5 C 公开 ABI** | `airy_error_t`、`airy_syscalls_init()` 等数千处 | `agentrt_error_t`、`agentrt_syscalls_init()` | 472 个 .c/.h 文件、13037 处前缀 | ✅ |
+| **L6 C 宏** | `AIRY_API`、`AIRY_VERSION` | `AGENTRT_API`、`AGENTRT_VERSION` | 全部公开头文件 | ✅ |
 | **L7 SDK 包名** | `agentos`(PyPI)、`@agentos/sdk`(npm)、`agentrt-rs`(crate)、`github.com/spharx/agentos/sdk/go` | `agentrt`(PyPI)、`@agentrt/sdk`(npm)、`agentrt-rs`(保持)、`github.com/spharx/agentrt/sdk/go` | 4 个 SDK 包配置 | ✅ |
 | **L8 daemon 模块** | `agentos/daemon/`、`agentrt_daemon`、`daemon.git` | `agentrt/daemons/`、`agentrt_daemons`、`daemons.git` | 目录 + CMake + 仓库名 | ✅ |
 | **L9 进程二进制名** | `gateway_d`、`llm_d`、`tool_d` 等 12 个 `*_d` | **保持不变** | — | ❌ |
@@ -1528,8 +1541,8 @@ set(_mr_candidate "${CMAKE_SOURCE_DIR}/../MemoryRovol")  # NA-4 违反
 
 | 验证项 | 验证命令 | 期望 |
 |--------|---------|:---:|
-| L1-L6 agentos_ 零残留 | `grep -rn '\bagentos_' --include='*.c' --include='*.h' --include='*.py' --include='*.go' --include='*.rs' --include='*.ts' . | wc -l` | **0** |
-| L6 AGENTOS_ 宏零残留 | `grep -rn 'AGENTOS_' --include='*.h' . | wc -l` | **0** |
+| L1-L6 airy_ 零残留 | `grep -rn '\bairy_' --include='*.c' --include='*.h' --include='*.py' --include='*.go' --include='*.rs' --include='*.ts' . | wc -l` | **0** |
+| L6 AIRY_ 宏零残留 | `grep -rn 'AIRY_' --include='*.h' . | wc -l` | **0** |
 | L7 SDK 包名零残留 | `grep -rn 'agentos' sdk/*/pyproject.toml sdk/*/package.json sdk/*/Cargo.toml sdk/*/go.mod` | **0** |
 | L8 daemon/零残留 | `grep -rn '\bdaemon/' --include='CMakeLists.txt' . | wc -l` | **0** |
 | L9 进程二进制名保持 | `find . -name '*_d' -type f` | **12 个** |
@@ -1538,8 +1551,8 @@ set(_mr_candidate "${CMAKE_SOURCE_DIR}/../MemoryRovol")  # NA-4 违反
 
 | BAN | 规则 | 检测方式 |
 |-----|------|---------|
-| **BAN-341** | **禁止保留 `agentos_compat_aliases.h` 兼容别名头**——0.1.1 是唯一奠基版本，无过渡版本，兼容别名头无价值 | `[SPLIT-SCAN]` grep `agentos_compat_aliases.h` 期望 0 |
-| **BAN-342** | **禁止改名后留有 agentos_ 前缀残留**——任何残留即编译失败 | `[SPLIT-SCAN]` grep `agentos_` 期望 0 |
+| **BAN-341** | **禁止保留 `airy_compat_aliases.h` 兼容别名头**——0.1.1 是唯一奠基版本，无过渡版本，兼容别名头无价值 | `[SPLIT-SCAN]` grep `airy_compat_aliases.h` 期望 0 |
+| **BAN-342** | **禁止改名后留有 airy_ 前缀残留**——任何残留即编译失败。**【v4.0 废止】本规则中关于 airy_ 前缀清零的要求已废止。airy_* 是 SSoT 规定的 [SC] + 应用层正确前缀（见 §1.6 术语表 + 06-iron9 §3.12）。BAN-342 仅保留 agentos_* 废弃前缀清零部分。** | `[SPLIT-SCAN]` grep `airy_` 期望 0（**注：本检测已废止，airy_* 为正确前缀，源码 1788 处使用；仅 agentos_* 废弃前缀清零检测保留**） |
 | **BAN-343** | **禁止 daemon 模块名残留**（应为 daemons）——目录、CMake target、仓库名必须统一 | `[SPLIT-SCAN]` grep `daemon/` 在 CMakeLists.txt 期望 0 |
 | **BAN-344** | **禁止进程二进制名 `*_d` 改名**——gateway_d/llm_d 等 12 个进程二进制名是用户接口契约，必须保持 | `[SPLIT-SCAN]` `find . -name '*_d'` 期望 12 |
 
@@ -1547,25 +1560,25 @@ set(_mr_candidate "${CMAKE_SOURCE_DIR}/../MemoryRovol")  # NA-4 违反
 
 ```bash
 # 1. 改名前完整符号清单导出
-nm -g build/lib/*.a | grep agentos_ > /tmp/agentos_symbols_before.txt
+nm -g build/lib/*.a | grep airy_ > /tmp/airy_symbols_before.txt
 
 # 2. 源码目录改名
 git mv agentos agentrt
 
 # 3. CMake target 改名（全部 CMakeLists.txt）
-find . -name CMakeLists.txt -exec sed -i 's/agentos_/agentrt_/g' {} +
+find . -name CMakeLists.txt -exec sed -i 's/airy_/agentrt_/g' {} +
 
 # 4. 运行时路径改名
-find . -type f -exec sed -i 's|/etc/agentos|/etc/agentrt|g; s|AGENTOS_CONFIG_DIR|AGENTRT_CONFIG_DIR|g' {} +
+find . -type f -exec sed -i 's|/etc/agentos|/etc/agentrt|g; s|AIRY_CONFIG_DIR|AGENTRT_CONFIG_DIR|g' {} +
 
 # 5. 安装路径改名
 find . -type f -exec sed -i 's|include/agentos/|include/agentrt/|g' {} +
 
 # 6. C 公开 ABI 改名（472 文件 13037 处）
-find . -name '*.c' -o -name '*.h' | xargs sed -i 's/\bagentos_/agentrt_/g'
+find . -name '*.c' -o -name '*.h' | xargs sed -i 's/\bairy_/agentrt_/g'
 
 # 7. C 宏改名
-find . -name '*.h' -exec sed -i 's/AGENTOS_/AGENTRT_/g' {} +
+find . -name '*.h' -exec sed -i 's/AIRY_/AGENTRT_/g' {} +
 
 # 8. SDK 包名改名（4 个 SDK）
 # sdk/python/pyproject.toml: name = "agentrt"
@@ -1582,12 +1595,12 @@ cmake -B build && cmake --build build -j$(nproc) && ctest --test-dir build
 
 # 11. 改名后符号清单对比
 nm -g build/lib/*.a | grep agentrt_ > /tmp/agentrt_symbols_after.txt
-diff /tmp/agentos_symbols_before.txt /tmp/agentrt_symbols_after.txt
+diff /tmp/airy_symbols_before.txt /tmp/agentrt_symbols_after.txt
 # 期望：仅前缀变化，符号数量一致
 
 # 12. 零残留验证
-grep -rn '\bagentos_' --include='*.c' --include='*.h' --include='*.py' --include='*.go' --include='*.rs' --include='*.ts' . | wc -l  # 期望 0
-grep -rn 'AGENTOS_' --include='*.h' . | wc -l  # 期望 0
+grep -rn '\bairy_' --include='*.c' --include='*.h' --include='*.py' --include='*.go' --include='*.rs' --include='*.ts' . | wc -l  # 期望 0
+grep -rn 'AIRY_' --include='*.h' . | wc -l  # 期望 0
 grep -rn '\bdaemon/' --include='CMakeLists.txt' . | wc -l  # 期望 0
 find . -name '*_d' -type f | wc -l  # 期望 12（进程二进制名保持）
 ```
@@ -1671,7 +1684,7 @@ airymaxhub/                                  # 伞仓（1）
 |------|------|------|
 | **裸名规则** | 仓库名不带 `agentrt-` 前缀，归属 `openairymax` 组织 | `openairymax/atoms` 而非 `openairymax/agentrt-atoms` |
 | **sdk-xx 前缀规则** | sdk 模块下子仓必须使用 `sdk-` 前缀 | `sdk-python`、`sdk-go`、`sdk-rust`、`sdk-typescript`、`sdk-cli`、`sdk-tui` |
-| **小写规则** | 全部目录名 + 仓库名小写 | `agentrt/daemons/` 而非 `AgentRT/Daemon/` |
+| **小写规则** | 全部目录名 + 仓库名小写 | `agentrt/daemons/` 而非 `agentrt/Daemon/` |
 | **memoryrovol 例外** | memoryrovol 归属 `spharx` 组织（闭源 EULA） | `git@atomgit.com:spharx/memoryrovol.git` |
 | **伞仓名规则** | 伞仓名为 `airymaxhub`（产品品牌） | `git@atomgit.com:openairymax/airymaxhub.git` |
 | **agentrt 管理仓继承规则** | agentrt 管理仓 url 必须是原 AgentRT 仓库 url | `git@atomgit.com:openairymax/agentos.git`（保留全部 git 历史） |
@@ -1683,7 +1696,7 @@ airymaxhub/                                  # 伞仓（1）
 | **伞仓** | 全新创建（无历史继承） | `git init && git remote add origin git@atomgit.com:openairymax/airymaxhub.git` |
 | **agentrt 管理仓** | 直接继承原 AgentRT url（不 clone 不 subtree） | `git remote set-url origin git@atomgit.com:openairymax/agentos.git`（url 保持不变，agentrt 管理仓继续使用原 AgentRT 仓库） |
 | **sdk/ecosystem/products 管理仓** | 全新创建 | `git init && git remote add origin <url>` |
-| **叶子仓（拆分自 AgentRT）** | 使用 `git subtree split` 保留子目录历史 | `git subtree split --prefix=AgentRT/agentrt/atoms/ -b atoms-branch` |
+| **叶子仓（拆分自 AgentRT）** | 使用 `git subtree split` 保留子目录历史 | `git subtree split --prefix=agentrt/agentrt/atoms/ -b atoms-branch` |
 | **memoryrovol 仓** | 已是独立仓库，无操作 | — |
 
 #### 11.7.4 7 阶段拆分顺序规范（SPLIT-04）
@@ -1691,7 +1704,7 @@ airymaxhub/                                  # 伞仓（1）
 | 阶段 | 内容 | SP 编号 | 工时 | 阻塞条件 |
 |------|------|:---:|:---:|---------|
 | **阶段 1** | 奠基（W01-W30 全部完成） | W01-W30 | ~1,620h | — |
-| **阶段 2** | 改名（agentos_→agentrt_ 彻底 + daemon→daemons） | SP01 | 70h | 阶段 1 完成 |
+| **阶段 2** | 改名（airy_→agentrt_ 彻底 + daemon→daemons） | SP01 | 70h | 阶段 1 完成 |
 | **阶段 3** | 解耦 5 处跨层耦合 | SP02-SP06 | 200h | 阶段 2 完成 |
 | **阶段 4** | 立即可拆 10 仓（零跨层耦合） | SP07-SP16 | 80h | 阶段 2 完成 |
 | **阶段 5** | C 层拆分 7 仓（解耦后） | SP17-SP23 | 112h | 阶段 3 完成 |
@@ -1735,9 +1748,9 @@ airymaxhub/                                  # 伞仓（1）
 
 ### 11.8 AgentOS→AgentRT 历史改名（v24.1 已完成，仅保留历史记录）
 
-> **历史记录**: v24.1 已完成的 `AgentOS/` → `AgentRT/` 外层改名，属于早期决策。当前 v26.0 的 §11.6 是更深入的 `agentos_` → `agentrt_` 内层彻底改名。
+> **历史记录**: v24.1 已完成的 `AgentOS/` → `agentrt/` 外层改名，属于早期决策。当前 v26.0 的 §11.6 是更深入的 `airy_` → `agentrt_` 内层彻底改名。
 
-原 §11.6 的内容已归档至历史记录，详见 v24.1 版本的手册归档。当前 v26.0 的 §11.6 是彻底改名规范（agentos_→agentrt_ + daemon→daemons）。
+原 §11.6 的内容已归档至历史记录，详见 v24.1 版本的手册归档。当前 v26.0 的 §11.6 是彻底改名规范（airy_→agentrt_ + daemon→daemons）。
 
 ---
 
@@ -1869,7 +1882,7 @@ Layer 1: 单元 (UT)      — 纯粹函数无副作用
 | L4 模式层 | 128 MB | 暂停聚类分析，保留已有模式 |
 | 检索缓存 | 64 MB | LRU 驱逐 |
 
-**规范**：MemoryRovol 总内存占用不得超过 `agentos.yaml` 中 `kernel.memory.max_alloc_mb` 的 40%。
+**规范**：MemoryRovol 总内存占用不得超过 `agentrt.yaml` 中 `kernel.memory.max_alloc_mb` 的 40%。
 
 ### 13.8 MemoryRovol 内存压力处理
 
@@ -1953,16 +1966,16 @@ Layer 1: 单元 (UT)      — 纯粹函数无副作用
 
 | 指标名 | 类型 | 标签 | 说明 |
 |--------|------|------|------|
-| `agentos_cognition_latency_ms` | Histogram | `agent_id` | 认知阶段延迟 |
-| `agentos_llm_request_duration_ms` | Histogram | `provider`, `model` | LLM 请求延迟 |
-| `agentos_llm_cost_usd_total` | Counter | `provider` | LLM 累计费用 |
-| `agentos_tool_call_total` | Counter | `tool_name`, `status` | 工具调用次数 |
-| `agentos_memory_operations_total` | Counter | `layer`, `operation` | 记忆操作次数 |
-| `agentos_hook_execution_ms` | Histogram | `hook_name`, `event` | Hook 执行延迟 |
-| `agentos_connection_health` | Gauge | `connection_id` | 连接线健康状态 |
-| `agentos_plugin_lifecycle_total` | Counter | `plugin_name`, `event` | Plugin 生命周期事件 |
-| `agentos_llm_retry_total` | Counter | `provider`, `error_category` | LLM 重试次数 |
-| `agentos_config_reload_total` | Counter | `status` | 配置重载次数 |
+| `airy_cognition_latency_ms` | Histogram | `agent_id` | 认知阶段延迟 |
+| `airy_llm_request_duration_ms` | Histogram | `provider`, `model` | LLM 请求延迟 |
+| `airy_llm_cost_usd_total` | Counter | `provider` | LLM 累计费用 |
+| `airy_tool_call_total` | Counter | `tool_name`, `status` | 工具调用次数 |
+| `airy_memory_operations_total` | Counter | `layer`, `operation` | 记忆操作次数 |
+| `airy_hook_execution_ms` | Histogram | `hook_name`, `event` | Hook 执行延迟 |
+| `airy_connection_health` | Gauge | `connection_id` | 连接线健康状态 |
+| `airy_plugin_lifecycle_total` | Counter | `plugin_name`, `event` | Plugin 生命周期事件 |
+| `airy_llm_retry_total` | Counter | `provider`, `error_category` | LLM 重试次数 |
+| `airy_config_reload_total` | Counter | `status` | 配置重载次数 |
 
 ### 16.2 日志格式规范
 
@@ -2004,14 +2017,14 @@ Layer 1: 单元 (UT)      — 纯粹函数无副作用
 
 | 指标名 | 类型 | 说明 |
 |--------|------|------|
-| `agentos_memory_rss_bytes` | Gauge | 各 daemon 常驻内存 |
-| `agentos_memory_heap_bytes` | Gauge | 堆内存使用量 |
-| `agentos_memory_pool_utilization` | Gauge | 内存池使用率（0~1） |
-| `agentos_oom_events_total` | Counter | OOM 事件计数（按级别标签） |
-| `agentos_memory_alloc_bytes_total` | Counter | 累计分配字节数 |
-| `agentos_memory_free_bytes_total` | Counter | 累计释放字节数 |
-| `agentos_memory_gc_pause_ms` | Histogram | GC 暂停时间（MemoryRovol） |
-| `agentos_memory_pressure_level` | Gauge | 当前内存压力级别（0~4） |
+| `airy_memory_rss_bytes` | Gauge | 各 daemon 常驻内存 |
+| `airy_memory_heap_bytes` | Gauge | 堆内存使用量 |
+| `airy_memory_pool_utilization` | Gauge | 内存池使用率（0~1） |
+| `airy_oom_events_total` | Counter | OOM 事件计数（按级别标签） |
+| `airy_memory_alloc_bytes_total` | Counter | 累计分配字节数 |
+| `airy_memory_free_bytes_total` | Counter | 累计释放字节数 |
+| `airy_memory_gc_pause_ms` | Histogram | GC 暂停时间（MemoryRovol） |
+| `airy_memory_pressure_level` | Gauge | 当前内存压力级别（0~4） |
 
 ---
 
@@ -2106,7 +2119,7 @@ v0.1.0 的 190 条 BAN 规则全数保留，详见 v0.1.0 工程标准规范手�
 |------|---------|------|---------|
 | 禁止模式 | BAN-01~BAN-13 | 13 | 占位返回、假指针、桩函数、假数据 |
 | 内存管理 | BAN-001~BAN-030 | 30 | 禁止裸 malloc/free、溢出检查、null 终止 |
-| 日志系统 | BAN-060~BAN-072 | 13 | 统一 SVC_LOG_*/AGENTOS_LOG_*、禁止 printf |
+| 日志系统 | BAN-060~BAN-072 | 13 | 统一 SVC_LOG_*/AIRY_LOG_*、禁止 printf |
 | 错误处理 | BAN-073~BAN-085 | 13 | 禁止 return -1、错误上下文传播 |
 | Python 规范 | BAN-080~BAN-099 | 20 | 禁止 print()、裸 except、assert |
 | 桩函数 | BAN-100~BAN-110 | 11 | 禁止桩函数和简化实现 |
@@ -2127,7 +2140,7 @@ v0.1.0 的 190 条 BAN 规则全数保留，详见 v0.1.0 工程标准规范手�
 | BAN-198 | 连接线接口变更必须同步测试 | 测试 | CI | v0.1.1 L-17 |
 | BAN-199 | 连接线测试必须 4 路径覆盖 | 测试 | 测试文件审计 | v0.1.1 L-17 |
 | BAN-200 | manager/openlab 迁移必须通过 pytest | Python | CI | v0.1.1 L-39 |
-| BAN-201 | Manager Schema 与 agentos.yaml 双向同步 | 配置 | `schema_diff.py` | v0.1.1 L-39 |
+| BAN-201 | Manager Schema 与 agentrt.yaml 双向同步 | 配置 | `schema_diff.py` | v0.1.1 L-39 |
 | BAN-202 | OpenLab 与 market_d 契约一致性 | 协议 | 集成测试 | v0.1.1 L-39 |
 | BAN-203 | CLI 必须用 clap crate | Rust | `cargo check` | atomcode |
 | BAN-204 | TUI 必须用 ratatui crate | Rust | `cargo check` | atomcode |
@@ -2178,7 +2191,7 @@ v0.1.0 的 190 条 BAN 规则全数保留，详见 v0.1.0 工程标准规范手�
 | **BAN-249** | 超过 3 层嵌套资源分配必须使用 goto cleanup 或 AUTO_FREE | 内存管理 | 代码审查 | RAII 模式 |
 | **BAN-250** | daemon 启动必须注册至少 WARNING + CRITICAL 两级 OOM 回调 | 内存管理 | CI 启动检查 | OOM 处理规范 |
 | **BAN-251** | 关键路径分配必须使用重试或预分配，不得 OOM 直接崩溃 | 内存管理 | 代码审查 | OOM 处理规范 |
-| **BAN-252** | 敏感数据释放禁止 AGENTOS_FREE，必须 AGENTOS_SECURE_FREE | 内存管理 | `security_check.py` | 安全释放 |
+| **BAN-252** | 敏感数据释放禁止 AIRY_FREE，必须 AIRY_SECURE_FREE | 内存管理 | `security_check.py` | 安全释放 |
 | **BAN-253** | 并发计数器不同线程写字段必须 _Alignas(64) 分离 | 内存管理 | 代码审查 | 缓存行优化 |
 | **BAN-254** | daemon 24h soak test RSS 增长 > 5% 视为内存泄漏 | 内存管理 | CI soak test | 泄漏检测 |
 | **BAN-255** | 所有分配必须在 memory_stats_reporter 统计覆盖内 | 内存管理 | `ban_scan.sh` | 统计追踪 |
@@ -2202,7 +2215,7 @@ v4.0/v4.1/v4.2 新增的 BAN-341~BAN-361 共 21 项规则分散在 §11.6/§11.7
 
 | 编号范围 | 数量 | 定义位置 | 主题 |
 |---------|:---:|---------|------|
-| **BAN-341~BAN-344** | 4 | §11.6.3 | **改名彻底约束**（兼容别名头/agentos_ 残留/daemon 残留/`*_d` 改名） |
+| **BAN-341~BAN-344** | 4 | §11.6.3 | **改名彻底约束**（兼容别名头/airy_ 残留/daemon 残留/`*_d` 改名） |
 | **BAN-345~BAN-348** | 4 | §11.7.7 | **38 仓拆分约束**（顺序/agentrt 继承/sdk-xx 命名/小写） |
 | **BAN-349~BAN-350** | 2 | §36.10 | **38 仓构建约束**（独立构建失败/跨平台降级） |
 | **BAN-351~BAN-356** | 6 | §37.7 | **生产就绪约束**（无 SBOM/单平台/Soak 跳过/安全降级/149 验收/cosign 跳过） |
@@ -2212,8 +2225,8 @@ v4.0/v4.1/v4.2 新增的 BAN-341~BAN-361 共 21 项规则分散在 §11.6/§11.7
 
 | 编号 | 规则 | 定义位置 |
 |------|------|---------|
-| BAN-341 | 禁止保留 `agentos_compat_aliases.h` 兼容别名头 | §11.6.3 |
-| BAN-342 | 禁止改名后留有 agentos_ 前缀残留 | §11.6.3 |
+| BAN-341 | 禁止保留 `airy_compat_aliases.h` 兼容别名头 | §11.6.3 |
+| BAN-342 | 禁止改名后留有 airy_ 前缀残留 [已部分废止：airy_ 部分废止，agentos_* 清零保留] | §11.6.3 |
 | BAN-343 | 禁止 daemon 模块名残留（应为 daemons） | §11.6.3 |
 | BAN-344 | 禁止进程二进制名 `*_d` 改名 | §11.6.3 |
 | BAN-345 | 禁止不按 7 阶段顺序拆分 | §11.7.7 |
@@ -2229,7 +2242,7 @@ v4.0/v4.1/v4.2 新增的 BAN-341~BAN-361 共 21 项规则分散在 §11.6/§11.7
 | BAN-355 | 禁止 149 项验收有 1 项 FAIL | §37.7 |
 | BAN-356 | 禁止跳过 cosign 签名 | §37.7 |
 | BAN-357 | 禁止 0.1.1 中 agentrt-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | §38.9 |
-| BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxAgentOS/） | §38.9 |
+| BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxOS/） | §38.9 |
 | BAN-359 | 禁止 AirymaxOS 内核态代码污染 agentrt 用户态跨平台路径（IRON-9） | §38.9 |
 | BAN-360 | 禁止 AirymaxOS 子仓名不使用 airymaxos- 前缀 | §38.9 |
 | BAN-361 | 禁止引用 Linux 7.0 专属特性作为 Linux 6.6 原生能力（PREEMPT_LAZY / Rust 正式转正 / MGLRU 2.0 / XFS 自修复 / eBPF 签名验证 / sched_ext（Linux 6.15+）等） | §38.10 |
@@ -2333,11 +2346,11 @@ contracts/
 
 | 脚本 | 修复范围 |
 |------|---------|
-| `fix_ban_printf.py` | printf/fprintf → SVC_LOG_*/AGENTOS_LOG_* |
-| `fix_ban_return_neg1.py` | return -1 → AGENTOS_E* |
-| `fix_ban_strcpy.py` | strcpy/strcat/sprintf → AGENTOS_STRNCPY |
-| `fix_ban_malloc.py` |裸 malloc/free → AGENTOS_MALLOC/FREE |
-| `fix_ban_sec22.py` | AGENTOS_FREE 后添加 ptr = NULL |
+| `fix_ban_printf.py` | printf/fprintf → SVC_LOG_*/AIRY_LOG_* |
+| `fix_ban_return_neg1.py` | return -1 → AIRY_E* |
+| `fix_ban_strcpy.py` | strcpy/strcat/sprintf → AIRY_STRNCPY |
+| `fix_ban_malloc.py` |裸 malloc/free → AIRY_MALLOC/FREE |
+| `fix_ban_sec22.py` | AIRY_FREE 后添加 ptr = NULL |
 | `fix_ban_nested_if.py` | 深度嵌套 if → 辅助函数提取 |
 | `fix_ban_missing_null.py` | 分配后添加 NULL 检查 |
 | `run_all_fixes.sh` | 一键运行所有修复 |
@@ -2364,7 +2377,7 @@ contracts/
 | Agent 认知循环 P99 延迟 | < 2s | 24h 滑动窗口 | CoreLoopThree 内置计时 + Prometheus histogram |
 | LLM 路由选择 P99 延迟 | < 100ms | 24h 滑动窗口 | llm_d router 计时 |
 | 服务发现健康检查超时率 | < 0.1% | 24h 滑动窗口 | service_discovery 日志聚合 |
-| daemon 崩溃率（每个） | < 0.01% | 每周 | Prometheus `agentos_daemon_restart_total` |
+| daemon 崩溃率（每个） | < 0.01% | 每周 | Prometheus `airy_daemon_restart_total` |
 | IPC Bus 消息丢失率 | < 0.001% | 每周 | IPC Bus 发送/接收计数器差值 |
 | MemoryRovol 缓存命中率 | > 85% | 24h 滑动窗口 | MemoryRovol 内置计数器 |
 | 端到端请求成功率 | > 99.9% | 24h 滑动窗口 | gateway Prometheus `http_requests_total{status!~"5.."}` |
@@ -2374,7 +2387,7 @@ contracts/
 - **计算公式**：`Error Budget = (1 - SLO目标) × 总请求数`
 - **耗尽条件**：Error Budget 降至 0%
 - **耗尽策略**：冻结所有新功能发布 → 仅接受稳定性修复 PR → Error Budget 恢复 > 50% 后解除冻结
-- **监控**：Prometheus `agentos_error_budget_remaining` gauge
+- **监控**：Prometheus `airy_error_budget_remaining` gauge
 
 ### 22.3 Soak Test 分层执行（替代 BAN-254 单一层级）
 
@@ -2415,11 +2428,11 @@ contracts/
 
 | 规则 | 内容 | 检测方式 |
 |------|------|---------|
-| DT-01 | **plan_strategy 必须注入**：cognition engine 创建后必须调用 `agentos_cognition_set_plan_strategy` 注入非 NULL 的规划策略 | 启动时断言 `engine->plan_strat != NULL` |
+| DT-01 | **plan_strategy 必须注入**：cognition engine 创建后必须调用 `airy_cognition_set_plan_strategy` 注入非 NULL 的规划策略 | 启动时断言 `engine->plan_strat != NULL` |
 | DT-02 | **Phase 0-4 不可跳过**：认知管线的 5 个阶段必须顺序执行，任何阶段不得被 `goto process_fail` 跳过 | 集成测试：验证每阶段 step_complete 被调用 |
 | DT-03 | **B6 输出必须打通**：Phase 2 的 `phase2_output` 必须写入 `task_node_output`，不得仅写入 ctx_window 后 FREE | 代码审查：grep `task_node_output` 赋值点 |
 | DT-04 | **fallback 策略必须注入**：cognition engine 必须同时注入主策略和 fallback 策略 | 启动时断言 `engine->fallback_plan_strat != NULL` |
-| DT-05 | **配置可覆盖**：plan_strategy 类型必须可通过 agentos.yaml 的 `cognition.plan_strategy` 配置项覆盖 | 配置测试：修改 YAML 后验证策略切换 |
+| DT-05 | **配置可覆盖**：plan_strategy 类型必须可通过 agentrt.yaml 的 `cognition.plan_strategy` 配置项覆盖 | 配置测试：修改 YAML 后验证策略切换 |
 
 ### 24.2 多模型验证规范（DT-06~DT-10）
 
@@ -2473,17 +2486,17 @@ contracts/
 
 | 规则 | 内容 | 检测方式 |
 |------|------|---------|
-| KER-01 | **OOM handler 必须激活**：kernel init 中必须调用 `agentos_oom_init` + `agentos_oom_config_apply`，生产代码不得跳过 | 启动日志验证：grep `OOM handler initialized` |
-| KER-02 | **水位线必须 apply**：`oom_watermark_percent`（默认 85）必须通过 `agentos_oom_config_apply` 应用到 handler，不得仅用于日志 | 代码审查：验证 apply 调用 |
-| KER-03 | **分配器接入**：mempool/slab 分配器必须调用 `agentos_oom_check_allocation`，不得绕过 OOM 检查 | 代码审查：grep `oom_check_allocation` 在分配路径 |
-| KER-04 | **降级回调链**：所有 daemon 必须通过 `agentos_register_degradation` 注册降级回调，OOM 触发时执行降级而非崩溃 | 集成测试：内存压力测试验证降级 |
+| KER-01 | **OOM handler 必须激活**：kernel init 中必须调用 `airy_oom_init` + `airy_oom_config_apply`，生产代码不得跳过 | 启动日志验证：grep `OOM handler initialized` |
+| KER-02 | **水位线必须 apply**：`oom_watermark_percent`（默认 85）必须通过 `airy_oom_config_apply` 应用到 handler，不得仅用于日志 | 代码审查：验证 apply 调用 |
+| KER-03 | **分配器接入**：mempool/slab 分配器必须调用 `airy_oom_check_allocation`，不得绕过 OOM 检查 | 代码审查：grep `oom_check_allocation` 在分配路径 |
+| KER-04 | **降级回调链**：所有 daemon 必须通过 `airy_register_degradation` 注册降级回调，OOM 触发时执行降级而非崩溃 | 集成测试：内存压力测试验证降级 |
 
 ### 25.2 heapstore 持久化规范（KER-05~KER-07）
 
 | 规则 | 内容 | 检测方式 |
 |------|------|---------|
 | KER-05 | **BUILD_HEAPSTORE 必须定义**：CMake 必须通过 `target_compile_definitions` 定义 `BUILD_HEAPSTORE` 宏 | CMake 审查：验证宏定义 |
-| KER-06 | **heapstore 必须链接**：`agentos_syscall` 必须链接 `agentos_heapstore` 库 | CMake 审查：验证 target_link_libraries |
+| KER-06 | **heapstore 必须链接**：`airy_syscall` 必须链接 `airy_heapstore` 库 | CMake 审查：验证 target_link_libraries |
 | KER-07 | **integration_init 必须调用**：系统初始化时必须调用 `heapstore_integration_init`，session 等状态必须持久化 | 持久化测试：重启后 session 存在 |
 
 ### 25.3 ODR 违规防护规范（KER-08~KER-10）
@@ -2521,7 +2534,7 @@ contracts/
 
 | 规则 | 内容 | 检测方式 |
 |------|------|---------|
-| DEP-01 | **路径必须正确**：Dockerfile 中的 COPY 源路径必须与实际仓库结构一致（`AgentRT/` 非 `AgentOS/`） | docker build 验证 |
+| DEP-01 | **路径必须正确**：Dockerfile 中的 COPY 源路径必须与实际仓库结构一致（`agentrt/` 非 `AgentOS/`） | docker build 验证 |
 | DEP-02 | **二进制必须存在**：Dockerfile CMD 引用的二进制必须在 CMake 中有对应 `add_executable` target | CI 检查：Dockerfile 二进制名 vs CMake target |
 | DEP-03 | **多阶段构建**：Dockerfile 必须使用多阶段构建（builder + runtime），runtime 镜像不含编译工具链 | Dockerfile 审查 |
 | DEP-04 | **镜像最小化**：runtime 镜像基于 `alpine` 或 `distroless`，不含 shell/包管理器（减少攻击面） | 镜像扫描：Trivy 零 HIGH/CRITICAL 漏洞 |
@@ -2695,58 +2708,58 @@ contracts/
 
 ## 第二十九章：统一打印系统规范（v24.4 新增）
 
-> **背景**: v3.0 二次验证发现项目存在"两头有、中间缺"的打印系统割裂：构建期（CMake `agentos_print.cmake`）已实现统一打印（8 函数 + ANSI 彩色 + 时间戳），但运行时（C 层）**无统一打印 API**——`agentos_print_ok`/`agentos_print_no` 不存在，NO=红色状态打印完全缺失；大量生产代码直接 `fprintf(stderr,...)` 绕过日志系统（heapstore_log.c 自建日志系统、memory.c 泄漏报告、compat.c 诊断输出等）。本章建立运行时统一打印系统的强制规范。
+> **背景**: v3.0 二次验证发现项目存在"两头有、中间缺"的打印系统割裂：构建期（CMake `airy_print.cmake`）已实现统一打印（8 函数 + ANSI 彩色 + 时间戳），但运行时（C 层）**无统一打印 API**——`airy_print_ok`/`airy_print_no` 不存在，NO=红色状态打印完全缺失；大量生产代码直接 `fprintf(stderr,...)` 绕过日志系统（heapstore_log.c 自建日志系统、memory.c 泄漏报告、compat.c 诊断输出等）。本章建立运行时统一打印系统的强制规范。
 
 ### 29.1 设计原则
 
 | 原则 | 内容 |
 |------|------|
 | **单一管线** | 所有运行时打印（含状态打印、诊断输出、启动 banner）最终必须委托 `log_write_va()`，禁止再造独立输出管线 |
-| **双层统一** | 构建期（CMake `agentos_print_*`）与运行时（C `agentos_print_*`）API 命名对齐、色彩语义对齐、时间戳源对齐 |
-| **状态显式化** | OK=绿色、NO=红色必须通过专用函数（`agentos_print_ok`/`agentos_print_no`）输出，禁止用 `printf("[OK]")` 拼接 |
-| **时间戳权威** | 运行时打印时间戳唯一来源为 `logging.c:get_current_timestamp()`（`CLOCK_REALTIME`），禁止使用 `agentos_time_ns()`（`CLOCK_MONOTONIC`） |
+| **双层统一** | 构建期（CMake `airy_print_*`）与运行时（C `airy_print_*`）API 命名对齐、色彩语义对齐、时间戳源对齐 |
+| **状态显式化** | OK=绿色、NO=红色必须通过专用函数（`airy_print_ok`/`airy_print_no`）输出，禁止用 `printf("[OK]")` 拼接 |
+| **时间戳权威** | 运行时打印时间戳唯一来源为 `logging.c:get_current_timestamp()`（`CLOCK_REALTIME`），禁止使用 `airy_time_ns()`（`CLOCK_MONOTONIC`） |
 | **色彩统一控制** | 运行时色彩由 `AGENTRT_LOG_COLOR=1/0` 控制；构建期由 `AGENTRT_BUILD_COLOR=1/0` 控制；两者自动检测逻辑一致（`isatty` → 终端启用/管道禁用） |
 
 ### 29.2 运行时统一打印 API（PRT-01~PRT-08）
 
-**规范 PRT-01**：新增 `agentos/commons/utils/print/include/agentos_print.h` 头文件，提供以下 8 个函数式宏，命名与 CMake 层完全对齐：
+**规范 PRT-01**：新增 `agentos/commons/utils/print/include/airy_print.h` 头文件，提供以下 8 个函数式宏，命名与 CMake 层完全对齐：
 
 | 函数 | 级别映射 | 颜色 | 用途 |
 |------|---------|------|------|
-| `agentos_print_ok(fmt, ...)` | INFO | 绿色 `\033[32m` | 成功/确认状态（对应 `[OK]`） |
-| `agentos_print_no(fmt, ...)` | ERROR | 红色 `\033[31m` | 失败/拒绝状态（对应 `[NO]`，**v3.0 前完全缺失**） |
-| `agentos_print_info(fmt, ...)` | INFO | 蓝色 `\033[34m` | 信息性输出 |
-| `agentos_print_warn(fmt, ...)` | WARN | 黄色 `\033[33m` | 警告 |
-| `agentos_print_error(fmt, ...)` | ERROR | 红色 `\033[31m` | 错误（不终止） |
-| `agentos_print_fatal(fmt, ...)` | FATAL | 品红 `\033[35m` | 致命错误 |
-| `agentos_print_debug(fmt, ...)` | DEBUG | 灰色 `\033[90m` | 调试信息 |
-| `agentos_print_section(fmt, ...)` | INFO | 青色加粗 `\033[1;36m` | 章节标题 |
+| `airy_print_ok(fmt, ...)` | INFO | 绿色 `\033[32m` | 成功/确认状态（对应 `[OK]`） |
+| `airy_print_no(fmt, ...)` | ERROR | 红色 `\033[31m` | 失败/拒绝状态（对应 `[NO]`，**v3.0 前完全缺失**） |
+| `airy_print_info(fmt, ...)` | INFO | 蓝色 `\033[34m` | 信息性输出 |
+| `airy_print_warn(fmt, ...)` | WARN | 黄色 `\033[33m` | 警告 |
+| `airy_print_error(fmt, ...)` | ERROR | 红色 `\033[31m` | 错误（不终止） |
+| `airy_print_fatal(fmt, ...)` | FATAL | 品红 `\033[35m` | 致命错误 |
+| `airy_print_debug(fmt, ...)` | DEBUG | 灰色 `\033[90m` | 调试信息 |
+| `airy_print_section(fmt, ...)` | INFO | 青色加粗 `\033[1;36m` | 章节标题 |
 
-**规范 PRT-02**：所有 `agentos_print_*` 函数底层委托 `log_write_va(level, __FILE__, __LINE__, fmt, args)`，复用核心日志系统的色彩检测（`AGENTRT_LOG_COLOR`）、时间戳（`CLOCK_REALTIME`）、节流（`log_set_throttle`）、采样（`log_should_sample`），禁止独立实现输出管线。
+**规范 PRT-02**：所有 `airy_print_*` 函数底层委托 `log_write_va(level, __FILE__, __LINE__, fmt, args)`，复用核心日志系统的色彩检测（`AGENTRT_LOG_COLOR`）、时间戳（`CLOCK_REALTIME`）、节流（`log_set_throttle`）、采样（`log_should_sample`），禁止独立实现输出管线。
 
 **规范 PRT-03**：统一输出格式为 `[YYYY-MM-DD HH:MM:SS.sss] [LEVEL] [filename.c:line] message`，与 `logging.c:330-335` 格式完全一致。状态打印（OK/NO）在 message 前自动添加 `[OK]`/`[NO]` 标签。
 
-**规范 PRT-04**：`agentos_print_ok` 和 `agentos_print_no` 必须成对存在，禁止只实现 OK 不实现 NO（v3.0 前的缺陷）。
+**规范 PRT-04**：`airy_print_ok` 和 `airy_print_no` 必须成对存在，禁止只实现 OK 不实现 NO（v3.0 前的缺陷）。
 
-**规范 PRT-05**：`agentos_print.h` 必须在 `agentos/CMakeLists.txt` 中通过 `target_include_directories()` 暴露给所有 daemon 和 atoms 子系统，确保全项目可 `#include <agentos_print.h>`。
+**规范 PRT-05**：`airy_print.h` 必须在 `agentos/CMakeLists.txt` 中通过 `target_include_directories()` 暴露给所有 daemon 和 atoms 子系统，确保全项目可 `#include <airy_print.h>`。
 
-**规范 PRT-06**：CMake 构建期打印（`agentos_print.cmake`）的环境变量从 `AGENTRT_BUILD_COLOR` 保持不变（构建期与运行时分离），但在 `agentos_print.h` 文档注释中明确标注两者的关系和使用场景。
+**规范 PRT-06**：CMake 构建期打印（`airy_print.cmake`）的环境变量从 `AGENTRT_BUILD_COLOR` 保持不变（构建期与运行时分离），但在 `airy_print.h` 文档注释中明确标注两者的关系和使用场景。
 
-**规范 PRT-07**：daemon 启动 banner（如 `gateway_d/main.c` 的帮助文本）属于 CLI 输出而非日志，可保留 `fputs(stdout)` 但必须通过 `agentos_print_section` 输出标题行，帮助文本体可豁免（标记 `/* CLI_HELP: exempt from log_write */`）。
+**规范 PRT-07**：daemon 启动 banner（如 `gateway_d/main.c` 的帮助文本）属于 CLI 输出而非日志，可保留 `fputs(stdout)` 但必须通过 `airy_print_section` 输出标题行，帮助文本体可豁免（标记 `/* CLI_HELP: exempt from log_write */`）。
 
-**规范 PRT-08**：所有 `agentos_print_*` 函数必须线程安全（底层 `log_write_va` 已持锁），禁止在信号处理函数中调用（信号处理中仅允许 `write(STDERR_FILENO, ...)` 原子写入）。
+**规范 PRT-08**：所有 `airy_print_*` 函数必须线程安全（底层 `log_write_va` 已持锁），禁止在信号处理函数中调用（信号处理中仅允许 `write(STDERR_FILENO, ...)` 原子写入）。
 
 ### 29.3 违规打印整改清单（PRT-09~PRT-15）
 
-**规范 PRT-09**：`heapstore/src/heapstore_log.c` 的自建日志系统（`fputs("[heapstore_LOG WARN]...", stderr/stdout)"`）必须整体替换为 `agentos_print_warn`/`agentos_print_error`/`agentos_print_debug`，禁止 heapstore 模块维护独立日志输出管线。
+**规范 PRT-09**：`heapstore/src/heapstore_log.c` 的自建日志系统（`fputs("[heapstore_LOG WARN]...", stderr/stdout)"`）必须整体替换为 `airy_print_warn`/`airy_print_error`/`airy_print_debug`，禁止 heapstore 模块维护独立日志输出管线。
 
-**规范 PRT-10**：`commons/utils/memory/src/memory.c:695-729` 的内存泄漏报告（10 处 `fprintf(stderr,...)`）必须改为 `agentos_print_error`，确保泄漏报告包含时间戳和文件行号。
+**规范 PRT-10**：`commons/utils/memory/src/memory.c:695-729` 的内存泄漏报告（10 处 `fprintf(stderr,...)`）必须改为 `airy_print_error`，确保泄漏报告包含时间戳和文件行号。
 
-**规范 PRT-11**：`commons/utils/memory/src/memory_debug.c` 的诊断转储（44 处 `fprintf`）改为 `agentos_print_debug`，并受 `log_set_module_level("memory_debug", LOG_DEBUG)` 控制。
+**规范 PRT-11**：`commons/utils/memory/src/memory_debug.c` 的诊断转储（44 处 `fprintf`）改为 `airy_print_debug`，并受 `log_set_module_level("memory_debug", LOG_DEBUG)` 控制。
 
-**规范 PRT-12**：`commons/utils/compat/src/compat.c` 和 `compat2.c` 的 stderr 诊断输出（10 处 `fputs`）改为 `agentos_print_warn`/`agentos_print_error`。
+**规范 PRT-12**：`commons/utils/compat/src/compat.c` 和 `compat2.c` 的 stderr 诊断输出（10 处 `fputs`）改为 `airy_print_warn`/`airy_print_error`。
 
-**规范 PRT-13**：`logging_compat.c:168` 的调试输出（`fprintf(stderr,"[LOGGING_COMPAT] API call: %s\n")`）改为 `agentos_print_debug`，受模块级别控制。
+**规范 PRT-13**：`logging_compat.c:168` 的调试输出（`fprintf(stderr,"[LOGGING_COMPAT] API call: %s\n")`）改为 `airy_print_debug`，受模块级别控制。
 
 **规范 PRT-14**：合法文件 I/O（如 `checkpoint.c` 写 JSON 文件、`heapstore_core.c` 写数据文件、`audit_overflow.c` 写审计文件）不属违规，但必须使用 `FILE*` 参数化写入，禁止硬编码 `stderr`/`stdout`。
 
@@ -2756,11 +2769,11 @@ contracts/
 
 > **背景**: v3.2 二次验证统计统一打印率 98.2%（~3150 统一调用 vs ~58 裸调用），但仍有 3 个模块存在大量裸调用需迁移。
 
-**规范 PRT-16**：`protocols/` 模块（MCP/A2A/OpenJiuWen 等协议适配器）约 80 处裸 `printf`/`fprintf` 必须替换为 `AGENTOS_LOG_*` 宏。协议适配器的调试输出应使用 `LOG_DEBUG`，连接错误使用 `LOG_ERROR`，协议协商使用 `LOG_INFO`。迁移时需在每个协议文件头部添加 `#include <logging_compat.h>`。
+**规范 PRT-16**：`protocols/` 模块（MCP/A2A/OpenJiuWen 等协议适配器）约 80 处裸 `printf`/`fprintf` 必须替换为 `AIRY_LOG_*` 宏。协议适配器的调试输出应使用 `LOG_DEBUG`，连接错误使用 `LOG_ERROR`，协议协商使用 `LOG_INFO`。迁移时需在每个协议文件头部添加 `#include <logging_compat.h>`。
 
-**规范 PRT-17**：`atoms/memory/` 模块的裸调用（当前仅 2 处 `AGENTOS_LOG` + 若干裸调用）必须统一为 `AGENTOS_LOG_*` 宏。`builtin_provider.c` 等内存提供者实现的调试输出使用 `LOG_DEBUG`，内存分配失败使用 `LOG_ERROR`。
+**规范 PRT-17**：`atoms/memory/` 模块的裸调用（当前仅 2 处 `AIRY_LOG` + 若干裸调用）必须统一为 `AIRY_LOG_*` 宏。`builtin_provider.c` 等内存提供者实现的调试输出使用 `LOG_DEBUG`，内存分配失败使用 `LOG_ERROR`。
 
-**规范 PRT-18**：`heapstore/src/heapstore_migration.c` 的 5 处裸 `fprintf` 必须替换为 `agentos_print_info`/`warn`/`error`。数据库迁移是关键操作，迁移进度必须通过 `agentos_print_info` 输出（含时间戳+信息头），迁移失败必须通过 `agentos_print_error` 输出。
+**规范 PRT-18**：`heapstore/src/heapstore_migration.c` 的 5 处裸 `fprintf` 必须替换为 `airy_print_info`/`warn`/`error`。数据库迁移是关键操作，迁移进度必须通过 `airy_print_info` 输出（含时间戳+信息头），迁移失败必须通过 `airy_print_error` 输出。
 
 ---
 
@@ -2770,82 +2783,82 @@ contracts/
 
 ### 30.1 核心 API 规范（LOG-01~LOG-05）
 
-**规范 LOG-01**：所有日志输出必须通过核心日志系统 API（`log_write()`/`log_write_va()`/`LOG_*` 宏/`AGENTOS_LOG_*` 宏/`SVC_LOG_*` 宏），禁止直接 `fprintf`/`printf`/`fputs`/`puts` 用于日志输出。合法文件 I/O 除外（见 PRT-14）。
+**规范 LOG-01**：所有日志输出必须通过核心日志系统 API（`log_write()`/`log_write_va()`/`LOG_*` 宏/`AIRY_LOG_*` 宏/`SVC_LOG_*` 宏），禁止直接 `fprintf`/`printf`/`fputs`/`puts` 用于日志输出。合法文件 I/O 除外（见 PRT-14）。
 
 **规范 LOG-02**：日志级别枚举严格为 5 级（DEBUG=0, INFO=1, WARN=2, ERROR=3, FATAL=4），禁止新增级别。颜色映射固定：DEBUG=灰(`\033[90m`)、INFO=蓝(`\033[34m`)、WARN=黄(`\033[33m`)、ERROR=红(`\033[31m`)、FATAL=品红(`\033[35m`)。
 
 **规范 LOG-03**：日志格式严格为 `[YYYY-MM-DD HH:MM:SS.sss] [LEVEL] [filename.c:line] message`，LEVEL 部分用对应颜色 ANSI 码包裹（含 RESET）。文件输出（`log_file_write`）始终不带 ANSI 色彩。
 
-**规范 LOG-04**：时间戳唯一来源为 `logging.c:get_current_timestamp()`（`clock_gettime(CLOCK_REALTIME, &ts)`），禁止使用 `agentos_time_ns()`（`CLOCK_MONOTONIC`）或 `time()`/`localtime()` 作为日志时间戳。`agentos_time_ns()` 仅用于子系统计时（超时、调度、性能测量）。
+**规范 LOG-04**：时间戳唯一来源为 `logging.c:get_current_timestamp()`（`clock_gettime(CLOCK_REALTIME, &ts)`），禁止使用 `airy_time_ns()`（`CLOCK_MONOTONIC`）或 `time()`/`localtime()` 作为日志时间戳。`airy_time_ns()` 仅用于子系统计时（超时、调度、性能测量）。
 
 **规范 LOG-05**：色彩控制通过 `AGENTRT_LOG_COLOR` 环境变量：识别 `0/no/false/off/never` 关闭，其余值启用；未设置时通过 `isatty(STDOUT_FILENO) || isatty(STDERR_FILENO)` 自动检测（终端启用、管道/文件禁用）。禁止其他模块独立实现色彩检测逻辑。
 
 ### 30.2 兼容层规范（LOG-06~LOG-10）
 
-**规范 LOG-06**：`logging_compat.h` 是 `AGENTOS_LOG_*` 宏的唯一定义源，通过 `#ifndef AGENTOS_LOG_ERROR` 保护避免冲突。所有使用 `AGENTOS_LOG_ERROR/WARN/INFO/DEBUG/FATAL` 的代码必须 `#include <logging_compat.h>` 或 `#include <error.h>`（corekern 版本已包含 logging_compat.h）。
+**规范 LOG-06**：`logging_compat.h` 是 `AIRY_LOG_*` 宏的唯一定义源，通过 `#ifndef AIRY_LOG_ERROR` 保护避免冲突。所有使用 `AIRY_LOG_ERROR/WARN/INFO/DEBUG/FATAL` 的代码必须 `#include <logging_compat.h>` 或 `#include <error.h>`（corekern 版本已包含 logging_compat.h）。
 
-**规范 LOG-07**：`svc_logger.h` 必须在文件顶部 `#include <logging_compat.h>`，确保仅包含 `svc_logger.h` 的代码也能使用 `AGENTOS_LOG_*` 宏。当前 `svc_logger.h` 仅包含 `logging.h` 提供的 `LOG_*`/`SVC_LOG_*` 宏，需补充 `logging_compat.h` 以提供 `AGENTOS_LOG_*` 宏。
+**规范 LOG-07**：`svc_logger.h` 必须在文件顶部 `#include <logging_compat.h>`，确保仅包含 `svc_logger.h` 的代码也能使用 `AIRY_LOG_*` 宏。当前 `svc_logger.h` 仅包含 `logging.h` 提供的 `LOG_*`/`SVC_LOG_*` 宏，需补充 `logging_compat.h` 以提供 `AIRY_LOG_*` 宏。
 
-**规范 LOG-08**：8 个协议文件（`openjiuwen_adapter.c`、`agentos_protocol_interface.c`、`mcp_transport.c`、`mcp_v1_adapter.c`、`a2a_v03_adapter.c`、`test_agntcy_acp.c`、`test_openclaw_adapter.c`、`test_china_eco_crypto.c`）已包含 `logging_compat.h`，此为合规范例。其余 13 个协议文件（`claude_adapter.c`、`china_eco_adapter.c`、`openai_enterprise_adapter.c` 等）若需日志输出，必须补充 `#include <logging_compat.h>`。
+**规范 LOG-08**：8 个协议文件（`openjiuwen_adapter.c`、`airy_protocol_interface.c`、`mcp_transport.c`、`mcp_v1_adapter.c`、`a2a_v03_adapter.c`、`test_agntcy_acp.c`、`test_openclaw_adapter.c`、`test_china_eco_crypto.c`）已包含 `logging_compat.h`，此为合规范例。其余 13 个协议文件（`claude_adapter.c`、`china_eco_adapter.c`、`openai_enterprise_adapter.c` 等）若需日志输出，必须补充 `#include <logging_compat.h>`。
 
 **规范 LOG-09**：`error.h` 三层定义关系固定：
-- `commons/utils/error/include/error.h`（权威源，定义 `AGENTOS_OK`/`AGENTOS_ERR_*` 错误码）
+- `commons/utils/error/include/error.h`（权威源，定义 `AIRY_ERR_*` 扩展错误码（`AIRY_OK`/`AIRY_EOK`/`AIRY_SUCCESS` 成功码定义于 `airy_types.h`））
 - `atoms/corekern/include/error.h`（`#include` 权威 error.h + `logging_compat.h`，内核层统一日志入口）
-- `daemons/common/include/error.h`（`#include` 权威 error.h，daemons 层兼容别名 `AGENTOS_ERROR_*` → `AGENTOS_ERR_*`）
-禁止在其他位置新增 `error.h` 或本地 `#define AGENTOS_ERR_*`/`#define AGENTOS_LOG_*`。
+- `daemons/common/include/error.h`（`#include` 权威 error.h，daemons 层兼容别名 `AIRY_ERROR_*` → `AIRY_ERR_*`）
+禁止在其他位置新增 `error.h` 或本地 `#define AIRY_ERR_*`/`#define AIRY_LOG_*`。
 
-**规范 LOG-10**：`logging_compat.c` 中的 19 处 `fprintf` 用于迁移报告文件 I/O（写 JSON 文件），属合法文件 I/O（见 PRT-14），但 `:168` 的调试输出 `fprintf(stderr,"[LOGGING_COMPAT] API call: %s\n")` 必须改为 `agentos_print_debug`（见 PRT-13）。
+**规范 LOG-10**：`logging_compat.c` 中的 19 处 `fprintf` 用于迁移报告文件 I/O（写 JSON 文件），属合法文件 I/O（见 PRT-14），但 `:168` 的调试输出 `fprintf(stderr,"[LOGGING_COMPAT] API call: %s\n")` 必须改为 `airy_print_debug`（见 PRT-13）。
 
 ### 30.3 关键环节增强日志覆盖（LOG-11~LOG-18）
 
 **规范 LOG-11**：daemon 启停环节必须记录以下日志：
 - 启动：`LOG_INFO("daemon %s starting, pid=%d, config=%s", daemon_name, getpid(), config_path)`
-- 启动完成：`agentos_print_ok("daemon %s started, listening on %s:%d", daemon_name, host, port)`
-- 启动失败：`agentos_print_fatal("daemon %s startup failed: %s (code=%d)", daemon_name, error_msg, err)`
+- 启动完成：`airy_print_ok("daemon %s started, listening on %s:%d", daemon_name, host, port)`
+- 启动失败：`airy_print_fatal("daemon %s startup failed: %s (code=%d)", daemon_name, error_msg, err)`
 - 停止：`LOG_INFO("daemon %s stopping, pid=%d", daemon_name, getpid())`
 - 停止完成：`LOG_INFO("daemon %s stopped", daemon_name)`
 
 **规范 LOG-12**：IPC 握手环节必须记录：
 - 连接建立：`LOG_DEBUG("ipc connection accepted: %s -> %s", src, dst)`
-- 握手成功：`agentos_print_ok("ipc handshake ok: %s <-> %s", src, dst)`
-- 握手失败：`agentos_print_no("ipc handshake failed: %s -> %s, reason=%s", src, dst, reason)`
+- 握手成功：`airy_print_ok("ipc handshake ok: %s <-> %s", src, dst)`
+- 握手失败：`airy_print_no("ipc handshake failed: %s -> %s, reason=%s", src, dst, reason)`
 - 连接断开：`LOG_WARN("ipc connection closed: %s -> %s", src, dst)`
 
 **规范 LOG-13**：LLM 调用环节必须记录：
 - 请求发起：`LOG_INFO("llm request: model=%s, provider=%s, tokens_in=%zu", model, provider, input_tokens)`
 - 响应成功：`LOG_INFO("llm response: model=%s, tokens_out=%zu, latency=%zums", model, output_tokens, latency_ms)`
-- 响应失败：`agentos_print_no("llm error: model=%s, provider=%s, code=%d, msg=%s", model, provider, err, msg)`
+- 响应失败：`airy_print_no("llm error: model=%s, provider=%s, code=%d, msg=%s", model, provider, err, msg)`
 - 降级触发：`LOG_WARN("llm fallback: %s -> %s, reason=%s", primary_model, fallback_model, reason)`
 
 **规范 LOG-14**：checkpoint 读写环节必须记录：
 - 保存：`LOG_DEBUG("checkpoint save: task=%s, step=%d, size=%zu bytes", task_id, step, size)`
 - 恢复：`LOG_INFO("checkpoint restore: task=%s, step=%d", task_id, step)`
-- 保存失败：`agentos_print_no("checkpoint save failed: task=%s, code=%d", task_id, err)`
+- 保存失败：`airy_print_no("checkpoint save failed: task=%s, code=%d", task_id, err)`
 
 **规范 LOG-15**：cupolas 审计环节必须记录：
-- 审批通过：`agentos_print_ok("cupolas allow: agent=%s, tool=%s, guard=%s", agent, tool, guard_type)`
-- 审批拒绝：`agentos_print_no("cupolas deny: agent=%s, tool=%s, guard=%s, reason=%s", agent, tool, guard_type, reason)`
+- 审批通过：`airy_print_ok("cupolas allow: agent=%s, tool=%s, guard=%s", agent, tool, guard_type)`
+- 审批拒绝：`airy_print_no("cupolas deny: agent=%s, tool=%s, guard=%s, reason=%s", agent, tool, guard_type, reason)`
 - 审计溢出：`LOG_WARN("cupolas audit overflow: %zu events dropped", dropped_count)`
 
 **规范 LOG-16**：OOM 压力环节必须记录：
 - 水位线升级：`LOG_WARN("oom watermark: %s -> %s, usage=%.1f%%", prev_level, new_level, usage_pct)`
 - 降级触发：`LOG_ERROR("oom degraded: level=%s, action=%s", level, action)`
-- 致命水位：`agentos_print_fatal("oom fatal: usage=%.1f%%, initiating emergency shutdown", usage_pct)`
+- 致命水位：`airy_print_fatal("oom fatal: usage=%.1f%%, initiating emergency shutdown", usage_pct)`
 
 **规范 LOG-17**：heapstore 持久化环节必须记录：
 - 写入成功：`LOG_DEBUG("heapstore write: key=%s, size=%zu, durable=%s", key, size, durable ? "yes" : "no")`
-- 写入失败：`agentos_print_no("heapstore write failed: key=%s, code=%d", key, err)`
+- 写入失败：`airy_print_no("heapstore write failed: key=%s, code=%d", key, err)`
 - fsync 完成：`LOG_DEBUG("heapstore fsync: %zu bytes flushed", bytes)`
 
 **规范 LOG-18**：双思考系统环节必须记录：
 - Phase 2 启动：`LOG_INFO("thinkdual phase2 start: task=%s, model=%s", task_id, model)`
-- Phase 2 结果：`agentos_print_ok("thinkdual phase2 done: task=%s, score=%.2f, verdict=%s", task_id, score, verdict)`
-- Phase 2 拒绝：`agentos_print_no("thinkdual phase2 reject: task=%s, reason=%s", task_id, reason)`
+- Phase 2 结果：`airy_print_ok("thinkdual phase2 done: task=%s, score=%.2f, verdict=%s", task_id, score, verdict)`
+- Phase 2 拒绝：`airy_print_no("thinkdual phase2 reject: task=%s, reason=%s", task_id, reason)`
 - 循环检测：`LOG_WARN("thinkdual loop detected: task=%s, count=%d, action=%s", task_id, loop_count, action)`
 
 ### 30.4 日志配置与运维规范（LOG-19~LOG-20）
 
-**规范 LOG-19**：`agentos.yaml` 的 `logging` 配置段必须支持以下字段：
+**规范 LOG-19**：`agentrt.yaml` 的 `logging` 配置段必须支持以下字段：
 ```yaml
 logging:
   level: "INFO"                    # 全局默认级别
@@ -2867,7 +2880,7 @@ logging:
     max_size_mb: 100
     max_files: 10
     flush_interval_sec: 5
-  trace_id: "${AGENTOS_TRACE_ID}"  # 分布式追踪 ID 注入
+  trace_id: "${AIRY_TRACE_ID}"  # 分布式追踪 ID 注入
 ```
 
 **规范 LOG-20**：`log_reload_config(path)` 必须支持运行时热重载（SIGHUP 触发或 `agentrt config reload` 命令），重载后立即生效新级别/色彩/节流/采样配置，无需重启 daemon。热重载必须记录 `LOG_INFO("logging config reloaded: %s", path)`。
@@ -2895,16 +2908,16 @@ logging:
 | **1. 流式日志（Streaming）** | 支持日志流式输出（`log_stream_open/write/flush/close`），适配 SSE/WebSocket 实时推送场景 | `log_stream_write()` 可边产生边消费，无需等待缓冲区满 |
 | **2. 结构化字段（Structured Fields）** | 日志支持结构化键值对字段（`log_write_kv(level, file, line, fmt, kv_pairs[], n)`），可输出 JSON Lines 格式 | `log_write_kv(LOG_INFO, __FILE__, __LINE__, "cognition", kv, 2)` 输出 `{"ts":"...","level":"INFO","msg":"cognition","task_id":"t123","phase":2}` |
 | **3. 采样与节流（Sampling/Throttle）** | 高频日志支持采样率配置（`log_set_sample_rate(category, rate)`）和节流（`log_set_throttle(category, max_per_sec)`），防止日志风暴 | DEBUG 级别采样率 0.1 时，1000 次/秒调用仅输出 100 次；节流 100/s 时超限丢弃并计数 |
-| **4. 29 事件全覆盖** | 关键环节 29 个事件全部必须有增强日志（启动/初始化/连接/断开/错误/恢复/调度/认知阶段/双思考/记忆读写/工具执行/安全检查/审计） | `grep -rn 'log_write\|LOG_\|AGENTOS_LOG_' AgentRT/agentos/ | grep -E "29 事件清单" ` 全覆盖 |
+| **4. 29 事件全覆盖** | 关键环节 29 个事件全部必须有增强日志（启动/初始化/连接/断开/错误/恢复/调度/认知阶段/双思考/记忆读写/工具执行/安全检查/审计） | `grep -rn 'log_write\|LOG_\|AIRY_LOG_' agentrt/agentrt/ | grep -E "29 事件清单" ` 全覆盖 |
 | **5. 日志分级动态调整** | 运行时可通过 API（`log_set_level(category, level)`）和配置（`log.level.cognition=DEBUG`）动态调整日志级别，无需重启 | `agentrt log level cognition DEBUG` → 后续 cognition 日志输出 DEBUG 级别 |
 | **6. 异步落盘（Async Flush）** | 日志写入异步队列，独立线程落盘，不阻塞业务线程；队列满时按策略丢弃（最低级别优先丢）或阻塞 | 业务线程日志调用 < 1μs，落盘线程独立；队列满时丢弃 DEBUG/WARN，保留 ERROR/FATAL |
-| **7. trace_id 跨进程贯穿** | trace_id 通过 IPC 消息头（`are_ipc_message_header_t.trace_id`）跨进程传递，所有日志输出包含 trace_id 字段 | 跨 3 个 daemon 的请求 → 三份日志 trace_id 一致 |
+| **7. trace_id 跨进程贯穿** | trace_id 通过 IPC 消息头（`airy_ipc_msg_hdr.trace_id`）跨进程传递，所有日志输出包含 trace_id 字段 | 跨 3 个 daemon 的请求 → 三份日志 trace_id 一致 |
 
 **29 事件清单（关键环节增强日志，必须全覆盖）**：
 
 | 类别 | 事件 | 日志级别 | 触发点 |
 |------|------|---------|--------|
-| 启动 | atoms_init_start/complete | INFO/FATAL | `agentos_core_init()` 入口/出口 |
+| 启动 | atoms_init_start/complete | INFO/FATAL | `airy_core_init()` 入口/出口 |
 | 启动 | daemon_init_start/complete | INFO/FATAL | 各 daemon `main()` 入口/出口 |
 | 启动 | ops_injected | INFO | daemon ops 注入 atoms 时 |
 | 连接 | ipc_connect/disconnect | INFO/WARN | IPC Bus 连接建立/断开 |
@@ -2942,9 +2955,9 @@ logging:
 | BAN-293 | 禁止 `puts()`/`printf()` 用于日志输出 | `[PRINT-SCAN]` CI 步骤 | PRT-15 |
 | BAN-294 | 禁止 heapstore 模块维护独立日志输出管线（`heapstore_log.c` 自建系统） | 代码审查 | PRT-09 |
 | BAN-295 | 禁止用 `printf("[OK]")`/`printf("[NO]")` 拼接状态打印 | `[PRINT-SCAN]` 检测 `[OK]`/`[NO]` 字面量 | PRT-01 |
-| BAN-296 | 禁止 `agentos_print_no` 未实现（必须与 `agentos_print_ok` 成对存在） | 编译检查头文件 | PRT-04 |
-| BAN-297 | 禁止在信号处理函数中调用 `agentos_print_*`/`log_write` | 代码审查 | PRT-08 |
-| BAN-298 | 禁止 daemon banner 不使用 `agentos_print_section` 输出标题行 | 代码审查 | PRT-07 |
+| BAN-296 | 禁止 `airy_print_no` 未实现（必须与 `airy_print_ok` 成对存在） | 编译检查头文件 | PRT-04 |
+| BAN-297 | 禁止在信号处理函数中调用 `airy_print_*`/`log_write` | 代码审查 | PRT-08 |
+| BAN-298 | 禁止 daemon banner 不使用 `airy_print_section` 输出标题行 | 代码审查 | PRT-07 |
 | BAN-299 | 禁止 `memory.c`/`memory_debug.c` 泄漏报告使用 `fprintf` | `[PRINT-SCAN]` | PRT-10/11 |
 | BAN-300 | 禁止 `compat.c`/`compat2.c` 诊断输出使用 `fputs(stderr)` | `[PRINT-SCAN]` | PRT-12 |
 
@@ -2952,10 +2965,10 @@ logging:
 
 | 编号 | 规则 | 检测方式 | 对应规范 |
 |------|------|---------|---------|
-| BAN-301 | 禁止使用 `agentos_time_ns()`（CLOCK_MONOTONIC）作为日志时间戳 | 代码审查 | LOG-04 |
+| BAN-301 | 禁止使用 `airy_time_ns()`（CLOCK_MONOTONIC）作为日志时间戳 | 代码审查 | LOG-04 |
 | BAN-302 | 禁止使用 `time()`/`localtime()` 作为日志时间戳 | 代码审查 | LOG-04 |
-| BAN-303 | 禁止在 `error.h` 之外的位置新增 `#define AGENTOS_ERR_*` | `check_error_codes.sh` | LOG-09 |
-| BAN-304 | 禁止本地 `#define AGENTOS_LOG_ERROR`/`AGENTOS_LOG_WARN` 等日志宏 | `ban_scan.sh` | LOG-06 |
+| BAN-303 | 禁止在 `error.h` 之外的位置新增 `#define AIRY_ERR_*` | `check_error_codes.sh` | LOG-09 |
+| BAN-304 | 禁止本地 `#define AIRY_LOG_ERROR`/`AIRY_LOG_WARN` 等日志宏 | `ban_scan.sh` | LOG-06 |
 | BAN-305 | 禁止 `svc_logger.h` 不包含 `logging_compat.h` | 头文件审查 | LOG-07 |
 | BAN-306 | 禁止新增日志级别（超出 DEBUG/INFO/WARN/ERROR/FATAL 5 级） | 枚举审查 | LOG-02 |
 | BAN-307 | 禁止其他模块独立实现色彩检测逻辑（必须复用 `AGENTRT_LOG_COLOR`） | 代码审查 | LOG-05 |
@@ -3016,16 +3029,16 @@ logging:
 
 | 子目录 | 许可证 | 理由 |
 |--------|--------|------|
-| `AgentRT/agentos/atoms/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/cupolas/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/daemons/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/gateway/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/heapstore/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/protocols/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/agentos/commons/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/sdk/rust/`、`sdk/python/`、`sdk/go/`、`sdk/typescript/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/ecosystem/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
-| `AgentRT/scripts/`、`deploy/`、`tests/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/atoms/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/cupolas/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/daemons/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/gateway/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/heapstore/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/protocols/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/agentrt/commons/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/sdk/rust/`、`sdk/python/`、`sdk/go/`、`sdk/typescript/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/ecosystem/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
+| `agentrt/scripts/`、`deploy/`、`tests/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
 | `Desktop/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
 | `Docker/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
 | `Docs/` | AGPL-3.0-or-later OR Apache-2.0 | 双许可证统一 |
@@ -3046,8 +3059,8 @@ logging:
 - ~~`MemoryRovol/CMakeLists.txt:224` = `set(CPACK_RPM_PACKAGE_LICENSE "Proprietary")`~~ → 已修正
 
 **修复方式（v3.5 实施）**：
-- OpenAirymax 内 5 个 `LICENSE` 文件（`AgentRT/`、`Desktop/`、`Docker/`、`Docs/`、`MemoryRovol/`）统一为双许可证全文（AGPL v3 + Apache 2.0）
-- 3 个 `NOTICE` 文件（`AgentRT/`、`Desktop/`、`Docker/`）统一声明版权人 SPHARX Ltd.
+- OpenAirymax 内 5 个 `LICENSE` 文件（`agentrt/`、`Desktop/`、`Docker/`、`Docs/`、`MemoryRovol/`）统一为双许可证全文（AGPL v3 + Apache 2.0）
+- 3 个 `NOTICE` 文件（`agentrt/`、`Desktop/`、`Docker/`）统一声明版权人 SPHARX Ltd.
 - 所有源码头部统一为 `SPDX-License-Identifier: AGPL-3.0-or-later OR Apache-2.0`
 - 所有 CMake 字段统一为 `set(CPACK_RPM_PACKAGE_LICENSE "AGPL-3.0-or-later OR Apache-2.0")`
 - 所有 Cargo.toml 字段统一为 `license = "AGPL-3.0-or-later OR Apache-2.0"`
@@ -3079,8 +3092,8 @@ logging:
 **扫描规则**:
 1. 所有 `.c`/`.h`/`.go`/`.rs`/`.py`/`.ts`/`.js`/`.sh`/`.ps1`/`.json`/`.toml`/`.yaml`/`.clangd`/`CMakeLists.txt` 必须有 SPDX 标识符
 2. OpenAirymax 主仓库内所有源码必须是 `AGPL-3.0-or-later OR Apache-2.0`（双许可证）
-3. 5 个 `LICENSE` 文件（`AgentRT/`、`Desktop/`、`Docker/`、`Docs/`、`MemoryRovol/`）必须为双许可证全文
-4. 3 个 `NOTICE` 文件（`AgentRT/`、`Desktop/`、`Docker/`）必须声明版权人 SPHARX Ltd.
+3. 5 个 `LICENSE` 文件（`agentrt/`、`Desktop/`、`Docker/`、`Docs/`、`MemoryRovol/`）必须为双许可证全文
+4. 3 个 `NOTICE` 文件（`agentrt/`、`Desktop/`、`Docker/`）必须声明版权人 SPHARX Ltd.
 
 **违规处理**：
 - 缺少 SPDX 标识符 → REJECT
@@ -3145,7 +3158,7 @@ logging:
 | **商业隔离层** | `memoryrovol/` | 商业记忆桥接（仅头文件，独立闭源仓库） | ~0.012K |
 
 **强制要求**：
-- 必须新增 `AgentRT/agentos/atoms/BOUNDARY.md` 文档化三类模块分类
+- 必须新增 `agentrt/agentrt/atoms/BOUNDARY.md` 文档化三类模块分类
 - coreloopthree/frameworks 的反向依赖必须通过 ops 抽象表消除（见 ARC-04）
 - taskflow 保留在 atoms（是核心原语），仅解耦对 coreloopthree 的链接依赖
 
@@ -3160,10 +3173,10 @@ logging:
 
 **检测方法**：
 ```bash
-grep -rn '#include.*daemons/' AgentRT/agentos/atoms/ | grep -v ".git/"
-grep -rn '#include.*gateway/' AgentRT/agentos/atoms/ | grep -v ".git/"
-grep -rn '#include.*heapstore/' AgentRT/agentos/atoms/ | grep -v ".git/"
-grep -rn 'daemons/' AgentRT/agentos/atoms/*/CMakeLists.txt
+grep -rn '#include.*daemons/' agentrt/agentrt/atoms/ | grep -v ".git/"
+grep -rn '#include.*gateway/' agentrt/agentrt/atoms/ | grep -v ".git/"
+grep -rn '#include.*heapstore/' agentrt/agentrt/atoms/ | grep -v ".git/"
+grep -rn 'daemons/' agentrt/agentrt/atoms/*/CMakeLists.txt
 ```
 
 上述命令必须全部返回 0。
@@ -3208,7 +3221,7 @@ cmake --build build --target agentrt_atoms_standalone
    if (g_checkpoint_ops && g_checkpoint_ops->save) {
        g_checkpoint_ops->save(...);
    } else {
-       return AGENTOS_ERR_NOT_INITIALIZED;  // 优雅降级
+       return AIRY_ERR_NOT_INITIALIZED;  // 优雅降级
    }
    ```
 5. CMakeLists.txt 删除 17 处反向依赖（7 处 daemons 源文件编译 + 10 处 daemons include path）
@@ -3221,14 +3234,14 @@ cmake --build build --target agentrt_atoms_standalone
 - 方案 A 通过接口隔离达到与物理迁移相同的"无反向依赖"目标
 
 **验证**：
-- `grep -rn '#include.*daemons/' AgentRT/agentos/atoms/ | grep -v ".git/"` → 0
-- `grep -rn 'daemons/' AgentRT/agentos/atoms/*/CMakeLists.txt AgentRT/agentos/atoms/*/src/*/CMakeLists.txt` → 0
+- `grep -rn '#include.*daemons/' agentrt/agentrt/atoms/ | grep -v ".git/"` → 0
+- `grep -rn 'daemons/' agentrt/agentrt/atoms/*/CMakeLists.txt agentrt/agentrt/atoms/*/src/*/CMakeLists.txt` → 0
 - `cmake --build build --target agentrt_atoms_standalone` → 成功
-- 启动 daemons 但不注入 ops → cognition 返回 `AGENTOS_ERR_NOT_INITIALIZED` 而非崩溃
+- 启动 daemons 但不注入 ops → cognition 返回 `AIRY_ERR_NOT_INITIALIZED` 而非崩溃
 
-### 33.5 agentos_core_init() 初始化链完整（ARC-05）
+### 33.5 airy_core_init() 初始化链完整（ARC-05）
 
-**强制规则 ARC-05**: `agentos_core_init()` 必须初始化所有必要的 atoms 子系统，并通过适配器注入点接受 daemons 层初始化。
+**强制规则 ARC-05**: `airy_core_init()` 必须初始化所有必要的 atoms 子系统，并通过适配器注入点接受 daemons 层初始化。
 
 **当前问题**：`core_init.c:25-113` 仅初始化 6 个子系统（mem→oom→task→ipc→time_eventloop→heapstore），缺失 cognition/memory/cupolas/frameworks_registry。
 
@@ -3247,8 +3260,8 @@ cmake --build build --target agentrt_atoms_standalone
 | 无反向依赖 | atoms 不依赖 daemon/gateway/heapstore（通过 ops 注入） | `grep -rn '#include.*daemon/' atoms/` → 0 |
 | 无编译期绑定 | atoms CMakeLists 不编译 daemon 源文件 | `grep -rn 'daemon/' atoms/*/CMakeLists.txt atoms/*/src/*/CMakeLists.txt` → 0 |
 | ops 注入隔离 | coreloopthree/frameworks 通过 ops 抽象表调用 daemon，无直接 include | `grep -rn '#include.*"checkpoint.h"\|"orchestrator.h"' atoms/coreloopthree/` → 0 |
-| 优雅降级 | ops 未注入时返回 `AGENTOS_ERR_NOT_INITIALIZED` 而非崩溃 | 集成测试：启动 daemon 不注入 ops → cognition 优雅失败 |
-| 独立编译 | atoms 可独立编译（不依赖外部 daemon 源文件） | `cmake --build build --target agentos_atoms_standalone` → 成功 |
+| 优雅降级 | ops 未注入时返回 `AIRY_ERR_NOT_INITIALIZED` 而非崩溃 | 集成测试：启动 daemon 不注入 ops → cognition 优雅失败 |
+| 独立编译 | atoms 可独立编译（不依赖外部 daemon 源文件） | `cmake --build build --target airy_atoms_standalone` → 成功 |
 
 **CI 集成**：上述 5 项验证必须集成到 `quality-gate.sh` Gate 1（编译期）。
 
@@ -3291,11 +3304,11 @@ cmake --build build --target agentrt_atoms_standalone
 | BAN-312 | 禁止 atoms 层 CMakeLists.txt 编译 daemon 源文件 | CMakeLists.txt 审查 |
 | BAN-313 | 禁止 atoms 层 coreloopthree/frameworks 出现编译期 daemon 绑定（必须通过 ops 抽象表运行时注入） | `[ARCH-SCAN]` + 代码审查 |
 | BAN-314 | 禁止 atoms 层业务模块（coreloopthree/frameworks）直接调用 daemon 函数（必须经 ops 表分发） | 代码审查 |
-| BAN-315 | 禁止 taskflow 反向链接 coreloopthree（taskflow 仅依赖 corekern） | `grep 'agentos_coreloopthree' atoms/taskflow/CMakeLists.txt` → 0 |
+| BAN-315 | 禁止 taskflow 反向链接 coreloopthree（taskflow 仅依赖 corekern） | `grep 'airy_coreloopthree' atoms/taskflow/CMakeLists.txt` → 0 |
 | BAN-316 | 禁止跨团队直接修改对方代码（必须通过合约文件） | git blame 审查 |
 | BAN-317 | 禁止合约文件无版本号 | 头文件审查 |
 | BAN-318 | 禁止合约文件无编译验证代码 | `contract_test.c` 存在性检查 |
-| BAN-319 | 禁止 ops 注入点为空时崩溃（必须返回 `AGENTOS_ERR_NOT_INITIALIZED` 优雅降级） | 集成测试 |
+| BAN-319 | 禁止 ops 注入点为空时崩溃（必须返回 `AIRY_ERR_NOT_INITIALIZED` 优雅降级） | 集成测试 |
 
 **方案 A 修正说明**：原 BAN-313（atoms 总 LOC ≤ 30K）和原 BAN-315（atoms 禁止出现 cognition/taskflow/framework 关键字）已撤销——方案 A 下 atoms 文件物理位置不变，coreloopthree/frameworks/taskflow 保留在 atoms，通过 ops 注入实现"无反向依赖"语义等价。
 
@@ -3327,33 +3340,74 @@ cmake --build build --target agentrt_atoms_standalone
 
 ### 34.2 IPC Bus 统一消息头规范（STD-02）
 
-**强制规则 STD-02**: 所有 IPC 消息必须使用 128 字节统一消息头 `are_ipc_message_header_t`。
+> **SSoT 声明**：IPC 消息头结构体权威定义位于 `include/airymax/ipc.h`（[SC] 共享契约层，agentrt 与 agentrt-linux 共享同一物理头文件，逐字节相同）。本节代码必须与 `docs/AirymaxRT/30-interfaces/06-ipc/README.md` §2.1（`struct airy_ipc_msg_hdr`，128 字节，8 字段，`__attribute__((packed))`，`_Static_assert(sizeof(...) == 128)`）以及源码 `agentrt/commons/include/airymax/ipc.h` 逐字节一致。
 
-**消息头结构**（128 字节）：
+**强制规则 STD-02**: 所有 IPC 消息必须使用 128 字节统一消息头 `struct airy_ipc_msg_hdr`。
+
+**消息头结构**（128 字节，[SC] 共享契约层）：
 ```c
-typedef struct are_ipc_message_header {
-    uint32_t magic;           // 0x41524531 ("ARE1")
-    uint16_t version;         // 1
-    uint16_t msg_type;        // REQUEST/RESPONSE/NOTIFY/ERROR
-    uint32_t protocol;        // JSON-RPC/MCP/A2A/OpenAI/Custom
-    uint64_t msg_id;          // 消息唯一 ID
-    uint64_t trace_id;        // 分布式追踪 ID（跨进程贯穿）
-    uint64_t correlation_id;  // 请求-响应关联 ID
-    char source[32];          // 源 daemon 名
-    char target[32];          // 目标 daemon 名
-    uint32_t payload_len;     // 负载长度
-    uint32_t flags;           // 标志位
-    uint64_t timestamp_ns;    // 纳秒时间戳（CLOCK_REALTIME）
-    uint32_t checksum;        // CRC32 校验
-    uint32_t reserved;        // 保留对齐
-} are_ipc_message_header_t;  // 共 128 字节
+/* include/airymax/ipc.h —— [SC] 共享契约层，agentrt 与 agentrt-linux 逐字节共享 */
+#include <airymax/uapi_compat.h>  /* __u32/__u16/__u64/__u8 跨平台 UAPI 类型 */
+
+#define AIRY_IPC_MAGIC    0x41524531u   /* 'ARE1' —— IPC 消息头 magic */
+#define AIRY_IPC_HDR_SZ   128           /* 固定 128 字节消息头 */
+
+/**
+ * struct airy_ipc_msg_hdr - IPC message header (128 bytes, [SC] shared)
+ * @magic: Must be AIRY_IPC_MAGIC (0x41524531 'ARE1').
+ * @opcode: Operation code; see enum airy_ipc_op.
+ * @flags: Message flags (AIRY_IPC_F_*).
+ * @trace_id: Distributed trace identifier for cross-daemon tracing.
+ * @timestamp_ns: Timestamp in nanoseconds (CLOCK_REALTIME).
+ * @src_task: Source task identifier.
+ * @dst_task: Destination task identifier.
+ * @payload_len: Payload length in bytes (excludes this 128B header).
+ * @reserved: 84 bytes padding, must be zero.
+ *
+ * Fixed 128-byte header, layout never changes. Shared between
+ * agentrt (user-space) and agentrt-linux (kernel) via [SC] contract layer.
+ * Recipients MUST validate magic before processing.
+ */
+struct airy_ipc_msg_hdr {
+    __u32   magic;          /* offset 0,  'ARE1' (0x41524531) */
+    __u16   opcode;         /* offset 4,  操作码（见 enum airy_ipc_op） */
+    __u16   flags;          /* offset 6,  消息标志（AIRY_IPC_F_*） */
+    __u64   trace_id;       /* offset 8,  分布式追踪 ID（贯穿全链路） */
+    __u64   timestamp_ns;   /* offset 16, 纳秒时间戳（CLOCK_REALTIME） */
+    __u64   src_task;       /* offset 24, 源任务 ID（整型 task ID，非字符串） */
+    __u64   dst_task;       /* offset 32, 目标任务 ID（整型 task ID，非字符串） */
+    __u32   payload_len;    /* offset 40, 负载长度（不含本 128B 头） */
+    __u8    reserved[84];   /* offset 44, 84 字节保留，必须为零 */
+} __attribute__((packed));
+
+_Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
+    "IPC message header must be exactly 128 bytes");
 ```
 
 **强制要求**：
-- `sizeof(are_ipc_message_header_t) == 128`
-- magic 不匹配则拒绝连接并返回 `AGENTOS_ERR_PROTOCOL`
+- `sizeof(struct airy_ipc_msg_hdr) == 128`（编译期 `_Static_assert` 强制验证）
+- magic 不匹配则拒绝连接并返回 `AIRY_EPROTO`
 - trace_id 字段强制填充（跨进程贯穿）
 - 开放标准推动路径：v0.1.1 文档发布 → v0.2.0 参考实现 → v0.3.0 IETF 草案 → v1.0.0 正式发布
+
+**与早期草案的对应关系**（仅供迁移参考）：
+
+| 早期草案字段（已废弃 `are_ipc_message_header_t`） | SSoT 字段（`struct airy_ipc_msg_hdr`） | 说明 |
+|--------------------------------------------------|--------------------------------------|------|
+| `uint32_t magic` | `__u32 magic` | 类型改为 UAPI `__u32` |
+| `uint16_t version` | — | 移除（version 由 `opcode`/`flags` 承载） |
+| `uint16_t msg_type` | `__u16 opcode` | 重命名为 `opcode`，对齐 `enum airy_ipc_op` |
+| `uint32_t protocol` | — | 移除（protocol 由上层协议层处理） |
+| `uint64_t msg_id` | — | 移除（msg_id 由 `trace_id` + `src_task` 推导） |
+| `uint64_t trace_id` | `__u64 trace_id` | 保留，类型改为 UAPI `__u64` |
+| `uint64_t correlation_id` | — | 移除（correlation 由 `trace_id` 复用） |
+| `char source[32]` | `__u64 src_task` | 改为整型 task ID |
+| `char target[32]` | `__u64 dst_task` | 改为整型 task ID |
+| `uint32_t payload_len` | `__u32 payload_len` | 保留，类型改为 UAPI `__u32` |
+| `uint32_t flags` | `__u16 flags` | 类型改为 UAPI `__u16` |
+| `uint64_t timestamp_ns` | `__u64 timestamp_ns` | 保留，类型改为 UAPI `__u64` |
+| `uint32_t checksum` | — | 移除（CRC32 由传输层处理） |
+| `uint32_t reserved` | `__u8 reserved[84]` | 扩展为 84 字节保留区 |
 
 ### 34.3 服务发现多后端适配器规范（STD-03）
 
@@ -3368,7 +3422,7 @@ typedef struct are_ipc_message_header {
 | etcd | K8s 环境非原生 service | gRPC 调用 etcd v3 |
 | k8s | K8s 原生部署 | K8s API server watch EndpointSlice |
 
-**配置选择**：`agentos.yaml` 的 `service_discovery.backend: shm|dns-sd|consul|etcd|k8s`
+**配置选择**：`agentrt.yaml` 的 `service_discovery.backend: shm|dns-sd|consul|etcd|k8s`
 
 ### 34.4 JSON-RPC 方法命名空间规范（STD-04）
 
@@ -3381,26 +3435,30 @@ typedef struct are_ipc_message_header {
 - `register_agent` @ market_d/sched_d → `market.register_agent`/`sched.register_agent`
 - `health_check` @ monit_d/market_d/sched_d → `monit.health_check`/`market.health_check`/`sched.health_check`
 
-**验证**：`grep -rn 'json_rpc_register_method.*"[a-z]_' AgentRT/agentos/daemons/` → 0（无下划线开头的扁平名）
+**验证**：`grep -rn 'json_rpc_register_method.*"[a-z]_' agentrt/agentrt/daemons/` → 0（无下划线开头的扁平名）
 
 ### 34.5 统一错误码规范（STD-05）
 
 **强制规则 STD-05**: 全项目错误码必须由唯一权威源定义，禁止多套并行系统。
 
-**权威源**：`agentos/commons/utils/error/include/error.h` 为唯一定义源。
+**权威源**：`agentrt/commons/utils/error/include/error.h` 为唯一定义源（v4.0 修正：原 `agentos/` 路径已对齐 SSoT 方案 A 改为 `agentrt/`）。
 
-**分段规范**：
+**分段规范（v4.0 修正：对齐 SSoT 11 段方案 A，与 §4.9 一致）**：
 | 段 | 范围 | 用途 |
 |----|------|------|
-| 通用 | -1~-99 | 基础错误（参数/内存/超时等） |
-| 系统 | -100~-199 | 系统与平台错误 |
-| 内核 | -200~-299 | 内核层错误 |
-| 服务 | -300~-399 | 服务层错误 |
-| LLM | -400~-499 | LLM/AI 服务错误 |
-| 执行 | -500~-599 | 执行/工具错误 |
-| 记忆 | -600~-699 | 记忆/存储错误 |
-| 安全 | -700~-799 | Cupolas 安全错误 |
-| 协议 | -800~-899 | 协议错误 |
+| 成功 | 0 | `AIRY_EOK`/`AIRY_OK`/`AIRY_SUCCESS`（等价，定义于 `airy_types.h`） |
+| 通用基础 | -1~-99 | 基础错误（参数/内存/超时等）+ POSIX errno 负值 + -40~-48 扩展迁移码 |
+| 系统与平台 | -100~-199 | 系统与平台错误（含 -120~-123 迁移系统码） |
+| 内核层 | -200~-299 | 内核层错误（IPC/任务/同步/锁/内存/调度/定时器/中断） |
+| 服务层 | -300~-399 | 服务层错误（未就绪/忙/停止/配置/依赖/健康/负载均衡） |
+| LLM/AI 服务 | -400~-499 | LLM/AI 服务错误（无 Provider/Provider 失败/限流/上下文/模型/鉴权/Token/解析/空响应/成本） |
+| 执行/工具 | -500~-599 | 执行/工具错误（未找到/失败/超时/校验/沙箱/权限/参数/环境） |
+| 记忆/存储 | -600~-699 | 记忆/存储错误（写/读/查询/演化/满/损坏/未初始化） |
+| 安全/沙箱 | -700~-799 | 安全/沙箱错误（含 Cupolas 安全穹顶 -712~-799 专属段） |
+| 协调/规划 | -800~-899 | 协调/规划错误（计划失败/同步失败/调度/意图/补偿/重试超限） |
+| 协议/校验 | -900~-909 | 协议/校验错误（IPC 消息头校验/CRC32 校验和，消息必须丢弃） |
+
+> **v4.0 SSoT 对齐说明**：原 §34.5 为 9 段（缺"成功"+"协调/规划"，且将 -800~-899 误标为"协议"），已对齐 SSoT 方案 A 11 段。`AIRY_E*` POSIX 风格码权威定义位于 `airy_types.h`；`AIRY_ERR_*` 扩展码定义位于 `error.h`。详见 §4.9 错误码分段表。
 
 **已知冲突（必须修复）**：Cupolas 三套并行错误码系统（commons / cupolas enum / cupolas 本地 #define）数值冲突，必须统一到 commons 权威源。
 
@@ -3553,9 +3611,9 @@ typedef struct are_ipc_message_header {
 **强制规则 FOUND-06**: 4 语言 SDK 必须严格遵循 L1 C ABI 接口规范，CTS 一致性测试套件全绿。
 
 **L1 C ABI 接口定义**（参考 ARE Standards L1）:
-- 函数命名: `agentos_<resource>_<action>`（如 `agentos_cognition_process`）
+- 函数命名: `airy_<resource>_<action>`（如 `airy_cognition_process`）
 - 参数顺序: `(handle, request, response, error_info)` 固定四参数
-- 返回值: `agentos_status_t`（枚举：SUCCESS/INVALID_PARAM/NOT_FOUND/INTERNAL/UNAVAILABLE）
+- 返回值: `airy_status_t`（枚举：SUCCESS/INVALID_PARAM/NOT_FOUND/INTERNAL/UNAVAILABLE）
 - 错误处理: `error_info` 结构体含 code + message + trace_id
 - 内存所有权: 调用方分配 request，被调方分配 response，调用方负责释放
 
@@ -3612,7 +3670,7 @@ typedef struct are_ipc_message_header {
 | 函数名 | CCN | 拆分目标 |
 |--------|:---:|---------|
 | browser_execute | 252 | 5 个子函数 + 1 个调度器 |
-| agentos_cognition_process | 243 | Phase 1/2/3 三个独立函数 |
+| airy_cognition_process | 243 | Phase 1/2/3 三个独立函数 |
 | execute_single_phase | 218 | 按 phase type 分派表 |
 | parse_value | 132 | 按 type 分派表 |
 | yaml_parse_value | 124 | 同上 |
@@ -3672,7 +3730,7 @@ typedef struct are_ipc_message_header {
 | IRON-6 | **禁止跨层耦合残留**: 0.1.1 拆仓前必须完成 5 处跨层耦合解耦（SP02-SP06），任何残留即拆仓失败 | 38 仓独立构建硬约束 | §36.1 |
 | IRON-7 | **禁止版本过渡**: 0.1.1 之后直接 1.0.1，禁止 0.1.2/0.2.0/0.3.0/1.0.0 中间版本，禁止兼容别名头/兼容层/双轨制 | 用户硬约束（2026-07-05） | §36.1 |
 | IRON-8 | **禁止生产就绪降级**: SP32-SP37 生产就绪 6 项全部必须达标，未达标禁止发布 0.1.1 | 一切以生产就绪为目标 | §36.1 |
-| IRON-9 | **agentrt 和 AirymaxOS 同源且部分代码共享**（IRON-9 v2，2026-07-07 变更）: 三层共享模型：[SC] 共享契约层（`include/airymax/` 4 个头文件完全共享：bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版（基于 Linux 内核 + 微内核化改造）。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容） | AirymaxOS 与 AirymaxAgentRT 架构分离硬约束（2026-07-06，2026-07-07 IRON-9 v2 变更） | §38.1 |
+| IRON-9 | **agentrt 和 AirymaxOS 同源且部分代码共享**（IRON-9 v2，2026-07-07 变更）: 三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版（基于 Linux 内核 + 微内核化改造）。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容） | AirymaxOS 与 AirymaxAgentRT 架构分离硬约束（2026-07-06，2026-07-07 IRON-9 v2 变更） | §38.1 |
 | IRON-10 | **禁止引用 Linux 7.0 专属特性作为 6.6 原生能力**: AirymaxOS 基于 Linux 6.6（openEuler 24.03 LTS 内核版本），禁止引用 Linux 7.0 专属特性（PREEMPT_LAZY / Rust 正式转正 / MGLRU 2.0 / XFS 自修复 / eBPF 签名验证等）作为 Linux 6.6 原生能力。正确表述：EEVDF 调度器 / Rust 实验性支持 / MGLRU 多代 LRU / sched_ext（openEuler backport，主线 6.12+）/ eBPF kfunc + dynamic pointer / XFS 在线 fsck | Linux 6.6 内核版本兼容性硬约束（2026-07-06） | §38.10 |
 
 **例外审批流程**:
@@ -3772,7 +3830,7 @@ airymaxhub（L0）
 | 命名规则 | 强制 | 反例（禁止） | 正例（必须） |
 |---------|:---:|------------|------------|
 | 仓库名小写 | ✅ | `AgentRT`、`SDK-Python` | `agentrt`、`sdk-python` |
-| 目录名小写 | ✅ | `AgentRT/Daemon/` | `agentrt/daemons/` |
+| 目录名小写 | ✅ | `agentrt/Daemon/` | `agentrt/daemons/` |
 | sdk-xx 前缀 | ✅ | `sdk/python`、`sdkpython` | `sdk-python` |
 | 裸名（无 agentrt- 前缀） | ✅ | `agentrt-atoms` | `atoms` |
 | 伞仓 = airymaxhub | ✅ | `openairymax`、`airymax-hub` | `airymaxhub` |
@@ -4172,7 +4230,7 @@ trivy sbom sbom-airymaxhub.json --severity HIGH,CRITICAL --exit-code 1
 **包内必含**:
 - `bin/`: 12 个 daemon 进程二进制（gateway_d、llm_d、tool_d、sched_d、market_d、monit_d、channel_d、info_d、notify_d、observe_d、hook_d、plugin_d）
 - `lib/`: 共享库 + 静态库
-- `include/`: C 公开 ABI 头文件（agentrt_ 前缀）
+- `include/`: C 公开 ABI 头文件（airy_ 前缀）
 - `share/`: 默认配置 + 文档
 - `LICENSE`、`NOTICE`、`sbom.json`、`sbom.json.sig`
 
@@ -4324,7 +4382,7 @@ gh release view v0.1.1
 
 ## 第三十八章：AirymaxOS（agentrt-linux）工程规范（v27.0 v4.1 新增）
 
-> **章节定位**: 本章是 AirymaxOS（agentrt-linux）的工程规范。AirymaxOS 是与 agentrt（AirymaxAgentRT）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范。0.1.1 中仅创建仓库占位，实际开发在 1.0.1。OS 详细设计文档全部在 `docs/AirymaxAgentOS/` 模块内。
+> **章节定位**: 本章是 AirymaxOS（agentrt-linux）的工程规范。AirymaxOS 是与 agentrt（AirymaxAgentRT）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范。0.1.1 中仅创建仓库占位，实际开发在 1.0.1。OS 详细设计文档全部在 `docs/AirymaxOS/` 模块内。
 
 ### 38.1 AirymaxOS 架构分离工程规范（IRON-9）
 
@@ -4338,9 +4396,9 @@ gh release view v0.1.1
 | 设计思想 | 用户态运行时平台 | **微内核设计思想**（seL4 / Zircon / Minix3） |
 | 接入方式 | 直接编译 | 同源天然适配（无适配层） |
 | 版本 | 0.1.1 | 1.0.1 |
-| 文档位置 | docs-closed/ | docs/AirymaxAgentOS/ |
+| 文档位置 | docs-closed/ | docs/AirymaxOS/ |
 
-**IRON-9 v2 强制规则**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 4 个头文件完全共享：bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准。
+**IRON-9 v2 强制规则**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准。
 
 ### 38.2 AirymaxOS 微内核设计思想工程规范
 
@@ -4395,7 +4453,7 @@ gh release view v0.1.1
 | 安全 | SELinux + 国密 | airymaxos-security + 国密 |
 | 测试 | mugen | airymaxos-tests-linux mugen 类框架 |
 | AI 原生 | 智慧中枢 + 超节点 OS | airymaxos-cognition + cloudnative |
-| 文档 | docs.openeuler.org | docs/AirymaxAgentOS/ |
+| 文档 | docs.openeuler.org | docs/AirymaxOS/ |
 
 ### 38.6 AirymaxOS 云原生亲和力工程规范
 
@@ -4418,7 +4476,7 @@ gh release view v0.1.1
 | 文档类型 | 位置 | 强制 |
 |---------|------|:---:|
 | RT 设计文档 | `docs-closed/`（顶层仓） | ✅ |
-| **OS 设计文档** | `docs/AirymaxAgentOS/`（docs 顶层仓下子目录，12 个文档） | ✅ |
+| **OS 设计文档** | `docs/AirymaxOS/`（docs 顶层仓下子目录，12 个文档） | ✅ |
 
 ### 38.8 AirymaxOS 仓库地址工程规范
 
@@ -4439,7 +4497,7 @@ gh release view v0.1.1
 | 编号 | 规则 | 检测方式 |
 |------|------|---------|
 | BAN-357 | 禁止 0.1.1 中 agentrt-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | `[OS-SCAN]` |
-| BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxAgentOS/） | `[OS-SCAN]` |
+| BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxOS/） | `[OS-SCAN]` |
 | BAN-359 | 禁止 AirymaxOS 内核态代码污染 agentrt 用户态跨平台路径（IRON-9） | `[OS-SCAN]` + `[FOUND-SCAN]` |
 | BAN-360 | 禁止 AirymaxOS 子仓名不使用 airymaxos- 前缀 | `[OS-SCAN]` |
 | BAN-361 | 禁止引用 Linux 7.0 专属特性作为 Linux 6.6 原生能力（PREEMPT_LAZY / Rust 正式转正 / MGLRU 2.0 / XFS 自修复 / eBPF 签名验证 / sched_ext（Linux 6.15+）等） | `[OS-SCAN]` + Grep 全文档扫描 |
@@ -4504,7 +4562,7 @@ AirymaxOS 基于 Linux 6.6（openEuler 24.03 LTS 内核版本）。禁止在文�
 | **第三十六章：38 仓 git 拆分工程规范（v4.0 新增）** | **8（SPLIT-01~SPLIT-08）+ 3 IRON（IRON-6~8）+ 6 BAN（BAN-345~BAN-350）** | **v26.0 v4.0 38 仓拆分** |
 | **第三十七章：生产就绪工程规范（v4.0 新增）** | **6（PROD-01~PROD-06）+ 6 BAN（BAN-351~BAN-356）** | **v26.0 v4.0 生产就绪** |
 | **第三十八章：AirymaxOS（agentrt-linux）工程规范（v4.1 新增，v4.2 扩展）** | **10（§38.1~§38.10 工程规范）+ 2 IRON（IRON-9/IRON-10）+ 5 BAN（BAN-357~BAN-361）+ 1 ACC（ACC-OS04）** | **v27.0 v4.1 AirymaxOS 工程规范 + v28.0 v4.2 Linux 6.6 兼容性** |
-| **§11.6：agentos_→agentrt_ 彻底改名规范（v4.0 重写）** | **7 层面矩阵 + 4 BAN（BAN-341~BAN-344）** | **v26.0 v4.0 改名彻底** |
+| **§11.6：airy_→agentrt_ 改名规范（v4.0：airy_ 部分已废止，agentos_* 清零部分保留）** | **7 层面矩阵 + 4 BAN（BAN-341~BAN-344）** | **v26.0 v4.0 改名彻底** |
 | **§11.7：38 仓 git submodule 拆分规范（v4.0 新增）** | **6（SPLIT-01~SPLIT-06 简略版）+ 4 BAN（BAN-345~BAN-348）** | **v26.0 v4.0 38 仓拆分** |
 | **合计** | **189+ 项历史 + 35 项 v4.0 新增规则 = 224+ 项** | — |
 

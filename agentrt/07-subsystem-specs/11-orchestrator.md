@@ -1,7 +1,7 @@
 # Orchestrator 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（流程编排）
-> **代码路径**: `agentos/daemon/common/`（`orchestrator.h` / `orchestrator.c`）
+> **代码路径**: `agentrt/daemon/common/`（`orchestrator.h` / `orchestrator.c`）
 
 ---
 
@@ -172,15 +172,15 @@ typedef struct {
 | 错误码 | 值 | 含义 |
 |--------|:---:|------|
 | `0` | 0 | 成功 |
-| `AGENTOS_ERR_INVALID_PARAM` | — | 无效参数 |
-| `AGENTOS_ERR_OUT_OF_MEMORY` | — | 内存不足 |
-| `AGENTOS_ERR_DAEMON_INIT_FAILED` | — | 初始化失败 |
-| `AGENTOS_ERR_OVERFLOW` | — | 任务表/步骤表已满 |
-| `AGENTOS_ERR_UNKNOWN` | — | 未知错误 |
-| `AGENTOS_ERR_SVC_BUSY` | — | 服务忙（熔断器拒绝） |
-| `AGENTOS_ERR_LLM_PROVIDER_FAIL` | — | LLM 服务调用失败 |
-| `AGENTOS_ERR_KERN_TASK` | — | 阶段执行失败 |
-| `AGENTOS_ERR_NOT_FOUND` | — | 任务未找到 |
+| `AIRY_ERR_INVALID_PARAM` | — | 无效参数 |
+| `AIRY_ERR_OUT_OF_MEMORY` | — | 内存不足 |
+| `AIRY_ERR_DAEMON_INIT_FAILED` | — | 初始化失败 |
+| `AIRY_ERR_OVERFLOW` | — | 任务表/步骤表已满 |
+| `AIRY_ERR_UNKNOWN` | — | 未知错误 |
+| `AIRY_ERR_SVC_BUSY` | — | 服务忙（熔断器拒绝） |
+| `AIRY_ERR_LLM_PROVIDER_FAIL` | — | LLM 服务调用失败 |
+| `AIRY_ERR_KERN_TASK` | — | 阶段执行失败 |
+| `AIRY_ERR_NOT_FOUND` | — | 任务未找到 |
 | `-1` | — | 阶段执行失败（LLM 不可用） |
 | `-2` | — | 熔断器拒绝 |
 | `-3` | — | 超时 |
@@ -195,13 +195,13 @@ typedef struct {
 
 ```
 orchestrator (svc_common 静态库)
-  ├── agentos_common (commons 统一基础库)
+  ├── airy_common (commons 统一基础库)
   │     ├── utils/memory/    — memory_compat.h, memory_provider.h
   │     ├── utils/error/     — error.h, error_types.h
   │     ├── utils/logging/   — logging_compat.h
   │     ├── utils/string/    — string_compat.h, safe_string_utils.h
   │     ├── utils/sync/      — atomic_compat.h, 互斥锁
-  │     ├── utils/types/     — agentos_types.h
+  │     ├── utils/types/     — airy_types.h
   │     └── platform/        — platform.h
   ├── daemon common 组件
   │     ├── svc_common.h     — 服务框架
@@ -330,7 +330,7 @@ orchestrator (svc_common 静态库)
 @owner: team-A
 ```
 
-所有 `agentos/daemon/common/include/orchestrator.h` 和 `agentos/daemon/common/src/orchestrator.c` 归属于团队A。编排器作为 `svc_common` 静态库的一部分编译，被所有守护进程链接使用。
+所有 `agentrt/daemon/common/include/orchestrator.h` 和 `agentrt/daemon/common/src/orchestrator.c` 归属于团队A。编排器作为 `svc_common` 静态库的一部分编译，被所有守护进程链接使用。
 
 ### 执行管线
 

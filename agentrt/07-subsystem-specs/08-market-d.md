@@ -1,7 +1,7 @@
 # Market Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（Agent 能力市场）
-> **代码路径**: `agentos/daemon/market_d/`
+> **代码路径**: `agentrt/daemon/market_d/`
 
 ---
 
@@ -14,7 +14,7 @@ Market Daemon 是 AgentRT 的 Agent 能力市场守护进程，负责 Agent 和 
 | 模块 | 职责 | 源文件 |
 |------|------|--------|
 | **市场服务核心** | 市场服务生命周期管理（创建/销毁/重载配置），Agent 和 Skill 的 CRUD 操作 | `src/market_service_impl.c` |
-| **市场服务适配器** | 将 market_service 适配为 agentos_service_t 标准接口，支持统一服务框架 | `src/market_svc_adapter.c` |
+| **市场服务适配器** | 将 market_service 适配为 airy_service_t 标准接口，支持统一服务框架 | `src/market_svc_adapter.c` |
 | **Agent 注册表** | Agent 注册/注销/查询/搜索，线程安全，支持按名称/描述模糊搜索 | `src/agent_registry.c` |
 | **Agent 注册核心** | Agent 元数据管理（版本号/下载URL/校验和），标签搜索，版本追踪 | `src/agent_registry_core.c` |
 | **Skill 注册表** | Skill 注册/注销/查询，支持工具型/知识型/集成型/自定义四种类型 | `src/skill_registry.c` |
@@ -78,12 +78,12 @@ int market_service_check_update(market_service_t *service, const char *id, bool 
                                 char **latest_version);
 
 // 服务适配器
-agentos_error_t market_service_adapter_create(agentos_service_t *out_service,
-                                              const agentos_svc_config_t *config);
-agentos_error_t market_service_adapter_wrap(agentos_service_t *out_service,
+airy_err_t market_service_adapter_create(airy_service_t *out_service,
+                                              const airy_svc_config_t *config);
+airy_err_t market_service_adapter_wrap(airy_service_t *out_service,
                                             market_service_t market_svc,
-                                            const agentos_svc_config_t *config);
-market_service_t market_service_adapter_get_original(agentos_service_t service);
+                                            const airy_svc_config_t *config);
+market_service_t market_service_adapter_get_original(airy_service_t service);
 
 // Agent 注册核心
 agent_registry_t *agent_registry_core_create(void);
@@ -149,13 +149,13 @@ typedef struct {
 
 | 错误码 | 值 | 含义 |
 |--------|:---:|------|
-| `AGENTOS_SUCCESS` | 0 | 成功 |
-| `AGENTOS_ERR_INVALID_PARAM` | — | 无效参数 |
-| `AGENTOS_ERR_OUT_OF_MEMORY` | — | 内存不足 |
-| `AGENTOS_ERR_NOT_FOUND` | — | Agent/Skill 未找到 |
-| `AGENTOS_ERR_OVERFLOW` | — | 注册表已满 |
-| `AGENTOS_ERR_IO` | — | 文件/网络 I/O 错误 |
-| `AGENTOS_ERR_ALREADY_EXISTS` | — | Agent/Skill 已存在 |
+| `AIRY_SUCCESS` | 0 | 成功 |
+| `AIRY_ERR_INVALID_PARAM` | — | 无效参数 |
+| `AIRY_ERR_OUT_OF_MEMORY` | — | 内存不足 |
+| `AIRY_ERR_NOT_FOUND` | — | Agent/Skill 未找到 |
+| `AIRY_ERR_OVERFLOW` | — | 注册表已满 |
+| `AIRY_ERR_IO` | — | 文件/网络 I/O 错误 |
+| `AIRY_ERR_ALREADY_EXISTS` | — | Agent/Skill 已存在 |
 | `MARKET_ERR_ALREADY_EXISTS` | DAEMON_BASE + 0x20 | 重复注册（market_d 特化） |
 | `MARKET_ERR_INSTALL_FAIL` | DAEMON_BASE + 0x21 | 安装失败 |
 
@@ -192,7 +192,7 @@ market_d
   │     ├── safe_string_utils.h  — 安全字符串
   │     ├── daemon_bootstrap_sd.h  — 服务发现启动
   │     └── daemon_bootstrap_ipc.h — IPC 启动
-  ├── agentos_common (commons 统一基础库)
+  ├── airy_common (commons 统一基础库)
   │     ├── utils/memory/    — memory_compat.h
   │     ├── utils/error/     — error.h, error_types.h
   │     ├── utils/logging/   — logging.h
@@ -243,8 +243,8 @@ market_d
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|:---:|------|
-| `DEFAULT_SOCKET_PATH_UNIX` | string | `AGENTOS_RUNTIME_DIR/market.sock` | Unix Socket 路径 |
-| `DEFAULT_SOCKET_PATH_WIN` | string | `\\.\pipe\agentos_market` | Windows 命名管道路径 |
+| `DEFAULT_SOCKET_PATH_UNIX` | string | `AIRY_RUNTIME_DIR/market.sock` | Unix Socket 路径 |
+| `DEFAULT_SOCKET_PATH_WIN` | string | `\\.\pipe\airy_market` | Windows 命名管道路径 |
 | `DEFAULT_TCP_PORT` | uint16_t | 8082 | TCP 模式端口 |
 | `MAX_BUFFER` | size_t | 65536 | 请求缓冲区大小 |
 | 线程池 `min_threads` | uint32_t | 4 | 最小线程数 |
@@ -309,7 +309,7 @@ market_d
 @owner: team-A
 ```
 
-所有 `agentos/daemon/market_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemon/market_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ### 通信方式
 

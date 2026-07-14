@@ -13,10 +13,10 @@
  * 任何指标名或注入点变更必须先升级本合约版本号。
  *
  * 参考实现：
- *   - agentos/daemon/common/include/unified_metrics.h
- *   - agentos/daemon/common/include/ipc_service_bus.h
- *   - agentos/daemon/common/include/daemon_security.h
- *   - agentos/daemon/common/include/svc_common.h
+ *   - agentrt/daemon/common/include/unified_metrics.h
+ *   - agentrt/daemon/common/include/ipc_service_bus.h
+ *   - agentrt/daemon/common/include/daemon_security.h
+ *   - agentrt/daemon/common/include/svc_common.h
  *   - tests/integration/c/test_c_link_*.c
  *
  * @owner team-A, team-C
@@ -54,14 +54,14 @@ extern "C" {
  * 注入点通过环境变量启用，生产环境必须关闭。
  *
  * 时序约束：
- *   1. 团队C 设置 AGENTOS_TEST_MODE=1 启用注入
+ *   1. 团队C 设置 AIRY_TEST_MODE=1 启用注入
  *   2. daemon 启动时检测环境变量，注册测试钩子
  *   3. 测试用例通过 IPC 注入故障/延迟/断言
  *   4. 测试结束清理注入状态
  * ================================================================ */
 
 /** 测试模式环境变量名 */
-#define CONTRACT_AC_TEST_MODE_ENV "AGENTOS_TEST_MODE"
+#define CONTRACT_AC_TEST_MODE_ENV "AIRY_TEST_MODE"
 
 /** 测试模式启用值 */
 #define CONTRACT_AC_TEST_MODE_ENABLED "1"
@@ -121,14 +121,14 @@ typedef struct contract_ac_injection_point {
  * 团队C 的 Prometheus 采集配置（deploy/docker/monitoring/prometheus.yml）
  * 与 Grafana 仪表板依赖这些指标名。
  *
- * 命名规范：agentos_<daemon>_<metric>_<unit>
- *   - 前缀统一为 agentos_
+ * 命名规范：airy_<daemon>_<metric>_<unit>
+ *   - 前缀统一为 airy_
  *   - daemon 名小写下划线
  *   - 单位后缀（seconds/bytes/total）
  * ================================================================ */
 
 /** 指标前缀（所有指标必须以此开头） */
-#define CONTRACT_AC_METRIC_PREFIX "agentos_"
+#define CONTRACT_AC_METRIC_PREFIX "airy_"
 
 /** 指标名称最大长度（与 UM_METRIC_NAME_LEN 对齐） */
 #define CONTRACT_AC_METRIC_NAME_MAX 128
@@ -145,20 +145,20 @@ typedef struct contract_ac_injection_point {
  * 团队A 的每个 daemon 必须注册这些指标（如适用）。
  * 团队C 的告警规则（alerts.yml）基于这些指标名编写。
  */
-#define CONTRACT_AC_METRIC_REQUESTS_TOTAL       "agentos_requests_total"        /**< 请求总数（Counter） */
-#define CONTRACT_AC_METRIC_REQUEST_DURATION     "agentos_request_duration_seconds" /**< 请求耗时（Histogram） */
-#define CONTRACT_AC_METRIC_ERRORS_TOTAL         "agentos_errors_total"          /**< 错误总数（Counter） */
-#define CONTRACT_AC_METRIC_ACTIVE_CONNECTIONS   "agentos_active_connections"    /**< 活跃连接数（Gauge） */
-#define CONTRACT_AC_METRIC_MEMORY_USAGE_BYTES   "agentos_memory_usage_bytes"    /**< 内存使用（Gauge） */
-#define CONTRACT_AC_METRIC_CPU_USAGE            "agentos_cpu_usage_ratio"       /**< CPU 使用率（Gauge） */
-#define CONTRACT_AC_METRIC_UPTIME_SECONDS       "agentos_uptime_seconds"        /**< 运行时长（Gauge） */
-#define CONTRACT_AC_METRIC_QUEUE_DEPTH          "agentos_queue_depth"           /**< 队列深度（Gauge） */
-#define CONTRACT_AC_METRIC_IPC_LATENCY          "agentos_ipc_latency_seconds"   /**< IPC 延迟（Histogram） */
-#define CONTRACT_AC_METRIC_GC_PAUSE_SECONDS     "agentos_gc_pause_seconds"      /**< GC 暂停（Histogram） */
-#define CONTRACT_AC_METRIC_FILE_DESCRIPTORS     "agentos_file_descriptors"      /**< 文件描述符数（Gauge） */
-#define CONTRACT_AC_METRIC_GOROUTINE_COUNT      "agentos_goroutine_count"       /**< 协程/线程数（Gauge） */
-#define CONTRACT_AC_METRIC_CACHE_HIT_RATIO      "agentos_cache_hit_ratio"       /**< 缓存命中率（Gauge） */
-#define CONTRACT_AC_METRIC_CIRCUIT_BREAKER_STATE "agentos_circuit_breaker_state" /**< 熔断器状态（Gauge） */
+#define CONTRACT_AC_METRIC_REQUESTS_TOTAL       "airy_requests_total"        /**< 请求总数（Counter） */
+#define CONTRACT_AC_METRIC_REQUEST_DURATION     "airy_request_duration_seconds" /**< 请求耗时（Histogram） */
+#define CONTRACT_AC_METRIC_ERRORS_TOTAL         "airy_errors_total"          /**< 错误总数（Counter） */
+#define CONTRACT_AC_METRIC_ACTIVE_CONNECTIONS   "airy_active_connections"    /**< 活跃连接数（Gauge） */
+#define CONTRACT_AC_METRIC_MEMORY_USAGE_BYTES   "airy_memory_usage_bytes"    /**< 内存使用（Gauge） */
+#define CONTRACT_AC_METRIC_CPU_USAGE            "airy_cpu_usage_ratio"       /**< CPU 使用率（Gauge） */
+#define CONTRACT_AC_METRIC_UPTIME_SECONDS       "airy_uptime_seconds"        /**< 运行时长（Gauge） */
+#define CONTRACT_AC_METRIC_QUEUE_DEPTH          "airy_queue_depth"           /**< 队列深度（Gauge） */
+#define CONTRACT_AC_METRIC_IPC_LATENCY          "airy_ipc_latency_seconds"   /**< IPC 延迟（Histogram） */
+#define CONTRACT_AC_METRIC_GC_PAUSE_SECONDS     "airy_gc_pause_seconds"      /**< GC 暂停（Histogram） */
+#define CONTRACT_AC_METRIC_FILE_DESCRIPTORS     "airy_file_descriptors"      /**< 文件描述符数（Gauge） */
+#define CONTRACT_AC_METRIC_GOROUTINE_COUNT      "airy_goroutine_count"       /**< 协程/线程数（Gauge） */
+#define CONTRACT_AC_METRIC_CACHE_HIT_RATIO      "airy_cache_hit_ratio"       /**< 缓存命中率（Gauge） */
+#define CONTRACT_AC_METRIC_CIRCUIT_BREAKER_STATE "airy_circuit_breaker_state" /**< 熔断器状态（Gauge） */
 
 /**
  * @brief 指标类型枚举（与 um_metric_type_t 对齐）

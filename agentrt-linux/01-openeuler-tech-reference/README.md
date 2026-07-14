@@ -43,7 +43,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 1. **先参考本目录**：修订开源设计文档前，先查阅对应子系统的 openEuler 技术规范参考
 2. **消化吸收**：openEuler 内容必须经过消化吸收，转化为 AirymaxOS 自身技术语言
-3. **隔离铁律**：开源文档（`docs/AirymaxAgentOS/`）中严禁出现 openEuler 描述（BAN-INTERNAL-002）
+3. **隔离铁律**：开源文档（`docs/AirymaxOS/`）中严禁出现 openEuler 描述（BAN-INTERNAL-002）
 4. **不对外发布**：本目录所有文档不包含在开源 LICENSE 范围内（BAN-INTERNAL-004）
 
 ---

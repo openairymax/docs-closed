@@ -1,7 +1,7 @@
 # LLM Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（核心引擎）
-> **代码路径**: `agentos/daemon/llm_d/`
+> **代码路径**: `agentrt/daemon/llm_d/`
 
 ---
 
@@ -20,7 +20,7 @@ LLM Daemon 是 AgentRT 的大语言模型服务守护进程，屏蔽不同 LLM �
 | **响应缓存** | LRU 缓存，基于请求内容的哈希键，可配置容量和 TTL | `src/cache.c` |
 | **响应序列化** | JSON 格式的请求/响应序列化与反序列化 | `src/response.c` |
 | **服务核心** | 编排 provider、router、cache、cost_tracker、token_counter，处理请求生命周期 | `src/service.c` |
-| **服务适配器** | 将 LLM 服务适配到 AgentOS 统一服务管理框架（svc_common） | `src/llm_svc_adapter.c` |
+| **服务适配器** | 将 LLM 服务适配到 AgentRT 统一服务管理框架（svc_common） | `src/llm_svc_adapter.c` |
 | **守护进程入口** | JSON-RPC 2.0 服务端，Unix Socket / TCP 双模式，事件驱动框架，注册 `complete` 和 `complete_stream` 两个 RPC 方法 | `src/main.c` |
 
 ### 非职责（明确排除）
@@ -104,17 +104,17 @@ void provider_registry_destroy(provider_registry_t *reg);
 const provider_t *provider_registry_find(provider_registry_t *reg, const char *model);
 
 // ── 服务适配器 ──
-agentos_error_t llm_service_adapter_create(agentos_service_t *out_service,
-                                           const agentos_svc_config_t *config);
-agentos_error_t llm_service_adapter_wrap(agentos_service_t *out_service,
+airy_err_t llm_service_adapter_create(airy_service_t *out_service,
+                                           const airy_svc_config_t *config);
+airy_err_t llm_service_adapter_wrap(airy_service_t *out_service,
                                          llm_service_t llm_svc,
-                                         const agentos_svc_config_t *config);
-llm_service_t llm_service_adapter_get_original(agentos_service_t service);
-agentos_error_t llm_service_adapter_init(agentos_service_t service);
-agentos_error_t llm_service_adapter_start(agentos_service_t service);
-agentos_error_t llm_service_adapter_stop(agentos_service_t service, bool force);
-void llm_service_adapter_destroy(agentos_service_t service);
-agentos_error_t llm_service_adapter_healthcheck(agentos_service_t service);
+                                         const airy_svc_config_t *config);
+llm_service_t llm_service_adapter_get_original(airy_service_t service);
+airy_err_t llm_service_adapter_init(airy_service_t service);
+airy_err_t llm_service_adapter_start(airy_service_t service);
+airy_err_t llm_service_adapter_stop(airy_service_t service, bool force);
+void llm_service_adapter_destroy(airy_service_t service);
+airy_err_t llm_service_adapter_healthcheck(airy_service_t service);
 ```
 
 ### 2.3 路由策略枚举
@@ -152,11 +152,11 @@ agentos_error_t llm_service_adapter_healthcheck(agentos_service_t service);
 
 | 错误码 | 值 | 含义 |
 |--------|:---:|------|
-| `AGENTOS_SUCCESS` | 0 | 成功 |
-| `AGENTOS_ERR_INVALID_PARAM` | — | 无效参数 |
-| `AGENTOS_ERR_OUT_OF_MEMORY` | — | 内存不足 |
-| `AGENTOS_ERR_OVERFLOW` | — | 消息数超限 |
-| `AGENTOS_ERR_UNKNOWN` | — | 未知错误 |
+| `AIRY_SUCCESS` | 0 | 成功 |
+| `AIRY_ERR_INVALID_PARAM` | — | 无效参数 |
+| `AIRY_ERR_OUT_OF_MEMORY` | — | 内存不足 |
+| `AIRY_ERR_OVERFLOW` | — | 消息数超限 |
+| `AIRY_ERR_UNKNOWN` | — | 未知错误 |
 | `JSONRPC_INTERNAL_ERROR` | — | JSON-RPC 内部错误 |
 | `JSONRPC_INVALID_PARAMS` | — | JSON-RPC 无效参数 |
 | `JSONRPC_PARSE_ERROR` | — | JSON-RPC 解析错误 |
@@ -170,15 +170,15 @@ agentos_error_t llm_service_adapter_healthcheck(agentos_service_t service);
 
 ```
 llm_d
-  ├── agentos_common (commons 公共库)
-  │    ├── platform/          — platform.h, agentos_sleep_ms
-  │    ├── utils/memory/      — memory_compat.h, AGENTOS_MALLOC/FREE/STRDUP
+  ├── airy_common (commons 公共库)
+  │    ├── platform/          — platform.h, airy_sleep_ms
+  │    ├── utils/memory/      — memory_compat.h, AIRY_MALLOC/FREE/STRDUP
   │    ├── utils/error/       — error.h
   │    ├── utils/logging/     — logging.h, logging_compat.h
-  │    ├── utils/sync/        — sync_compat.h, agentos_mutex_t
+  │    ├── utils/sync/        — sync_compat.h, airy_mutex_t
   │    ├── utils/atomic/      — atomic_compat.h
   │    ├── utils/cache/       — 缓存基础设施
-  │    ├── utils/network/     — agentos_socket_t, agentos_socket_*
+  │    ├── utils/network/     — airy_socket_t, airy_socket_*
   │    └── utils/ipc/         — ipc_service_bus
   ├── svc_common (daemon 通用服务层)
   │    ├── svc_logger         — SVC_LOG_* 宏
@@ -221,7 +221,7 @@ llm_d
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|:---:|------|
-| `daemon.socket_path` | string | `/var/run/agentos/llm.sock` | Unix Socket 路径 |
+| `daemon.socket_path` | string | `/var/run/agentrt/llm.sock` | Unix Socket 路径 |
 | `daemon.tcp_port` | uint16 | 8080 | TCP 监听端口（启用 TCP 时） |
 | `daemon.max_threads` | int | 8 | 最大线程数 |
 | `daemon.max_clients` | int | 64 | 最大客户端连接数 |
@@ -296,7 +296,7 @@ llm_d
 @owner: team-A
 ```
 
-所有 `agentos/daemon/llm_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemon/llm_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

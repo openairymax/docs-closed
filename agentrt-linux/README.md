@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 1. **全面参考 Euler 技术规范**：Euler 社区的技术规范、内核改动、工程实践对 agentrt-linux 设计具有重要参考价值，但参考文档不能公开
 2. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
-3. **开源文档隔离**：开源文档（`docs/AirymaxAgentOS/`）中**严禁**出现对 Euler 参考发行版的相关描述；所有参考内容仅限本目录
+3. **开源文档隔离**：开源文档（`docs/AirymaxOS/`）中**严禁**出现对 Euler 参考发行版的相关描述；所有参考内容仅限本目录
 
 ---
 
@@ -63,19 +63,19 @@ docs-closed/agentrt-linux/
 
 ### 3.1 何时参考本目录
 
-AirymaxOS 开源设计文档（`docs/AirymaxAgentOS/`）的编写和修订流程：
+AirymaxOS 开源设计文档（`docs/AirymaxOS/`）的编写和修订流程：
 
 1. **先参考 Euler**：查阅本目录 `01-openeuler-tech-reference/` 中对应子系统的 openEuler 技术规范
 2. **再参考行业最新理论**：查阅 `04-industry-best-practices/` 中的最新理论和最佳实践
 3. **最后形成 AirymaxOS 技术方案**：综合 Euler 参考 + 行业最新理论，形成 AirymaxOS 自己的技术方案
-4. **开源文档输出**：在 `docs/AirymaxAgentOS/` 中编写开源文档，**严禁引用 openEuler**
+4. **开源文档输出**：在 `docs/AirymaxOS/` 中编写开源文档，**严禁引用 openEuler**
 
 ### 3.2 开源/闭源隔离铁律
 
 | 规则 | 说明 |
 |------|------|
 | **BAN-INTERNAL-001** | openEuler 技术规范参考内容**只能**存在于 `docs-closed/agentrt-linux/` 目录 |
-| **BAN-INTERNAL-002** | 开源文档 `docs/AirymaxAgentOS/` 中**严禁**出现 "openEuler"、"open Euler"、"openeuler" 等描述 |
+| **BAN-INTERNAL-002** | 开源文档 `docs/AirymaxOS/` 中**严禁**出现 "openEuler"、"open Euler"、"openeuler" 等描述 |
 | **BAN-INTERNAL-003** | 闭源参考文档中的 openEuler 内容必须经过**消化吸收**后才能体现在开源设计文档中 |
 | **BAN-INTERNAL-004** | 闭源参考文档**不对外发布**，不包含在任何开源 LICENSE 范围内 |
 | **BAN-INTERNAL-005** | 开源文档中的技术方案表述必须用 **AirymaxOS 自身语言**，不能是 openEuler 的直接翻译 |
@@ -92,7 +92,7 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 ## 4. 与开源文档的关系
 
-| 维度 | 闭源参考文档（本目录） | 开源设计文档（`docs/AirymaxAgentOS/`） |
+| 维度 | 闭源参考文档（本目录） | 开源设计文档（`docs/AirymaxOS/`） |
 |------|----------------------|--------------------------------------|
 | 保密级别 | SPHARX Ltd 内部 | 开源（AGPL v3 + Apache 2.0） |
 | openEuler 引用 | ✅ 允许，全面参考 | ❌ 严禁 |
@@ -121,8 +121,8 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 ## 6. 相关文档
 
-- 开源设计文档：`docs/AirymaxAgentOS/README.md`（19 模块三层体系）
-- 工程标准规范：`docs/AirymaxAgentOS/50-engineering-standards/README.md`（IRON-9 v2 定义）
+- 开源设计文档：`docs/AirymaxOS/README.md`（19 模块三层体系）
+- 工程标准规范：`docs/AirymaxOS/50-engineering-standards/README.md`（IRON-9 v2 定义）
 - Airymax 架构原则：`docs/00-architectural-principles.md`（五维正交 24 原则）
 - agentrt 工程标准：`docs-closed/0.1.1工程标准规范手册.md`（17 类规则编号体系）
 

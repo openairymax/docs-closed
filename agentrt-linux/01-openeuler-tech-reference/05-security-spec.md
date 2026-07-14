@@ -22,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|------|
 | **第一段** | 参考 openEuler 安全规范（本文档） | 闭源 `docs-closed/agentrt-linux/01-openeuler-tech-reference/05-security-spec.md` |
 | **第二段** | 参考行业最新安全理论 | seL4 capability / Zircon handle / BeyondCorp / CCC 机密计算 / Landlock UAPI |
-| **第三段** | 形成 AirymaxOS 技术方案 | 开源 `docs/AirymaxAgentOS/110-security/` + `20-modules/03-security.md` 修订 |
+| **第三段** | 形成 AirymaxOS 技术方案 | 开源 `docs/AirymaxOS/110-security/` + `20-modules/03-security.md` 修订 |
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -847,9 +847,9 @@ CONFIG_LSM="landlock,yama,cupolas"
 - [闭源 openEuler eBPF 技术规范](03-ebpf-spec.md)
 - [闭源 openEuler io_uring 技术规范](02-io-uring-spec.md)
 - [闭源 openEuler 调度器技术规范](01-scheduler-spec.md)
-- [开源安全穹顶模块设计](../../docs/AirymaxAgentOS/20-modules/03-security.md)
-- [开源 LSM 框架详解](../../docs/AirymaxAgentOS/110-security/01-lsm-framework.md)
-- [开源 Landlock 用户态沙箱](../../docs/AirymaxAgentOS/110-security/02-landlock-sandbox.md)
+- [开源安全穹顶模块设计](../../docs/AirymaxOS/20-modules/03-security.md)
+- [开源 LSM 框架详解](../../docs/AirymaxOS/110-security/01-lsm-framework.md)
+- [开源 Landlock 用户态沙箱](../../docs/AirymaxOS/110-security/02-landlock-sandbox.md)
 
 ### 14.2 版本与维护
 

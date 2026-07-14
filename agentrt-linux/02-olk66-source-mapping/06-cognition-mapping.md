@@ -11,6 +11,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-1 | 关注点分离（8 子仓差异化） | §5 AirymaxOS CoreLoopThree 映射规则（[SC]/[SS]/[IND] 三层划分）；§5.3 [SC] 共享契约层映射 |
+| ES-OLK-13 | 文档即代码（Documentation/） | §1.2 源码定位（Documentation/ 设计文档引用）；§8 相关文档（开源设计文档体系） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -387,7 +398,7 @@ accel 框架与 DRM 共享底层基础设施，但独立成类：
 | `drm_open_helper` | `accel_open`（独立 open 路径） |
 | `drm_debugfs_create_files` | `accel_debugfs_root`（独立 debugfs 根） |
 
-**AirymaxOS 映射**：accel 框架是 GPU/NPU 统一接入的范例——AirymaxOS `airymaxos-cognition/gpu-npu` 模块参考 accel 设计，为各类加速器（含国产昇腾/寒武纪/海光）提供统一抽象（[IND] 独立实现，不共享 accel 代码）。
+**AirymaxOS 映射**：accel 框架是 GPU/NPU 统一接入的范例——AirymaxOS `cognition/gpu-npu` 模块参考 accel 设计，为各类加速器（含国产昇腾/寒武纪/海光）提供统一抽象（[IND] 独立实现，不共享 accel 代码）。
 
 ---
 
@@ -649,13 +660,13 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 
 ## 8. 相关文档
 
-- [认知模块设计](../../docs/AirymaxAgentOS/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
-- [认知循环数据流](../../docs/AirymaxAgentOS/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
+- [认知模块设计](../../docs/AirymaxOS/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
+- [认知循环数据流](../../docs/AirymaxOS/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
 - [调度子系统闭源映射](01-sched-ext-mapping.md)：sched_ext + SCHED_AGENT
 - [内存子系统闭源映射](04-mm-mapping.md)：MemoryRovol + CXL + PMEM（KV cache 分层基础）
 - [安全子系统闭源映射](05-security-mapping.md)：capability + LSM（横切关注点）
 - [认知子系统技术规范](../01-openeuler-tech-reference/06-cognition-spec.md)：kthread 工程规范 + LLM 推理调度最佳实践
-- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxAgentOS/50-engineering-standards/README.md)
+- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxOS/50-engineering-standards/README.md)
 
 ---
 

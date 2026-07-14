@@ -20,7 +20,7 @@
 | 配置加密 | AES-256-GCM 加密敏感字段（API Key、密码、密钥），支持 env/file/vault 三种密钥来源 |
 | 配置导入导出 | 支持 YAML/JSON 格式，导入时 Schema 验证，排除敏感字段，支持 replace/merge/deep_merge 三种合并策略 |
 | 配置差异对比 | YAML/JSON 配置文件的结构化深度比较，支持单文件和批量目录比较，彩色输出和 JSON 报告 |
-| Schema 同步检查 | Manager 11 Schema 与 agentos.yaml 的双向一致性检查，检测字段不一致、Schema 漂移和缺失配置 |
+| Schema 同步检查 | Manager 11 Schema 与 agentrt.yaml 的双向一致性检查，检测字段不一致、Schema 漂移和缺失配置 |
 | 多实例配置同步 | 基于 Redis 的配置同步机制（可选），支持 last_write_wins 冲突解决策略 |
 | 性能基准测试 | TaskManager/SessionManager/MemoryManager/SkillManager 四大模块的性能基准测试框架 |
 
@@ -38,7 +38,7 @@
 
 | 文件 | 类型 | 说明 |
 |------|------|------|
-| `schema_diff.py` | Python CLI | Manager Schema 与 agentos.yaml 双向一致性检查 |
+| `schema_diff.py` | Python CLI | Manager Schema 与 agentrt.yaml 双向一致性检查 |
 | `tools/config_diff.py` | Python CLI | 配置文件差异对比工具 |
 | `tools/drift_detector.py` | Python CLI | 配置漂移检测（基线创建/检测/报告） |
 | `tools/config_version_cleanup.py` | Python CLI | 配置版本历史清理（按天数/版本数） |
@@ -50,7 +50,7 @@
 ```python
 # === Schema Diff (schema_diff.py) ===
 class SchemaDiffer:
-    def __init__(self, agentos_root: Optional[str] = None)
+    def __init__(self, airy_root: Optional[str] = None)
     def run(self) -> DiffReport
 
 # === Config Diff (tools/config_diff.py) ===
@@ -127,11 +127,11 @@ python manager/benchmark/benchmark_manager.py --iterations 1000
 
 | 依赖模块 | 用途 |
 |----------|------|
-| `agentos.yaml` | AgentRT 主配置文件，Schema 同步检查的目标 |
-| `agentos.modules.task.manager` | 任务管理器（基准测试） |
-| `agentos.modules.session.manager` | 会话管理器（基准测试） |
-| `agentos.modules.memory.manager` | 记忆管理器（基准测试） |
-| `agentos.modules.skill.manager` | 技能管理器（基准测试） |
+| `agentrt.yaml` | AgentRT 主配置文件，Schema 同步检查的目标 |
+| `agentrt.modules.task.manager` | 任务管理器（基准测试） |
+| `agentrt.modules.session.manager` | 会话管理器（基准测试） |
+| `agentrt.modules.memory.manager` | 记忆管理器（基准测试） |
+| `agentrt.modules.skill.manager` | 技能管理器（基准测试） |
 
 ### 运行时依赖
 
@@ -197,7 +197,7 @@ Manager 自身管理配置（`manager_management.yaml`）：
 | 配置管理 Schema | `schema/config-management.schema.json` | Manager 自身管理配置 |
 | 审计日志 Schema | `schema/config-audit-log.schema.json` | 配置变更审计日志规范 |
 | 清洗器规则 Schema | `schema/sanitizer-rules.schema.json` | 输入清洗规则（XSS/SQL 注入） |
-| Schema 同步检查 | `schema_diff.py` | Manager Schema ↔ agentos.yaml 双向一致性合约 |
+| Schema 同步检查 | `schema_diff.py` | Manager Schema ↔ agentrt.yaml 双向一致性合约 |
 
 ### 测试接口
 

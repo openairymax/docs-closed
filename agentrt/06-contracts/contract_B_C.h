@@ -15,7 +15,7 @@
  * 参考实现：
  *   - sdk/cli/src/main.rs（agentrt CLI 入口）
  *   - sdk/cli/src/commands/ （各命令实现 .rs 文件）
- *   - sdk/python/agentos/exceptions.py（错误码体系）
+ *   - sdk/python/agentrt/exceptions.py（错误码体系）
  *   - deploy/docker/Dockerfile（HEALTHCHECK 定义）
  *   - deploy/docker/docker-compose.test.yml（健康检查配置）
  *
@@ -145,7 +145,7 @@ typedef enum contract_bc_exit_code {
 #define CONTRACT_BC_HARNESS_REPORT_ENV "AGENTRT_TEST_REPORT_PATH"
 
 /** Harness 测试模式环境变量（与 contract_A_C.h 对齐） */
-#define CONTRACT_BC_HARNESS_TEST_MODE_ENV "AGENTOS_TEST_MODE"
+#define CONTRACT_BC_HARNESS_TEST_MODE_ENV "AIRY_TEST_MODE"
 
 /**
  * @brief SDK 测试 Harness 状态
@@ -193,7 +193,7 @@ typedef struct contract_bc_harness_result {
  * 团队C 的 Dockerfile HEALTHCHECK 与 docker-compose healthcheck 依赖此端点。
  *
  * 时序约束：
- *   1. daemon 启动后监听 AGENTOS_SERVICE_PORT
+ *   1. daemon 启动后监听 AIRY_SERVICE_PORT
  *   2. Docker 每 5-15 秒探测 /healthz
  *   3. 连续 5 次失败标记容器 unhealthy
  *   4. start_period 内的失败不计入
@@ -209,10 +209,10 @@ typedef struct contract_bc_harness_result {
 #define CONTRACT_BC_METRICS_ENDPOINT "/metrics"
 
 /** 默认服务端口环境变量 */
-#define CONTRACT_BC_SERVICE_PORT_ENV "AGENTOS_SERVICE_PORT"
+#define CONTRACT_BC_SERVICE_PORT_ENV "AIRY_SERVICE_PORT"
 
 /** 默认指标端口环境变量 */
-#define CONTRACT_BC_METRICS_PORT_ENV "AGENTOS_METRICS_PORT"
+#define CONTRACT_BC_METRICS_PORT_ENV "AIRY_METRICS_PORT"
 
 /** 默认 HTTP 端口 */
 #define CONTRACT_BC_DEFAULT_HTTP_PORT 8080
