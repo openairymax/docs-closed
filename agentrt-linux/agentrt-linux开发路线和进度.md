@@ -4,13 +4,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: 0.2.5（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新）/ 1.0.1（开发）
-> **最后更新**: 2026-07-13
+> **版本**: 0.2.7（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新）/ 1.0.1（开发）
+> **最后更新**: 2026-07-14
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B，达到"可开始进行工程开发"文档层面前置条件
-> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`_review_0.9.0/` 7 份报告）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
-> **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，本次 v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05，详见 `agentrt-linux基本工程标准规范.md` v0.2.5）
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态
+> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
+> **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1，详见 `agentrt-linux基本工程标准规范.md` v0.2.7
 
 ---
 
@@ -1001,22 +1001,23 @@ R-04（合规检查增补 4 项规则）在 R-01/R-02/R-03 全部落地后增补
 
 ---
 
-## 附录 A: 当前进度快照（2026-07-13）
+## 附录 A: 当前进度快照（2026-07-14）
 
 | 维度 | 状态 |
 |------|------|
-| 0.1.1 文档体系 | ✅ 完成（v0.2.0 二轮审查 100/100 A+，v0.2.1 再检查维持 100/100，Wave 2 v2 源码级深读 80/B） |
+| 0.1.1 文档体系 | ✅ 完成（v0.2.0 二轮审查 100/100 A+，v0.2.1 再检查维持 100/100，Wave 2 v2 源码级深读 80/B，v1.0 系统性复审 11 项全部修复） |
 | v0.2.1 源代码研究 | ✅ 完成（ES-OLK-1~13 + ES-SEL4-1~10 + 双源融合裁决 16 维度） |
 | Wave 2 v2 源码级深读 | ✅ 完成（Phase A/B/C/D/E/F，2026-07-13，三层对齐度 61/C+ → 80/B，26 README 重写，34 项差距全部处置） |
-| v0.9.0 综合审查 | ✅ 完成（15 项问题已验证，P0-CRITICAL 3 + P1-MAJOR 6 + P2-MINOR 6，v0.2.5 修复 6 项，剩余 9 项移交后续） |
+| v0.9.0 综合审查 | ✅ 完成（15 项问题已验证，P0-CRITICAL 3 + P1-MAJOR 6 + P2-MINOR 6） |
+| v1.0 系统性复审 | ✅ 完成（11 项问题全部修复，v0.2.7：P0-1/P0-2/P1-2/P1-3/P1-4/P1-NEW/P2-5/P2-6/P2-7/P2-8/P2-9/P2-10；DEFER_INIT 设计层面延期表述消除；零设计延期到 1.0.1） |
 | 8 子仓目录结构设计 | ✅ 完成（v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正，1903 行 + 开源 SSoT 350 行） |
-| 1.0.1 开发 | ✅ 文档层面前置条件达成（Wave 2 v2 确认可开发状态，计划 2026-07-13 启动 M1 代码开发） |
+| 1.0.1 开发 | ✅ 文档层面前置条件达成（v1.0 系统性复审通过，零设计延期，可以按方案开始全面开发） |
 | agentrt 0.1.1 奠基 | 进行中 |
 | 8 子仓初始化 | 目录结构已设计（SSoT），待 M0 标准化创建骨架 |
-| 闭源参考文档 | 21/21 已完成（100%）+ v0.9.0 审查报告 7 份 |
-| P2 增强建议 | 已规划（R-01~R-04，~40h），待 1.0.1 阶段落地 |
+| 闭源参考文档 | 21/21 已完成（100%）+ v0.9.0 审查报告 7 份 + v1.0 系统性复审报告 1 份 |
+| P2 增强建议 | 已规划（R-01~R-04，~40h），属工程实现层面，1.0.1 阶段落地 |
 | 4 项 P2 建议 | R-01/R-02 → M1、R-03 → M5、R-04 → R-01/R-02/R-03 后 |
-| 1.0.1 M1 就绪判定 | ✅ 通过（v2.1 修复完成后 8 项判定标准全部满足：无方案冲突点（ES-SEL4-7 分类冲突已消解、IPC 操作码 SSoT 对齐、宏/字段/标志位命名统一）、v2.1 P0 修复完成） |
+| 1.0.1 M1 就绪判定 | ✅ 通过（v1.0 系统性复审 11 项全部修复 + 零设计延期 + DEFER_INIT 表述消除 + tests 简写残留清除 + OS-KER-007/008 废弃说明补齐 + 品味哲学 8 项文档化 + 闭源总纲 v0.2.7 对齐） |
 
 ---
 
@@ -1032,7 +1033,7 @@ R-04（合规检查增补 4 项规则）在 R-01/R-02/R-03 全部落地后增补
 | 仓库拆分可行性分析 | `docs-closed/0.1.1AgentRT仓库拆分方案可行性分析报告.md` | 可行性分析 |
 | 许可证全面审计报告 | `docs-closed/0.1.1许可证全面审计报告.md` | 许可证审计 |
 | TaskFlow vs CoreKern 对比 | `docs-closed/0.1.1_taskflow_vs_corekern_scheduler_对比报告.md` | 调度器对比 |
-| 基本工程标准规范 | `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | agentrt-linux 工程标准（v0.2.5，~1445 行，Wave 2 v2 源码级深读审查 + v0.9.0 综合审查修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05） |
+| 基本工程标准规范 | `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | agentrt-linux 工程标准（v0.2.7，~1470 行，Wave 2 v2 源码级深读审查 + v0.9.0 综合审查 + v1.0 系统性复审修复 11 项全部完成 + 附录 C.1 品味哲学 8 项隐性智慧 OS-STD-STY-005~012 引用表） |
 | v0.2.1 源代码研究报告 | `docs-closed/agentrt-linux/_research_0.2.1/01-source-code-engineering-study.md` | OLK-6.6 + seL4 工程思想研究（489 行） |
 | v0.2.1 再检查报告 | `docs-closed/agentrt-linux/_research_0.2.1/02-airymaxos-recheck-report.md` | AirymaxOS 方案再检查（235 行） |
 | v0.2.4 目录结构设计 | `docs-closed/agentrt-linux/_design_0.2.4/01-agentrt-linux-directory-structure.md` | 8 子仓完整目录结构（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正） |
