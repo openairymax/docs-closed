@@ -10,6 +10,18 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-7 | 声明式+命令式分离（Kconfig + Makefile） | §3 构建系统映射（§3.1 Makefile + §3.3 Kconfig + §3.4 Kbuild） |
+| ES-OLK-8 | 维护者制度文档化（MAINTAINERS） | §7 agentrt-linux 工程工具链复用策略总览（工程标准与维护责任）；§9 相关文档 |
+| ES-OLK-9 | 规范可执行（checkpatch.pl） | §2.2 scripts/checkpatch.pl（补丁风格检查器 7823 行）；§2.2.2 关键检查规则 |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -967,7 +979,7 @@ agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
 ## 8. 与开源文档的关系
 
 - 本映射文档是**闭源参考**，不对外发布
-- 开源设计文档（`docs/AirymaxAgentOS/`）引用本映射结论时，必须用 agentrt-linux 自身语言表述
+- 开源设计文档（`docs/AirymaxOS/`）引用本映射结论时，必须用 agentrt-linux 自身语言表述
 - 开源文档中**严禁**出现 OLK-6.6 源码路径、行号、函数名等直接引用
 - 开源文档中**严禁**出现任何主流 Linux 发行版的名称
 

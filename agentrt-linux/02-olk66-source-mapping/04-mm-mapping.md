@@ -10,6 +10,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-1 | 关注点分离（8 子仓差异化） | §10 IRON-9 v2 三层共享边界汇总（[SC]/[SS]/[IND] 划分）；§11.4 与 agentrt 一致性检查 |
+| ES-OLK-2 | 架构正交（arch/machine/plat 三层） | §2 核心数据结构映射（struct zone / pglist_data / lruvec 分层）；§1.4 三大集成路径（MGLRU/CXL/PMEM 正交） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -207,7 +218,7 @@ struct lruvec {
 
 `lru_gen_memcg` 是 per-node memcg LRU——将所有 memcg 划分为两代（old/young），每代分为 8 个 bin，用于全局回收时的 memcg 选择。
 
-> **OS-MM-MAP-006**: `lru_gen_memcg` 是 openEuler/主线 MGLRU 的 memcg 全局回收机制——AirymaxOS 不直接复用，因为 AirymaxOS 的"memcg"对应"agent 实例"（per-agent memory quota），由 airymaxos-services/system daemon 管理，独立于内核 memcg。
+> **OS-MM-MAP-006**: `lru_gen_memcg` 是 openEuler/主线 MGLRU 的 memcg 全局回收机制——AirymaxOS 不直接复用，因为 AirymaxOS 的"memcg"对应"agent 实例"（per-agent memory quota），由 services/system daemon 管理，独立于内核 memcg。
 
 ### 2.7 struct mem_cgroup [IND]
 
@@ -331,7 +342,7 @@ alloc_pages_slowpath(gfp_mask, order, alloc_flags, ac):
   9. dump_header + panic（全部失败）
 ```
 
-> **OS-MM-MAP-011**: AirymaxOS 不修改 slowpath 决策树——保持主线 Linux 行为。MemoryRovol L1 写入失败时（PMEM 满或回收阻塞）应返回 `-ENOMEM`，由 airymaxos-services daemon 处理（不触发内核 panic）。
+> **OS-MM-MAP-011**: AirymaxOS 不修改 slowpath 决策树——保持主线 Linux 行为。MemoryRovol L1 写入失败时（PMEM 满或回收阻塞）应返回 `-ENOMEM`，由 services daemon 处理（不触发内核 panic）。
 
 ### 3.3 紧凑化 compaction [IND]
 
@@ -584,7 +595,7 @@ static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
 
 AirymaxOS 通过此接口实现 per-agent 主动内存回收——当 agent 实例 token 配额告警时，daemon 写入 `memory.reclaim` 触发该 agent 的 memcg 回收。
 
-> **OS-MM-MAP-019**: AirymaxOS 必须保留 `memory.reclaim` 接口——这是 per-agent 内存压力触发的标准接口。airymaxos-services/system daemon 监控 token 配额，超阈值时写 `memory.reclaim` 触发该 agent 的 memcg 回收。
+> **OS-MM-MAP-019**: AirymaxOS 必须保留 `memory.reclaim` 接口——这是 per-agent 内存压力触发的标准接口。services/system daemon 监控 token 配额，超阈值时写 `memory.reclaim` 触发该 agent 的 memcg 回收。
 
 ### 6.2 memcg + MGLRU 集成 [IND]
 
@@ -616,7 +627,7 @@ void out_of_memory(struct oom_control *oc)
 }
 ```
 
-> **OS-MM-MAP-021**: AirymaxOS OOM 行为保持主线 Linux——`memory.oom.group` 启用时，整个 memcg（agent 实例）被一起 kill，符合 per-agent 隔离语义。airymaxos-services/system daemon 监听 `memory.oom.kill` 事件并触发 agent 重启。
+> **OS-MM-MAP-021**: AirymaxOS OOM 行为保持主线 Linux——`memory.oom.group` 启用时，整个 memcg（agent 实例）被一起 kill，符合 per-agent 隔离语义。services/system daemon 监听 `memory.oom.kill` 事件并触发 agent 重启。
 
 ---
 
@@ -676,7 +687,7 @@ enum memory_tier_level {
 | Switched Fabric | CXL Switch 多设备 | 数据中心池化 |
 | Fabric-Attached Memory | 全解耦内存池 | 超节点 OS 跨节点共享 |
 
-> **OS-MM-MAP-023**: AirymaxOS 超节点 OS（参考 docs/AirymaxAgentOS/10-architecture/）使用 Fabric-Attached Memory 模式——L1 原始卷可通过 CXL fabric 跨节点共享读取，避免复制。
+> **OS-MM-MAP-023**: AirymaxOS 超节点 OS（参考 docs/AirymaxOS/10-architecture/）使用 Fabric-Attached Memory 模式——L1 原始卷可通过 CXL fabric 跨节点共享读取，避免复制。
 
 ---
 
@@ -961,9 +972,9 @@ typedef void (*agentrt_pmem_flush_fn)(void *addr, size_t size);
   - [02-olk66-source-mapping/03-bpf-mapping.md](03-bpf-mapping.md) — eBPF 与 MemoryRovol 协同
   - [02-olk66-source-mapping/02-io-uring-mapping.md](02-io-uring-mapping.md) — io_uring 与 L1 写入协同
 - **开源设计**：
-  - [docs/AirymaxAgentOS/40-dataflows/02-memory-flow.md](../../../docs/AirymaxAgentOS/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流（开源）
-  - [docs/AirymaxAgentOS/20-modules/04-memory.md](../../../docs/AirymaxAgentOS/20-modules/04-memory.md) — MemoryRovol 模块设计（开源）
-  - [docs/AirymaxAgentOS/50-engineering-standards/README.md](../../../docs/AirymaxAgentOS/50-engineering-standards/README.md) §1.3 IRON-9 v2
+  - [docs/AirymaxOS/40-dataflows/02-memory-flow.md](../../../docs/AirymaxOS/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流（开源）
+  - [docs/AirymaxOS/20-modules/04-memory.md](../../../docs/AirymaxOS/20-modules/04-memory.md) — MemoryRovol 模块设计（开源）
+  - [docs/AirymaxOS/50-engineering-standards/README.md](../../../docs/AirymaxOS/50-engineering-standards/README.md) §1.3 IRON-9 v2
 
 ### 12.2 版本维护
 

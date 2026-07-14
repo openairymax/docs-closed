@@ -59,7 +59,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|------|
 | **第一段** | 参考发行版编码规范（本文档） | 闭源 `docs-closed/agentrt-linux/01-openeuler-tech-reference/08-coding-standard-spec.md` |
 | **第二段** | 参考行业最新编码规范 | MISRA C、Rust 安全编码指南、Google C++ Style Guide、SEI CERT C Coding Standard |
-| **第三段** | 形成 agentrt-linux 技术方案 | 开源 `docs/AirymaxAgentOS/50-engineering-standards/` + agentrt-linux 基本工程标准规范 |
+| **第三段** | 形成 agentrt-linux 技术方案 | 开源 `docs/AirymaxOS/50-engineering-standards/` + agentrt-linux 基本工程标准规范 |
 
 ### 1.4 IRON-9 v2 三层共享模型标注
 
@@ -307,7 +307,7 @@ ForEachMacros:
   - 'agentrt_for_each_task'
   - 'agentrt_for_each_channel'
   - 'agentrt_for_each_cupola'
-  # ... 完整列表参见 airymaxos-kernel/.clang-format
+  # ... 完整列表参见 kernel/.clang-format
 ```
 
 **关键差异**：agentrt-linux 在 `ForEachMacros` 中添加了 `agentrt_for_each_*` 系列宏，确保自研的迭代宏也能被 clang-format 正确识别。
@@ -1081,7 +1081,7 @@ agentrt-linux 与参考发行版编码规范的核心差异可以归纳为"三�
 - [闭源 参考发行版安全规范](05-security-spec.md)
 - [闭源 参考发行版 IPC 规范](06-ipc-spec.md)
 - [闭源 参考发行版 Rust 支持规范](07-rust-support-spec.md)
-- [开源 工程标准文档](../../docs/AirymaxAgentOS/50-engineering-standards/)
+- [开源 工程标准文档](../../docs/AirymaxOS/50-engineering-standards/)
 - [开源 五维正交 24 原则](../../docs/00-architectural-principles.md)
 
 ### 17.2 版本与维护

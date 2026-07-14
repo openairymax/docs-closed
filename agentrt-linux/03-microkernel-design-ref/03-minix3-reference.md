@@ -4,7 +4,7 @@
 > **版本**：0.1.1（文档体系完成）/ 1.0.1（开发）  
 > **最后更新**：2026-07-07  
 > **理论来源**：Minix3 微内核（Andrew Tanenbaum）  
-> **AirymaxOS 对应**：airymaxos-services 用户态服务化  
+> **AirymaxOS 对应**：services 用户态服务化  
 
 ---
 
@@ -286,7 +286,7 @@ AirymaxOS 当前采用微内核化改造策略（基于 Linux 6.6 演进，非�
 
 | Minix3 特性 | AirymaxOS 借鉴方式 | 借鉴理由 |
 |------------|-------------------|---------|
-| 用户态服务化 | airymaxos-services 子仓 | 所有系统服务运行在用户态，故障隔离 |
+| 用户态服务化 | services 子仓 | 所有系统服务运行在用户态，故障隔离 |
 | 自愈机制（RS） | Health Monitor 服务 | 自动检测和重启故障 Agent |
 | 最小权限 | Cupolas 能力系统 | 每个服务仅拥有最小权限集 |
 | 故障隔离 | 独立 namespace + cgroup | 每个 Agent 独立隔离域 |

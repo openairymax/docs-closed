@@ -10,6 +10,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-4 | 策略机制分离（sched_ext BPF 可插拔） | §3 struct sched_ext_ops 回调映射；§9 scx_simple 示例调度器映射；§12.1 设计优势（可插拔） |
+| ES-OLK-5 | 条件编译规范化（IS_ENABLED()） | §1.3 关键配置选项（CONFIG_SCHED_CLASS_EXT / CONFIG_EXT_GROUP_SCHED 等） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -605,13 +616,13 @@ agentrt 专属（AirymaxOS 不涉及）：
 - [openEuler 调度器技术规范](../01-openeuler-tech-reference/01-scheduler-spec.md)：Euler 调度器规范参考
 - [微内核设计参考](../03-microkernel-design-ref/README.md)：seL4/Zircon/Minix3 参考
 
-### 14.2 开源设计文档（`docs/AirymaxAgentOS/`）
+### 14.2 开源设计文档（`docs/AirymaxOS/`）
 
-- [调度数据流](../../docs/AirymaxAgentOS/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
-- [内核模块设计](../../docs/AirymaxAgentOS/20-modules/01-kernel.md)：airymaxos-kernel 子仓
-- [系统调用接口](../../docs/AirymaxAgentOS/30-interfaces/01-syscalls.md)：agentrt_sys_task_submit
-- [工程基线](../../docs/AirymaxAgentOS/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
-- [IRON-9 v2 定义](../../docs/AirymaxAgentOS/50-engineering-standards/README.md)：三层共享模型
+- [调度数据流](../../docs/AirymaxOS/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
+- [内核模块设计](../../docs/AirymaxOS/20-modules/01-kernel.md)：kernel 子仓
+- [系统调用接口](../../docs/AirymaxOS/30-interfaces/01-syscalls.md)：agentrt_sys_task_submit
+- [工程基线](../../docs/AirymaxOS/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
+- [IRON-9 v2 定义](../../docs/AirymaxOS/50-engineering-standards/README.md)：三层共享模型
 
 ### 14.3 OLK-6.6 源码（参考，不公开引用）
 

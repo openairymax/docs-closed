@@ -1,7 +1,7 @@
 # Checkpoint 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A
-> **代码路径**: `agentos/heapstore/`
+> **代码路径**: `agentrt/heapstore/`
 
 ## 1. 职责边界
 
@@ -124,8 +124,8 @@ heapstore_error_t heapstore_get_circuit_state(heapstore_circuit_info_t *info);
 
 | 依赖模块 | 用途 |
 |----------|------|
-| `commons/platform/include/platform.h` | 平台抽象层（`agentos_mutex_t` 等同步原语） |
-| `agentos.h` | AgentRT 核心类型定义（`agentos_error_t`、`AGENTOS_API`） |
+| `commons/platform/include/platform.h` | 平台抽象层（`airy_mutex_t` 等同步原语） |
+| `airy_rt.h` | AgentRT 核心类型定义（`airy_err_t`、`AIRY_API`） |
 
 ### 运行时依赖
 

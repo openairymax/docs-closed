@@ -4,10 +4,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.2.5（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正）/ 1.0.1（开发）
-> **最后更新**: 2026-07-13
+> **版本**: 0.2.7（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正 + v2.1 系统性修复：OS-FMT 加入前缀表、[SC] 头文件清单 bpf_struct_ops.h→syscalls.h + SSoT 对齐、ES-SEL4-7 分类消解为 P2（5 强制+5 P2）、airymaxos- 前缀清除（8 子仓裸名）、airymaxos_*→airy_* 前缀修正 + v1.0 系统性复核修复：品味哲学 8 项隐性智慧文档化 OS-STD-STY-005~012、Rust OS-STD-045~046 补全、OS-KER-007/008 跳号废弃说明、ES-SEL4-9/10 状态分类消解、OS-SEC 三重编号冲突消解、v1.0 报告 11 项问题全部修复）/ 1.0.1（开发）
+> **最后更新**: 2026-07-14
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，本次 v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）
 > **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
 > **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ 开源手册 `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（17 类规则编号体系）
 > **理论根基**: Linux 6.6 内核基线（openEuler OLK-6.6 标杆）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
@@ -75,14 +75,14 @@ AirymaxOS 的 8 个子仓对应不同的内核子系统，各自承担不同的�
 
 | 子仓 | 对应 agentrt 模块 | 工程标准侧重点 | 适用规则前缀 |
 |------|------------------|---------------|-------------|
-| `airymaxos-kernel` | atoms/corekern | 内核极简（K-1）、接口契约化（K-2）、资源确定性（E-3）、临界区锁规则 | OS-KER、OS-IRON |
-| `airymaxos-services` | daemons | 服务隔离（K-3）、跨平台一致性（E-4）、用户态内存安全 | OS-STD、OS-DRV |
-| `airymaxos-security` | cupolas | 安全内生（E-1）、最小权限、LSM 钩子注册规则、capability 派生 | OS-SEC、OS-IRON |
-| `airymaxos-memory` | heapstore + memoryrovol | 内存管理规范、池化与泄漏检测、MGLRU 多代 LRU、CXL/PMEM 分级 | OS-KER、OS-STD |
-| `airymaxos-cognition` | coreloopthree + frameworks | 双系统协同（C-1）、增量演化（C-2）、调度策略可插拔（K-4） | OS-STD、OS-ACC |
-| `airymaxos-cloudnative` | gateway + sdk | 接口契约化（K-2）、可观测性（E-2）、API 版本管理 | OS-STD、OS-ABI |
-| `airymaxos-system` | commons | 命名语义化（E-5）、错误可追溯（E-6）、文档即代码（E-7） | OS-STD、OS-BUILD |
-| `airymaxos-tests-linux` | 全模块测试 | 可测试性（E-8）、覆盖率门槛、契约测试、模糊测试 | OS-TEST、OS-ACC |
+| `kernel` | atoms/corekern | 内核极简（K-1）、接口契约化（K-2）、资源确定性（E-3）、临界区锁规则 | OS-KER、OS-IRON |
+| `services` | daemons | 服务隔离（K-3）、跨平台一致性（E-4）、用户态内存安全 | OS-STD、OS-DRV |
+| `security` | cupolas | 安全内生（E-1）、最小权限、LSM 钩子注册规则、capability 派生 | OS-SEC、OS-IRON |
+| `memory` | heapstore + memoryrovol | 内存管理规范、池化与泄漏检测、MGLRU 多代 LRU、CXL/PMEM 分级 | OS-KER、OS-STD |
+| `cognition` | coreloopthree + frameworks | 双系统协同（C-1）、增量演化（C-2）、调度策略可插拔（K-4） | OS-STD、OS-ACC |
+| `cloudnative` | gateway + sdk | 接口契约化（K-2）、可观测性（E-2）、API 版本管理 | OS-STD、OS-ABI |
+| `system` | commons | 命名语义化（E-5）、错误可追溯（E-6）、文档即代码（E-7） | OS-STD、OS-BUILD |
+| `tests-linux` | 全模块测试 | 可测试性（E-8）、覆盖率门槛、契约测试、模糊测试 | OS-TEST、OS-ACC |
 
 ### 1.5 规则编号体系
 
@@ -93,6 +93,7 @@ AirymaxOS 在 agentrt 17 类规则编号体系基础上，新增 OS 专属编号
 | **OS-IRON** | AirymaxOS 工程铁律（不可妥协） | 继承 agentrt IRON-1~10 + 新增 | OS-IRON-001: 用户空间 ABI 永不破坏 |
 | **OS-BAN** | AirymaxOS 禁止规则 | 继承 agentrt BAN-1~360 + 新增 | OS-BAN-001: 敏感术语禁用 |
 | **OS-STD** | AirymaxOS 标准规则 | 继承 agentrt STD + OS 专属扩展 | OS-STD-001: 全局符号描述性命名 |
+| **OS-FMT** | AirymaxOS 代码格式规则 | 全新（agentrt 不涉及内核态格式） | OS-FMT-001: C 内核代码 Tab 8 字符缩进 |
 | **OS-ACC** | AirymaxOS 验收标准 | 继承 agentrt ACC-1~149 + OS 专属 | OS-ACC-001: 覆盖率 >= 80% |
 | **OS-KER** | AirymaxOS 内核工程规则 | 全新（agentrt 不涉及内核态） | OS-KER-001: goto 集中出口模式 |
 | **OS-DRV** | AirymaxOS 驱动工程规则 | 全新 | OS-DRV-001: 驱动用户态化优先 |
@@ -109,6 +110,7 @@ AirymaxOS 在 agentrt 17 类规则编号体系基础上，新增 OS 专属编号
 | **铁律** | OS-IRON | 补丁退回，不可合并 | 是 | 立即修复 |
 | **禁止** | OS-BAN | 补丁退回，强制修改 | 是 | 立即修复 |
 | **标准** | OS-STD | 审查要求修改 | 是 | 24h 内修复 |
+| **格式** | OS-FMT | 审查要求修改 | 是 | 24h 内修复 |
 | **验收** | OS-ACC | 版本发布阻断 | 是 | 发布前修复 |
 | **内核** | OS-KER | 补丁退回 | 是 | 立即修复 |
 | **驱动** | OS-DRV | 审查要求修改 | 是 | 24h 内修复 |
@@ -164,11 +166,11 @@ enum agentrt_task_state {
 
 #### 2.1.5 AirymaxOS 专属前缀
 
-> **OS-STD-005**: `agentrt_*` 前缀保留给 agentrt 同源 API；`airymaxos_*` 前缀用于 AirymaxOS 内核/发行版专属 API。两者共享 Airymax 同源语义，但代码归属与 ABI 边界不同，前缀隔离确保无适配层互操作时不冲突。
+> **OS-STD-005**: `agentrt_*` 前缀保留给 agentrt 同源 API；`airy_*` 前缀用于 AirymaxOS 内核/发行版专属 API。两者共享 Airymax 同源语义，但代码归属与 ABI 边界不同，前缀隔离确保无适配层互操作时不冲突。
 
 ```c
 int agentrt_ipc_send(u32 ch, const void *msg, size_t len);     /* agentrt 同源 */
-int airymaxos_lsm_hook_register(const struct security_hook_list *hooks); /* OS 专属 */
+int airy_lsm_hook_register(const struct security_hook_list *hooks); /* OS 专属 */
 ```
 
 ### 2.2 函数规范
@@ -398,7 +400,7 @@ SpaceAfterCStyleCast: true
 ForEachMacros:
   - 'list_for_each_entry'
   - 'agentrt_for_each_task'
-  # ... 完整列表参见 airymaxos-kernel/.clang-format
+  # ... 完整列表参见 kernel/.clang-format
 ```
 
 ---
@@ -720,7 +722,7 @@ DCO 通过 Signed-off-by 标签在每次提交中声明，CI 自动验证。
 > **OS-STD-041**: 每个子仓必须包含 `.github/CODEOWNERS` 文件，定义文件路径到审查者的自动映射。
 
 ```codeowners
-# airymaxos-kernel CODEOWNERS
+# kernel CODEOWNERS
 kernel/sched/     @airymaxos/sched-maintainers
 kernel/security/  @airymaxos/security-maintainers
 include/airymax/  @airymaxos/contract-maintainers
@@ -807,19 +809,21 @@ IRON-9 v2（2026-07-07 用户决策变更）确立了 agentrt 与 AirymaxOS **�
 
 | 头文件 | 内容 | 变更审批 |
 |--------|------|---------|
-| `bpf_struct_ops.h` | struct_ops 状态机 + common_value | 架构委员会 + 两端维护者 |
 | `memory_types.h` | MemoryRovol L1-L4 数据结构 + GFP 掩码语义 + PMEM 持久化接口 | 架构委员会 + 两端维护者 |
-| `security_types.h` | POSIX capability 38 ID + LSM 钩子 254 ID + Cupolas blob 布局 + capability 派生模型 + Vault backend + 策略裁决 4 值枚举 | 架构委员会 + 两端维护者 |
-| `cognition_types.h` | CoreLoopThree 阶段枚举 + Thinkdual 模式枚举 + LLM 推理阶段枚举 + 上下文结构 + Token 能效指标 + GPU/NPU 描述符 | 架构委员会 + 两端维护者 |
-| `sched.h` | SCHED_EXT 调度类编号约束（复用内核 SCHED_EXT=7，禁止 SCHED_AGENT 宏）+ 任务描述符（magic 0x41475453 'AGTS'）+ vtime 类型与衰减公式 + 优先级范围 0-139 + AIRYMAX_SLICE_DFL（20ms） | 架构委员会 + 两端维护者 |
-| `ipc.h` | IPC magic（0x41524531 'ARE1'）+ 128B 消息头结构（agentrt_ipc_msg_hdr_t）+ SQE/CQE 操作码与标志位 | 架构委员会 + 两端维护者 |
+| `security_types.h` | POSIX capability 41 ID + LSM 钩子 252 ID + Cupolas blob 布局 + capability 派生模型（`airy_capability_t` + MDB 派生树）+ capability 引用类型（`cap_t` = `uint64_t`）+ Vault backend + 策略裁决 4 值枚举 | 架构委员会 + 两端维护者 |
+| `cognition_types.h` | CoreLoopThree 阶段枚举 + Thinkdual 模式枚举 + LLM 推理阶段枚举 + 上下文结构 + Token 能效指标 + GPU/NPU 描述符 + 统一错误码类型（`airy_err_t` = `int32_t`） | 架构委员会 + 两端维护者 |
+| `sched.h` | SCHED_EXT 调度类编号约束（复用内核 SCHED_EXT=7，禁止 SCHED_AGENT 宏）+ 任务描述符（magic 0x41475453 'AGTS'）+ vtime 类型与衰减公式 + 优先级范围 0-139 + AIRY_SLICE_DFL_MS（20ms） | 架构委员会 + 两端维护者 |
+| `ipc.h` | IPC magic（0x41524531 'ARE1'）+ 128B 消息头结构（`struct airy_ipc_msg_hdr`）+ SQE/CQE 操作码与标志位 | 架构委员会 + 两端维护者 |
+| `syscalls.h` | Syscall 编号体系（12 核心 + 12 预留 = 24 槽位） | 架构委员会 + 两端维护者 |
+
+> **OS-IRON-008a**: `bpf_struct_ops.h` 是 agentrt 与 AirymaxOS 之间的**补充共享文件**（SDK 网关状态管理共享结构），两端共享代码但**不属于 6 个 [SC] 核心头文件**。其 `struct airy_struct_ops_value` 和 `enum airy_struct_ops_state` 用于 agentrt 用户态 BPF loader 与 AirymaxOS 内核 struct_ops 框架之间的状态同步。详见 `120-cross-project-code-sharing.md` §2.2。
 
 ### 9.3 [SS] 语义同源层
 
 | 子系统 | agentrt 实现 | AirymaxOS 实现 | 共享的语义 |
 |--------|-------------|---------------|-----------|
 | 调度 | MicroCoreRT 用户态调度 | sched_ext BPF 调度 | 任务优先级、抢占模型、时间片语义 |
-| 安全 | Cupolas 用户态权限 | LSM 钩子 + Cupolas 内核模块 | POSIX capability 38 ID、策略裁决 4 值枚举 |
+| 安全 | Cupolas 用户态权限 | LSM 钩子 + Cupolas 内核模块 | POSIX capability 41 ID、策略裁决 4 值枚举 |
 | IPC | agentrt 消息队列 | AgentsIPC over io_uring | 128B 消息头、通道创建/销毁语义 |
 | 记忆 | heapstore 用户态 | MemoryRovol 内核态 | L1-L4 卷载语义、遗忘曲线算法 |
 
@@ -1013,11 +1017,11 @@ seL4 的工程思想在架构层被选择性借鉴——仅借鉴其设计哲学
 
 | 编号 | seL4 工程思想 | 借鉴方式 | 落地子仓 | 在本规范的体现 |
 |------|-------------|---------|---------|---------------|
-| ES-SEL4-1 | 极简原则（Liedtke minimality） | 影响内核机制最小化取向 | airymaxos-kernel | §13.3 corekern 仅 4 原子机制 |
-| ES-SEL4-2 | capability 单一权限模型 | 影响 capability 设计 | airymaxos-security | §13.4 capability + LSM 融合 |
-| ES-SEL4-3 | 服务用户态化 | 影响 VFS/网络/驱动用户态化 | airymaxos-services | §13.4 用户态服务架构 |
-| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 影响 io_uring 消息传递 | airymaxos-kernel | §13.3 IPC 子系统 |
-| ES-SEL4-5 | 形式化验证驱动 | 影响形式化验证框架 | airymaxos-tests-linux | §13.6 formal-verification 三段式 |
+| ES-SEL4-1 | 极简原则（Liedtke minimality） | 影响内核机制最小化取向 | kernel | §13.3 corekern 仅 4 原子机制 |
+| ES-SEL4-2 | capability 单一权限模型 | 影响 capability 设计 | security | §13.4 capability + LSM 融合 |
+| ES-SEL4-3 | 服务用户态化 | 影响 VFS/网络/驱动用户态化 | services | §13.4 用户态服务架构 |
+| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 影响 io_uring 消息传递 | kernel | §13.3 IPC 子系统 |
+| ES-SEL4-5 | 形式化验证驱动 | 影响形式化验证框架 | tests-linux | §13.6 formal-verification 三段式 |
 
 ### 12.6 架构层借鉴 seL4 的边界
 
@@ -1040,15 +1044,15 @@ seL4 的工程思想在架构层被选择性借鉴——仅借鉴其设计哲学
 
 ### 12.8 ES-SEL4-6~10 的落地方式
 
-ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 现代构建系统）不作为架构层强制借鉴，而是作为 P2 增强建议在 1.0.1 阶段增量落地：
+ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 架构正交分层）不作为架构层强制借鉴，而是作为 P2 增强建议。其中 **ES-SEL4-7/9/10 已在 0.1.1 阶段提前落地**（标注"已落地"），**ES-SEL4-6/8 作为 1.0.1 阶段增量待落地**（标注"待落地"）：
 
-| seL4 工程思想 | 落地方式 | 对应 P2 建议 |
-|-------------|---------|-------------|
-| ES-SEL4-6 接口契约 XML | syscall.xml 式接口契约定义 | R-01（§14.1） |
-| ES-SEL4-8 bitfield codegen | structures.bf 式位域 codegen | R-02（§14.2） |
-| ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已在 airymaxos-cloudnative 落地 |
-| ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已在 services/cloudnative 落地 |
-| ES-SEL4-7 架构正交分层 | arch/machine/plat 三层适配 | 已在 kernel 子仓落地（借鉴 seL4 而非 OLK-6.6 单 arch/） |
+| seL4 工程思想 | 落地方式 | 状态 | 对应 P2 建议 |
+|-------------|---------|------|-------------|
+| ES-SEL4-6 接口契约 XML | syscall.xml 式接口契约定义 | 待落地 | R-01（§14.1） |
+| ES-SEL4-8 bitfield codegen | structures.bf 式位域 codegen | 待落地 | R-02（§14.2） |
+| ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已落地 | 已在 cloudnative 落地 |
+| ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已落地 | 已在 services/cloudnative 落地 |
+| ES-SEL4-7 架构正交分层 | arch/machine/plat 三层适配 | 已落地 | 已在 kernel 子仓落地（借鉴 seL4 而非 OLK-6.6 单 arch/） |
 
 ---
 
@@ -1058,20 +1062,20 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 > **OS-IRON-013**: agentrt-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理。8 子仓的目录结构设计基于 Linux 6.6 内核基线（24 顶层目录）+ seL4（src/{api,kernel,object,fastpath,arch,machine,plat}）+ Airymax 同源（atoms/corekern 复用）三大设计支柱。[v0.2.4-review P0-R01 修正：28→24，详见 _design_0.2.4 附录 D.5]
 
-> **OS-IRON-014**: [SC] 共享契约层 6 个头文件（bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h）仅物理宿主于 `airymaxos-kernel/include/airymax/`，是唯一物理副本。其他子仓通过 `-I../kernel/include` 构建路径引用，**禁止**在任何子仓的 `include/airymax/<sub>/` 下创建 [SC] 头文件的物理副本。子仓内部头文件以 `_internal.h` 后缀区分（如 `capability_internal.h`）。此铁律对齐 IRON-9 v2 [SC] 共享契约层单一数据源约束，CI 强制检查规则见 STD-IRON-19。违反此铁律将导致 [SC] 头文件出现多份物理副本，破坏编译期类型一致性，是 agentrt-linux 工程体系中最严重的架构违规之一。
+> **OS-IRON-014**: [SC] 共享契约层 6 个头文件（memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h）仅物理宿主于 `kernel/include/airymax/`，是唯一物理副本。其他子仓通过 `-I../kernel/include` 构建路径引用，**禁止**在任何子仓的 `include/airymax/<sub>/` 下创建 [SC] 头文件的物理副本。子仓内部头文件以 `_internal.h` 后缀区分（如 `capability_internal.h`）。此铁律对齐 IRON-9 v2 [SC] 共享契约层单一数据源约束，CI 强制检查规则见 STD-IRON-19。违反此铁律将导致 [SC] 头文件出现多份物理副本，破坏编译期类型一致性，是 agentrt-linux 工程体系中最严重的架构违规之一。
 
 8 子仓及其依赖层次（L2-L7，与 v0.2.4 目录结构设计 §11.2 一致）：
 
 | 子仓 | 依赖层次 | 对应 agentrt 模块 | 构建系统 | 参考来源 |
 |------|---------|------------------|---------|---------|
-| `airymaxos-kernel` | L2（**自包含 L1**：模型 A 完整 Linux 6.6 fork，[SC] 唯一宿主） | atoms/corekern | Kbuild + Kconfig | OLK-6.6（完整 fork）+ seL4 |
-| `airymaxos-security` | L3（依赖 L2） | cupolas | Kbuild（内核态）+ Meson（用户态） | OLK-6.6 security/（扁平模型）+ seL4 capability |
-| `airymaxos-memory` | L3（依赖 L2 [SC] + 上游 mm/ 接口） | heapstore + memoryrovol | Kbuild | OLK-6.6 mm/（三方边界） |
-| `airymaxos-cognition` | L4（依赖 L2 + L3） | coreloopthree + frameworks | Cargo（Rust） | OLK-6.6 + Airymax 同源 |
-| `airymaxos-services` | L5（依赖 L2 + L3 + L4） | daemons | Meson | OLK-6.6 + seL4 libsel4 + FUSE/VFIO 接入 |
-| `airymaxos-system` | L6（依赖 L2-L5） | commons | Kbuild + Meson | OLK-6.6 init/ + systemd |
-| `airymaxos-cloudnative` | L7（依赖 L2-L6） | gateway + sdk | Go Modules | OLK-6.6 + 现代云原生 |
-| `airymaxos-tests-linux` | L7（横向，依赖 L2-L6） | 全模块测试 | KUnit + kselftest + fault-injection + Isabelle/HOL | OLK-6.6 tools/testing（11 子目录）+ seL4 proof/ |
+| `kernel` | L2（**自包含 L1**：模型 A 完整 Linux 6.6 fork，[SC] 唯一宿主） | atoms/corekern | Kbuild + Kconfig | OLK-6.6（完整 fork）+ seL4 |
+| `security` | L3（依赖 L2） | cupolas | Kbuild（内核态）+ Meson（用户态） | OLK-6.6 security/（扁平模型）+ seL4 capability |
+| `memory` | L3（依赖 L2 [SC] + 上游 mm/ 接口） | heapstore + memoryrovol | Kbuild | OLK-6.6 mm/（三方边界） |
+| `cognition` | L4（依赖 L2 + L3） | coreloopthree + frameworks | Cargo（Rust） | OLK-6.6 + Airymax 同源 |
+| `services` | L5（依赖 L2 + L3 + L4） | daemons | Meson | OLK-6.6 + seL4 libsel4 + FUSE/VFIO 接入 |
+| `system` | L6（依赖 L2-L5） | commons | Kbuild + Meson | OLK-6.6 init/ + systemd |
+| `cloudnative` | L7（依赖 L2-L6） | gateway + sdk | Go Modules | OLK-6.6 + 现代云原生 |
+| `tests-linux` | L7（横向，依赖 L2-L6） | 全模块测试 | KUnit + kselftest + fault-injection + Isabelle/HOL | OLK-6.6 tools/testing（11 子目录）+ seL4 proof/ |
 
 > **v0.2.4 模型 A 关键变化（OS-IRON-015）**: kernel 子仓采用**模型 A（完整 Linux 6.6 fork）**——自包含完整上游源码树（fs/net/block/drivers/mm/security 等 24 子系统，EV-R07；v0.2.4-review P0-R01 修正：28→24），`make` 即可构建，无需外部基线引用（ES-OLK-7 自包含性）。Airymax 修改**直接写入上游目录**（如 `mm/airymax_*.c`），对齐 openEuler `mm/dynamic_pool.c` 实践（EV-R06），不使用 patches/ 隔离层。核心价值标准：**一切以"生产级的 Linux 发行版"为价值标准**。
 
@@ -1085,18 +1089,18 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 1. **关注点分离（ES-OLK-1）**：每个子仓对应一个独立关注点，跨子仓耦合通过 [SC] 共享契约层进行
 2. **架构正交（ES-OLK-2 + ES-SEL4-7）**：kernel 子仓采用 arch/machine/plat 三层架构适配（借鉴 seL4 而非 OLK-6.6 单 arch/）
-3. **[SC] 单一数据源**：6 个 [SC] 头文件物理宿主在 `airymaxos-kernel/include/airymax/`，其他子仓通过 `-I` 引用确保单一数据源
+3. **[SC] 单一数据源**：6 个 [SC] 头文件物理宿主在 `kernel/include/airymax/`，其他子仓通过 `-I` 引用确保单一数据源
 4. **corekern 极简（ES-SEL4-1）**：corekern/ 仅 4 原子机制（sched/ipc/taskflow/memory/time），对应 seL4 极简原则
 5. **构建系统混合**：内核态子仓采 Kbuild（ES-OLK-7），用户态子仓采 Meson（services）/ Go Modules（cloudnative）/ Cargo（cognition Rust）
 6. **formal-verification 三段式（ES-SEL4-5）**：tests-linux 子仓采 seL4 三段式 spec/proof/capDL
 7. **生产级 fork 模型（v0.2.4 新增）**：kernel 子仓含完整 Linux 6.6 源码树，Airymax 修改直接写入上游目录，对齐 openEuler/OLK-6.6 完整 fork 实践——核心价值标准为"生产级的 Linux 发行版"
 
-### 13.3 airymaxos-kernel 子仓目录结构
+### 13.3 kernel 子仓目录结构
 
-airymaxos-kernel 是 8 子仓的基础（L2），采用**模型 A（完整 Linux 6.6 fork）**——自包含完整上游源码树，Airymax 修改直接写入上游目录：
+kernel 是 8 子仓的基础（L2），采用**模型 A（完整 Linux 6.6 fork）**——自包含完整上游源码树，Airymax 修改直接写入上游目录：
 
 ```
-airymaxos-kernel/
+kernel/
 ├── arch/                    # 架构相关（借鉴 seL4 三层）
 │   ├── x86/                 # x86 架构
 │   │   ├── machine/         # 机器相关原语（seL4 风格）
@@ -1157,7 +1161,7 @@ airymaxos-kernel/
 
 ### 13.6 形式化验证工程标准
 
-> **OS-TEST-010**: airymaxos-tests-linux 子仓必须包含 formal-verification/ 目录，采用 seL4 三段式结构（ES-SEL4-5）：
+> **OS-TEST-010**: tests-linux 子仓必须包含 formal-verification/ 目录，采用 seL4 三段式结构（ES-SEL4-5）：
 
 ```
 formal-verification/
@@ -1384,6 +1388,23 @@ Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）在本规范中的�
 | ES-OLK-12 | 运行时可加载 | 机制留在内核，实现可作为模块运行时加载/卸载 | OS-IRON-003（策略与机制分离） | §4.3、§13.3 |
 | ES-OLK-13 | 文档即代码 | 文档与代码同仓库同步演进，/proc 文档化、kernel-doc、make htmldocs | OS-STD-008（kernel-doc 强制）、OS-STD-062 | §2.3.1、§13.4 |
 
+### 附录 C.1 OLK-6.6 品味哲学——8 项隐性工程智慧（OS-STD-STY-005~012）
+
+> **v1.0 修复（2026-07-14）**：v0.9.0 审查报告 P1-MAJOR-04 标记"品味哲学层 8 项隐性智慧未文档化（移交 1.0.1）"。经 OLK-6.6 源码深度提炼，8 项隐性工程智慧已文档化于开源手册 `01-coding-standards.md` §8.5（OS-STD-STY-005~012），并在 SSoT `09-ssot-registry.md` §4.3 登记完整。此为 v1.0 系统性复核的关键修复——**不再延期至 1.0.1**，0.1.1 文档体系内已完整落地。
+
+| 编号 | 品味哲学 | OLK-6.6 源码证据 | 五维映射 |
+|------|---------|-----------------|---------|
+| OS-STD-STY-005 | 信任读者——暴露而非封装 | `kernel/locking/mutex.c` L60-73 owner 位编码 | A-1 极简主义 |
+| OS-STD-STY-006 | 短函数——一屏可读（≤80×24） | `kernel/locking/mutex.c` L845 | A-2 细节关注 / A-4 完美主义 |
+| OS-STD-STY-007 | 简洁文件头——SPDX 优先 | `kernel/locking/mutex.c` L1-20 | A-2 细节关注 |
+| OS-STD-STY-008 | EXPORT_SYMBOL 紧跟定义——导出即声明 | `kernel/locking/mutex.c` L46-58 | A-2 细节关注 |
+| OS-STD-STY-009 | include 语义分组——禁止字母序自动排序 | `kernel/locking/mutex.c` L21-35 | A-2 细节关注 |
+| OS-STD-STY-010 | `__` 前缀标注内部接口 | `kernel/locking/mutex.c` L80 `__mutex_owner` | A-2 细节关注 |
+| OS-STD-STY-011 | `__read_mostly` 缓存优化 | `kernel/sched/core.c` L168/178/7786 | E-3 资源确定性 |
+| OS-STD-STY-012 | `__randomize_layout` 结构体布局随机化 | `include/linux/sched.h` L658 | E-1 安全内生 |
+
+> **权威定义**：开源手册 `docs/AirymaxOS/50-engineering-standards/01-coding-standards.md` §8.5（L1657-1902，约 245 行，含 8 项规则定义 + OLK-6.6 源码证据 + 好坏代码示例）。SSoT 登记：`09-ssot-registry.md` §4.3 OS-STD-STY 表（L357-364）。
+
 ---
 
 ## 附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）
@@ -1395,21 +1416,20 @@ seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方�
 | 编号 | seL4 工程思想 | 核心内涵 | 借鉴方式 | 落地规则/子仓 | 章节定位 |
 |------|-------------|---------|---------|-------------|---------|
 | ES-SEL4-1 | 极简原则（Liedtke minimality） | 微内核只保留无法在用户空间高效实现的最小原语集 | 架构层强制 | corekern/ 仅 4 原子机制、OS-STD-061（设计原则 4） | §13.2、§13.3 |
-| ES-SEL4-2 | capability 单一权限模型 | 所有权限通过 capability 令牌表达，可 mint/mintcopy/derive/revoke | 架构层强制 | airymaxos-security capability/ | §13.4 |
-| ES-SEL4-3 | 服务用户态化 | 所有非必要服务运行在用户空间 | 架构层强制 | airymaxos-services userland-{vfs,net,drivers}/ | §13.4 |
-| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 进程间通信唯一机制是消息传递，有 endpoint/notification/fastpath | 架构层强制 | airymaxos-kernel io_uring/ + IPC fastpath | §13.3 |
-| ES-SEL4-5 | 形式化验证驱动 | 内核实现必须可被形式化证明满足抽象规约 | 架构层强制 | airymaxos-tests-linux formal-verification/{spec,proof,capdl}/、OS-TEST-010 | §13.6 |
+| ES-SEL4-2 | capability 单一权限模型 | 所有权限通过 capability 令牌表达，可 mint/mintcopy/derive/revoke | 架构层强制 | security capability/ | §13.4 |
+| ES-SEL4-3 | 服务用户态化 | 所有非必要服务运行在用户空间 | 架构层强制 | services userland-{vfs,net,drivers}/ | §13.4 |
+| ES-SEL4-4 | 消息传递 IPC（含 fastpath） | 进程间通信唯一机制是消息传递，有 endpoint/notification/fastpath | 架构层强制 | kernel io_uring/ + IPC fastpath | §13.3 |
+| ES-SEL4-5 | 形式化验证驱动 | 内核实现必须可被形式化证明满足抽象规约 | 架构层强制 | tests-linux formal-verification/{spec,proof,capdl}/、OS-TEST-010 | §13.6 |
 | ES-SEL4-6 | 接口契约 XML 定义 | 通过 syscall.xml 定义系统调用接口契约，codegen 生成 stub | P2 增强建议（R-01） | OS-STD-070 | §14.1 |
-| ES-SEL4-7 | 架构正交分层 | 内核核心逻辑与架构相关代码物理隔离，arch/machine/plat 三层 | 架构层强制（已落地） | airymaxos-kernel arch/{x86,arm64,riscv}/{machine,plat}/、OS-STD-061 | §13.2、§13.3 |
+| ES-SEL4-7 | 架构正交分层 | 内核核心逻辑与架构相关代码物理隔离，arch/machine/plat 三层 | P2 增强建议（已落地） | kernel arch/{x86,arm64,riscv}/{machine,plat}/、OS-STD-061 | §13.2、§13.3 |
 | ES-SEL4-8 | 结构定义代码生成 | 复杂位域通过 DSL（.bf 文件）定义，codegen 生成 C 代码 | P2 增强建议（R-02） | OS-STD-071 | §14.2 |
-| ES-SEL4-9 | 用户态 API 库独立 | 用户态 API 库与内核源码树物理分离 | 已落地 | airymaxos-cloudnative（SDK 层借鉴 libsel4 模型） | §13.4 |
-| ES-SEL4-10 | 现代构建系统 | CMake 支持多编译器/多架构/多平台/多配置 | 已落地（用户态子仓） | services 用 Meson、cloudnative 用 Go Modules、cognition 用 Cargo | §13.5 |
+| ES-SEL4-9 | 用户态 API 库独立 | 用户态 API 库与内核源码树物理分离 | P2 增强建议（已落地） | cloudnative（SDK 层借鉴 libsel4 模型） | §13.4 |
+| ES-SEL4-10 | 现代构建系统 | CMake 支持多编译器/多架构/多平台/多配置 | P2 增强建议（已落地） | services 用 Meson、cloudnative 用 Go Modules、cognition 用 Cargo | §13.5 |
 
 **借鉴边界声明**:
 
-- **架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）**: 6 项，已在 1.0.1 架构设计中落地
-- **P2 增强建议（ES-SEL4-6 + ES-SEL4-8）**: 2 项，1.0.1 M1 阶段增量落地（R-01/R-02）
-- **已落地（ES-SEL4-9 + ES-SEL4-10）**: 2 项，用户态子仓构建系统已采纳
+- **架构层强制借鉴（ES-SEL4-1~5）**: 5 项，已在 1.0.1 架构设计中落地
+- **P2 增强建议（ES-SEL4-6~10）**: 5 项，其中 ES-SEL4-7/9/10 已落地、ES-SEL4-6/8 待 M1 阶段增量落地（R-01/R-02）
 
 ---
 

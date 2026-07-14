@@ -22,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 与 agentrt-linux 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxAgentOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
+本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -41,7 +41,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **性能 (Performance)** | 微秒级延迟、零拷贝、批量提交 | io_uring 批量 SQE 提交 + 共享内存 ring buffer |
 | **安全 (Security)** | capability 基端点、最小权限、不可伪造 | [SC] 共享 AgentsIPC 128B 消息头 magic 校验 |
 | **隔离 (Isolation)** | 进程级 / cgroup 级故障隔离 | IPC namespace 隔离 + per-agent memcg 限流 |
-| **可观测 (Observability)** | 端到端 trace、每消息可审计 | AgentsIPC trace_id + correlation_id 全链路追踪 |
+| **可观测 (Observability)** | 端到端 trace、每消息可审计 | AgentsIPC trace_id（消息头）+ request_id（payload）全链路追踪 |
 | **简洁 (Simplicity)** | 最小化内核机制、用户态策略 | 机制在内核（io_uring ring），策略在用户态（AgentsIPC 协议） |
 
 ### 1.5 术语
@@ -105,7 +105,7 @@ flowchart TB
 
     subgraph "agentrt-linux IPC 协议"
         AGENTS_IPC[AgentsIPC 协议引擎<br/>128B 消息头 + 0x41524531]
-        TRACE[全链路追踪<br/>trace_id + correlation_id]
+        TRACE[全链路追踪<br/>trace_id + request_id]
         CAP_ENDPOINT[capability 基端点<br/>seL4 风格]
     end
 
@@ -269,7 +269,7 @@ System V 消息队列在 `msgsnd` 时从用户态拷贝消息到内核态 `msg_m
 | > 0 | 接收第一条 `m_type == msgtyp` 的消息 |
 | < 0 | 接收第一条 `m_type <= -msgtyp` 的消息（最低类型优先） |
 
-此机制为传统 IPC 提供了基本的消息路由能力，但类型空间仅为 `long`（64 位），无法表达 agentrt-linux 所需的丰富路由语义（trace_id、correlation_id、priority、endpoint_id）。
+此机制为传统 IPC 提供了基本的消息路由能力，但类型空间仅为 `long`（64 位），无法表达 agentrt-linux 所需的丰富路由语义（trace_id、request_id、src_task/dst_task）。
 
 #### 3.3.5 资源限制与 sysctl
 
@@ -487,7 +487,7 @@ rm /dev/mqueue/my_queue
 | 多路复用 | poll/epoll | io_uring CQ ring |
 | 零拷贝 | 无（两次拷贝） | 是（registered buffer） |
 | 异步通知 | mq_notify（每次一条） | io_uring 批量 CQE（单次 syscall 返回多条） |
-| 路由 | 无（单队列 FIFO+优先级） | trace_id + correlation_id 全链路追踪 |
+| 路由 | 无（单队列 FIFO+优先级） | trace_id + request_id 全链路追踪 |
 | 优先级 | 0-31（5 位） | 16 位优先级 + 8 位 QoS 类别 |
 
 ---
@@ -790,104 +790,99 @@ AgentsIPC 是 agentrt-linux 的**唯一 IPC 协议**——所有 Agent 间通信
 1. **固定头 + 可变体**：128B 固定消息头提供全链路追踪能力，可变长 payload 承载业务数据
 2. **magic 校验**：0x41524531 魔数防止消息伪造和协议版本错配
 3. **capability 基端点**：借鉴 seL4 capability 模型，端点 ID 为不可伪造的 64 位 capability 引用
-4. **全链路追踪**：trace_id + correlation_id 实现端到端消息可观测性
+4. **全链路追踪**：`trace_id`（消息头 SSoT 字段）+ `request_id`（payload 体字段，请求-响应配对）实现端到端消息可观测性
 5. **零拷贝优先**：payload 通过 registered buffer 共享内存传递，消息头通过 CQE 的 `user_data` 字段传递
 
 ### 8.2 128B 消息头格式
 
+AgentsIPC 128B 消息头为 **[SC] 共享契约层**，权威定义见 SSoT（`50-engineering-standards/120-cross-project-code-sharing.md` §Layout C），物理宿主为 `include/airymax/ipc.h`。本映射文档**不就地重定义**，仅说明 SSoT 字段与 OLK-6.6 io_uring 概念的映射关系。
+
 ```c
-/* include/airymax/agents_ipc.h — [SC] 共享契约层 */
-struct agents_ipc_header {
-    /* — Word 0: Magic + Version — */
-    __le32  magic;             /* 0x41524531 ('ARE1') */
-    __le16  version;           /* 协议版本（当前 0x0001） */
-    __le16  header_len;        /* 头部长度 = 128 */
-    
-    /* — Word 1: Message Identity — */
-    __le64  msg_id;            /* 消息唯一 ID（单调递增） */
-    
-    /* — Word 2-3: Routing — */
-    __le64  src_endpoint;      /* 源端点 capability ID */
-    __le64  dst_endpoint;      /* 目标端点 capability ID */
-    
-    /* — Word 4-5: Tracing — */
-    __le64  trace_id;          /* 分布式追踪 ID */
-    __le64  correlation_id;    /* 关联 ID（请求-响应配对） */
-    
-    /* — Word 6: Timestamps — */
-    __le64  send_timestamp;    /* 发送时间戳（ns） */
-    __le64  recv_timestamp;    /* 接收时间戳（ns，由内核填充） */
-    
-    /* — Word 7: Attributes — */
-    __le16  msg_type;          /* 消息类型 */
-    __le16  priority;          /* 优先级（0-65535） */
-    __le32  flags;             /* 标志位 */
-    
-    /* — Word 8: Payload — */
-    __le32  payload_len;       /* payload 长度 */
-    __le32  payload_offset;    /* payload 在共享内存中的偏移 */
-    __le64  payload_cookie;    /* payload 验证 cookie */
-    
-    /* — Word 9-10: Security — */
-    __le32  auth_tag;          /* 认证标签（HMAC 前 32 位） */
-    __le32  reserved1;         /* 保留 */
-    __le64  security_context;  /* 安全上下文 ID */
-    
-    /* — Word 11-15: Reserved — */
-    __le64  reserved[5];       /* 未来扩展保留 */
-} __attribute__((packed, aligned(64)));
-/* 总大小：128 字节 */
+/* include/airymax/ipc.h — [SC] 共享契约层
+ * 权威定义见 SSoT：50-engineering-standards/120-cross-project-code-sharing.md §Layout C
+ * 结构体名：struct airy_ipc_msg_hdr（Layout C，128B，__attribute__((packed))）
+ * 字段顺序：magic/opcode/flags/trace_id/timestamp_ns/src_task/dst_task/payload_len/reserved[84]
+ * 编译期保证：_Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128)
+ */
+#include <airymax/ipc.h>
 ```
+
+**SSoT 字段与 io_uring 概念映射**：
+
+| SSoT 字段 | 偏移 | 长度 | io_uring 对应 | 说明 |
+|-----------|------|------|---------------|------|
+| `magic` | 0 | 4B | — | 0x41524531('ARE1')，协议识别（永久稳定） |
+| `opcode` | 4 | 2B | SQE `opcode` | SEND/RECV/SEND_BATCH/CANCEL（SSoT 4 操作码） |
+| `flags` | 6 | 2B | SQE `flags` | NOWAIT/SIGNAL([SC]) + ZEROCOPY/CAP_CARRY/COMPRESS/ENCRYPT/URGENT/NOREPLY([IND]) |
+| `trace_id` | 8 | 8B | SQE `user_data` | 链路追踪 ID（OpenTelemetry span 同源） |
+| `timestamp_ns` | 16 | 8B | — | CLOCK_REALTIME 纳秒（对齐北京时间 UTC+8） |
+| `src_task` | 24 | 8B | — | 源任务 ID（0=内核发起，运行时校验） |
+| `dst_task` | 32 | 8B | — | 目标任务 ID（0=广播） |
+| `payload_len` | 40 | 4B | SQE `len` | payload 字节数（0~64 MiB） |
+| `reserved[84]` | 44 | 84B | — | 保留扩展区，填充 0（新增字段写入此区并通过 flags 标记启用） |
+
+> **SSoT 声明**：Layout C 消息头**无** `version`、`type`、`header_len`、`msg_id`、`correlation_id`、`priority`、`payload_offset`、`payload_cookie`、`auth_tag`、`security_context` 字段。payload 协议类型（REQUEST/RESPONSE/EVENT/STREAM/NOTIFICATION）由 payload 体首字段携带（见 §8.4）。消息头布局永久稳定（AOS-STD-IPC-002，L1 稳定级）；新增字段只能写入 `reserved[84]` 区并通过 `flags` 标记启用。
 
 ### 8.3 Magic 0x41524531 校验
 
 ```c
-/* 魔数定义 */
-#define AGENTS_IPC_MAGIC 0x41524531  /* 'ARE1' = Agent Runtime Engine v1 */
+/* 魔数定义 — [SC] 共享（SSoT） */
+#define AIRY_IPC_MAGIC  0x41524531u  /* 'ARE1' = Agent Runtime Engine v1 */
 
-/* 魔法校验 */
-static inline bool agents_ipc_validate_header(const struct agents_ipc_header *hdr)
+/* 消息头校验（SSoT Layout C，无 version/header_len/auth_tag 字段）
+ * 头部长度由编译期 _Static_assert 保证，运行期无需检查。
+ * 版本协商由 opcode 扩展实现（新增 opcode 编号），无独立 version 字段。
+ * HMAC/加密由 [IND] 扩展标志 ENCRYPT（0x0020）控制，密钥由 capability 携带。
+ */
+static inline bool airy_ipc_validate_header(const struct airy_ipc_msg_hdr *hdr)
 {
-    /* 1. Magic 校验 */
-    if (hdr->magic != AGENTS_IPC_MAGIC)
+    /* 1. Magic 校验（永久稳定，AOS-STD-IPC-001） */
+    if (hdr->magic != AIRY_IPC_MAGIC)
         return false;
-    
-    /* 2. 版本协商 */
-    if (hdr->version > AGENTS_IPC_VERSION_CURRENT)
+
+    /* 2. Opcode 校验（SSoT 4 操作码，无 version 字段） */
+    if (hdr->opcode > AIRY_IPC_OP_CANCEL)
         return false;
-    
-    /* 3. 头部长度校验 */
-    if (hdr->header_len != sizeof(struct agents_ipc_header))
+
+    /* 3. 头部长度由编译期 _Static_assert 保证，运行期无需检查 */
+
+    /* 4. payload_len 校验（0 ~ 64 MiB） */
+    if (hdr->payload_len > (64u * 1024u * 1024u))
         return false;
-    
-    /* 4. HMAC 校验（可选，通过 auth_tag） */
-    if (hdr->flags & AGENTS_IPC_FLAG_AUTH) {
-        if (!agents_ipc_verify_hmac(hdr))
-            return false;
-    }
-    
+
+    /* 5. 标志位校验（未知位必须为 0，前向兼容，AOS-STD-IPC-004） */
+    if (hdr->flags & ~0x00FFu)  /* 当前仅定义 bit 0-7（NOWAIT/NOREPLY） */
+        return false;
+
     return true;
 }
 ```
 
-### 8.4 消息类型定义
+### 8.4 payload 类型定义
+
+payload 协议类型由 payload 体首字段携带（**不在 128B 消息头中**，见 §8.2 SSoT 声明）。前 5 类与 OpenStandards §3.1 永久稳定对齐（[SC] SSoT），0x0006+ 为 [IND] 扩展类型：
 
 ```c
-/* 消息类型枚举 — [SC] 共享 */
-enum agents_ipc_msg_type {
-    AGENTS_IPC_TYPE_REQ        = 0x0001,  /* 请求 */
-    AGENTS_IPC_TYPE_RESP       = 0x0002,  /* 响应 */
-    AGENTS_IPC_TYPE_EVENT      = 0x0003,  /* 事件通知 */
-    AGENTS_IPC_TYPE_STREAM     = 0x0004,  /* 流式数据 */
-    AGENTS_IPC_TYPE_CTRL       = 0x0005,  /* 控制消息 */
-    AGENTS_IPC_TYPE_ERROR      = 0x0006,  /* 错误 */
-    AGENTS_IPC_TYPE_CAP_XFER   = 0x0007,  /* capability 传递 */
-    AGENTS_IPC_TYPE_HEARTBEAT  = 0x0008,  /* 心跳 */
-    AGENTS_IPC_TYPE_TRACE      = 0x0009,  /* 追踪数据 */
-    AGENTS_IPC_TYPE_MMAP       = 0x000A,  /* 内存映射传递 */
-    AGENTS_IPC_TYPE_KERNEL     = 0x0100,  /* 内核消息（Agent↔内核） */
-    AGENTS_IPC_TYPE_SYSTEM     = 0x0200,  /* 系统服务消息 */
+/* payload 类型枚举 — [SC] 共享（OpenStandards §3.1）
+ * 前 5 类与 SSoT 对齐（永久稳定，AOS-STD-IPC-005），0x0006+ 为 [IND] 扩展。
+ * 新增类型必须追加到 0x000A 之后，不得修改既有值。 */
+enum airy_ipc_payload_type {
+    /* [SC] SSoT 基础类型（OpenStandards §3.1，永久稳定） */
+    AIRY_IPC_TYPE_REQUEST      = 0x0001,  /* 请求（请求-响应，可靠投递） */
+    AIRY_IPC_TYPE_RESPONSE     = 0x0002,  /* 响应（请求-响应，可靠投递） */
+    AIRY_IPC_TYPE_EVENT        = 0x0003,  /* 事件通知（发布-订阅，尽力投递） */
+    AIRY_IPC_TYPE_STREAM       = 0x0004,  /* 流式数据（双向流，可靠有序） */
+    AIRY_IPC_TYPE_NOTIFICATION = 0x0005,  /* 单向通知（无需响应，尽力投递） */
+    /* [IND] 扩展类型（0x0006+，新增类型必须追加，不得修改既有值） */
+    AIRY_IPC_TYPE_CAP_XFER    = 0x0006,  /* capability 传递 */
+    AIRY_IPC_TYPE_HEARTBEAT    = 0x0007,  /* 心跳 */
+    AIRY_IPC_TYPE_TRACE        = 0x0008,  /* 追踪数据 */
+    AIRY_IPC_TYPE_MMAP         = 0x0009,  /* 内存映射传递 */
+    AIRY_IPC_TYPE_KERNEL       = 0x0100,  /* 内核消息（Agent↔内核） */
+    AIRY_IPC_TYPE_SYSTEM       = 0x0200,  /* 系统服务消息 */
 };
+/* 注：错误状态通过 RESPONSE.status < 0（AIRY_E* 负错误码）表示，无独立 ERROR 类型。
+ * 原 CTRL(0x0005) 已对齐为 NOTIFICATION(0x0005)——语义一致（单向通知/控制消息）。 */
 ```
 
 ### 8.5 Capability 基端点
@@ -928,13 +923,14 @@ enum agentrt_cap_type {
 
 ### 8.6 全链路追踪
 
-AgentsIPC 通过 `trace_id` + `correlation_id` 实现端到端消息可观测性：
+AgentsIPC 的端到端消息可观测性分两层实现：**消息头层**（[SC] SSoT `trace_id` 字段，偏移 8，8B）+ **payload 体层**（[SC] `request_id` 字段，请求-响应配对）。二者协同实现端到端追踪：
 
 ```c
-/* 追踪上下文 */
-struct agents_ipc_trace {
-    __le64  trace_id;           /* 全局唯一追踪 ID（来自 OpenTelemetry span） */
-    __le64  correlation_id;     /* 请求-响应关联 ID */
+/* 追踪上下文（[IND] 扩展，不在 128B 消息头中，由 payload 携带或 sidecar 传递）
+ * trace_id 在消息头中（SSoT 字段），以下为 OpenTelemetry span 扩展元数据 */
+struct airy_ipc_trace {
+    __le64  trace_id;           /* 全局唯一追踪 ID（与消息头 trace_id 同源，来自 OpenTelemetry span） */
+    __le64  request_id;         /* 请求-响应关联 ID（payload REQUEST.request_id / RESPONSE.request_id 配对） */
     __le64  parent_span_id;     /* 父 span ID */
     __le64  span_id;            /* 当前 span ID */
     __le32  trace_flags;        /* 采样标志 */
@@ -946,10 +942,12 @@ struct agents_ipc_trace {
 
 ```
 Agent A → MSG_RING(trace_id=T1, span_id=S1) → Agent B
-Agent B → MSG_RING(trace_id=T1, correlation_id=S1, span_id=S2) → Agent A
+Agent B → MSG_RING(trace_id=T1, request_id=R1, span_id=S2) → Agent A
 ```
 
-所有消息通过 `trace_id` 串联为一棵追踪树，通过 `correlation_id` 关联请求-响应对。这是五维原则中**可观测**维度的核心实现。
+所有消息通过消息头 `trace_id` 串联为一棵追踪树，通过 payload `request_id` 关联请求-响应对（OpenStandards §4.2 AOS-STD-IPC-011）。这是五维原则中**可观测**维度的核心实现。
+
+> **SSoT 声明**：`trace_id` 是消息头 SSoT 字段（Layout C 偏移 8）；`request_id` 是 payload 体字段（REQUEST/RESPONSE payload 首字段）。消息头中无 `correlation_id` 字段，请求-响应关联通过 payload `request_id` 配对实现。
 
 ### 8.7 协议流程图
 
@@ -973,7 +971,7 @@ flowchart TB
     subgraph "Agent B（接收方）"
         POLL_B[io_uring_enter<br/>收割 CQE 批量]
         HDR_B[解析 128B 消息头]
-        VALIDATE_B[验证 auth_tag + trace]
+        VALIDATE_B[验证 flags + trace_id]
         APP_B[应用层：处理消息]
     end
 
@@ -1165,20 +1163,29 @@ enum agentrt_cap_rights {
 ### 11.4 AgentsIPC 消息安全
 
 ```c
-/* 消息头安全标志 */
-#define AGENTS_IPC_FLAG_AUTH        (1 << 0)  /* 需要 HMAC 认证 */
-#define AGENTS_IPC_FLAG_ENCRYPT     (1 << 1)  /* payload 加密 */
-#define AGENTS_IPC_FLAG_INTEGRITY   (1 << 2)  /* payload 完整性校验 */
-#define AGENTS_IPC_FLAG_CAP_TRANSFER (1 << 3) /* 消息携带 capability 传递 */
-#define AGENTS_IPC_FLAG_NO_FORWARD  (1 << 4)  /* 禁止转发 */
-#define AGENTS_IPC_FLAG_NO_REPLY    (1 << 5)  /* 无需回复（单向） */
-#define AGENTS_IPC_FLAG_URGENT      (1 << 6)  /* 紧急消息（优先投递） */
+/* 消息头安全标志 — [SC] SSoT 共享（OpenStandards §2.4）
+ * bit 0-7 由 SSoT 锁定，扩展标志从 bit 8 开始编号。
+ * 权威定义见 include/airymax/ipc.h（SSoT Layout C）。 */
+#define AIRY_IPC_F_NOWAIT      0x0001u  /* [SC] 非阻塞（对应 io_uring IOSQE_ASYNC） */
+#define AIRY_IPC_F_SIGNAL      0x0002u  /* [SC] 完成后投递信号 */
+#define AIRY_IPC_F_ZEROCOPY    0x0004u  /* [IND] 零拷贝路径（发送方须注册 buffer） */
+#define AIRY_IPC_F_CAP_CARRY   0x0008u  /* [IND] 携带 capability 令牌（内核校验） */
+#define AIRY_IPC_F_COMPRESS    0x0010u  /* [IND] payload 已压缩（LZ4） */
+#define AIRY_IPC_F_ENCRYPT     0x0020u  /* [IND] payload 已加密（SM4，密钥由 capability 携带） */
+#define AIRY_IPC_F_URGENT      0x0040u  /* [IND] 紧急消息（仅实时调度类可用） */
+#define AIRY_IPC_F_NOREPLY     0x0080u  /* [IND] 无需响应（仅 EVENT/NOTIFICATION 可用） */
+/* [IND] 扩展标志（bit 8+，不在 SSoT bit 0-7 范围内） */
+#define AIRY_IPC_F_AUTH        0x0100u  /* [IND] 需要 HMAC 认证 */
+#define AIRY_IPC_F_INTEGRITY   0x0200u  /* [IND] payload 完整性校验（SHA-256） */
+#define AIRY_IPC_F_NO_FORWARD  0x0400u  /* [IND] 禁止转发（anti-relay） */
 ```
+
+> **SSoT 对齐说明**：原 `AGENTS_IPC_FLAG_*` 命名已统一为 `AIRY_IPC_F_*`（对齐 SSoT）。原 bit 0-6 分配与 SSoT NOWAIT/SIGNAL/ZEROCOPY/CAP_CARRY/COMPRESS/ENCRYPT/URGENT 冲突，已修正为 SSoT bit 0-7 + [IND] 扩展 bit 8-10。HMAC 认证（AUTH）、完整性校验（INTEGRITY）、禁止转发（NO_FORWARD）为 [IND] 扩展，从 bit 8 开始编号。
 
 **认证流程**：
 ```
-Agent A → HMAC_SHA256(header || payload, shared_key) → auth_tag
-Agent B → 重新计算 HMAC，比对 auth_tag → 通过/拒绝
+Agent A → HMAC_SHA256(header || payload, shared_key) → 附着于 payload 尾部（AIRY_IPC_F_AUTH 标志置位）
+Agent B → 重新计算 HMAC，比对 → 通过/拒绝
 ```
 
 ### 11.5 seL4 参考安全属性
@@ -1222,11 +1229,11 @@ agentrt-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属�
 
 | # | 规范 | 增强内容 |
 |---|------|---------|
-| 1 | 128B 消息头协议 | [SC] 共享 `agents_ipc_header`——magic + trace_id + correlation_id + capability 端点 |
+| 1 | 128B 消息头协议 | [SC] 共享 `airy_ipc_msg_hdr`——magic + opcode + trace_id + src_task/dst_task |
 | 2 | seL4 风格 capability 端点 | [SC] 共享 `agentrt_cap`——mint/mintcopy/derive/revoke 语义 |
-| 3 | 全链路追踪 | [SC] 共享 `agents_ipc_trace`——OpenTelemetry span 集成 |
+| 3 | 全链路追踪 | [SC] 共享 `airy_ipc_trace`——OpenTelemetry span 集成 |
 | 4 | 批量提交 + multi-shot | io_uring MSG_RING multi-shot 扩展——广播/多播支持 |
-| 5 | HMAC 认证 + 加密 | [SC] 共享 `AGENTS_IPC_FLAG_AUTH/ENCRYPT/INTEGRITY` 标志 |
+| 5 | HMAC 认证 + 加密 | [SC] 共享 `AIRY_IPC_F_ENCRYPT` + [IND] 扩展 `AIRY_IPC_F_AUTH/INTEGRITY` 标志 |
 
 ### 12.4 技术决策依据总结
 
@@ -1234,7 +1241,7 @@ agentrt-linux 选择 io_uring + AgentsIPC 作为唯一 IPC 方案的核心依据
 
 1. **性能**（五维原则）：零拷贝 + 批量提交，延迟降低 90%，吞吐量提升 5-10×
 2. **安全**（五维原则）：capability 基端点 + magic 校验 + HMAC 认证，不可伪造，不可越权
-3. **可观测**（五维原则）：trace_id + correlation_id 全链路追踪，每消息可审计
+3. **可观测**（五维原则）：trace_id + request_id 全链路追踪，每消息可审计
 4. **简洁**（五维原则）：单一 IPC 协议（AgentsIPC）+ 单一传输层（io_uring），消除多范式复杂性
 5. **seL4 形式化验证参考**：Authority Confinement、No Authority Leakage 属性保证
 
@@ -1316,8 +1323,8 @@ cat /proc/self/fdinfo/<fd>     # 详细状态（SQ/CQ 大小、已注册资源�
 ### 14.2 AgentsIPC OpenTelemetry 集成
 
 ```c
-/* [SC] 共享 — include/airymax/agents_ipc_trace.h */
-struct agents_ipc_otel_span {
+/* [SC] 共享 — include/airymax/airy_ipc_trace.h */
+struct airy_ipc_otel_span {
     __le64  trace_id;           /* OpenTelemetry TraceID */
     __le64  span_id;            /* OpenTelemetry SpanID */
     __le64  parent_span_id;     /* 父 SpanID */
@@ -1368,9 +1375,9 @@ struct agents_ipc_otel_span {
 
 | # | 增强特性 | 来源 | agentrt-linux 增强 |
 |---|---------|------|-------------------|
-| 1 | 128B 消息头协议 | 自研 | [SC] 共享 `agents_ipc_header` |
+| 1 | 128B 消息头协议 | 自研 | [SC] 共享 `airy_ipc_msg_hdr` |
 | 2 | seL4 风格 capability 端点 | seL4 形式化验证 | [SC] 共享 `agentrt_cap` |
-| 3 | 全链路追踪 | OpenTelemetry | [SC] 共享 `agents_ipc_trace` |
+| 3 | 全链路追踪 | OpenTelemetry | [SC] 共享 `airy_ipc_trace` |
 | 4 | 批量提交 + multi-shot | io_uring 扩展 | [SS] 广播/多播支持 |
 | 5 | HMAC 认证 + 加密 | 自研 | [SC] 共享安全标志 |
 
@@ -1384,8 +1391,8 @@ struct agents_ipc_otel_span {
 - [闭源 io_uring 技术规范](02-io-uring-spec.md)
 - [闭源安全技术规范](05-security-spec.md)
 - [闭源调度器技术规范](01-scheduler-spec.md)
-- [开源 IPC 协议设计](../../docs/AirymaxAgentOS/30-interfaces/02-ipc-protocol.md)
-- [开源 io_uring IPC 数据流](../../docs/AirymaxAgentOS/40-dataflows/03-ipc-flow.md)
+- [开源 IPC 协议设计](../../docs/AirymaxOS/30-interfaces/02-ipc-protocol.md)
+- [开源 io_uring IPC 数据流](../../docs/AirymaxOS/40-dataflows/03-ipc-flow.md)
 
 ### 16.2 版本维护
 

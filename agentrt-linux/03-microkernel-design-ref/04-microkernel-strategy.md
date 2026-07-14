@@ -4,7 +4,7 @@ confidentiality: SPHARX Ltd 内部参考，闭源不公开
 version: 1.0.1 (开发) / 0.1.1 (文档体系完成)
 last_updated: 2026-07-07
 theory_source: seL4（唯一来源，ADR-014）
-open_source_reference: docs/AirymaxAgentOS/10-architecture/03-microkernel-strategy.md
+open_source_reference: docs/AirymaxOS/10-architecture/03-microkernel-strategy.md
 copyright: Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ---
 
@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **版本**：0.1.1（文档体系完成）/ 1.0.1（开发）  
 **最后更新**：2026-07-07  
 **理论来源**：seL4（唯一来源，ADR-014）  
-**关联文档**：`docs/AirymaxAgentOS/10-architecture/03-microkernel-strategy.md`（开源版）
+**关联文档**：`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md`（开源版）
 
 > 本文档是开源版 `10-architecture/03-microkernel-strategy.md` 的闭源深化版，包含内部技术决策、详细的实施路线、验收标准和风险评估。
 
@@ -156,18 +156,18 @@ AirymaxOS 的微内核化改造遵循以下核心哲学：
 
 | 编号 | Daemon | 功能 | 迁移难度 | 优先级 | 迁移后位置 |
 |------|--------|------|----------|--------|-----------|
-| D-01 | agentd | Agent 生命周期管理 | 中 | P0 | airymaxos-services/agentd |
-| D-02 | schedd | Agent 调度守护 | 高 | P0 | airymaxos-services/schedd |
-| D-03 | memd | 记忆管理守护 | 高 | P0 | airymaxos-services/memd |
-| D-04 | cognitived | 认知计算守护 | 高 | P0 | airymaxos-services/cognitived |
-| D-05 | securid | 安全策略守护 | 中 | P0 | airymaxos-services/securid |
-| D-06 | netd | 网络通信守护 | 中 | P1 | airymaxos-services/netd |
-| D-07 | fsd | 文件系统守护 | 高 | P1 | airymaxos-services/fsd |
-| D-08 | toold | 工具管理守护 | 中 | P1 | airymaxos-services/toold |
-| D-09 | monitord | 监控守护 | 低 | P1 | airymaxos-services/monitord |
-| D-10 | logd | 日志守护 | 低 | P2 | airymaxos-services/logd |
-| D-11 | configd | 配置管理守护 | 低 | P2 | airymaxos-services/configd |
-| D-12 | cloudd | 云原生接口守护 | 中 | P2 | airymaxos-services/cloudd |
+| D-01 | agentd | Agent 生命周期管理 | 中 | P0 | services/agentd |
+| D-02 | schedd | Agent 调度守护 | 高 | P0 | services/schedd |
+| D-03 | memd | 记忆管理守护 | 高 | P0 | services/memd |
+| D-04 | cognitived | 认知计算守护 | 高 | P0 | services/cognitived |
+| D-05 | securid | 安全策略守护 | 中 | P0 | services/securid |
+| D-06 | netd | 网络通信守护 | 中 | P1 | services/netd |
+| D-07 | fsd | 文件系统守护 | 高 | P1 | services/fsd |
+| D-08 | toold | 工具管理守护 | 中 | P1 | services/toold |
+| D-09 | monitord | 监控守护 | 低 | P1 | services/monitord |
+| D-10 | logd | 日志守护 | 低 | P2 | services/logd |
+| D-11 | configd | 配置管理守护 | 低 | P2 | services/configd |
+| D-12 | cloudd | 云原生接口守护 | 中 | P2 | services/cloudd |
 
 **迁移策略**：
 

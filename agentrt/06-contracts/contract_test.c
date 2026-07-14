@@ -249,7 +249,7 @@ static void test_daemon_injection_points(void)
     printf("\n--- Daemon 测试注入点验证 ---\n");
 
     /* 测试模式环境变量校验 */
-    TEST_ASSERT(strcmp(CONTRACT_AC_TEST_MODE_ENV, "AGENTOS_TEST_MODE") == 0,
+    TEST_ASSERT(strcmp(CONTRACT_AC_TEST_MODE_ENV, "AIRY_TEST_MODE") == 0,
                 "test mode env var");
     TEST_ASSERT(strcmp(CONTRACT_AC_TEST_MODE_ENABLED, "1") == 0,
                 "test mode enabled == 1");
@@ -287,52 +287,52 @@ static void test_prometheus_metrics(void)
                    "required metrics count == 14");
 
     /* 指标前缀校验 */
-    TEST_ASSERT(strcmp(CONTRACT_AC_METRIC_PREFIX, "agentos_") == 0,
-                "metric prefix == agentos_");
+    TEST_ASSERT(strcmp(CONTRACT_AC_METRIC_PREFIX, "airy_") == 0,
+                "metric prefix == airy_");
 
-    /* 14 项指标名均以 agentos_ 开头 */
+    /* 14 项指标名均以 airy_ 开头 */
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_REQUESTS_TOTAL,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "requests_total starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "requests_total starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_REQUEST_DURATION,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "request_duration starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "request_duration starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_ERRORS_TOTAL,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "errors_total starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "errors_total starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_ACTIVE_CONNECTIONS,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "active_connections starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "active_connections starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_MEMORY_USAGE_BYTES,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "memory_usage_bytes starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "memory_usage_bytes starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_CPU_USAGE,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "cpu_usage starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "cpu_usage starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_UPTIME_SECONDS,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "uptime_seconds starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "uptime_seconds starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_QUEUE_DEPTH,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "queue_depth starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "queue_depth starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_IPC_LATENCY,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "ipc_latency starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "ipc_latency starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_GC_PAUSE_SECONDS,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "gc_pause_seconds starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "gc_pause_seconds starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_FILE_DESCRIPTORS,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "file_descriptors starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "file_descriptors starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_GOROUTINE_COUNT,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "goroutine_count starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "goroutine_count starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_CACHE_HIT_RATIO,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "cache_hit_ratio starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "cache_hit_ratio starts with airy_");
     TEST_ASSERT(strncmp(CONTRACT_AC_METRIC_CIRCUIT_BREAKER_STATE,
-                        CONTRACT_AC_METRIC_PREFIX, 8) == 0,
-                "circuit_breaker_state starts with agentos_");
+                        CONTRACT_AC_METRIC_PREFIX, 5) == 0,
+                "circuit_breaker_state starts with airy_");
 
     /* 指标类型枚举校验 */
     TEST_ASSERT_EQ(CONTRACT_AC_METRIC_COUNTER, 0, "COUNTER == 0");
@@ -455,8 +455,8 @@ static void test_sdk_harness(void)
                 "harness result non-empty");
 
     /* 环境变量校验 */
-    TEST_ASSERT(strcmp(CONTRACT_BC_HARNESS_TEST_MODE_ENV, "AGENTOS_TEST_MODE") == 0,
-                "harness test mode env == AGENTOS_TEST_MODE");
+    TEST_ASSERT(strcmp(CONTRACT_BC_HARNESS_TEST_MODE_ENV, "AIRY_TEST_MODE") == 0,
+                "harness test mode env == AIRY_TEST_MODE");
 }
 
 /* ================================================================

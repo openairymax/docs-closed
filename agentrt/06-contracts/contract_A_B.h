@@ -15,11 +15,11 @@
  *   - C-L12: CoreLoopThree (C, 团队A) → MemoryRovol 内存提供商接口（团队B 集成）
  *
  * 参考实现：
- *   - agentos/atoms/coreloopthree/include/manager_adapter.h
- *   - agentos/daemon/market_d/include/market_service.h
- *   - agentos/daemon/gateway_d/include/gateway_forward.h
- *   - agentos/atoms/memory/src/memory_provider.h
- *   - agentos/atoms/coreloopthree/include/memoryrovol_bridge.h
+ *   - agentrt/atoms/coreloopthree/include/manager_adapter.h
+ *   - agentrt/daemon/market_d/include/market_service.h
+ *   - agentrt/daemon/gateway_d/include/gateway_forward.h
+ *   - agentrt/atoms/memory/src/memory_provider.h
+ *   - agentrt/atoms/coreloopthree/include/memoryrovol_bridge.h
  *
  * @owner team-A, team-B
  * @version 1.0.0
@@ -53,7 +53,7 @@ extern "C" {
  * C-L01: Manager → CoreLoopThree 配置消息格式
  *
  * 时序约束：
- *   1. Manager 生成/修改 agentos.yaml
+ *   1. Manager 生成/修改 agentrt.yaml
  *   2. Manager 调用 manager_adapter_reload() 触发热重载
  *   3. config_loader 检测文件变更 → yaml_loader 解析
  *   4. 回调通知 CoreLoopThree 更新运行时配置
@@ -71,13 +71,13 @@ extern "C" {
 /** C-L01: 配置路径最大长度（与 manager_adapter 内部 g_config_path[256] 对齐） */
 #define CONTRACT_CL01_CONFIG_PATH_MAX 256
 
-/** C-L01: 热重载回调最大数量（与 AGENTOS_MAX_RELOAD_CALLBACKS 对齐） */
+/** C-L01: 热重载回调最大数量（与 AIRY_MAX_RELOAD_CALLBACKS 对齐） */
 #define CONTRACT_CL01_MAX_RELOAD_CALLBACKS 32
 
 /** C-L01: 默认配置文件路径 */
-#define CONTRACT_CL01_DEFAULT_CONFIG_PATH "./configs/agentos.yaml"
+#define CONTRACT_CL01_DEFAULT_CONFIG_PATH "./configs/agentrt.yaml"
 
-/** C-L01: 默认配置监听间隔（毫秒，与 AGENTOS_CONFIG_WATCH_INTERVAL_MS 对齐） */
+/** C-L01: 默认配置监听间隔（毫秒，与 AIRY_CONFIG_WATCH_INTERVAL_MS 对齐） */
 #define CONTRACT_CL01_WATCH_INTERVAL_MS 1000
 
 /**
@@ -120,7 +120,7 @@ typedef void (*contract_cl01_config_change_cb_t)(const char *old_path,
  * ================================================================ */
 
 /** C-L03: market_d 默认 Unix Socket 路径 */
-#define CONTRACT_CL03_DEFAULT_SOCKET_PATH "/var/run/agentos/market.sock"
+#define CONTRACT_CL03_DEFAULT_SOCKET_PATH "/var/run/agentrt/market.sock"
 
 /** C-L03: market_d 默认 TCP 端口 */
 #define CONTRACT_CL03_DEFAULT_TCP_PORT 8082
@@ -254,11 +254,11 @@ static const contract_cl11_route_entry_t
  * C-L12: CoreLoopThree → MemoryRovol 内存布局
  *
  * 时序约束：
- *   1. CoreLoopThree (团队A) 通过 agentos_memory_provider_t 接口访问记忆
+ *   1. CoreLoopThree (团队A) 通过 airy_memory_provider_t 接口访问记忆
  *   2. MemoryRovol (团队B 集成) 实现同一接口，作为商业提供商
  *   3. 桥接层 memoryrovol_bridge 在构建时选择内置/MemoryRovol/混合模式
  *
- * 团队A 负责：agentos_memory_provider_t 接口定义与消费
+ * 团队A 负责：airy_memory_provider_t 接口定义与消费
  * 团队B 负责：MemoryRovol 提供商实现与构建集成
  * ================================================================ */
 
@@ -278,7 +278,7 @@ static const contract_cl11_route_entry_t
 #define CONTRACT_CL12_MEMORYROVOL_VERSION "2.0.0"
 
 /** C-L12: 默认存储路径 */
-#define CONTRACT_CL12_DEFAULT_STORAGE_PATH "/var/lib/agentos/memoryrovol"
+#define CONTRACT_CL12_DEFAULT_STORAGE_PATH "/var/lib/agentrt/memoryrovol"
 
 /** C-L12: 默认查询结果数量上限 */
 #define CONTRACT_CL12_DEFAULT_QUERY_LIMIT 10
@@ -287,7 +287,7 @@ static const contract_cl11_route_entry_t
 #define CONTRACT_CL12_DEFAULT_SYNC_INTERVAL_MS 5000
 
 /**
- * @brief C-L12: 提供商能力标记（与 agentos_memory_capabilities_t 对齐）
+ * @brief C-L12: 提供商能力标记（与 airy_memory_capabilities_t 对齐）
  *
  * 团队B 的 MemoryRovol 实现必须填充此结构。
  * 内置提供商仅支持 L1+L2，MemoryRovol 支持 L1-L4 全功能。
@@ -307,7 +307,7 @@ typedef struct contract_cl12_capabilities {
 } contract_cl12_capabilities_t;
 
 /**
- * @brief C-L12: 内存统计信息（与 agentos_memory_stats_t 对齐）
+ * @brief C-L12: 内存统计信息（与 airy_memory_stats_t 对齐）
  *
  * 团队A 通过此结构查询提供商运行时状态。
  */

@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档全面参考 openEuler 社区的 eBPF 子系统技术规范，作为 AirymaxOS 可编程扩展子系统（eBPF/struct_ops/kfunc）设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxAgentOS/`）中。
+本文档全面参考 openEuler 社区的 eBPF 子系统技术规范，作为 AirymaxOS 可编程扩展子系统（eBPF/struct_ops/kfunc）设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxOS/`）中。
 
 ### 1.2 参考来源
 
@@ -43,7 +43,7 @@ OLK-6.6 是基于 Linux 6.6 主线的 openEuler 内核基线，包含从主线 6
 
 1. **先参考 Euler**：查阅本文档对应章节的 openEuler eBPF 规范
 2. **再参考行业最新理论**：查阅 `04-industry-best-practices/01-latest-theory.md` 中的最新理论
-3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/AirymaxAgentOS/90-observability/02-ebpf-probes.md`
+3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/AirymaxOS/90-observability/02-ebpf-probes.md`
 
 ---
 
@@ -722,7 +722,7 @@ bpftool prog load agent_tracer.bpf.o /sys/fs/bpf/agent_tracer \
 ### 13.1 相关文档
 
 **同模块闭源文档**：[`01-scheduler-spec.md`](01-scheduler-spec.md)（调度器规范）、[`02-io-uring-spec.md`](02-io-uring-spec.md)（io_uring 规范）。
-**同模块开源文档**：`docs/AirymaxAgentOS/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）。
+**同模块开源文档**：`docs/AirymaxOS/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）。
 **源码映射**：[`../02-olk66-source-mapping/03-bpf-mapping.md`](../02-olk66-source-mapping/03-bpf-mapping.md)（eBPF 源码映射）。
 
 ### 13.2 版本与维护
@@ -731,7 +731,7 @@ bpftool prog load agent_tracer.bpf.o /sys/fs/bpf/agent_tracer \
 |------|------|----------|
 | 0.1.1 | 2026-07-07 | 初稿，覆盖 openEuler eBPF 整体架构 + struct_ops + BPF_SCHED + 验证器 + map + kfunc + 加载流程 + 性能调优 + 安全 + 可观测性 + 差异化声明 |
 
-**维护责任**：文档负责人为 AirymaxOS 可观测性工程组；代码负责人为 airymaxos-kernel BPF 维护者；每个 LTS 小版本发布前重新核对 openEuler 规范变更与 AirymaxOS 差异化声明有效性。
+**维护责任**：文档负责人为 AirymaxOS 可观测性工程组；代码负责人为 kernel BPF 维护者；每个 LTS 小版本发布前重新核对 openEuler 规范变更与 AirymaxOS 差异化声明有效性。
 
 ---
 

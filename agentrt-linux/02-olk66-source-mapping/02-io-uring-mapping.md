@@ -10,6 +10,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
+## 0. ES-OLK 工程思想追溯
+
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+
+| ES-OLK 编号 | 工程思想 | 本文档对应章节 |
+|------------|---------|--------------|
+| ES-OLK-1 | 关注点分离（8 子仓差异化） | §11 IRON-9 v2 共享边界汇总（[SC]/[SS]/[IND] 三层划分）；§13 与 agentrt 设计一致性检查 |
+| ES-OLK-3 | UAPI 分离（双层稳定性） | §2.2 struct io_uring_sqe；§2.3 struct io_uring_cqe（`include/uapi/linux/io_uring.h` UAPI 接口） |
+
+---
+
 ## 1. 文档说明
 
 ### 1.1 目的
@@ -576,19 +587,22 @@ static inline bool io_allowed_run_tw(struct io_ring_ctx *ctx) {
 #define AGENTRT_IPC_CQE_F_MORE      (1U << 1)
 #define AGENTRT_IPC_CQE_F_NOTIF     (1U << 2)
 
-/* 128B 消息头结构 */
+/* 128B 消息头结构（[SC] 共享契约层，与 SSoT Layout C 同源）
+ * 注：agentrt_ipc_msg_hdr 为 agentrt 侧别名，SSoT 权威类型名为 airy_ipc_msg_hdr
+ *     （定义于 120-cross-project-code-sharing.md §3.2）。字段布局完全一致。
+ */
 typedef struct __attribute__((aligned(64))) agentrt_ipc_msg_hdr {
-    uint32_t magic;          /* 0x41524531 'ARE1' */
-    uint16_t version;        /* 协议版本 */
-    uint16_t type;           /* 5 种 payload 协议 */
-    uint32_t payload_len;    /* payload 长度 */
-    uint32_t flags;          /* 标志位 */
-    uint32_t src_pid;        /* 源进程 ID */
-    uint32_t dst_pid;        /* 目标进程 ID */
-    uint64_t trace_id;       /* 链路追踪 ID（user_data 同源） */
-    uint64_t timestamp_ns;   /* 纳秒时间戳 */
-    uint8_t  reserved[72];   /* 保留字段（对齐 128B） */
-} agentrt_ipc_msg_hdr_t;
+    uint32_t magic;          /* offset 0,  4B, 0x41524531 'ARE1' */
+    uint16_t opcode;         /* offset 4,  2B, AIRY_IPC_OP_SEND/RECV/SEND_BATCH/CANCEL */
+    uint16_t flags;          /* offset 6,  2B, AIRY_IPC_F_NOWAIT/SIGNAL/ZEROCOPY/... */
+    uint64_t trace_id;       /* offset 8,  8B, 链路追踪 ID（user_data 同源） */
+    uint64_t timestamp_ns;   /* offset 16, 8B, CLOCK_REALTIME 纳秒时间戳（对齐北京时间 UTC+8） */
+    uint64_t src_task;       /* offset 24, 8B, 源任务 ID（u64，非旧 src_pid u32） */
+    uint64_t dst_task;       /* offset 32, 8B, 目标任务 ID（0 表示广播） */
+    uint32_t payload_len;    /* offset 40, 4B, payload 长度 */
+    uint8_t  reserved[84];    /* offset 44, 84B, 保留字段（对齐 128B） */
+} agentrt_ipc_msg_hdr_t;  /* 总计 = 4+2+2+8+8+8+8+4+84 = 128B ✓ */
+_Static_assert(sizeof(agentrt_ipc_msg_hdr) == 128, "agentrt_ipc_msg_hdr must be 128 bytes");
 ```
 
 ### 11.2 [SS] 语义同源层
@@ -639,7 +653,7 @@ typedef struct __attribute__((aligned(64))) agentrt_ipc_msg_hdr {
 
 | 增强 | 设计 | 理由 |
 |------|------|------|
-| 128B 消息头 | 定长头 + 64B 对齐 | io_uring SQE 64B + 128B 扩展的同源演进，承载 trace_id/src_pid/dst_pid |
+| 128B 消息头 | 定长头 + 64B 对齐 | io_uring SQE 64B + 128B 扩展的同源演进，承载 trace_id/src_task/dst_task（u64，SSoT Layout C） |
 | 5 种 payload 协议 | REQUEST/RESPONSE/EVENT/STREAM/CONTROL | io_uring 无 payload 协议层，AirymaxOS 补充语义层 |
 | 跨节点扩展 | CXL/RDMA/NVLink | io_uring 单节点，AirymaxOS 超节点 OS 扩展 |
 | capability 集成 | IPC 操作 + capability 检查 | io_uring 无 capability，AirymaxOS 用 Cupolas 增强 |
@@ -667,7 +681,7 @@ AirymaxOS IPC 的 [SC] 层 `include/airymax/ipc.h` 与 agentrt AgentsIPC 共享�
 |------|-------------------|---------------|--------|
 | magic | 0x41524531 'ARE1' | 0x41524531 'ARE1' | ✅ 同源 |
 | 消息头大小 | 128B | 128B | ✅ 同源 |
-| 消息头字段 | magic/version/type/payload_len/flags/src_pid/dst_pid/trace_id/timestamp | 完全一致 | ✅ 同源 |
+| 消息头字段 | magic/opcode/flags/trace_id/timestamp_ns/src_task/dst_task/payload_len/reserved[84]（SSoT Layout C） | 完全一致 | ✅ 同源 |
 | 5 种 payload 协议 | REQUEST/RESPONSE/EVENT/STREAM/CONTROL | 完全一致 | ✅ 同源 |
 | trace_id 语义 | user_data 同源 | user_data 同源 | ✅ 同源 |
 
@@ -688,10 +702,10 @@ AirymaxOS IPC 的 [SC] 层 `include/airymax/ipc.h` 与 agentrt AgentsIPC 共享�
 ## 14. 相关文档
 
 - [闭源 openEuler io_uring 技术规范](../01-openeuler-tech-reference/02-io-uring-spec.md)
-- [开源 IPC 消息流设计](../../docs/AirymaxAgentOS/40-dataflows/03-ipc-flow.md)
-- [开源 IPC 协议接口](../../docs/AirymaxAgentOS/30-interfaces/02-ipc-protocol.md)
+- [开源 IPC 消息流设计](../../docs/AirymaxOS/40-dataflows/03-ipc-flow.md)
+- [开源 IPC 协议接口](../../docs/AirymaxOS/30-interfaces/02-ipc-protocol.md)
 - [sched_ext 源码映射](01-sched-ext-mapping.md)（同系列文档模式参考）
-- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxAgentOS/50-engineering-standards/README.md)
+- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxOS/50-engineering-standards/README.md)
 
 ---
 

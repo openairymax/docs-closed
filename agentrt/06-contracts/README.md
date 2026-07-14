@@ -37,7 +37,7 @@ contracts/
 | 第2节 | HTTP/WS/STDIO 网关 API 定义 | C-L03 |
 | 第3节 | 协议路由表（多协议适配与转换） | C-L11 |
 | 第4节 | 内存布局（MemoryRovol 桥接接口） | C-L12 |
-| 第5节 | agentos.yaml 配置 Schema（C 结构体映射） | — |
+| 第5节 | agentrt.yaml 配置 Schema（C 结构体映射） | — |
 | 第6节 | Hook 系统接口（生命周期回调） | — |
 | 第7节 | 错误码映射表（A 错误码 → B SDK 异常映射） | — |
 | 第8节 | 时序约束（跨语言调用超时与重试） | — |
