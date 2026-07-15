@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：2.1（2026-07-13）。
 > **审查范围**：开源 `docs/AirymaxOS/`（123 .md）+ `docs/AirymaxRT/`（88 .md + 3 .drawio）+ `docs/OpenStandards/`（8 主标准 + 3 _research 目录）+ `docs/Publications/` + 闭源 `docs-closed/agentrt/` + `docs-closed/agentrt-linux/`，共 5 个文档子仓库；228 个开源 .md + 225 个闭源 .md。
-> **审查方法**：13 关键词 Grep 机器检查 + URL 格式 Grep 验证 + 路径有效性实测（`ls`/`find`）+ 内部引用解析性抽样（20 文件）+ 跨仓库前缀迁移统计 + 上下游关系交叉对照 + 与 v1.0 综合分析（`docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md`）和 v2.0 文档质量控制（`docs-closed/_review_v2.0/01-document-quality-control.md`）结论对照。
+> **审查方法**：13 关键词 Grep 机器检查 + URL 格式 Grep 验证 + 路径有效性实测（`ls`/`find`）+ 内部引用解析性抽样（20 文件）+ 跨仓库前缀迁移统计 + 上下游关系交叉对照 + 与 v1.0 综合分析（`docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md`）和 v2.0 文档质量控制（`docs-closed/_review_v2.0/01-document-quality-control.md`）结论对照。
 > **证据要求**：所有结论附文件路径与行号（格式：`文件路径:L行号`），可通过 Grep/Read 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
 
@@ -53,7 +53,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.4 与 v1.0 / v2.0 的关系
 
-本报告**沿用 v1.0 综合分析（`docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md`）**关于 P0-9（文件路径引用错误）的判定，并经本次实测**确认问题不仅未修复反而扩散**；同时**沿用 v2.0 文档质量控制（`docs-closed/_review_v2.0/01-document-quality-control.md`）**关于引用路径体系系统性失效的判定，并新增**内部研究文档越界、跨边界引用、闭源前缀迁移停滞、邮箱域名未标准化** 4 类 v1.0/v2.0 未覆盖的问题。
+本报告**沿用 v1.0 综合分析（`docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md`）**关于 P0-9（文件路径引用错误）的判定，并经本次实测**确认问题不仅未修复反而扩散**；同时**沿用 v2.0 文档质量控制（`docs-closed/_review_v2.0/01-document-quality-control.md`）**关于引用路径体系系统性失效的判定，并新增**内部研究文档越界、跨边界引用、闭源前缀迁移停滞、邮箱域名未标准化** 4 类 v1.0/v2.0 未覆盖的问题。
 
 ---
 
@@ -504,10 +504,10 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 | `docs-closed/agentrt/`（全量） | 218 处 / 12 文件 | — | ❌ 前缀迁移未完成 |
 | `docs-closed/agentrt/agentrt工程标准规范手册.md` | 22 处 | 163 处 | ⚠️ 12% 残留 |
 | `docs-closed/agentrt/07-subsystem-specs/02-corekern.md` | 0 处 | 50 处 | ✅ 完全迁移 |
-| `docs-closed/agentrt/_design_0.1.1/01-repo-split-proposal.md` | 24 处 | — | ❌ 设计文档未迁移 |
-| `docs-closed/agentrt/_design_0.1.1/04-release-full-remediation-plan.md` | 19 处 | — | ❌ 设计文档未迁移 |
-| `docs-closed/agentrt/_archive_conversations/总线开发-长任务.md` | 48 处 | — | ⚠️ 历史归档（可不迁移） |
-| `docs-closed/agentrt/_archive_conversations/总线开发-长任务2.md` | 48 处 | — | ⚠️ 历史归档（可不迁移） |
+| `docs-closed/agentrt/01-designs/_design_0.1.1/01-repo-split-proposal.md` | 24 处 | — | ❌ 设计文档未迁移 |
+| `docs-closed/agentrt/01-designs/_design_0.1.1/04-release-full-remediation-plan.md` | 19 处 | — | ❌ 设计文档未迁移 |
+| `docs-closed/agentrt/00-reviews/_archive_conversations/总线开发-长任务.md` | 48 处 | — | ⚠️ 历史归档（可不迁移） |
+| `docs-closed/agentrt/00-reviews/_archive_conversations/总线开发-长任务2.md` | 48 处 | — | ⚠️ 历史归档（可不迁移） |
 
 **结论**：子系统规范层已完全迁移，工程标准手册层 12% 残留且自相矛盾，设计文档与归档未迁移。
 

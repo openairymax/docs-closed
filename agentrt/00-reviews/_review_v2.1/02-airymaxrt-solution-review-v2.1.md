@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **审查范围**：`/home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxRT/` 全量文档（88 个 .md 文件 + 3 个 .drawio 文件）
 > **审查基线**：AirymaxOS 文档体系（123 个 .md 文件）+ IRON-9 v2 三层共享模型 + SSoT 注册表（09-ssot-registry.md）+ 120-cross-project-code-sharing.md
-> **对比基线**：v1.0 审查报告（`docs-closed/agentrt/_review_v1.0/03-airymaxrt-solution-review.md`）
+> **对比基线**：v1.0 审查报告（`docs-closed/agentrt/00-reviews/_review_v1.0/03-airymaxrt-solution-review.md`）
 > **审查日期**：2026-07-13
 > **审查者**：Airymax 架构审查专家（agentrt 子代理）
 > **审查维度**：v1.0 修复验证 / 目录结构 / 文档深度 / 方案冲突 / 工程标准对齐 / 命名前缀 / 跨平台 / 29 仓拆分 / 草案清单 / IPC 一致性 / 技术准确性 / 抄袭风险 / 改进建议

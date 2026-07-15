@@ -580,10 +580,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | # | 日志文件 | 大小 | Agent | 范围 |
 |---|---------|------|-------|------|
-| 1 | `docs-closed/agentrt/_review_v2.0/fix-log-p0-docs.md` | 17532 B | Agent 1 | 开源文档 P0（5 项：P0-1/P0-4/P0-5/P0-8/P0-9） |
-| 2 | `docs-closed/agentrt/_review_v2.0/fix-log-p1-docs.md` | 12883 B | Agent 2 | 开源文档 P1（5 项：P1-5/P1-6/P1-11/P1-13/P1-1/3） |
-| 3 | `docs-closed/agentrt/_review_v2.0/fix-log-p0-closed-docs.md` | 15742 B | Agent 3 | 闭源手册 P0（2 项：P0-DQC-1/P0-DQC-2） |
-| 4 | `docs-closed/agentrt/_review_v2.0/fix-log-source-code.md` | 18156 B | Agent 4 | 源码 P0+P1（7 项：P0-6/P0-7/N1/N2/N3/N5/N6） |
+| 1 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p0-docs.md` | 17532 B | Agent 1 | 开源文档 P0（5 项：P0-1/P0-4/P0-5/P0-8/P0-9） |
+| 2 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p1-docs.md` | 12883 B | Agent 2 | 开源文档 P1（5 项：P1-5/P1-6/P1-11/P1-13/P1-1/3） |
+| 3 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p0-closed-docs.md` | 15742 B | Agent 3 | 闭源手册 P0（2 项：P0-DQC-1/P0-DQC-2） |
+| 4 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-source-code.md` | 18156 B | Agent 4 | 源码 P0+P1（7 项：P0-6/P0-7/N1/N2/N3/N5/N6） |
 | **合计** | — | **64,313 B** | **4 Agent** | **19 项修正** |
 
 ---
