@@ -281,12 +281,12 @@ v4.0 系统性修正基于 v4.0 综合分析报告（32 项去重问题：5 P0 +
 
 | 文档 | 路径 |
 |------|------|
-| v4.0 综合分析报告 | `docs-closed/agentrt/_review_v4.0/00-comprehensive-analysis-v4.md` |
-| v4.0 开源文档审查 | `docs-closed/agentrt/_review_v4.0/01-open-docs-review.md` |
-| v4.0 闭源文档审查 | `docs-closed/agentrt/_review_v4.0/02-closed-docs-review.md` |
-| v4.0 源码审查 | `docs-closed/agentrt/_review_v4.0/03-source-code-review.md` |
-| v4.0 跨文档一致性审查 | `docs-closed/agentrt/_review_v4.0/04-cross-doc-consistency-review.md` |
-| **v4.0 修正验证报告（本文档）** | `docs-closed/agentrt/_review_v4.0/fix-verification-report-v4.md` |
+| v4.0 综合分析报告 | `docs-closed/agentrt/00-reviews/_review_v4.0/00-comprehensive-analysis-v4.md` |
+| v4.0 开源文档审查 | `docs-closed/agentrt/00-reviews/_review_v4.0/01-open-docs-review.md` |
+| v4.0 闭源文档审查 | `docs-closed/agentrt/00-reviews/_review_v4.0/02-closed-docs-review.md` |
+| v4.0 源码审查 | `docs-closed/agentrt/00-reviews/_review_v4.0/03-source-code-review.md` |
+| v4.0 跨文档一致性审查 | `docs-closed/agentrt/00-reviews/_review_v4.0/04-cross-doc-consistency-review.md` |
+| **v4.0 修正验证报告（本文档）** | `docs-closed/agentrt/00-reviews/_review_v4.0/fix-verification-report-v4.md` |
 
 ---
 

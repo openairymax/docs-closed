@@ -407,12 +407,12 @@ Grep "docs/AirymaxAgentOS" docs/AirymaxRT
 
 | # | 报告 | 路径 | 版本 |
 |---|------|------|------|
-| 1 | v1.0 综合分析 | `docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
-| 2 | v2.0 工程规范与代码审查 | `docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
-| 3 | v2.0 修正验证报告 | `docs-closed/agentrt/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
-| 4 | v3.0 开源文档审查 | `docs-closed/agentrt/_review_v3.0/01-open-docs-review.md` | 3.0（2026-07-14） |
-| 5 | v3.0 修正验证报告 | `docs-closed/agentrt/_review_v3.0/fix-verification-report-v3.md` | 3.0（2026-07-14） |
-| 6 | **v4.0 开源文档审查（本文档）** | `docs-closed/agentrt/_review_v4.0/01-open-docs-review.md` | **4.0（2026-07-14）** |
+| 1 | v1.0 综合分析 | `docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
+| 2 | v2.0 工程规范与代码审查 | `docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
+| 3 | v2.0 修正验证报告 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
+| 4 | v3.0 开源文档审查 | `docs-closed/agentrt/00-reviews/_review_v3.0/01-open-docs-review.md` | 3.0（2026-07-14） |
+| 5 | v3.0 修正验证报告 | `docs-closed/agentrt/00-reviews/_review_v3.0/fix-verification-report-v3.md` | 3.0（2026-07-14） |
+| 6 | **v4.0 开源文档审查（本文档）** | `docs-closed/agentrt/00-reviews/_review_v4.0/01-open-docs-review.md` | **4.0（2026-07-14）** |
 
 ---
 

@@ -578,8 +578,8 @@ v3.0 复审后评分从 v2.0 修正后的 78/B+ 下调至 66/C+（-12 分），�
 | 文件 | 路径 | 用途 |
 |------|------|------|
 | v2.0 文档质量控制 | `docs-closed/_review_v2.0/01-document-quality-control.md` | v2.0 P0-DQC-1/P0-DQC-2 发现 |
-| v2.0 闭源 P0 修正日志 | `docs-closed/agentrt/_review_v2.0/fix-log-p0-closed-docs.md` | P0-DQC-1/P0-DQC-2 修正操作 |
-| v2.0 修正验证报告 | `docs-closed/agentrt/_review_v2.0/fix-verification-report.md` | 修正验证 + 延期项清单 |
+| v2.0 闭源 P0 修正日志 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p0-closed-docs.md` | P0-DQC-1/P0-DQC-2 修正操作 |
+| v2.0 修正验证报告 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-verification-report.md` | 修正验证 + 延期项清单 |
 
 ### A.2 实际审查文件（docs-closed/agentrt/ 全目录）
 

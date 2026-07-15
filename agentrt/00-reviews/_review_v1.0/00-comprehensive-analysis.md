@@ -566,9 +566,9 @@ agentrt 工程体系经过 5 个并行子任务的全面审查（833 源文件 +
 
 | 报告 | 路径 | 行数 | 综合评分 |
 |------|------|------|----------|
-| 01 atoms 源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/01-atoms-source-deep-review.md` | 840 | 架构 A / 技术 A- / 工程标准 C+ / 边界 A+ / 文档 B+ / 安全 B |
-| 02 daemons 等源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/02-daemons-others-source-deep-review.md` | 453 | 用户态工程标准系统性违规 |
-| 03 AirymaxRT 方案审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/03-airymaxrt-solution-review.md` | 887 | **62/C+** |
+| 01 atoms 源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/01-atoms-source-deep-review.md` | 840 | 架构 A / 技术 A- / 工程标准 C+ / 边界 A+ / 文档 B+ / 安全 B |
+| 02 daemons 等源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/02-daemons-others-source-deep-review.md` | 453 | 用户态工程标准系统性违规 |
+| 03 AirymaxRT 方案审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/03-airymaxrt-solution-review.md` | 887 | **62/C+** |
 | agentrt-linux 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v1.0/01-systematic-recheck.md` | 773 | **79/B+** |
 
 ## 附录 B：术语对照

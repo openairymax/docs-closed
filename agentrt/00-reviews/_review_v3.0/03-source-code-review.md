@@ -651,10 +651,10 @@ cupolas.c 同理，在 L109 前增加 CAS 2→0 重置。
 
 | 报告 | 路径 | 版本 |
 |------|------|------|
-| v1.0 综合分析 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
-| v2.0 工程规范审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
-| v2.0 源码修正日志 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.0/fix-log-source-code.md` | 1.0（2026-07-13） |
-| v2.0 修正验证报告 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
+| v1.0 综合分析 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
+| v2.0 工程规范审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
+| v2.0 源码修正日志 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-source-code.md` | 1.0（2026-07-13） |
+| v2.0 修正验证报告 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
 
 ### 7.2 v3.0 深读源码文件清单
 

@@ -54,28 +54,32 @@ docs-closed/agentrt/
 │   ├── 11-orchestrator.md                 #   编排器
 │   └── 12-tool-d.md                       #   工具服务 (tool_d)
 │
-├── _analysis_0.1.1/                       # 0.1.1 分析报告
-│   ├── 01-taskflow-vs-corekern-scheduler-comparison.md  # TaskFlow vs CoreKern 调度器对比
-│   └── 02-repo-split-feasibility-analysis.md             # 仓库拆分可行性分析
+├── 00-reviews/                            # 审查/分析/归档
+│   ├── _analysis_0.1.1/                   #   0.1.1 分析报告
+│   │   ├── 01-taskflow-vs-corekern-scheduler-comparison.md  # TaskFlow vs CoreKern 调度器对比
+│   │   └── 02-repo-split-feasibility-analysis.md             # 仓库拆分可行性分析
+│   ├── _review_0.1.1/                     #   0.1.1 审计报告
+│   │   └── 01-license-audit-report.md     #     许可证全面审计报告
+│   ├── _review_v1.0/                      #   v1.0 审查
+│   ├── _review_v2.0/                      #   v2.0 审查
+│   ├── _review_v2.1/                      #   v2.1 审查
+│   ├── _review_v3.0/                      #   v3.0 审查
+│   ├── _review_v4.0/                      #   v4.0 审查
+│   ├── _archive_conversations/            #   历史对话归档
+│   │   ├── 总线开发-长任务.md                #     总线开发对话记录 1
+│   │   └── 总线开发-长任务2.md               #     总线开发对话记录 2
+│   └── _archive_fix_history/              #   修复工作历史档案
+│       ├── round-archives/                #     各轮次归档
+│       ├── improvement-plans/             #     改进计划
+│       ├── proposal-archives/             #     方案归档
+│       ├── legacy-docs/                   #     旧版文档
+│       └── inspection-reports/            #     检查报告
 │
-├── _review_0.1.1/                         # 0.1.1 审计报告
-│   └── 01-license-audit-report.md         #   许可证全面审计报告
-│
-├── _design_0.1.1/                         # 0.1.1 设计方案
-│   ├── 01-repo-split-proposal.md          #   仓库拆分方案
-│   ├── 02-tech-improvement-plan-v3.0.md   #   技术全面改进方案 v3.0
-│   └── 03-detailed-task-list.md           #   详细任务清单
-│
-├── _archive_conversations/                # 历史对话归档
-│   ├── 总线开发-长任务.md                    #   总线开发对话记录 1
-│   └── 总线开发-长任务2.md                   #   总线开发对话记录 2
-│
-└── _archive_fix_history/                  # 修复工作历史档案
-    ├── round-archives/                    #   各轮次归档
-    ├── improvement-plans/                 #   改进计划
-    ├── proposal-archives/                 #   方案归档
-    ├── legacy-docs/                       #   旧版文档
-    └── inspection-reports/                #   检查报告
+└── 01-designs/                            # 设计方案
+    └── _design_0.1.1/                     #   0.1.1 设计方案
+        ├── 01-repo-split-proposal.md      #     仓库拆分方案
+        ├── 02-tech-improvement-plan-v3.0.md #     技术全面改进方案 v3.0
+        └── 03-detailed-task-list.md       #     详细任务清单
 ```
 
 ---

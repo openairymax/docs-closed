@@ -503,9 +503,9 @@ v2.1 阶段 agentrt 源代码在 **[SC] 共享契约层**和 **banned_functions 
 |---|---|
 | OLK-6.6 六大支柱 | `/home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/50-engineering-standards/10-coding-style/C_Cpp_coding_style.md` |
 | IRON-9 v2 三层共享模型 | `/home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md` |
-| v1.0 atoms 审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/01-atoms-source-deep-review.md` |
-| v1.0 daemons 审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/02-daemons-others-source-deep-review.md` |
-| v2.0 工程审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` |
+| v1.0 atoms 审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/01-atoms-source-deep-review.md` |
+| v1.0 daemons 审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/02-daemons-others-source-deep-review.md` |
+| v2.0 工程审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md` |
 
 ### 8.3 关键证据文件清单
 

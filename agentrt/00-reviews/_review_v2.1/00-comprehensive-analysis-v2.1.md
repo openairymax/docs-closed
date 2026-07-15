@@ -54,16 +54,16 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 
 | Agent | 维度 | 审查范围 | 报告路径 | 行数 |
 |-------|------|---------|---------|------|
-| A1 | agentrt 源码 | `/agentrt/`（~875 个 C/H 文件） | `docs-closed/agentrt/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
-| A2 | AirymaxRT 方案 | `/docs/AirymaxRT/`（88 .md + 3 .drawio） | `docs-closed/agentrt/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
+| A1 | agentrt 源码 | `/agentrt/`（~875 个 C/H 文件） | `docs-closed/agentrt/00-reviews/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
+| A2 | AirymaxRT 方案 | `/docs/AirymaxRT/`（88 .md + 3 .drawio） | `docs-closed/agentrt/00-reviews/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
 | A3 | agentrt-linux 方案 | `/docs/AirymaxOS/` + `/docs-closed/agentrt-linux/` | `docs-closed/agentrt-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
 | A4 | OpenStandards | `/docs/OpenStandards/`（8 文件 4409 行）+ `_research_v1.0/v2.0/v2.1` | `docs/OpenStandards/_research_v2.1/01-open-standards-review-v2.1.md` | 1241 |
-| A5 | 文档规范与质量控制 | 5 个文档子仓库（228 开源 + 225 闭源 .md） | `docs-closed/agentrt/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
+| A5 | 文档规范与质量控制 | 5 个文档子仓库（228 开源 + 225 闭源 .md） | `docs-closed/agentrt/00-reviews/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
 
 ### 1.2 审查基线
 
-- **v1.0 综合分析**：`docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md`
-- **v2.0 工程审查**：`docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md`
+- **v1.0 综合分析**：`docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md`
+- **v2.0 工程审查**：`docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md`
 - **v2.0 文档质控**：`docs-closed/_review_v2.0/01-document-quality-control.md`
 - **v2.0 OpenStandards 优化研究**：`docs/OpenStandards/_research_v2.0/01-open-standards-optimization-v2.md`（1088 行）
 - **IRON-9 v2 三层共享模型**：`docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md`
@@ -749,11 +749,11 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 
 | # | 报告 | 路径 | 行数 |
 |---|------|------|------|
-| 1 | agentrt 源码 v2.1 深度复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
-| 2 | AirymaxRT 整体方案 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
+| 1 | agentrt 源码 v2.1 深度复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
+| 2 | AirymaxRT 整体方案 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
 | 3 | agentrt-linux 方案 v2.1 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
 | 4 | OpenStandards v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs/OpenStandards/_research_v2.1/01-open-standards-review-v2.1.md` | 1241 |
-| 5 | 文档规范与质量控制 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
+| 5 | 文档规范与质量控制 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
 | — | **合计** | — | **4527** |
 
 ### 附录 B：v1.0 → v2.1 评分对比表（完整版）

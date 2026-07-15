@@ -549,7 +549,7 @@
   - 验证：`ctest -R "test_split_" --output-on-failure` → 全部通过
   - **完成说明（2026-07-11）**：B05 `mcp_v1_route_request` 新建 27 用例（protocols/tests/test_mcp_v1_adapter.c），覆盖 9 条路由路径 + NULL 参数 + 边界条件；其余 17 个已拆分函数经审计确认已有现有测试文件覆盖。测试期间修复 `mcp_v1_handle_prompts_get` 中 3 项预存 bug（类型混淆/双重引号/内存泄漏）。全项目 ctest 108/108 通过，无 ASan 泄漏。
 - [x] **P0.19.8**: 第三档长尾治理计划文档化
-  - 新增 `docs-closed/agentrt/_design_0.1.1/CCN_LONG_TAIL_REMEDIATION.md`：列出 872 个 CCN > 15 的函数清单（BLOCK 5 + FAIL 200 + WARN 662）+ 四阶段治理路线图
+  - 新增 `docs-closed/agentrt/01-designs/_design_0.1.1/CCN_LONG_TAIL_REMEDIATION.md`：列出 872 个 CCN > 15 的函数清单（BLOCK 5 + FAIL 200 + WARN 662）+ 四阶段治理路线图
   - 纳入 v0.1.1 收尾 → v1.0.1 M1~M6+ 路线图
   - 验证：✅ 文档存在且函数清单完整
 

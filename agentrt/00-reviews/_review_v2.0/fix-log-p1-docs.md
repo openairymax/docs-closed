@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **修复范围**： `docs/AirymaxRT/`（仅开源文档，不含源码、闭源文档、`docs/AirymaxOS/`）\
 > **修复日期**： 2026-07-13\
 > **修复版本**： 0.1.1（文档体系完成）\
-> **修复依据**： `docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` P1 级问题清单
+> **修复依据**： `docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md` P1 级问题清单
 
 ---
 

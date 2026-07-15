@@ -11,7 +11,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **日期**: 2026-07-14
 > **审查范围**: `docs/AirymaxRT/` + `docs-closed/agentrt/` + `docs/AirymaxOS/50-engineering-standards/`（SSoT）+ `agentrt/` 源码（833 文件）+ [SC] 6 头文件
 > **审查性质**: 仅审查，不修改任何文件
-> **基线**: v3.0 修正后预估 ~76/B（`docs-closed/agentrt/_review_v3.0/fix-verification-report-v3.md`）
+> **基线**: v3.0 修正后预估 ~76/B（`docs-closed/agentrt/00-reviews/_review_v3.0/fix-verification-report-v3.md`）
 > **审查 Agent**: Agent 4（跨文档一致性与 SSoT）
 
 ---

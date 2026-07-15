@@ -12,7 +12,7 @@
 > **SPDX-License-Identifier**: AGPL-3.0-or-later OR Apache-2.0  
 > **审查范围**: `docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` [SC] 6 头文件 + `docs/AirymaxOS/50-engineering-standards/`（仅引用）  
 > **审查性质**: 仅审查，不修改任何文件  
-> **基线**: v2.0 修正后预估 72/B-（`docs-closed/agentrt/_review_v2.0/fix-verification-report.md`）
+> **基线**: v2.0 修正后预估 72/B-（`docs-closed/agentrt/00-reviews/_review_v2.0/fix-verification-report.md`）
 
 ---
 

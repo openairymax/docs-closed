@@ -179,7 +179,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
   - `30-interfaces/07-rpc-api/README.md:82`
   - `30-interfaces/08-service-discovery/README.md:68`
   - `140-application-development/01-sdk/README.md:72`
-- **问题**：`ls docs-closed/0.1.1详细任务清单.md` = No such file or directory。v2.0 P0-9 修正日志（`fix-log-p0-docs.md` §遗留说明 1）已承认"P0-9 修正了 `DocsClosed/` → `docs-closed/` 的目录大小写，但该文件本身在 `docs-closed/` 下的具体位置未进一步验证"。实际该文件不存在，类似命名文件位于 `docs-closed/agentrt/_archive_fix_history/proposal-archives/0.1.1技术全面改进方案*.md`。
+- **问题**：`ls docs-closed/0.1.1详细任务清单.md` = No such file or directory。v2.0 P0-9 修正日志（`fix-log-p0-docs.md` §遗留说明 1）已承认"P0-9 修正了 `DocsClosed/` → `docs-closed/` 的目录大小写，但该文件本身在 `docs-closed/` 下的具体位置未进一步验证"。实际该文件不存在，类似命名文件位于 `docs-closed/agentrt/00-reviews/_archive_fix_history/proposal-archives/0.1.1技术全面改进方案*.md`。
 - **修复**：评估目标文件是否应为 `0.1.1技术全面改进方案_v1.0.md` 或其他；或删除引用（闭源文件不应在开源文档中引用）。
 - **工作量**：~0.3h
 
@@ -376,11 +376,11 @@ ls docs-closed/0.1.1详细任务清单.md
 
 | # | 报告 | 路径 | 版本 |
 |---|------|------|------|
-| 1 | v1.0 综合分析 | `docs-closed/agentrt/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
-| 2 | v2.0 工程规范与代码审查 | `docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
-| 3 | v2.0 开源文档 P0 修正日志 | `docs-closed/agentrt/_review_v2.0/fix-log-p0-docs.md` | 1.0（2026-07-13） |
-| 4 | v2.0 开源文档 P1 修正日志 | `docs-closed/agentrt/_review_v2.0/fix-log-p1-docs.md` | 1.0（2026-07-13） |
-| 5 | v2.0 修正验证报告 | `docs-closed/agentrt/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
+| 1 | v1.0 综合分析 | `docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md` | 1.0（2026-07-13） |
+| 2 | v2.0 工程规范与代码审查 | `docs-closed/agentrt/00-reviews/_review_v2.0/01-engineering-code-review-v2.md` | 2.0（2026-07-13） |
+| 3 | v2.0 开源文档 P0 修正日志 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p0-docs.md` | 1.0（2026-07-13） |
+| 4 | v2.0 开源文档 P1 修正日志 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-log-p1-docs.md` | 1.0（2026-07-13） |
+| 5 | v2.0 修正验证报告 | `docs-closed/agentrt/00-reviews/_review_v2.0/fix-verification-report.md` | 1.0（2026-07-13） |
 
 ---
 
