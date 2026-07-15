@@ -4,16 +4,16 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.2.7（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正 + v2.1 系统性修复：OS-FMT 加入前缀表、[SC] 头文件清单 bpf_struct_ops.h→syscalls.h + SSoT 对齐、ES-SEL4-7 分类消解为 P2（5 强制+5 P2）、airymaxos- 前缀清除（8 子仓裸名）、airymaxos_*→airy_* 前缀修正 + v1.0 系统性复核修复：品味哲学 8 项隐性智慧文档化 OS-STD-STY-005~012、Rust OS-STD-045~046 补全、OS-KER-007/008 跳号废弃说明、ES-SEL4-9/10 状态分类消解、OS-SEC 三重编号冲突消解、v1.0 报告 11 项问题全部修复）/ 1.0.1（开发）
-> **最后更新**: 2026-07-14
+> **版本**: 0.2.8（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正 + v2.1 系统性修复：OS-FMT 加入前缀表、[SC] 头文件清单 bpf_struct_ops.h→syscalls.h + SSoT 对齐、ES-SEL4-7 分类消解为 P2（5 强制+5 P2）、airymaxos- 前缀清除（8 子仓裸名）、airymaxos_*→airy_* 前缀修正 + v1.0 系统性复核修复：品味哲学 8 项隐性智慧文档化 OS-STD-STY-005~012、Rust OS-STD-045~046 补全、OS-KER-007/008 跳号废弃说明、ES-SEL4-9/10 状态分类消解、OS-SEC 三重编号冲突消解、v1.0 报告 11 项问题全部修复 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解（snake_case 命名规则保留 + 整数类型选择让位至 OS-STD-CODE-032）+ 跨子系统 OS-STD-0xx 编号冲突消解（60-driver-model → OS-STD-DRV-0xx、90-observability → OS-STD-OBS-0xx、OS-STD-017 元规则提升为 OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用））+ 闭源 03-ebpf-spec.md 同步引用更新）/ 1.0.1（开发）
+> **最后更新**: 2026-07-15
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）
 > **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
 > **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ 开源手册 `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（17 类规则编号体系）
 > **理论根基**: Linux 6.6 内核基线（openEuler OLK-6.6 标杆）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
 > **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 Linux 6.6 内核基线（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
-> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`_review_0.9.0/` 7 份报告）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
+> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ 开源目录结构设计文档（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，v0.2.4 ~583 行，SSoT 依赖 `50-engineering-standards/09-ssot-registry.md`）
 
 ---
 
@@ -57,7 +57,7 @@ AirymaxOS 工程标准建立在三大支柱之上，缺一不可。
 |------|---------|---------|
 | **Linux 内核工程思想** | Linux 6.6（OLK-6.6）内核源代码深度研究提炼 | 双层稳定性哲学、策略机制分离、渐进式开发、审查优先文化、补丁生命周期、维护者层级制度 |
 | **Airymax 五维正交 24 原则** | `00-architectural-principles.md`（S/K/C/E/A 五维） | 体系并行论、反馈闭环、层次分解、内核极简、接口契约化、服务隔离、可插拔策略、安全内生、可观测性、资源确定性等 24 条核心原则 |
-| **agentrt 17 类规则编号体系** | `0.1.1工程标准规范手册.md`（IRON/BAN/STD/ACC/FOUND 等） | 17 类规则骨架、自动化强制执行哲学、四层自动化铁律、三层集成验证、验收标准量化 |
+| **agentrt 17 类规则编号体系** | `agentrt工程标准规范手册.md` v29.0（IRON/BAN/STD/ACC/FOUND 等 17 类 751 条） | 17 类规则骨架、自动化强制执行哲学、四层自动化铁律、三层集成验证、验收标准量化。SSoT 登记：`09-ssot-registry.md` §10 |
 
 **三大支柱的正交耦合关系**：Linux 内核工程思想提供严肃性基底（内核工程的普遍规律），五维正交 24 原则提供 Airymax 自身的设计语言（Airymax 在这些规律上的立场），17 类规则编号体系提供可执行性骨架（这些立场如何被强制执行）。三者并非简单叠加，而是正交耦合——每条规则都可以同时追溯到：一份 Linux 内核工程传统的沉淀 + 一条五维正交原则的支撑 + 一个 17 类规则编号。
 
@@ -956,7 +956,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 > **OS-IRON-010**: agentrt-linux 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 Linux 6.6 内核基线工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
 
-本章基于 v0.2.1 源代码深度研究（`_research_0.2.1/01-source-code-engineering-study.md`，489 行），将研究成果正式固化为工程标准。研究的范围与方法：
+本章基于 v0.2.1 源代码深度研究（`00-reviews/_research_0.2.1/01-source-code-engineering-study.md`，489 行），将研究成果正式固化为工程标准。研究的范围与方法：
 
 | 维度 | OLK-6.6 | seL4 |
 |------|---------|------|
@@ -1083,7 +1083,7 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 ### 13.2 目录结构设计原则
 
-8 子仓的目录结构设计遵循以下原则（源自 v0.2.4 生产级修正版设计文档 `_design_0.2.4/01-agentrt-linux-directory-structure.md`，1903 行，含 v0.2.4-review 二次审查 8 项修正）：
+8 子仓的目录结构设计遵循以下原则（源自 v0.2.4 生产级修正版设计文档 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`，1903 行，含 v0.2.4-review 二次审查 8 项修正）：
 
 > **OS-STD-061**: 8 子仓目录结构必须遵循以下 7 项设计原则：
 
@@ -1134,7 +1134,7 @@ kernel/
 
 ### 13.4 其他 7 子仓目录结构概要
 
-> **OS-STD-062**: 其余 7 子仓的完整目录结构见 `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
+> **OS-STD-062**: 其余 7 子仓的完整目录结构见 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
 
 | 子仓 | 关键目录 | 构建系统 | seL4 借鉴点 | v0.2.4 修正 |
 |------|---------|---------|------------|------------|
@@ -1246,11 +1246,13 @@ formal-verification/
 | R-04 合规检查增补 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | |
 | **合计** | | | | **~40h** |
 
-> **注**: 4 项 P2 增强建议合计 ~40h，非阻断项，在 1.0.1 开发阶段增量落地。落地后 agentrt-linux 综合成熟度将从 100/100（A+）进一步提升至工程思想深度落地的新高度。
+> **注**: 4 项 P2 增强建议合计 ~40h，非阻断项。根据版本路线规划（非设计延期）：0.1.1 阶段完成 P0/P1 全部强制规则与设计文档，P2 增强建议作为 1.0.1 开发阶段增量落地——此为版本路线规划（IRON-8 版本过渡规则），非设计层面延期至 1.0.1。落地后 agentrt-linux 综合成熟度将从 100/100（A+）进一步提升至工程思想深度落地的新高度。
 
 ---
 
 ## 附录 A 规则编号注册表
+
+> **SSoT 声明（2026-07-15 升级）**：本附录为闭源侧摘要登记，**完整规则编号登记的唯一权威来源**为 [`09-ssot-registry.md`](../../docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)（已升级为 Airymax 全局规则 SSoT 注册表，覆盖 AirymaxOS `OS-*` 第 2-9 章 + agentrt 无前缀第 10 章 17 类 751 条规则）。当本附录与 SSoT 冲突时，以 SSoT 为准。本附录仅登记闭源侧关键规则摘要，完整 OS-KER（155+条）/OS-STD（含 CODE/FMT/STY/GOV/DRV/OBS 子域）/OS-ACC（110 项）/OS-SEC（54 条）请直接查阅 SSoT 对应章节。
 
 ### A.1 OS-IRON 工程铁律（不可妥协）
 
@@ -1270,6 +1272,7 @@ formal-verification/
 | OS-IRON-012 | seL4 借鉴仅限架构层（ES-SEL4-1~5） | §12.6 |
 | OS-IRON-013 | 8 子仓独立 git 仓库 + submodule 管理 | §13.1 |
 | OS-IRON-014 | [SC] 共享契约层 6 头文件单一数据源（禁止物理副本） | §13.1 |
+| OS-IRON-015 | 编号管理元规则——OS-KER / OS-STD / OS-OBS / OS-DRV 等所有规则编号一经分配不得复用；废弃规则标记 `DEPRECATED` 但保留编号（原 OS-STD-017，2026-07-15 提升） | SSoT §2 |
 
 ### A.2 OS-BAN 禁止规则
 
@@ -1409,7 +1412,7 @@ Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）在本规范中的�
 
 ## 附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）
 
-> **v0.2.5 修正（P0-CRITICAL-02 + P1-MAJOR-06 + P2-MINOR-05）**：附录 D 标题原为"ES-SEL4-1~10 工程思想借鉴映射"，与 §12.6 OS-IRON-012"ES-SEL4-1~5"声明和 §12.8"ES-SEL4-6~10 作为 P2 增强建议"定位矛盾。现已修正为"ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）"，消解三重冲突。ES-SEL4 借鉴范围三作用域：5 项强制（OS-IRON-012 架构层）/ 10 项强制+P2（本附录）/ 54 项研究（`_research_0.2.5/01-sel4-deep-analysis.md` 研究范围，非借鉴范围）。
+> **v0.2.5 修正（P0-CRITICAL-02 + P1-MAJOR-06 + P2-MINOR-05）**：附录 D 标题原为"ES-SEL4-1~10 工程思想借鉴映射"，与 §12.6 OS-IRON-012"ES-SEL4-1~5"声明和 §12.8"ES-SEL4-6~10 作为 P2 增强建议"定位矛盾。现已修正为"ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）"，消解三重冲突。ES-SEL4 借鉴范围三作用域：5 项强制（OS-IRON-012 架构层）/ 10 项强制+P2（本附录）/ 54 项研究（`00-reviews/_research_0.2.5/01-sel4-deep-analysis.md` 研究范围，非借鉴范围）。
 
 seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方式。ES-SEL4-1~5 在架构层强制借鉴，ES-SEL4-6~10 作为 P2 增强建议增量落地。
 

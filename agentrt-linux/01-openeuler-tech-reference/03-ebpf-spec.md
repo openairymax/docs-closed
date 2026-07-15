@@ -366,7 +366,7 @@ int bpf_sched_cfs_select_rq(struct sched_migrate_ctx *ctx)
 | 两阶段验证 | [SS] 语义同源，实现独立 |
 | 寄存器类型系统 | [SS] 语义同源 |
 | 复杂度上限 | [SS] 遵循相同上限（OS-STD-010） |
-| 验证器日志落审计 | AirymaxOS 强制落 `/var/log/airymaxos/bpf-load.log`（OS-STD-012） |
+| 验证器日志落审计 | AirymaxOS 强制落 `/var/log/airymaxos/bpf-load.log`（OS-STD-OBS-012，2026-07-15 从 OS-STD-012 改名消解跨子系统冲突） |
 
 ---
 
@@ -525,7 +525,7 @@ graph TD
 | libbpf 框架 | AirymaxOS 沿用 libbpf |
 | BTF CO-RE 重定位 | OS-OBS-012 强制 CO-RE |
 | 显式 link 生命周期 | OS-OBS-018 强制 `bpf_link__destroy` |
-| .o 文件随内核发布 | OS-STD-014 存放 `/usr/lib/airymaxos/bpf/` |
+| .o 文件随内核发布 | OS-STD-OBS-014 存放 `/usr/lib/airymaxos/bpf/`（2026-07-15 从 OS-STD-014 改名消解跨子系统冲突） |
 
 ---
 
@@ -673,7 +673,7 @@ bpftool prog load agent_tracer.bpf.o /sys/fs/bpf/agent_tracer \
 |---------------|----------------------------|
 | bpf_iter 可观测性 | AirymaxOS 沿用 bpf_iter |
 | bpftool 工具 | AirymaxOS 随内核发布 bpftool |
-| 验证器日志 | OS-STD-012 强制落审计 |
+| 验证器日志 | OS-STD-OBS-012 强制落审计（2026-07-15 从 OS-STD-012 改名消解跨子系统冲突） |
 
 ---
 

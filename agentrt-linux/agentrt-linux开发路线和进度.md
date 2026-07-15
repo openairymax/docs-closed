@@ -4,13 +4,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: 0.2.7（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新）/ 1.0.1（开发）
-> **最后更新**: 2026-07-14
+> **版本**: 0.2.8（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解）/ 1.0.1（开发）
+> **最后更新**: 2026-07-15
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态
-> **关联研究**: `_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突
+> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
 > **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1，详见 `agentrt-linux基本工程标准规范.md` v0.2.7
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1 + v1.0 大检查（2026-07-15：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解——60-driver-model→OS-STD-DRV-0xx、90-observability→OS-STD-OBS-0xx、OS-STD-017→OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用而改用 OS-IRON-015）；所有规则编号统一登记 SSoT §9.4；闭源 03-ebpf-spec.md 同步引用更新），详见 `agentrt-linux基本工程标准规范.md` v0.2.8
 
 ---
 
@@ -880,16 +880,16 @@ v0.2.1 阶段完成了两项关键研究，v0.2.4 完成生产级目录结构修
 
 | 研究成果 | 文档 | 行数 | 对开发路线的影响 |
 |---------|------|------|----------------|
-| OLK-6.6 + seL4 源代码工程思想研究 | `_research_0.2.1/01-source-code-engineering-study.md` | 489 | 确立"Linux 6.6 为基、seL4 为鉴"工程取向，提取 ES-OLK-1~13 + ES-SEL4-1~10 + 双源融合裁决 16 维度 |
-| AirymaxOS 方案再检查 | `_research_0.2.1/02-airymaxos-recheck-report.md` | 235 | 综合成熟度维持 100/100（A+），D1 编码风格 16/16 全对齐、D2 OLK-6.6 思想 12/13 覆盖、D3 seL4 借鉴 8/10 借鉴 |
-| 8 子仓完整项目目录结构设计 | `_design_0.2.4/01-agentrt-linux-directory-structure.md` | 1903 | 为 M0 阶段 8 子仓初始化提供生产级目录结构蓝图（v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正，含模型 A 完整 24 目录 + security 扁平 + memory 三方边界 + corekern/ 与 kernel/ 协同关系） |
+| OLK-6.6 + seL4 源代码工程思想研究 | `00-reviews/_research_0.2.1/01-source-code-engineering-study.md` | 489 | 确立"Linux 6.6 为基、seL4 为鉴"工程取向，提取 ES-OLK-1~13 + ES-SEL4-1~10 + 双源融合裁决 16 维度 |
+| AirymaxOS 方案再检查 | `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md` | 235 | 综合成熟度维持 100/100（A+），D1 编码风格 16/16 全对齐、D2 OLK-6.6 思想 12/13 覆盖、D3 seL4 借鉴 8/10 借鉴 |
+| 8 子仓完整项目目录结构设计 | `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md` | 1903 | 为 M0 阶段 8 子仓初始化提供生产级目录结构蓝图（v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正，含模型 A 完整 24 目录 + security 扁平 + memory 三方边界 + corekern/ 与 kernel/ 协同关系） |
 
 ### 12.2 对 M0 的影响：8 子仓目录结构骨架创建
 
 v0.2.1 启动、v0.2.3 修正、v0.2.4 生产级修正 + v0.2.4-review 二次审查修正的 8 子仓目录结构设计（1903 行）为 M0 阶段提供了完整蓝图。v0.2.4 落实用户三项架构裁决：(1) kernel/ 采用模型 A（完整 Linux 6.6 fork）；(2) security/ 采用方案 A（扁平对齐 OLK-6.6）；(3) 核心价值标准"生产级 Linux 发行版"。v0.2.4 修正了 v0.2.3 审查报告的 3 P0 + 5 P1 + 4 P2 = 12 项发现。**v0.2.4-review 二次审查**追加修正 8 项（2 P0 + 2 P1 + 3 P2 + 1 P3），核心架构裁决：corekern/ 是 Airymax 微核心抽象层（非替代上游 kernel/），模型 A 完整性维持 24/24 = 100%；补全遗漏的 kernel/tools/LICENSES/rust 4 个上游目录。M0 阶段的"8 子仓初始化与目录结构标准化"任务（原 32h）现在可以直接基于 v0.2.4-review 修正后的设计文档创建目录骨架，kernel 子仓需按模型 A 创建完整 24 上游子系统目录（含 kernel/tools/LICENSES/rust）。
 
 **M0 新增交付物**：
-- 8 子仓目录结构骨架创建（基于 `_design_0.2.4/01-agentrt-linux-directory-structure.md`）
+- 8 子仓目录结构骨架创建（基于 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`）
 - kernel 子仓模型 A 完整上游子系统目录骨架（fs/net/block/drivers/mm/security 等基于 OLK-6.6 fork）
 - Makefile.airymaxos 版本四元组定义文件（对齐 OLK-6.6 Makefile.oever）
 - [SC] 共享契约层 6 个头文件骨架创建（`include/airymax/`）
