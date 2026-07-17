@@ -16,6 +16,8 @@
 | [04-missing-design-docs.md](04-missing-design-docs.md) | 缺失设计文档清单：需要补充完成的文档 | P0 |
 | [05-survival-layer-design.md](05-survival-layer-design.md) | [DSL] 降级生存层设计缺陷 | P1 |
 | [06-ipc-data-plane-autonomy-report.md](06-ipc-data-plane-autonomy-report.md) | IPC 数据面自治缺陷报告 | P1 |
+| [07-airymax-unify-design-assessment.md](07-airymax-unify-design-assessment.md) | Airymax Unify Design 技术方案重构评估（5 大组件 + 用户额外想法 + OLK 6.6/seL4 源码对照） | P0 |
+| [08-conflicts-and-defects-checklist.md](08-conflicts-and-defects-checklist.md) | agentrt-linux 方案冲突点与问题清单（24 项问题 + 解决能力评估） | P0 |
 
 ## 核心结论
 
