@@ -4,16 +4,16 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.2.8（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正 + v2.1 系统性修复：OS-FMT 加入前缀表、[SC] 头文件清单 bpf_struct_ops.h→syscalls.h + SSoT 对齐、ES-SEL4-7 分类消解为 P2（5 强制+5 P2）、airymaxos- 前缀清除（8 子仓裸名）、airymaxos_*→airy_* 前缀修正 + v1.0 系统性复核修复：品味哲学 8 项隐性智慧文档化 OS-STD-STY-005~012、Rust OS-STD-045~046 补全、OS-KER-007/008 跳号废弃说明、ES-SEL4-9/10 状态分类消解、OS-SEC 三重编号冲突消解、v1.0 报告 11 项问题全部修复 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解（snake_case 命名规则保留 + 整数类型选择让位至 OS-STD-CODE-032）+ 跨子系统 OS-STD-0xx 编号冲突消解（60-driver-model → OS-STD-DRV-0xx、90-observability → OS-STD-OBS-0xx、OS-STD-017 元规则提升为 OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用））+ 闭源 03-ebpf-spec.md 同步引用更新）/ 1.0.1（开发）
-> **最后更新**: 2026-07-15
+> **版本**: v1.1（Capability Folding 集成版）（同步开源手册 v1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + ES-SEL4 数量冲突消解 + 附录 D 标题修正 + v2.1 系统性修复：OS-FMT 加入前缀表、[SC] 头文件清单 bpf_struct_ops.h→syscalls.h + SSoT 对齐、ES-SEL4-7 分类消解为 P2（5 强制+5 P2）、airymaxos- 前缀清除（8 子仓裸名）、airymaxos_*→airy_* 前缀修正 + v1.0 系统性复核修复：品味哲学 8 项隐性智慧文档化 OS-STD-STY-005~012、Rust OS-STD-045~046 补全、OS-KER-007/008 跳号废弃说明、ES-SEL4-9/10 状态分类消解、OS-SEC 三重编号冲突消解、v1.0 报告 11 项问题全部修复 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解（snake_case 命名规则保留 + 整数类型选择让位至 OS-STD-CODE-032）+ 跨子系统 OS-STD-0xx 编号冲突消解（60-driver-model → OS-STD-DRV-0xx、90-observability → OS-STD-OBS-0xx、OS-STD-017 元规则提升为 OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用））+ 闭源 03-ebpf-spec.md 同步引用更新 + v1.1 Capability Folding 集成（2026-07-20：IRON-9 v3 四层模型 + 10 个 [SC] 头文件迁入 `include/uapi/linux/airymax/` + 6 条硬约束 H1-H6 + 12 daemon `*_d` 命名统一 + sched_tac 调度框架 ADR-013））/ 1.0.1（开发）
+> **最后更新**: 2026-07-20
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）
-> **核心约束**: IRON-9 v2 同源且部分代码共享——[SC] 共享契约层 6 个头文件落地于 `include/airymax/`
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）+ v1.1 集成审查（2026-07-20：IRON-9 v3 四层模型 + [SC] 10 头文件 UAPI 迁移 + Capability Folding H1-H6）
+> **核心约束**: IRON-9 v3 同源且部分代码共享——[SC] 共享契约层 10 个头文件落地于 `include/uapi/linux/airymax/`（kernel UAPI 路径，H1 硬约束：magic 0x41524531 / capability_badge offset 40-47）
 > **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ 开源手册 `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（17 类规则编号体系）
 > **理论根基**: Linux 6.6 内核基线（openEuler OLK-6.6 标杆）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
 > **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 Linux 6.6 内核基线（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
-> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ 开源目录结构设计文档（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，v0.2.4 ~583 行，SSoT 依赖 `50-engineering-standards/09-ssot-registry.md`）
+> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/07-directory-structure.md` v2.0，~1800 行，SSoT 依赖 `50-engineering-standards/09-ssot-registry.md`）
 
 ---
 
@@ -27,12 +27,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [第 6 章 工具链与自动化](#第-6-章-工具链与自动化)
 - [第 7 章 维护者制度与治理](#第-7-章-维护者制度与治理)
 - [第 8 章 规范符合性检查](#第-8-章-规范符合性检查)
-- [第 9 章 IRON-9 v2 三层共享模型](#第-9-章-iron-9-v2-三层共享模型)
+- [第 9 章 IRON-9 v3 四层共享模型](#第-9-章-iron-9-v3-四层共享模型)
 - [第 10 章 Euler 标准兼容性](#第-10-章-euler-标准兼容性)
 - [第 11 章 禁词清单与处罚机制](#第-11-章-禁词清单与处罚机制)
 - [第 12 章 "Linux 6.6 为基、seL4 为鉴"工程取向](#第-12-章-linux-66-为基-sel4-为鉴工程取向)
 - [第 13 章 8 子仓目录结构工程标准](#第-13-章-8-子仓目录结构工程标准)
 - [第 14 章 P2 增强建议落地规划](#第-14-章-p2-增强建议落地规划)
+- [第 15 章 v1.1 Capability Folding 与 6 条硬约束](#第-15-章-v11-capability-folding-与-6-条硬约束)
 - [附录 A 规则编号注册表](#附录-a-规则编号注册表)
 - [附录 B 五维正交 24 原则映射](#附录-b-五维正交-24-原则映射)
 - [附录 C ES-OLK-1~13 工程思想映射](#附录-c-es-olk-1-13-工程思想映射)
@@ -63,9 +64,9 @@ AirymaxOS 工程标准建立在三大支柱之上，缺一不可。
 
 ### 1.3 与 agentrt 工程标准的关系
 
-AirymaxOS 与 agentrt（AirymaxAgentRT）遵循 **IRON-9 v2 同源且部分代码共享** 原则（详见第 9 章）。两者关系如下：
+AirymaxOS 与 agentrt（AirymaxAgentRT）遵循 **IRON-9 v3 同源且部分代码共享（四层模型：[SC]+[SS]+[IND]+[DSL]）** 原则（详见第 9 章）。两者关系如下：
 
-- **同源**：共享 Airymax 五维正交 24 原则作为顶层设计哲学；共享 17 类规则编号体系骨架；共享 E-7 文档即代码、E-6 错误可追溯、E-1 安全内生等核心工程观原则。共享契约层代码（`include/airymax/` 头文件库）。
+- **同源**：共享 Airymax 五维正交 24 原则作为顶层设计哲学；共享 17 类规则编号体系骨架；共享 E-7 文档即代码、E-6 错误可追溯、E-1 安全内生等核心工程观原则。共享契约层代码（`include/uapi/linux/airymax/` 头文件库，10 个 [SC] 头文件）。
 - **独立**：AirymaxOS 是 OS 发行版，承担内核态严肃性责任，其工程标准必须独立处理内核 ABI 稳定性、内核内部 API 不稳定性、补丁生命周期、维护者层级制度等 agentrt 不涉及的领域。
 - **互操作**：agentrt 在 AirymaxOS 上运行时，两端工程标准形成天然互补——agentrt 遵循其用户态运行时规范，AirymaxOS 遵循其内核发行版规范，两端通过共享契约层代码实现无适配层互操作。
 
@@ -441,8 +442,8 @@ AirymaxOS 在双层稳定性基础上扩展为 4 层：
 > **OS-IRON-003**: 机制留在内核（提供能力），策略外移至用户空间或可插拔模块。
 
 这是五维正交 K-4 可插拔策略原则的内核级体现。具体实践：
-- **sched_ext BPF 调度策略**：调度机制（`kernel/sched/ext.c`）留在内核，调度策略（BPF 程序）运行在用户空间可观测、可热更新的 BPF 沙箱中。
-- **LSM 安全策略**：安全机制（LSM 钩子框架）留在内核，具体安全策略（SELinux/AppArmor/Landlock）以可插拔模块形式加载。
+- **sched_tac 调度框架**：调度机制（`kernel/sched/`）留在内核，调度策略由 sched_tac 框架以 SCHED_DEADLINE/SCHED_FIFO 形式承载 agentrt 专属调度类（ADR-013 禁止 sched_ext/SCHED_AGENT，因 Linux 6.6 主线无 sched_ext）。
+- **LSM 安全策略**：安全机制（LSM 钩子框架，纯 C LSM airy_lsm，H5 硬约束）留在内核，具体安全策略（Cupolas 用户态策略）以可插拔方式加载。
 
 ### 4.4 渐进式开发
 
@@ -679,12 +680,12 @@ PR 提交
 格式参考 Linux 内核 `MAINTAINERS`：
 
 ```
-AIRYMAXOS SCHEDULER (SCHED_EXT 策略)
+AIRYMAXOS SCHEDULER (sched_tac 策略)
 M:  Maintainer Name <maintainer@airymaxos.dev>
 L:  os-sched@airymaxos.dev
 S:  Mainlined
 F:  kernel/sched/
-F:  include/airymax/sched.h
+F:  include/uapi/linux/airymax/sched.h
 F:  Documentation/scheduler/
 ```
 
@@ -725,7 +726,7 @@ DCO 通过 Signed-off-by 标签在每次提交中声明，CI 自动验证。
 # kernel CODEOWNERS
 kernel/sched/     @airymaxos/sched-maintainers
 kernel/security/  @airymaxos/security-maintainers
-include/airymax/  @airymaxos/contract-maintainers
+include/uapi/linux/airymax/  @airymaxos/contract-maintainers
 ```
 
 ---
@@ -738,7 +739,7 @@ include/airymax/  @airymaxos/contract-maintainers
 |------|--------|---------|----------|---------|
 | STD-DOC-01 | Copyright 头部存在 | `grep -L "Copyright (c) 2025-2026 SPHARX"` | P0-CRITICAL | 是 |
 | STD-DOC-02 | 开源文档禁词检查 | 正则匹配 forbidden-words.conf | P0-CRITICAL | 是 |
-| STD-DOC-03 | IRON-9 v2 三层标注 | 深度修订文档必须有 [SC]/[SS]/[IND] 标注 | P1-MAJOR | 是 |
+| STD-DOC-03 | IRON-9 v3 四层标注 | 深度修订文档必须有 [SC]/[SS]/[IND]/[DSL] 标注 | P1-MAJOR | 是 |
 | STD-DOC-04 | 文档版本号一致性 | VERSION 文件与文档头部版本号比对 | P1-MAJOR | 是 |
 | STD-DOC-05 | 文档链接有效性 | `scripts/check_doc_links.py` | P1-MAJOR | 是 |
 | STD-DOC-06 | Mermaid 图表完整性 | 架构文档必须有至少 1 个 Mermaid 图表 | P2-MINOR | 否 |
@@ -791,40 +792,45 @@ include/airymax/  @airymaxos/contract-maintainers
 
 ---
 
-## 第 9 章 IRON-9 v2 三层共享模型
+## 第 9 章 IRON-9 v3 四层共享模型
 
-### 9.1 三层共享模型概述
+### 9.1 四层共享模型概述
 
-IRON-9 v2（2026-07-07 用户决策变更）确立了 agentrt 与 AirymaxOS **同源且部分代码共享**的关系。三层模型如下：
+IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且部分代码共享**的关系。v3 在 v2 三层模型基础上新增 [DSL] 降级生存层，形成四层模型：
 
 | 层次 | 共享程度 | 内容 | 组织方式 |
 |------|---------|------|---------|
-| **[SC] 共享契约层** | 完全共享代码 | 6 个核心头文件 | `include/airymax/` 独立头文件库，两端共同依赖 |
-| **[SS] 语义同源层** | API 签名相同，实现独立 | 调度、安全、IPC、记忆模型 | 各自独立实现，通过契约层保证互操作 |
+| **[SC] 共享契约层** | 完全共享代码 | **10 个核心头文件**（error.h / log_types.h / ipc.h / sched.h / memory_types.h / security_types.h / cognition_types.h / syscalls.h / uapi_compat.h / lsm_types.h） | `kernel/include/uapi/linux/airymax/` 唯一物理宿主，两端共同依赖 |
+| **[SS] 语义同源层** | API 签名相同，实现独立 | 调度、安全、IPC、记忆模型、Capability Folding Badge 校验语义 | 各自独立实现，通过契约层保证互操作 |
 | **[IND] 完全独立层** | 完全独立 | 驱动、运行时、硬件相关 | 各自独立仓库，无依赖关系 |
+| **[DSL] 降级生存层** | 最小生存子集 | `#ifdef AIRY_SC_FALLBACK` 降级块：`capability_badge=0`、跳过 C-S9、退化到 `airy_cap_check()` slowpath 兜底（基于 `agent_caps[1024]` 静态数组）| 各自独立仓库（受 [SC] 头文件 `AIRY_SC_FALLBACK` 宏驱动） |
 
-### 9.2 [SC] 共享契约层：6 个头文件
+### 9.2 [SC] 共享契约层：10 个头文件（OS-IRON-008）
 
-> **OS-IRON-008**: 共享契约层 6 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。
+> **OS-IRON-008**: 共享契约层 10 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。OS-IRON-008 修订（v1.1）：[SC] 物理宿主迁移至 `kernel/include/uapi/linux/airymax/`（kernel UAPI 路径，v2 旧宿主路径见 §9.6 历史对比表），对齐 ES-OLK-3/ES-OLK-6 UAPI 物理隔离原则与 H1 硬约束（magic 0x41524531 / capability_badge offset 40-47）。
 
-| 头文件 | 内容 | 变更审批 |
-|--------|------|---------|
-| `memory_types.h` | MemoryRovol L1-L4 数据结构 + GFP 掩码语义 + PMEM 持久化接口 | 架构委员会 + 两端维护者 |
-| `security_types.h` | POSIX capability 41 ID + LSM 钩子 252 ID + Cupolas blob 布局 + capability 派生模型（`airy_capability_t` + MDB 派生树）+ capability 引用类型（`cap_t` = `uint64_t`）+ Vault backend + 策略裁决 4 值枚举 | 架构委员会 + 两端维护者 |
-| `cognition_types.h` | CoreLoopThree 阶段枚举 + Thinkdual 模式枚举 + LLM 推理阶段枚举 + 上下文结构 + Token 能效指标 + GPU/NPU 描述符 + 统一错误码类型（`airy_err_t` = `int32_t`） | 架构委员会 + 两端维护者 |
-| `sched.h` | SCHED_EXT 调度类编号约束（复用内核 SCHED_EXT=7，禁止 SCHED_AGENT 宏）+ 任务描述符（magic 0x41475453 'AGTS'）+ vtime 类型与衰减公式 + 优先级范围 0-139 + AIRY_SLICE_DFL_MS（20ms） | 架构委员会 + 两端维护者 |
-| `ipc.h` | IPC magic（0x41524531 'ARE1'）+ 128B 消息头结构（`struct airy_ipc_msg_hdr`）+ SQE/CQE 操作码与标志位 | 架构委员会 + 两端维护者 |
-| `syscalls.h` | Syscall 编号体系（12 核心 + 12 预留 = 24 槽位） | 架构委员会 + 两端维护者 |
+| # | 头文件 | 内容 | 关键字段 |
+|---|--------|------|---------|
+| 1 | `error.h` | 扩展错误码 + Fault 码（A-UEF） | `AIRY_ECAP_*` 系列（-71~-100）、`AIRY_ESEC_D_THROTTLED=-83`、`AIRY_FAULT_*`（0x1001+） |
+| 2 | `log_types.h` | 日志类型与 Ring Buffer 布局（A-ULP） | `struct airy_log_record`、facility/level/caller_id |
+| 3 | `ipc.h` | IPC 协议 SSoT（A-IPC） | `AIRY_IPC_MAGIC=0x41524531`、`struct airy_ipc_msg_hdr` 128B 11 字段（含 `capability_badge` offset 40、`crc32` offset 52）、Badge 位布局宏、Capability 权限位 |
+| 4 | `sched.h` | 调度契约 | `sched_tac` 调度框架（SCHED_DEADLINE/SCHED_FIFO，ADR-013 禁止 sched_ext/SCHED_AGENT）、任务描述符 magic 0x41475453 'AGTS'、vtime Q16.16 定点、`AIRY_SLICE_DFL_MS=20` |
+| 5 | `memory_types.h` | MemoryRovol L1-L4 | L1_HOT/L2_WARM/L3_COLD/L4_PMEM + GFP 掩码 |
+| 6 | `security_types.h` | 安全契约 | POSIX capability 41 ID + LSM 钩子 ID + Cupolas blob + `cap_t` 引用类型 |
+| 7 | `cognition_types.h` | 认知契约 | CoreLoopThree 阶段枚举 + Thinkdual 模式 + LLM 推理阶段 + `airy_err_t` |
+| 8 | `syscalls.h` | Syscall 契约 | 4 核心 syscall + 20 预留 = 24 槽位（v1.1 Capability Folding：8 个 seL4 IPC 原语已移除，IPC 数据面走 io_uring `IORING_OP_URING_CMD`） |
+| 9 | `uapi_compat.h` | UAPI 兼容性 | `__u32`/`__u64`/`__u8` 类型桥接 |
+| 10 | `lsm_types.h` | LSM 类型 | `airy_lsm` 钩子类型（`LSM_ORDER_MUTABLE`，纯 C LSM，H5 硬约束） |
 
-> **OS-IRON-008a**: `bpf_struct_ops.h` 是 agentrt 与 AirymaxOS 之间的**补充共享文件**（SDK 网关状态管理共享结构），两端共享代码但**不属于 6 个 [SC] 核心头文件**。其 `struct airy_struct_ops_value` 和 `enum airy_struct_ops_state` 用于 agentrt 用户态 BPF loader 与 AirymaxOS 内核 struct_ops 框架之间的状态同步。详见 `120-cross-project-code-sharing.md` §2.2。
+> **OS-IRON-008a（修订）**：`bpf_struct_ops.h` 是 agentrt 与 AirymaxOS 之间的**补充共享文件**（SDK 网关状态管理共享结构），两端共享代码但**不属于 [SC] 10 个核心头文件**。其 `struct airy_struct_ops_value` 和 `enum airy_struct_ops_state` 用于 agentrt 用户态 BPF loader 与 AirymaxOS 内核 struct_ops 框架之间的状态同步。详见 `120-cross-project-code-sharing.md` §2.2。
 
-### 9.3 [SS] 语义同源层
+### 9.3 [SS] 语义同源层（修订）
 
 | 子系统 | agentrt 实现 | AirymaxOS 实现 | 共享的语义 |
 |--------|-------------|---------------|-----------|
-| 调度 | MicroCoreRT 用户态调度 | sched_ext BPF 调度 | 任务优先级、抢占模型、时间片语义 |
-| 安全 | Cupolas 用户态权限 | LSM 钩子 + Cupolas 内核模块 | POSIX capability 41 ID、策略裁决 4 值枚举 |
-| IPC | agentrt 消息队列 | AgentsIPC over io_uring | 128B 消息头、通道创建/销毁语义 |
+| 调度 | MicroCoreRT 用户态调度 | sched_tac 调度框架（SCHED_DEADLINE/SCHED_FIFO） | 任务优先级、抢占模型、时间片语义 |
+| 安全 | Cupolas 用户态权限 | airy_lsm 内核模块 + Cupolas 用户态策略 | POSIX capability 41 ID、策略裁决 4 值枚举、v1.1 Capability Folding Badge 校验语义 |
+| IPC | agentrt 消息队列 | AgentsIPC over io_uring `IORING_OP_URING_CMD` | 128B 消息头、通道创建/销毁语义、C-S9 fastpath Badge 校验 |
 | 记忆 | heapstore 用户态 | MemoryRovol 内核态 | L1-L4 卷载语义、遗忘曲线算法 |
 
 ### 9.4 [IND] 完全独立层
@@ -832,16 +838,26 @@ IRON-9 v2（2026-07-07 用户决策变更）确立了 agentrt 与 AirymaxOS **�
 - AirymaxOS 专属：内核驱动框架、Kbuild、systemd 集成、内核内部 API、printk 日志系统
 - agentrt 专属：跨平台用户态运行时、SDK 四语言、CLI/TUI、网关层
 
-### 9.5 与旧版 IRON-9 的差异
+### 9.5 [DSL] 降级生存层（新增）
 
-| 维度 | 旧版 IRON-9 | 新版 IRON-9 v2 |
-|------|-----------|---------------|
-| 设计哲学 | 共享 | 共享（不变） |
-| 规则编号 | 共享骨架 | 共享骨架（不变） |
-| 契约层代码 | 不共享，仅语义同源 | **完全共享**（`include/airymax/` 头文件库） |
-| 实现层代码 | 独立 | 独立（不变） |
-| 互操作方式 | 通过同源语义无适配层 | **通过共享代码无适配层**（增强） |
-| CI 校验 | 无 | 契约层变更双向校验 |
+[DSL] 降级生存层是 IRON-9 v3 在 v2 三层模型基础上新增的第四层，用于在 [SC] 头文件不可用或 fastpath 校验失败时提供最小生存能力。
+
+- **触发条件**：`#ifdef AIRY_SC_FALLBACK` 编译开关启用
+- **行为**：`capability_badge=0`，跳过 C-S9 fastpath 校验，退化到 `airy_cap_check()` slowpath 兜底（基于 `agent_caps[1024]` 静态数组）
+- **错误码**：`AIRY_ECAP_RADIX_MISS`(-76) 和 `AIRY_ECAP_STATIC_KEY`(-77)（保留编号但 v1.1 不触发）
+- **opcode 集缩减至 2 种**（SEND/RECV）
+- **Fault 码禁用**，统一 Panic
+- **详见** `10-architecture/11-degraded-survival-layer.md`
+
+### 9.6 与旧版 IRON-9 的差异（修订）
+
+| 维度 | IRON-9 v1 | IRON-9 v2 | IRON-9 v3（当前） |
+|------|-----------|-----------|-------------------|
+| 模型层数 | 3 层 | 3 层 | **4 层**（新增 [DSL]） |
+| [SC] 头文件数 | 不共享 | 6 个 | **10 个** |
+| [SC] 物理宿主 | — | `include/airymax/` | **`include/uapi/linux/airymax/`** |
+| IPC 数据面 | — | — | **io_uring `IORING_OP_URING_CMD`**（零 syscall） |
+| Capability 校验 | — | POSIX capability | **v1.1 Capability Folding**（Badge 64-bit + fastpath C-S9 ~10ns + `agent_caps[1024]` + `airy_cap_global_epoch` O(1) 撤销） |
 
 ---
 
@@ -903,7 +919,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 | 加速器接入一致性 | 核对 drivers/accel/ 模式 | 接入模式一致（[IND] 独立实现） |
 | Kconfig 风格一致性 | 核对 CONFIG_ 前缀命名 | 与 Euler Kconfig 风格一致 |
 | 模块化一致性 | 核对 Makefile/Kbuild 结构 | 与 Euler 构建结构一致 |
-| 调度类编号不冲突 | 核对 SCHED_EXT 策略名（禁止 SCHED_AGENT 宏） | 不与 Euler 已有调度类冲突 |
+| 调度类编号不冲突 | 核对 sched_tac 策略（SCHED_DEADLINE/SCHED_FIFO，ADR-013 禁止 sched_ext/SCHED_AGENT） | 不与 Euler 已有调度类冲突 |
 
 ---
 
@@ -967,10 +983,10 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 ### 12.2 双源边界声明
 
-> **OS-IRON-011**: OLK-6.6 与 seL4 的源码仅在本地参考路径（`01Reference/`）中作为研究对象；agentrt-linux 与两者的关系是"技术参考"而非"代码共享"。代码共享仅限 agentrt ↔ AirymaxOS 之间的 IRON-9 v2 [SC] 共享契约层 6 个头文件。
+> **OS-IRON-011**: OLK-6.6 与 seL4 的源码仅在本地参考路径（`01Reference/`）中作为研究对象；agentrt-linux 与两者的关系是"技术参考"而非"代码共享"。代码共享仅限 agentrt ↔ AirymaxOS 之间的 IRON-9 v3 [SC] 共享契约层 10 个头文件。
 
 ```
-agentrt ←→ AirymaxOS:  IRON-9 v2 [SC] 共享契约层 6 个头文件（完全共享代码）
+agentrt ←→ AirymaxOS:  IRON-9 v3 [SC] 共享契约层 10 个头文件（完全共享代码）
 AirymaxOS ←→ OLK-6.6:  技术参考（编码风格 + 工程思想），不共享代码
 AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
 ```
@@ -1062,7 +1078,7 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 > **OS-IRON-013**: agentrt-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理。8 子仓的目录结构设计基于 Linux 6.6 内核基线（24 顶层目录）+ seL4（src/{api,kernel,object,fastpath,arch,machine,plat}）+ Airymax 同源（atoms/corekern 复用）三大设计支柱。[v0.2.4-review P0-R01 修正：28→24，详见 _design_0.2.4 附录 D.5]
 
-> **OS-IRON-014**: [SC] 共享契约层 6 个头文件（memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h）仅物理宿主于 `kernel/include/airymax/`，是唯一物理副本。其他子仓通过 `-I../kernel/include` 构建路径引用，**禁止**在任何子仓的 `include/airymax/<sub>/` 下创建 [SC] 头文件的物理副本。子仓内部头文件以 `_internal.h` 后缀区分（如 `capability_internal.h`）。此铁律对齐 IRON-9 v2 [SC] 共享契约层单一数据源约束，CI 强制检查规则见 STD-IRON-19。违反此铁律将导致 [SC] 头文件出现多份物理副本，破坏编译期类型一致性，是 agentrt-linux 工程体系中最严重的架构违规之一。
+> **OS-IRON-014**: [SC] 共享契约层 10 个头文件（error.h / log_types.h / ipc.h / sched.h / memory_types.h / security_types.h / cognition_types.h / syscalls.h / uapi_compat.h / lsm_types.h）仅物理宿主于 `kernel/include/uapi/linux/airymax/`，是唯一物理副本。其他子仓通过 `-I../kernel/include` 构建路径引用，**禁止**在任何子仓的 `include/uapi/linux/airymax/<sub>/` 下创建 [SC] 头文件的物理副本。子仓内部头文件以 `_internal.h` 后缀区分（如 `capability_internal.h`）。此铁律对齐 IRON-9 v3 [SC] 共享契约层单一数据源约束，CI 强制检查规则见 STD-IRON-19。违反此铁律将导致 [SC] 头文件出现多份物理副本，破坏编译期类型一致性，是 agentrt-linux 工程体系中最严重的架构违规之一。
 
 8 子仓及其依赖层次（L2-L7，与 v0.2.4 目录结构设计 §11.2 一致）：
 
@@ -1089,7 +1105,7 @@ ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构�
 
 1. **关注点分离（ES-OLK-1）**：每个子仓对应一个独立关注点，跨子仓耦合通过 [SC] 共享契约层进行
 2. **架构正交（ES-OLK-2 + ES-SEL4-7）**：kernel 子仓采用 arch/machine/plat 三层架构适配（借鉴 seL4 而非 OLK-6.6 单 arch/）
-3. **[SC] 单一数据源**：6 个 [SC] 头文件物理宿主在 `kernel/include/airymax/`，其他子仓通过 `-I` 引用确保单一数据源
+3. **[SC] 单一数据源**：10 个 [SC] 头文件物理宿主在 `kernel/include/uapi/linux/airymax/`，其他子仓通过 `-I` 引用确保单一数据源
 4. **corekern 极简（ES-SEL4-1）**：corekern/ 仅 4 原子机制（sched/ipc/taskflow/memory/time），对应 seL4 极简原则
 5. **构建系统混合**：内核态子仓采 Kbuild（ES-OLK-7），用户态子仓采 Meson（services）/ Go Modules（cloudnative）/ Cargo（cognition Rust）
 6. **formal-verification 三段式（ES-SEL4-5）**：tests-linux 子仓采 seL4 三段式 spec/proof/capDL
@@ -1109,7 +1125,7 @@ kernel/
 │   └── riscv/
 ├── include/                 # 头文件
 │   ├── uapi/                # 用户空间 ABI（ES-OLK-3/ES-OLK-6）
-│   └── airymax/             # [SC] 共享契约层 6 个头文件（单一数据源）
+│   └── uapi/linux/airymax/  # [SC] 共享契约层 10 个头文件（H1：magic 0x41524531 / capability_badge offset 40）
 ├── corekern/                # Airymax 微核心抽象层（ES-SEL4-1；v0.2.4-review P0-R02: 与上游 kernel/ 协同，非替代）
 │   ├── sched/ ipc/ taskflow/ memory/ time/
 │   └── object/              # seL4 对象模型（cnode/tcb/endpoint/notification）
@@ -1178,12 +1194,12 @@ formal-verification/
 
 ### 14.1 R-01：syscall.xml 式接口契约定义
 
-> **OS-STD-070**（建议，1.0.1 M1 落地）: 为 IRON-9 v2 [SC] 共享契约层引入 seL4 风格的 syscall.xml 接口契约定义，由代码生成器自动生成用户态 stub 与内核态 entry 表。
+> **OS-STD-070**（建议，1.0.1 M1 落地）: 为 IRON-9 v3 [SC] 共享契约层引入 seL4 风格的 syscall.xml 接口契约定义，由代码生成器自动生成用户态 stub 与内核态 entry 表。
 
 | 维度 | 详情 |
 |------|------|
 | 借鉴来源 | seL4 `tools/syscall.xml` + `tools/syscall_generator.py`（ES-SEL4-6） |
-| 落地范围 | 6 个 [SC] 头文件的接口契约 XML 化 |
+| 落地范围 | 10 个 [SC] 头文件的接口契约 XML 化 |
 | 预计工时 | ~16h |
 | 落地里程碑 | 1.0.1 M1（架构与模块设计完善） |
 | 依赖 | 无 |
@@ -1250,6 +1266,82 @@ formal-verification/
 
 ---
 
+## 第 15 章 v1.1 Capability Folding 与 6 条硬约束
+
+### 15.1 Capability Folding 设计模式
+
+**核心论断**：IPC 不是承载能力校验——IPC 就是能力校验。
+
+Capability Folding 是将 capability check 从独立控制面操作"折叠"到 IPC 数据面 fastpath 中的设计模式。v1.1 起，IPC 消息头 `capability_badge` 字段（offset 40-47，D-9 修复后 8 字节对齐）承载 64-bit Native Word Badge，由 fastpath C-S9 内联校验（~10ns）。
+
+**架构要素**：
+- 4 核心 syscall + 20 预留 = 24 槽位（8 个 seL4 风格 IPC 原语已移除）
+- IPC 数据面：完全由 io_uring `IORING_OP_URING_CMD` 承载（零 syscall）
+- `agent_caps[1024]` 静态数组（16KB），sec_d 唯一写者
+- Badge 64-bit：`Epoch<<48 | RandomTag<<16 | Perms`
+- O(1) 撤销：`atomic_inc(&airy_cap_global_epoch)`
+- fastpath C-S9 内联校验（~10ns）+ slowpath LSM 钩子（airy_lsm）
+
+### 15.2 6 条硬约束 H1-H6（不可妥协）
+
+| 约束 | 内容 |
+|------|------|
+| **H1** | Layout C v4 总长 128B / magic 0x41524531 / capability_badge offset 40-47（D-9 修复后 8 字节对齐） |
+| **H2** | capability_badge 字段进 [SC] ipc.h，Badge 校验机制属 [SS] |
+| **H3** | agentrt 用户态 capability_badge=0（跳过 C-S9） |
+| **H4** | agentrt-linux 内核 Badge 由 sec_d 编译、fastpath C-S9 校验 |
+| **H5** | 纯 C LSM 职责不变（不使用 BPF LSM） |
+| **H6** | [DSL] 降级 capability_badge=0 跳过 C-S9 |
+
+### 15.3 12 daemon 命名统一（v2.0 决策，无例外）
+
+**OS-IRON-016（新增）**：12 daemon 命名统一遵循 `*_d` 后缀约定（v2.0 决策，无例外，ADR-013）。
+
+| 二进制 | systemd unit | 职责 | 启动顺序 |
+|--------|--------------|------|---------|
+| `macro_d` | `agentrt-macro-d.service` | 主监管守护进程（Macro-Supervisor） | 1 |
+| `gateway_d` | `agentrt-gateway-d.service` | 网关 | 1 |
+| `sched_d` | `agentrt-sched-d.service` | 调度守护进程（sched_tac） | 1 |
+| `logger_d` | `agentrt-logger-d.service` | 日志消费守护进程 | 2 |
+| `vfs_d` | `agentrt-vfs-d.service` | VFS 用户态服务 | 2 |
+| `net_d` | `agentrt-net-d.service` | 网络策略守护进程 | 2 |
+| `cogn_d` | `agentrt-cogn-d.service` | 认知调度守护进程 | 2 |
+| `dev_d` | `agentrt-dev-d.service` | 工具调用代理 | 3 |
+| `config_d` | `agentrt-config-d.service` | 配置管理守护进程 | 3 |
+| `mem_d` | `agentrt-mem-d.service` | 记忆管理守护进程 | 4 |
+| `audit_d` | `agentrt-audit-d.service` | 审计守护进程 | 4 |
+| `sec_d` | `agentrt-sec-d.service` | 安全策略守护进程 | 5 |
+
+**旧称/禁止使用**：`macro_superv`、`logger_daemon`、`config_daemon`、`drv_d`（→ `dev_d`）、`llm_d`（→ `cogn_d`）、`tool_d`（→ `dev_d`）、`market_d`（→ `gateway_d`）
+
+### 15.4 关键 ADR 引用（v1.1）
+
+| ADR | 标题 | 决策内容 |
+|-----|------|---------|
+| ADR-012 | 微内核化改造技术路线确认 | 基于 Linux 改造 + seL4 思想，非从零开发 |
+| ADR-013 | 调度框架决策 | sched_tac（SCHED_DEADLINE/SCHED_FIFO），禁止 sched_ext/SCHED_AGENT（Linux 6.6 主线无 sched_ext） |
+| ADR-014 | 微内核设计思想来源单一化 | 仅 seL4，不引入 Zircon/Minix3 |
+| ADR-015 | 已撤销 | 定位调整方向错误 |
+| ADR-016 | 版本基线锁定 | 1.x.x 锁定 Linux 6.6 |
+
+### 15.5 路径与命名约定（v1.1）
+
+| 项目 | 路径/值 |
+|------|---------|
+| [SC] 头文件宿主 | `kernel/include/uapi/linux/airymax/` |
+| 配置文件路径 | `/etc/agentrt/`（YAML/TOML 格式，JSON 仅用于 IPC payload） |
+| 持久化数据路径 | `/var/lib/airy/`（匹配 airy_lsm 命名） |
+| 日志路径 | `/var/log/agentrt/` |
+| IPC magic | `0x41524531` ('ARE1') |
+| 任务描述符 magic | `0x41475453` ('AGTS') |
+| IPC 消息头大小 | 128 字节（11 字段，2 cache lines） |
+| capability_badge offset | 40（D-9 修复后 8 字节对齐） |
+| crc32 offset | 52 |
+| reserved 大小 | 72 字节（offset 56-127） |
+| Syscall 数 | 4 核心 + 20 预留 = 24 槽位（Linux 注册号 512-535） |
+
+---
+
 ## 附录 A 规则编号注册表
 
 > **SSoT 声明（2026-07-15 升级）**：本附录为闭源侧摘要登记，**完整规则编号登记的唯一权威来源**为 [`09-ssot-registry.md`](../../docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)（已升级为 Airymax 全局规则 SSoT 注册表，覆盖 AirymaxOS `OS-*` 第 2-9 章 + agentrt 无前缀第 10 章 17 类 751 条规则）。当本附录与 SSoT 冲突时，以 SSoT 为准。本附录仅登记闭源侧关键规则摘要，完整 OS-KER（155+条）/OS-STD（含 CODE/FMT/STY/GOV/DRV/OBS 子域）/OS-ACC（110 项）/OS-SEC（54 条）请直接查阅 SSoT 对应章节。
@@ -1265,14 +1357,16 @@ formal-verification/
 | OS-IRON-005 | 审查优先文化 | §4.5 |
 | OS-IRON-006 | 不破坏用户空间原则 | §4.6 |
 | OS-IRON-007 | DCO 强制 | §5.3.3 |
-| OS-IRON-008 | 共享契约层 6 个头文件双向 CI 验证 | §9.2 |
+| OS-IRON-008 | 共享契约层 10 个头文件双向 CI 验证 | §9.2 |
 | OS-IRON-009 | 代码共享边界：仅 agentrt ↔ AirymaxOS | §10.6 |
 | OS-IRON-010 | "Linux 6.6 为基、seL4 为鉴"工程取向 | §12.1 |
 | OS-IRON-011 | 双源边界声明（技术参考非代码共享） | §12.2 |
 | OS-IRON-012 | seL4 借鉴仅限架构层（ES-SEL4-1~5） | §12.6 |
 | OS-IRON-013 | 8 子仓独立 git 仓库 + submodule 管理 | §13.1 |
-| OS-IRON-014 | [SC] 共享契约层 6 头文件单一数据源（禁止物理副本） | §13.1 |
+| OS-IRON-014 | [SC] 共享契约层 10 头文件单一数据源（禁止物理副本，物理宿主 `kernel/include/uapi/linux/airymax/`） | §13.1 |
 | OS-IRON-015 | 编号管理元规则——OS-KER / OS-STD / OS-OBS / OS-DRV 等所有规则编号一经分配不得复用；废弃规则标记 `DEPRECATED` 但保留编号（原 OS-STD-017，2026-07-15 提升） | SSoT §2 |
+| OS-IRON-016 | 12 daemon 命名统一 `*_d` 后缀（v2.0 决策，无例外，ADR-013） | §15.3 |
+| OS-IRON-017 | v1.1 Capability Folding 6 条硬约束 H1-H6 不可妥协 | §15.2 |
 
 ### A.2 OS-BAN 禁止规则
 
@@ -1351,7 +1445,7 @@ AirymaxOS 工程标准每一条规则都可以追溯到 Airymax 五维正交 24 
 | 内核观 | 内核极简 | K-1 | 微内核化改造策略、内核职责最小化（§1.4） |
 | 内核观 | 接口契约化 | K-2 | 双层稳定性哲学（§4.1）、kernel-doc 强制（§2.3.1） |
 | 内核观 | 服务隔离 | K-3 | 驱动用户态化、服务进程隔离 |
-| 内核观 | 可插拔策略 | K-4 | sched_ext BPF 调度器、LSM 钩子（§4.3） |
+| 内核观 | 可插拔策略 | K-4 | sched_tac 调度框架（SCHED_DEADLINE/SCHED_FIFO）、LSM 钩子（§4.3） |
 | 认知观 | 双系统协同 | C-1 | 快慢路径分层（热路径 C / 慢路径 Rust） |
 | 认知观 | 增量演化 | C-2 | 补丁序列中点可编译运行、git bisect 友好（§4.4） |
 | 认知观 | 记忆卷载 | C-3 | MGLRU 多代 LRU、CXL/PMEM 分级 |
