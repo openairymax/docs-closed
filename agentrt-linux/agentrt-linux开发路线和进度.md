@@ -4,11 +4,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: 0.2.8（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解）/ 1.0.1（开发）
-> **最后更新**: 2026-07-15
+> **版本**: v1.1（Capability Folding 集成版）（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解）/ 1.0.1（开发）
+> **最后更新**: 2026-07-20
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突
-> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/06-directory-structure.md`，350 行）
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）
+> **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/07-directory-structure.md` v2.0，~1800 行 + 闭源审查报告 `00-reviews/_review_v2.2/`（37 份，含 37-capability-folding-decision-and-roadmap.md 决策总纲））
 > **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）
 > **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1 + v1.0 大检查（2026-07-15：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解——60-driver-model→OS-STD-DRV-0xx、90-observability→OS-STD-OBS-0xx、OS-STD-017→OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用而改用 OS-IRON-015）；所有规则编号统一登记 SSoT §9.4；闭源 03-ebpf-spec.md 同步引用更新），详见 `agentrt-linux基本工程标准规范.md` v0.2.8
 
@@ -29,6 +29,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 11. [进度可视化](#11-进度可视化)
 12. [v0.2.1 研究成果对开发路线的影响](#12-v021-研究成果对开发路线的影响)
 13. [P2 增强建议里程碑映射](#13-p2-增强建议里程碑映射)
+14. [v1.1 Capability Folding 实施路线](#14-v11-capability-folding-实施路线)
 
 ---
 
@@ -40,7 +41,7 @@ AirymaxOS（agentrt-linux）采用双版本策略，明确区分文档体系建�
 
 | 版本 | 定义 | 范围 | 工时 |
 |------|------|------|------|
-| **0.1.1** | 文档体系完成 | ~79/85 文档完成（三作用域模型：~79 P0 基线 / ~85 工程基线 / ~122 全量展开），不含内核/OS 代码实施 | 文档编制工时（见各项任务） |
+| **0.1.1** | 奠基 + 29 仓拆分 + 生产就绪 三大支柱 | 三大支柱：支柱一 奠基 W01-W30（~1,620h） / 支柱二 29 仓拆分 SP01-SP31（~572h） / 支柱三 生产就绪 SP32-SP37（~240h）；新增验收标准 ACC-SP01~SP12（12 项），总验收标准从 137 项扩展为 149 项 | ~3,396.5h |
 | **1.0.1** | 实际开发 | M0-M8 全部里程碑，含代码实施 | ~2,750h |
 
 ### 1.2 版本关系
@@ -65,10 +66,10 @@ agentrt 0.1.1 三大支柱与 AirymaxOS 1.0.1 的协同关系：
 
 | agentrt 0.1.1 支柱 | 内容 | 工时 | 对 AirymaxOS 1.0.1 的影响 |
 |---------------------|------|------|---------------------------|
-| 支柱一：奠基 | 工程标准、仓库拆分、CI/CD、开发环境 | ~1,200h | 提供工程基础设施 |
-| 支柱二：29 仓拆分 | 模块化拆分与独立构建 | ~1,800h | 定义子仓边界与接口契约 |
-| 支柱三：生产就绪 | 性能优化、安全加固、文档完善 | ~396.5h（含 SP38 的 18h） | 提供生产级参考实现 |
-| **合计** | | **~3,414.5h** | |
+| 支柱一：奠基 | 工程标准、仓库拆分、CI/CD、开发环境 | ~1,620h | 提供工程基础设施 |
+| 支柱二：29 仓拆分 | 模块化拆分与独立构建 | ~572h | 定义子仓边界与接口契约 |
+| 支柱三：生产就绪 | 性能优化、安全加固、文档完善 | ~240h | 提供生产级参考实现 |
+| **合计** | | **~2,432h**（仅 29 仓拆分 + 生产就绪，奠基属于 0.1.1 文档体系） | |
 
 ---
 
@@ -116,6 +117,10 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
 - 开发环境标准化配置（Docker/DevContainer）
 - 文档模板与规范（API 文档、设计文档、决策记录）
 - 8 子仓初始化与目录结构标准化
+- v1.1 Capability Folding 架构设计文档
+- 6 条硬约束 H1-H6 落地清单
+- 12 daemon 命名统一规范（v2.0 决策，`*_d` 后缀无例外）
+- [SC] 10 头文件清单（error.h / log_types.h / ipc.h / sched.h / memory_types.h / security_types.h / cognition_types.h / syscalls.h / uapi_compat.h / lsm_types.h）
 
 **验收标准**:
 - ACC-OS-001: 所有工程标准文档评审通过
@@ -128,7 +133,7 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
 
 **核心交付物**:
 - 8 子仓架构设计文档
-  - kernel/：内核核心架构（调度器、中断、系统调用）
+  - kernel/：内核核心架构（调度框架（sched_tac，SCHED_DEADLINE/SCHED_FIFO，ADR-013 禁止 sched_ext/SCHED_AGENT）、中断、系统调用）
   - services/：系统服务架构（IPC、设备管理、文件系统）
   - security/：安全子系统架构（Cupolas 安全框架）
   - memory/：内存管理架构（MemoryRovol）
@@ -140,6 +145,12 @@ M0 ──> M1 ──> M2 ──> M6 ──> M7 ──> M8
 - 数据流设计文档
 - 关键路径性能预算
 - 技术选型决策记录（ADR）
+- v1.1 Capability Folding fastpath C-S9 状态机实现（7 态：IDLE/FAST_SEND/SLOW_SEND/FAST_RECV/SLOW_RECV/REPLY/ERROR）
+- agent_caps[1024] 静态数组 + airy_cap_global_epoch O(1) 撤销机制
+- Badge 64-bit 编译（Epoch<<48 | RandomTag<<16 | Perms）by sec_d
+- io_uring IORING_OP_URING_CMD IPC 数据面（零 syscall）
+- airy_lsm 内核模块（LSM_ORDER_MUTABLE，纯 C LSM，H5 硬约束）
+- 10 个 [SC] 头文件实现（kernel/include/uapi/linux/airymax/）
 
 **验收标准**:
 - ACC-OS-010: 8 子仓架构设计文档完成
@@ -699,7 +710,7 @@ Part 1 (M0: 工程标准)
 
 ### 9.2 同源 API 验证时间窗口
 
-IRON-9 v2 原则下，agentrt 与 AirymaxOS 共享契约层（`include/airymax/`），需要在以下时间窗口完成 API 验证：
+IRON-9 v3 原则下，agentrt 与 AirymaxOS 共享契约层（`include/uapi/linux/airymax/`），需要在以下时间窗口完成 API 验证：
 
 | 验证节点 | 时间窗口 | 验证内容 | 负责人 |
 |----------|----------|----------|--------|
@@ -892,7 +903,7 @@ v0.2.1 启动、v0.2.3 修正、v0.2.4 生产级修正 + v0.2.4-review 二次审
 - 8 子仓目录结构骨架创建（基于 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`）
 - kernel 子仓模型 A 完整上游子系统目录骨架（fs/net/block/drivers/mm/security 等基于 OLK-6.6 fork）
 - Makefile.airymaxos 版本四元组定义文件（对齐 OLK-6.6 Makefile.oever）
-- [SC] 共享契约层 6 个头文件骨架创建（`include/airymax/`）
+- [SC] 共享契约层 10 个头文件骨架创建（`include/uapi/linux/airymax/`）
 - corekern/ 4 原子机制目录骨架（sched/ipc/taskflow/memory/time）+ object/（seL4 对象模型取舍矩阵）
 - formal-verification/ 三段式目录骨架（spec/proof/capdl）
 - tests-linux kunit/ + selftests/ + fault-injection/ 目录骨架（对齐 OLK-6.6 tools/testing/）
@@ -954,7 +965,7 @@ R-01（syscall.xml）和 R-02（structures.bf）在 M1 阶段落地，与架构�
 | 任务 | 工时 | 时间窗口 | 交付物 | 验收标准 |
 |------|------|----------|--------|---------|
 | R-01: 设计 syscall.xml schema | 8h | Day 15-21 | `tools/syscall.xml` + codegen 脚本 | schema 通过架构评审 |
-| R-01: 6 个 [SC] 头文件接口契约 XML 化 | 8h | Day 22-28 | 6 个 XML 契约文件 | codegen 输出与手写头文件一致 |
+| R-01: 10 个 [SC] 头文件接口契约 XML 化 | 8h | Day 22-28 | 10 个 XML 契约文件 | codegen 输出与手写头文件一致 |
 | R-02: 设计 structures.bf schema | 6h | Day 15-21 | `tools/structures.bf` + codegen 脚本 | schema 通过架构评审 |
 | R-02: [SC] 位域结构 codegen 化 | 6h | Day 22-28 | 位域 codegen 输出 | codegen 输出与手写位域一致 |
 
@@ -1001,6 +1012,53 @@ R-04（合规检查增补 4 项规则）在 R-01/R-02/R-03 全部落地后增补
 
 ---
 
+## 14. v1.1 Capability Folding 实施路线
+
+### 14.1 4 阶段实施计划（基于闭源审查报告 37-capability-folding-decision-and-roadmap.md）
+
+| 阶段 | 内容 | 工时 | 里程碑 | 验收标准 |
+|------|------|------|--------|---------|
+| Phase 1 | [SC] 10 头文件物理实现（kernel/include/uapi/linux/airymax/） | 80h | M0-M1 | H1-H6 硬约束全部落地，CI sc-dual-ci.yml 通过 |
+| Phase 2 | fastpath C-S9 状态机 + agent_caps[1024] + airy_cap_global_epoch | 160h | M1-M2 | fastpath ~10ns，CBMC 全函数验证通过 |
+| Phase 3 | sec_d Badge 编译 + airy_lsm slowpath + [DSL] 降级 | 120h | M2-M4 | airy_lsm 注册成功，[DSL] 模式可降级 |
+| Phase 4 | 17 份文档同步清单全量落地 + 跨节点 Badge 一致性 | 80h | M4-M6 | gateway_d 跨节点 Badge 一致性验证通过 |
+
+### 14.2 6 条硬约束 H1-H6 验收
+
+| 约束 | 验收标准 | 验证方法 |
+|------|---------|---------|
+| H1 | Layout C v4 128B / magic 0x41524531 / capability_badge offset 40 | _Static_assert + CI |
+| H2 | capability_badge 在 [SC] ipc.h，Badge 校验在 [SS] | 代码审查 + SSoT 校验 |
+| H3 | agentrt 用户态 capability_badge=0 | 集成测试 |
+| H4 | sec_d 编译 Badge，fastpath C-S9 校验 | 单元测试 + 性能测试（~10ns） |
+| H5 | 纯 C LSM，不使用 BPF LSM | 代码审查 + 配置检查 |
+| H6 | [DSL] 降级 capability_badge=0 跳过 C-S9 | 降级模式测试 |
+
+### 14.3 12 daemon 命名统一（v2.0 决策，无例外）
+
+12 daemon 全部使用 `*_d` 后缀，无任何例外：
+sec_d / cogn_d / mem_d / gateway_d / logger_d / macro_d / audit_d / sched_d / dev_d / net_d / vfs_d / config_d
+
+**旧称/禁止使用**：`macro_superv`、`logger_daemon`、`config_daemon`、`drv_d`、`llm_d`、`tool_d`、`market_d`
+
+### 14.4 关键 ADR 引用（v1.1）
+
+| ADR | 标题 | 决策内容 | 影响 |
+|-----|------|---------|------|
+| ADR-012 | 微内核化改造技术路线确认 | 基于 Linux 改造 + seL4 思想 | 全部 8 子仓基于 Linux 6.6 改造 |
+| ADR-013 | 调度框架决策 | sched_tac，禁止 sched_ext/SCHED_AGENT | M1 调度框架实现 |
+| ADR-014 | 微内核设计思想来源单一化 | 仅 seL4 | capability 模型来源唯一 |
+| ADR-015 | 已撤销 | — | — |
+| ADR-016 | 版本基线锁定 | 1.x.x 锁定 Linux 6.6 | 全部 8 子仓 Linux 6.6 基线 |
+
+### 14.5 闭源审查报告 _review_v2.2 同步状态
+
+闭源审查报告 v2.2（37 份）已与开源方案对齐至 ~92.8% 对齐度。剩余 ~7.2% 差异属改进性偏离（如开源方案 8 态状态机 vs 闭源报告 7 态，多了 ERROR 态）。17 份文档同步清单已全部落地。
+
+详见 `00-reviews/_review_v2.2/37-capability-folding-decision-and-roadmap.md`。
+
+---
+
 ## 附录 A: 当前进度快照（2026-07-14）
 
 | 维度 | 状态 |
@@ -1039,7 +1097,7 @@ R-04（合规检查增补 4 项规则）在 R-01/R-02/R-03 全部落地后增补
 | v0.2.4 目录结构设计 | `docs-closed/agentrt-linux/_design_0.2.4/01-agentrt-linux-directory-structure.md` | 8 子仓完整目录结构（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正） |
 | Wave 2 v2 源码级深读报告 | `docs-closed/agentrt-linux/_review_0.9.0/` | 7 份报告（Phase A-F 完成报告 + B1/B2/B3 源码深读 + C 综合报告 + D 修复报告） |
 | v0.9.0 综合审查报告 | `docs-closed/agentrt-linux/_review_0.9.0/00-review-summary.md` | 15 项问题系统化整理（P0-CRITICAL 3 + P1-MAJOR 6 + P2-MINOR 6）+ 三层对齐评分（70/B-） |
-| 开源目录结构 SSoT | `docs/AirymaxOS/10-architecture/06-directory-structure.md` | 8 子仓目录结构 SSoT（350 行，Wave 2 v2 Phase D 新建） |
+| 开源目录结构 SSoT | `docs/AirymaxOS/10-architecture/07-directory-structure.md` | 8 子仓目录结构 SSoT（~1800 行 v2.0 + 闭源审查报告 `00-reviews/_review_v2.2/` 37 份含 37-capability-folding-decision-and-roadmap.md 决策总纲） |
 
 ---
 
