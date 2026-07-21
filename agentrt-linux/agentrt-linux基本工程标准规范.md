@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: v1.2（内核框架验证版）（v1.1 基础 + 内核 M0 框架编译验证完成 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文件 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 + hardening.config 三段式 defconfig + error.h 81 个错误码定义 + IRON 编号三套体系 SSoT 统一登记）/ 1.0.1（开发）
+> **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + 内核 M0 框架编译验证完成 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文件 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 + hardening.config 三段式 defconfig + error.h 81 个错误码定义 + IRON 编号三套体系 SSoT 统一登记）/ 1.0.1（开发）
 > **最后更新**: 2026-07-21
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 > **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）+ v1.1 集成审查（2026-07-20：IRON-9 v3 四层模型 + [SC] 10 头文件 UAPI 迁移 + Capability Folding H1-H6）+ v1.2 内核框架验证（2026-07-21：M0 框架编译验证通过 37 .o 零错误零警告 + airy_defconfig 修复 + 文档体系全面一致性修复 + Kbuild/Kconfig 集成验证通过）
@@ -33,7 +33,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [第 12 章 "Linux 6.6 为基、seL4 为鉴"工程取向](#第-12-章-linux-66-为基-sel4-为鉴工程取向)
 - [第 13 章 8 子仓目录结构工程标准](#第-13-章-8-子仓目录结构工程标准)
 - [第 14 章 P2 增强建议落地规划](#第-14-章-p2-增强建议落地规划)
-- [第 15 章 v1.1 Capability Folding 与 6 条硬约束](#第-15-章-v11-capability-folding-与-6-条硬约束)
+- [第 15 章 v1.0.1 Capability Folding 与 6 条硬约束](#第-15-章-v11-capability-folding-与-6-条硬约束)
 - [附录 A 规则编号注册表](#附录-a-规则编号注册表)
 - [附录 B 五维正交 24 原则映射](#附录-b-五维正交-24-原则映射)
 - [附录 C ES-OLK-1~13 工程思想映射](#附录-c-es-olk-1-13-工程思想映射)
@@ -808,7 +808,7 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 
 ### 9.2 [SC] 共享契约层：10 个头文件（OS-IRON-008）
 
-> **OS-IRON-008**: 共享契约层 10 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。OS-IRON-008 修订（v1.1）：[SC] 物理宿主迁移至 `kernel/include/uapi/linux/airymax/`（kernel UAPI 路径，v2 旧宿主路径见 §9.6 历史对比表），对齐 ES-OLK-3/ES-OLK-6 UAPI 物理隔离原则与 H1 硬约束（magic 0x41524531 / capability_badge offset 40-47）。
+> **OS-IRON-008**: 共享契约层 10 个头文件是 agentrt 与 AirymaxOS 的代码共享边界，任何变更必须通过双向 CI 验证（agentrt + AirymaxOS CI 同时通过）。OS-IRON-008 修订（v1.0.1）：[SC] 物理宿主迁移至 `kernel/include/uapi/linux/airymax/`（kernel UAPI 路径，v2 旧宿主路径见 §9.6 历史对比表），对齐 ES-OLK-3/ES-OLK-6 UAPI 物理隔离原则与 H1 硬约束（magic 0x41524531 / capability_badge offset 40-47）。
 
 | # | 头文件 | 内容 | 关键字段 |
 |---|--------|------|---------|
@@ -819,7 +819,7 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 | 5 | `memory_types.h` | MemoryRovol L1-L4 | L1_HOT/L2_WARM/L3_COLD/L4_PMEM + GFP 掩码 |
 | 6 | `security_types.h` | 安全契约 | POSIX capability 41 ID + LSM 钩子 ID + Cupolas blob + `cap_t` 引用类型 |
 | 7 | `cognition_types.h` | 认知契约 | CoreLoopThree 阶段枚举 + Thinkdual 模式 + LLM 推理阶段 + `airy_err_t` |
-| 8 | `syscalls.h` | Syscall 契约 | 4 核心 syscall + 20 预留 = 24 槽位（v1.1 Capability Folding：8 个 seL4 IPC 原语已移除，IPC 数据面走 io_uring `IORING_OP_URING_CMD`） |
+| 8 | `syscalls.h` | Syscall 契约 | 4 核心 syscall + 20 预留 = 24 槽位（v1.0.1 Capability Folding：8 个 seL4 IPC 原语已移除，IPC 数据面走 io_uring `IORING_OP_URING_CMD`） |
 | 9 | `uapi_compat.h` | UAPI 兼容性 | `__u32`/`__u64`/`__u8` 类型桥接 |
 | 10 | `lsm_types.h` | LSM 类型 | `airy_lsm` 钩子类型（`LSM_ORDER_MUTABLE`，纯 C LSM，H5 硬约束） |
 
@@ -830,7 +830,7 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 | 子系统 | agentrt 实现 | AirymaxOS 实现 | 共享的语义 |
 |--------|-------------|---------------|-----------|
 | 调度 | MicroCoreRT 用户态调度 | sched_tac 调度框架（SCHED_DEADLINE/SCHED_FIFO） | 任务优先级、抢占模型、时间片语义 |
-| 安全 | Cupolas 用户态权限 | airy_lsm 内核模块 + Cupolas 用户态策略 | POSIX capability 41 ID、策略裁决 4 值枚举、v1.1 Capability Folding Badge 校验语义 |
+| 安全 | Cupolas 用户态权限 | airy_lsm 内核模块 + Cupolas 用户态策略 | POSIX capability 41 ID、策略裁决 4 值枚举、v1.0.1 Capability Folding Badge 校验语义 |
 | IPC | agentrt 消息队列 | AgentsIPC over io_uring `IORING_OP_URING_CMD` | 128B 消息头、通道创建/销毁语义、C-S9 fastpath Badge 校验 |
 | 记忆 | heapstore 用户态 | MemoryRovol 内核态 | L1-L4 卷载语义、遗忘曲线算法 |
 
@@ -858,7 +858,7 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 | [SC] 头文件数 | 不共享 | 6 个 | **10 个** |
 | [SC] 物理宿主 | — | `include/airymax/` | **`include/uapi/linux/airymax/`** |
 | IPC 数据面 | — | — | **io_uring `IORING_OP_URING_CMD`**（零 syscall） |
-| Capability 校验 | — | POSIX capability | **v1.1 Capability Folding**（Badge 64-bit + fastpath C-S9 ~10ns + `agent_caps[1024]` + `airy_cap_global_epoch` O(1) 撤销） |
+| Capability 校验 | — | POSIX capability | **v1.0.1 Capability Folding**（Badge 64-bit + fastpath C-S9 ~10ns + `agent_caps[1024]` + `airy_cap_global_epoch` O(1) 撤销） |
 
 ---
 
@@ -1267,13 +1267,13 @@ formal-verification/
 
 ---
 
-## 第 15 章 v1.1 Capability Folding 与 6 条硬约束
+## 第 15 章 v1.0.1 Capability Folding 与 6 条硬约束
 
 ### 15.1 Capability Folding 设计模式
 
 **核心论断**：IPC 不是承载能力校验——IPC 就是能力校验。
 
-Capability Folding 是将 capability check 从独立控制面操作"折叠"到 IPC 数据面 fastpath 中的设计模式。v1.1 起，IPC 消息头 `capability_badge` 字段（offset 40-47，D-9 修复后 8 字节对齐）承载 64-bit Native Word Badge，由 fastpath C-S9 内联校验（~10ns）。
+Capability Folding 是将 capability check 从独立控制面操作"折叠"到 IPC 数据面 fastpath 中的设计模式。v1.0.1 起，IPC 消息头 `capability_badge` 字段（offset 40-47，D-9 修复后 8 字节对齐）承载 64-bit Native Word Badge，由 fastpath C-S9 内联校验（~10ns）。
 
 **架构要素**：
 - 4 核心 syscall + 20 预留 = 24 槽位（8 个 seL4 风格 IPC 原语已移除）
@@ -1315,7 +1315,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 
 **旧称/禁止使用**：`macro_superv`、`logger_daemon`、`config_daemon`、`drv_d`（→ `dev_d`）、`llm_d`（→ `cogn_d`）、`tool_d`（→ `dev_d`）、`market_d`（→ `gateway_d`）
 
-### 15.4 关键 ADR 引用（v1.1）
+### 15.4 关键 ADR 引用（v1.0.1）
 
 | ADR | 标题 | 决策内容 |
 |-----|------|---------|
@@ -1325,7 +1325,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | ADR-015 | 已撤销 | 定位调整方向错误 |
 | ADR-016 | 版本基线锁定 | 1.x.x 锁定 Linux 6.6 |
 
-### 15.5 路径与命名约定（v1.1）
+### 15.5 路径与命名约定（v1.0.1）
 
 | 项目 | 路径/值 |
 |------|---------|
@@ -1367,7 +1367,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | OS-IRON-014 | [SC] 共享契约层 10 头文件单一数据源（禁止物理副本，物理宿主 `kernel/include/uapi/linux/airymax/`） | §13.1 |
 | OS-IRON-015 | 编号管理元规则——OS-KER / OS-STD / OS-OBS / OS-DRV 等所有规则编号一经分配不得复用；废弃规则标记 `DEPRECATED` 但保留编号（原 OS-STD-017，2026-07-15 提升） | SSoT §2 |
 | OS-IRON-016 | 12 daemon 命名统一 `*_d` 后缀（v2.0 决策，无例外，ADR-013） | §15.3 |
-| OS-IRON-017 | v1.1 Capability Folding 6 条硬约束 H1-H6 不可妥协 | §15.2 |
+| OS-IRON-017 | v1.0.1 Capability Folding 6 条硬约束 H1-H6 不可妥协 | §15.2 |
 
 ### A.2 OS-BAN 禁止规则
 
