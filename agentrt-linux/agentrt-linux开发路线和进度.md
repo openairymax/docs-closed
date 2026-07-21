@@ -4,10 +4,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: v1.1（Capability Folding 集成版）（同步开源手册 v0.1.1 全部变更 + 融入 Wave 2 v2 源码级深读审查结论 + v0.9.0 综合审查修复 + v1.0 系统性复审修复 + 术语清洗 OLK-6.6 → Linux 6.6 内核基线 + 进度快照更新 + v1.0 大检查（2026-07-15）：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解）/ 1.0.1（开发）
-> **最后更新**: 2026-07-20
+> **版本**: v1.2（内核框架验证版）（v1.1 基础 + M0 内核框架编译验证完成 39 .o 零错误零警告 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 5 处 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文档 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 39 处 AIRY_SC_FALLBACK + Kbuild/Kconfig 5 层依赖链集成验证 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现问题：security/airy 与 kernel/superv 同名文件不同内容 4 对，纳入 M1 修复清单）/ 1.0.1（开发）
+> **最后更新**: 2026-07-21
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）；v1.2 内核框架验证（2026-07-21）：M0 框架编译验证通过 39 .o 零错误零警告 + vmlinux 生成正常 + Kbuild/Kconfig 5 层依赖链集成验证 + airy_defconfig CONFIG_SECURITY=y 修复 + 10 项历史问题全部修复 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现（superv/ 同名文件）纳入 M1 修复清单，详见 `agentrt-linux基本工程标准规范.md` 附录 F
 > **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/07-directory-structure.md` v2.0，~1800 行 + 闭源审查报告 `00-reviews/_review_v2.2/`（37 份，含 37-capability-folding-decision-and-roadmap.md 决策总纲））
 > **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）
 > **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1 + v1.0 大检查（2026-07-15：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解——60-driver-model→OS-STD-DRV-0xx、90-observability→OS-STD-OBS-0xx、OS-STD-017→OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用而改用 OS-IRON-015）；所有规则编号统一登记 SSoT §9.4；闭源 03-ebpf-spec.md 同步引用更新），详见 `agentrt-linux基本工程标准规范.md` v0.2.8
@@ -30,6 +30,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 12. [v0.2.1 研究成果对开发路线的影响](#12-v021-研究成果对开发路线的影响)
 13. [P2 增强建议里程碑映射](#13-p2-增强建议里程碑映射)
 14. [v1.1 Capability Folding 实施路线](#14-v11-capability-folding-实施路线)
+15. [v1.2 内核框架验证进度（2026-07-21）](#15-v12-内核框架验证进度2026-07-21)
 
 ---
 
@@ -1059,7 +1060,95 @@ sec_d / cogn_d / mem_d / gateway_d / logger_d / macro_d / audit_d / sched_d / de
 
 ---
 
-## 附录 A: 当前进度快照（2026-07-14）
+## 15. v1.2 内核框架验证进度（2026-07-21）
+
+> **章节定位**：本章是 v1.2 内核框架验证的进度跟踪与里程碑对齐记录。完整技术验证报告见 `agentrt-linux基本工程标准规范.md` 附录 F，本章仅记录进度维度的影响。
+> **验证日期**：2026-07-21
+> **核心结论**：M0 框架编译验证通过，1.0.1 开发可进入 M1 阶段；1 项 P1-MAJOR 新发现问题纳入 M1 修复清单。
+
+### 15.1 M0 里程碑进度对齐
+
+| M0 验收标准 | 计划状态 | 实际状态 | 备注 |
+|------------|---------|---------|------|
+| 工程标准框架建立 | 240h | ✅ 完成 | 工程标准规范手册 v1.2 + SSoT 注册表 + IRON-9 v3 四层模型 + 17 类规则编号体系 |
+| 8 子仓目录骨架 | 计划 | ✅ kernel 子仓完成 | 39 .o 编译通过；其他 7 子仓待 M1 标准化创建 |
+| Kbuild/Kconfig 集成 | 计划 | ✅ 完成 | 5 层依赖链完整：`SECURITY=y → SECURITY_AIRY=y → AIRY_SYSCALL/COREKERN/LOG/IPC=y` |
+| defconfig 验证 | 计划 | ✅ 完成 | `arch/x86/configs/airy_defconfig` + `configs/defconfig` 均含 `CONFIG_SECURITY=y` 依赖修复 |
+| 编译零错误零警告 | 计划 | ✅ 完成 | `make ARCH=x86_64 airy_defconfig && make ARCH=x86_64 -j$(nproc)` 退出码 0 |
+| [SC] 10 头文件完整性 | 计划 | ✅ 完成 | 10/10 头文件 + 39 处 `AIRY_SC_FALLBACK` 降级块 |
+| H1-H6 硬约束验证 | 计划 | ✅ 完成 | 6 项全部通过验证（详见基本工程标准规范附录 F §F.3.2） |
+
+### 15.2 v1.2 关键修复记录
+
+| # | 修复项 | 类别 | 提交记录 | 影响范围 |
+|---|--------|------|---------|---------|
+| 1 | `airy_defconfig` 添加 `CONFIG_SECURITY=y` | P0 关键依赖 | `eb2923d`（kernel）+ `f77c641`（docs）+ `7710ee5`（submodule） | 2 个 defconfig 文件 |
+| 2 | `03-ci-cd-pipeline.md` 5 处 `make defconfig` → `make airy_defconfig` | CI/CD 引用 | `f77c641`（docs） | 1 文档 5 处 |
+| 3 | `MAC_MAX_AGENTS` → `AIRY_CAP_MAX_AGENTS` | 命名一致性 | 前次会话 + `f77c641` | 15 文档 19 处 + kernel 源码 0 残留 |
+| 4 | `agent_lsm` → `airy_lsm`（闭源文档残留） | 命名一致性 | 本次会话 | 闭源文档 2 处 + kernel 源码 0 残留 |
+| 5 | `v1.0.0` 引用清除 | 版本一致性（IRON-8） | 前次会话 | 13 文档 38 处 |
+| 6 | LSM 钩子描述修正 250→5 实现 | 描述一致性 | 前次会话 | `docs/AirymaxOS/20-modules/03-security.md` |
+| 7 | 文档数量模型三作用域对齐 | 文档体系 | 前次会话 | `docs/AirymaxOS/130-roadmap/README.md` |
+| 8 | [SC] 10 头文件 [DSL] 降级块完整性 | IRON-9 v3 | 前次会话 | 10 文件 39 处 `AIRY_SC_FALLBACK` |
+| 9 | `hardening.config` 三段式 defconfig | 构建工程 | 前次会话 | 1 文件 |
+| 10 | IRON 编号三套体系 SSoT 统一登记 | 治理 | 前次会话 | 全量规则编号 |
+
+### 15.3 对 M1 里程碑的影响
+
+v1.2 验证对 M1（架构与模块设计完善，480h → 508h 含 R-01/R-02）的影响：
+
+| 影响项 | 描述 | M1 工时影响 |
+|--------|------|------------|
+| **新增 P1 修复任务** | 重命名 `kernel/superv/` 4 个 wrapper 文件加 `_superv` 后缀 + 更新 `kernel/superv/Kbuild` | +4h（纳入 M1 总工时） |
+| R-01 syscall.xml 接口契约 | 已规划 | +14h |
+| R-02 structures.bf 位域 codegen | 已规划 | +14h |
+| **M1 调整后总工时** | 480h + 4h（P1 修复）+ 28h（R-01/R-02） | **512h** |
+
+> **进度风险**：M1 工时从原 480h 增至 512h（+6.7%），仍在原 ~14% 缓冲范围内，不影响关键路径。
+
+### 15.4 P1-MAJOR 新发现问题详细说明
+
+**问题**：`security/airy/` 与 `kernel/superv/` 存在 4 个**同名但内容不同**的源文件，违反 OS-STD-001"全局符号必须描述性命名"原则精神。
+
+| 文件名 | security/airy/ 内容 | kernel/superv/ 内容 |
+|--------|---------------------|---------------------|
+| `airy_cap_check.c` | 5 阶段 slowpath capability enforcement + `airy_security_fault()` | `airy_cap_has_perm()` 快路径 wrapper，委托 `airy_cap_badge_ok()` 到 `security/airy/airy_cap.h` |
+| `airy_die_notify.c` | die notifier 注册 + fault 映射 + ring 冻结 | die notifier wrapper，委托 `airy_security_fault()` |
+| `airy_eventfd.c` | `struct airy_fault_event` + eventfd ctx + fault 信号实现 | eventfd wrapper，委托 `airy_eventfd_signal_fault()` |
+| `airy_ipc_freeze.c` | `airy_ipc_freeze_ring()` / `airy_ipc_thaw_ring()` 核心实现 | thin wrapper，extern 声明 + 委托调用 |
+
+**修复方案**：M1 阶段重命名 `kernel/superv/` 下 4 个文件加 `_superv` 后缀：
+- `airy_cap_check.c` → `airy_cap_check_superv.c`
+- `airy_die_notify.c` → `airy_die_notify_superv.c`
+- `airy_eventfd.c` → `airy_eventfd_superv.c`
+- `airy_ipc_freeze.c` → `airy_ipc_freeze_superv.c`
+
+同步更新 `kernel/superv/Kbuild`：
+```makefile
+airy_superv-y := airy_cap_check_superv.o airy_die_notify_superv.o \
+                 airy_eventfd_superv.o airy_ipc_freeze_superv.o
+```
+
+**未导致链接错误的原因**：两套 `.o` 文件中定义的全局符号名不同（security/airy/ 侧是 `airy_ipc_freeze_ring()` 等核心实现，kernel/superv/ 侧是 `airy_superv_map_fault()` 等 wrapper），Kbuild 将它们分别链接进 `airy.o` 与 `airy_superv.o` 两个独立的复合模块。
+
+**优先级**：P1-MAJOR（不阻断 M0 框架编译，但必须在 M1 架构与模块设计完善阶段修复）。
+
+### 15.5 v1.2 验证对 1.0.1 开发路线的总体影响
+
+| 路线维度 | v1.1 状态 | v1.2 状态 | 变化 |
+|---------|----------|----------|------|
+| M0 工程标准框架 | 计划 240h | ✅ 完成（含框架编译验证） | 0h（无变化） |
+| M1 架构与模块设计 | 计划 480h + 28h（R-01/R-02）= 508h | 计划 508h + 4h（P1 修复）= 512h | +4h |
+| 关键路径总时长 | 126 天 | 126 天（不变） | 0 天 |
+| 总工时 | ~2,790h（含 P2 增强） | ~2,794h（含 P2 增强 + P1 修复） | +4h |
+| 缓冲率 | ~12.6% | ~12.5% | -0.1% |
+| M1 就绪判定 | 通过（v1.0 系统性复审 11 项全部修复） | 通过（v1.0 + v1.2 M0 框架编译验证 + 1 项 P1 纳入 M1 修复清单） | 更严格 |
+
+**结论**：v1.2 验证不改变 1.0.1 开发路线的关键路径与总工期，仅 M1 工时微调 +4h，缓冲率仍在合理范围。1.0.1 开发可按原计划进入 M1 阶段。
+
+---
+
+## 附录 A: 当前进度快照（2026-07-21）
 
 | 维度 | 状态 |
 |------|------|
@@ -1069,13 +1158,16 @@ sec_d / cogn_d / mem_d / gateway_d / logger_d / macro_d / audit_d / sched_d / de
 | v0.9.0 综合审查 | ✅ 完成（15 项问题已验证，P0-CRITICAL 3 + P1-MAJOR 6 + P2-MINOR 6） |
 | v1.0 系统性复审 | ✅ 完成（11 项问题全部修复，v0.2.7：P0-1/P0-2/P1-2/P1-3/P1-4/P1-NEW/P2-5/P2-6/P2-7/P2-8/P2-9/P2-10；DEFER_INIT 设计层面延期表述消除；零设计延期到 1.0.1） |
 | 8 子仓目录结构设计 | ✅ 完成（v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正，1903 行 + 开源 SSoT 350 行） |
-| 1.0.1 开发 | ✅ 文档层面前置条件达成（v1.0 系统性复审通过，零设计延期，可以按方案开始全面开发） |
+| **v1.2 M0 内核框架编译验证** | **✅ 完成（2026-07-21）**——39 .o 零错误零警告 + vmlinux 生成正常 + Kbuild/Kconfig 5 层依赖链集成验证 + airy_defconfig CONFIG_SECURITY=y 修复 + H1-H6 硬约束全部通过 |
+| **v1.2 历史问题修复** | **✅ 完成（2026-07-21）**——10 项历史问题全部修复并验证（详见 `agentrt-linux基本工程标准规范.md` 附录 F §F.4.1） |
+| **v1.2 新发现问题** | **⚠️ 1 项 P1-MAJOR**——security/airy 与 kernel/superv 同名文件不同内容 4 对（详见 §15.4），纳入 M1 修复清单 |
+| 1.0.1 开发 | ✅ M0 框架编译验证通过，可进入 M1 阶段（1 项 P1 不阻断推进） |
 | agentrt 0.1.1 奠基 | 进行中 |
-| 8 子仓初始化 | 目录结构已设计（SSoT），待 M0 标准化创建骨架 |
-| 闭源参考文档 | 21/21 已完成（100%）+ v0.9.0 审查报告 7 份 + v1.0 系统性复审报告 1 份 |
+| 8 子仓初始化 | kernel 子仓框架已搭建（39 .o 编译通过），其他 7 子仓目录结构已设计（SSoT），待 M0-M1 标准化创建骨架 |
+| 闭源参考文档 | 21/21 已完成（100%）+ v0.9.0 审查报告 7 份 + v1.0 系统性复审报告 1 份 + v1.2 内核框架验证报告 1 份（`agentrt-linux基本工程标准规范.md` 附录 F） |
 | P2 增强建议 | 已规划（R-01~R-04，~40h），属工程实现层面，1.0.1 阶段落地 |
 | 4 项 P2 建议 | R-01/R-02 → M1、R-03 → M5、R-04 → R-01/R-02/R-03 后 |
-| 1.0.1 M1 就绪判定 | ✅ 通过（v1.0 系统性复审 11 项全部修复 + 零设计延期 + DEFER_INIT 表述消除 + tests 简写残留清除 + OS-KER-007/008 废弃说明补齐 + 品味哲学 8 项文档化 + 闭源总纲 v0.2.7 对齐） |
+| 1.0.1 M1 就绪判定 | ✅ 通过（v1.0 系统性复审 11 项全部修复 + 零设计延期 + v1.2 M0 框架编译验证通过 + 1 项 P1 新发现纳入 M1 修复清单） |
 
 ---
 
