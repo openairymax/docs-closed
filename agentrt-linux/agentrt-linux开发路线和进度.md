@@ -4,13 +4,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + M0 内核框架编译验证完成 39 .o 零错误零警告 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 5 处 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文档 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 39 处 AIRY_SC_FALLBACK + Kbuild/Kconfig 5 层依赖链集成验证 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现问题：security/airy 与 kernel/superv 同名文件不同内容 4 对，纳入 M1 修复清单）/ 1.0.1（开发）
-> **最后更新**: 2026-07-21
+> **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + M0 内核框架编译验证完成 39 .o 零错误零警告 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 5 处 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文档 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 39 处 AIRY_SC_FALLBACK + Kbuild/Kconfig 5 层依赖链集成验证 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现问题：security/airy 与 kernel/superv 同名文件不同内容 4 对，纳入 M1 修复清单 + v2.9/v3.0 P0 系统性修复：P0-014 syscall 编号统一 548-551 + P0-016 v0.2.8 清除 + P0-017 codegen 管道落地（R-01 已落地）+ P0-018 ABI 检查工具 6/6 PASS + SSoT 权威加强 OS-IRON-018~021 + 20 份文档修改 + 6 份工具新增）/ 1.0.1（开发）
+> **最后更新**: 2026-07-23
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.0.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）；v1.2 内核框架验证（2026-07-21）：M0 框架编译验证通过 39 .o 零错误零警告 + vmlinux 生成正常 + Kbuild/Kconfig 5 层依赖链集成验证 + airy_defconfig CONFIG_SECURITY=y 修复 + 10 项历史问题全部修复 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现（superv/ 同名文件）纳入 M1 修复清单，详见 `agentrt-linux基本工程标准规范.md` 附录 F
+> **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.0.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）；v1.2 内核框架验证（2026-07-21）：M0 框架编译验证通过 39 .o 零错误零警告 + vmlinux 生成正常 + Kbuild/Kconfig 5 层依赖链集成验证 + airy_defconfig CONFIG_SECURITY=y 修复 + 10 项历史问题全部修复 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现（superv/ 同名文件）纳入 M1 修复清单，详见 `agentrt-linux基本工程标准规范.md` 附录 F；v2.9/v3.0 P0 系统性修复（2026-07-22/23）：v2.8 审查确认 4 项 P0 + 2 项 GAP，v2.9 系统性修复（SSoT 重写 914 行 + 18 文档修改 + 6 工具新增 + 2 代码修改）+ v3.0 深度残留修复（2 文档 13 处），ABI 三方一致性 6/6 PASS，SSoT 权威加强 OS-IRON-018~021，详见 `00-reviews/_review_v3.0/`
 > **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/07-directory-structure.md` v2.0，~1800 行 + 闭源审查报告 `00-reviews/_review_v2.2/`（37 份，含 37-capability-folding-decision-and-roadmap.md 决策总纲））
-> **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1 + v1.0 大检查（2026-07-15：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解——60-driver-model→OS-STD-DRV-0xx、90-observability→OS-STD-OBS-0xx、OS-STD-017→OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用而改用 OS-IRON-015）；所有规则编号统一登记 SSoT §9.4；闭源 03-ebpf-spec.md 同步引用更新），详见 `agentrt-linux基本工程标准规范.md` v0.2.8
+> **P2 增强**: 4 项 P2 增强建议（R-01~R-04，~40h）已纳入里程碑规划，详见 §3.10（属工程实现层面，非设计延期）。**R-01（syscall.xml）已于 v2.9 落地**（2026-07-22），R-02/R-03/R-04 待落地
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证）+ v1.0 系统性复审完成（11 项问题，v0.2.7 全部修复：P0-1 ES-SEL4-7 分类残留 / P0-2 OS-SEC 三重编号冲突 / P1-2 airymaxos- 前缀 / P1-3 OS-KER-005 跳号 / P1-4 ES-SEL4-9/10 状态分类 / P1-NEW OS-KER-007/008 跳号 / P2-5 tests 简写残留 / P2-6 OS-STD-2xx 运维域 / P2-7 Rust 编号登记 / P2-8 文档计数三作用域 / P2-9 变更日志 / P2-10 品味哲学 8 项；DEFER_INIT 设计层面延期表述消除），零设计延期到 1.0.1 + v1.0 大检查（2026-07-15：OS-STD-CODE-031 命名冲突消解 + 跨子系统 OS-STD-0xx 编号冲突消解——60-driver-model→OS-STD-DRV-0xx、90-observability→OS-STD-OBS-0xx、OS-STD-017→OS-IRON-015（因 OS-IRON-013 已被"8 子仓 submodule"占用而改用 OS-IRON-015）；所有规则编号统一登记 SSoT §9.4；闭源 03-ebpf-spec.md 同步引用更新），详见 `agentrt-linux基本工程标准规范.md` v0.2.8 + v2.8 全量文档审查（2026-07-22：4 项 P0 + 2 项 GAP 确认真实）+ v2.9 系统性修复（2026-07-22：P0-014/016/017/018 全部修复，SSoT 重写 914 行 + 18 文档 + 6 工具 + 2 代码）+ v3.0 深度残留修复（2026-07-23：2 文档 13 处残留修复，7/7 维度验证 PASS）+ v3.0 深层一致性审查（2026-07-23：6 项残留矛盾 + 4 项 SSoT 权威差距识别，OS-IRON-018~021 新增），详见 `00-reviews/_review_v3.0/`
 
 ---
 
@@ -951,24 +951,24 @@ v0.2.1 研究完成后，agentrt-linux 综合成熟度从 v0.1.1 的 93/100（A�
 
 v0.2.1 研究提出 4 项 P2 增强建议（R-01~R-04），合计 ~40h，非阻断项，在 1.0.1 开发阶段增量落地：
 
-| 建议 | 名称 | 工时 | 里程碑 | 依赖 | 借鉴来源 |
-|------|------|------|--------|------|---------|
-| R-01 | syscall.xml 式接口契约定义 | ~16h | M1 | 无 | seL4 ES-SEL4-6 |
-| R-02 | structures.bf 式 bitfield codegen | ~12h | M1 | 无 | seL4 ES-SEL4-8 |
-| R-03 | 8 子仓 MAINTAINERS 文件 | ~8h | M5 | M0 目录骨架 | OLK-6.6 ES-OLK-8 |
-| R-04 | 合规检查增补 4 项规则 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | seL4 + OLK-6.6 |
-| **合计** | | **~40h** | | | |
+| 建议 | 名称 | 工时 | 里程碑 | 依赖 | 借鉴来源 | 状态 |
+|------|------|------|--------|------|---------|------|
+| R-01 | syscall.xml 式接口契约定义 | ~16h | M1 | 无 | seL4 ES-SEL4-6 | ✅ 已落地（v2.9） |
+| R-02 | structures.bf 式 bitfield codegen | ~12h | M1 | 无 | seL4 ES-SEL4-8 | 待落地 |
+| R-03 | 8 子仓 MAINTAINERS 文件 | ~8h | M5 | M0 目录骨架 | OLK-6.6 ES-OLK-8 | 待落地 |
+| R-04 | 合规检查增补 4 项规则 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | seL4 + OLK-6.6 | 待落地（R-01 已满足） |
+| **合计** | | **~40h** | | | | **R-01 已落地 ~16h** |
 
 ### 13.2 R-01/R-02 落地计划（M1 阶段，Day 15-42）
 
-R-01（syscall.xml）和 R-02（structures.bf）在 M1 阶段落地，与架构设计并行：
+**R-01（syscall.xml）已于 v2.9 提前落地**（2026-07-22），R-02（structures.bf）在 M1 阶段落地：
 
-| 任务 | 工时 | 时间窗口 | 交付物 | 验收标准 |
-|------|------|----------|--------|---------|
-| R-01: 设计 syscall.xml schema | 8h | Day 15-21 | `tools/syscall.xml` + codegen 脚本 | schema 通过架构评审 |
-| R-01: 10 个 [SC] 头文件接口契约 XML 化 | 8h | Day 22-28 | 10 个 XML 契约文件 | codegen 输出与手写头文件一致 |
-| R-02: 设计 structures.bf schema | 6h | Day 15-21 | `tools/structures.bf` + codegen 脚本 | schema 通过架构评审 |
-| R-02: [SC] 位域结构 codegen 化 | 6h | Day 22-28 | 位域 codegen 输出 | codegen 输出与手写位域一致 |
+| 任务 | 工时 | 时间窗口 | 交付物 | 验收标准 | 状态 |
+|------|------|----------|--------|---------|------|
+| R-01: 设计 syscall.xml schema | 8h | Day 15-21 | `tools/syscall.xml` + codegen 脚本 | schema 通过架构评审 | ✅ 已落地 |
+| R-01: 10 个 [SC] 头文件接口契约 XML 化 | 8h | Day 22-28 | 10 个 XML 契约文件 | codegen 输出与手写头文件一致 | ✅ 已落地（4 核心 syscall）
+| R-02: 设计 structures.bf schema | 6h | Day 15-21 | `tools/structures.bf` + codegen 脚本 | schema 通过架构评审 | 待落地 |
+| R-02: [SC] 位域结构 codegen 化 | 6h | Day 22-28 | 位域 codegen 输出 | codegen 输出与手写位域一致 | 待落地 |
 
 ### 13.3 R-03 落地计划（M5 阶段，Day 43-63）
 
@@ -1004,7 +1004,7 @@ R-04（合规检查增补 4 项规则）在 R-01/R-02/R-03 全部落地后增补
 
 | 建议 | 落地后收益 |
 |------|-----------|
-| R-01 syscall.xml | 接口契约与实现分离，自动生成 stub 减少手写错误，CI 可校验契约与实现一致性 |
+| R-01 syscall.xml | 接口契约与实现分离，自动生成 stub 减少手写错误，CI 可校验契约与实现一致性（✅ 已落地 v2.9） |
 | R-02 structures.bf | 避免手写位域操作的错误，位域定义集中管理，[SC] 头文件位域一致性保证 |
 | R-03 MAINTAINERS | 每个子系统有明确责任归属，CODEOWNERS 可基于 MAINTAINERS 自动生成 |
 | R-04 合规检查增补 | seL4 借鉴检查规则纳入 CI 强制执行，工程思想深度落地有机器保障 |
@@ -1100,11 +1100,11 @@ v1.2 验证对 M1（架构与模块设计完善，480h → 508h 含 R-01/R-02）
 | 影响项 | 描述 | M1 工时影响 |
 |--------|------|------------|
 | **新增 P1 修复任务** | 重命名 `kernel/superv/` 4 个 wrapper 文件加 `_superv` 后缀 + 更新 `kernel/superv/Kbuild` | +4h（纳入 M1 总工时） |
-| R-01 syscall.xml 接口契约 | 已规划 | +14h |
-| R-02 structures.bf 位域 codegen | 已规划 | +14h |
-| **M1 调整后总工时** | 480h + 4h（P1 修复）+ 28h（R-01/R-02） | **512h** |
+| R-01 syscall.xml 接口契约 | ✅ 已落地（v2.9） | +0h（已提前完成） |
+| R-02 structures.bf 位域 codegen | 待落地 | +12h |
+| **M1 调整后总工时** | 480h + 4h（P1 修复）+ 12h（仅 R-02，R-01 已落地） | **496h** |
 
-> **进度风险**：M1 工时从原 480h 增至 512h（+6.7%），仍在原 ~14% 缓冲范围内，不影响关键路径。
+> **进度风险**：M1 工时从原 480h 增至 496h（+3.3%），R-01 已于 v2.9 提前落地减少 16h 工时，仍在原 ~14% 缓冲范围内，不影响关键路径。
 
 ### 15.4 P1-MAJOR 新发现问题详细说明
 

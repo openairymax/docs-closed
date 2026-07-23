@@ -4,10 +4,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + 内核 M0 框架编译验证完成 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文件 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 + hardening.config 三段式 defconfig + error.h 81 个错误码定义 + IRON 编号三套体系 SSoT 统一登记）/ 1.0.1（开发）
-> **最后更新**: 2026-07-21
+> **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + 内核 M0 框架编译验证完成 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文件 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 + hardening.config 三段式 defconfig + error.h 81 个错误码定义 + IRON 编号三套体系 SSoT 统一登记 + v2.9/v3.0 P0 系统性修复：syscall 编号统一 548-551 + codegen 管道（syscall.xml + syscall_gen.py）+ ABI 检查工具（abi_check.py 6/6 PASS）+ SSoT 权威加强 OS-IRON-018~021 + 闭源文档旧编号残留清除 3 处 + v3.1 eBPF/sched_ext 深层残留全面清除：03-security.md 7 处 eBPF kfunc→纯 C LSM + CBMC + 17 处文档深层 eBPF 残留修复 + sched_ext 误用修复 4 处 + airy_superv_lsm.c→airy_superv_init.c 重命名 + DEFINE_LSM(airy) 归属修正 + 00-alk-kernel-overview.md 完全重建 525 行 + syscalls.h 描述修正 + FR-006 修正）/ 1.0.1（开发）
+> **最后更新**: 2026-07-23
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）+ v1.1 集成审查（2026-07-20：IRON-9 v3 四层模型 + [SC] 10 头文件 UAPI 迁移 + Capability Folding H1-H6）+ v1.2 内核框架验证（2026-07-21：M0 框架编译验证通过 37 .o 零错误零警告 + airy_defconfig 修复 + 文档体系全面一致性修复 + Kbuild/Kconfig 集成验证通过）
+> **审查状态**: Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）+ v0.9.0 综合审查完成（15 项问题已验证，P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项，v0.2.5 修复 P0-CRITICAL-01/02 + P1-MAJOR-03/06 + P2-MINOR-04/05）+ v2.1 系统性修复（2026-07-14：OS-FMT/ES-SEL4-7/[SC]头文件/子仓命名/前缀/SSoT 一致性）+ v1.0 系统性复核修复（2026-07-14：品味哲学 8 项/Rust 045~046/OS-KER-007~008/ES-SEL4-9~10/OS-SEC 三重冲突/SSoT 内部一致性，v1.0 报告 11 项问题 10 项已修复 + 1 项 tests 简写分析中）+ v1.0 大检查（2026-07-15：OS-STD-CODE-031/跨子系统 OS-STD-0xx 冲突消解，所有规则编号统一登记 SSoT §9.4）+ v1.1 集成审查（2026-07-20：IRON-9 v3 四层模型 + [SC] 10 头文件 UAPI 迁移 + Capability Folding H1-H6）+ v1.2 内核框架验证（2026-07-21：M0 框架编译验证通过 37 .o 零错误零警告 + airy_defconfig 修复 + 文档体系全面一致性修复 + Kbuild/Kconfig 集成验证通过）+ v2.9/v3.0 P0 系统性修复（2026-07-22/23：P0-014 syscall 编号统一 548-551 + P0-016 v0.2.8 清除 + P0-017 codegen 管道 + P0-018 ABI 检查工具 + SSoT 权威加强 OS-IRON-018~021 + 闭源文档旧编号残留清除）+ v3.1 eBPF/sched_ext 深层残留全面清除（2026-07-23：03-security.md 7 处 eBPF kfunc→纯 C LSM + CBMC + 17 处文档深层 eBPF 残留修复 + sched_ext 误用修复 4 处 + airy_superv_lsm.c→airy_superv_init.c 重命名 + DEFINE_LSM(airy) 归属修正 + 00-alk-kernel-overview.md 完全重建 525 行）
 > **核心约束**: IRON-9 v3 同源且部分代码共享——[SC] 共享契约层 10 个头文件落地于 `include/uapi/linux/airymax/`（kernel UAPI 路径，H1 硬约束：magic 0x41524531 / capability_badge offset 40-47）
 > **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ 开源手册 `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（17 类规则编号体系）
 > **理论根基**: Linux 6.6 内核基线（openEuler OLK-6.6 标杆）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
@@ -882,7 +882,7 @@ AirymaxOS（agentrt-linux）的工程思想与实现方式与 Euler 保持一致
 |---------|---------|---------|
 | 加速器接入（accel 框架） | 参考设计模式，[IND] 独立实现 | 不共享 |
 | GPU 调度器（drm_sched） | 参考设计模式，[IND] 独立实现 | 不共享 |
-| eBPF 可编程内核 | 参考设计模式，[IND] 独立实现 | 不共享 |
+| eBPF 可编程内核（非核心，H5） | 参考设计模式，[IND] 独立实现（仅 90-observability 可观测性，airy_lsm 不依赖 BPF） | 不共享 |
 
 ### 10.4 模块化兼容
 
@@ -1061,11 +1061,11 @@ seL4 的工程思想在架构层被选择性借鉴——仅借鉴其设计哲学
 
 ### 12.8 ES-SEL4-6~10 的落地方式
 
-ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 架构正交分层）不作为架构层强制借鉴，而是作为 P2 增强建议。其中 **ES-SEL4-7/9/10 已在 0.1.1 阶段提前落地**（标注"已落地"），**ES-SEL4-6/8 作为 1.0.1 阶段增量待落地**（标注"待落地"）：
+ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 架构正交分层）不作为架构层强制借鉴，而是作为 P2 增强建议。其中 **ES-SEL4-6/7/9/10 已落地**（ES-SEL4-6 于 v2.9 落地 syscall.xml + syscall_gen.py codegen 管道），**ES-SEL4-8 作为 1.0.1 阶段增量待落地**（标注"待落地"）：
 
 | seL4 工程思想 | 落地方式 | 状态 | 对应 P2 建议 |
 |-------------|---------|------|-------------|
-| ES-SEL4-6 接口契约 XML | syscall.xml 式接口契约定义 | 待落地 | R-01（§14.1） |
+| ES-SEL4-6 接口契约 XML | syscall.xml 式接口契约定义 | 已落地（v2.9） | R-01（§14.1，已落地） |
 | ES-SEL4-8 bitfield codegen | structures.bf 式位域 codegen | 待落地 | R-02（§14.2） |
 | ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已落地 | 已在 cloudnative 落地 |
 | ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已落地 | 已在 services/cloudnative 落地 |
@@ -1193,18 +1193,20 @@ formal-verification/
 
 ## 第 14 章 P2 增强建议落地规划
 
-### 14.1 R-01：syscall.xml 式接口契约定义
+### 14.1 R-01：syscall.xml 式接口契约定义（✅ 已落地 v2.9）
 
-> **OS-STD-070**（建议，1.0.1 M1 落地）: 为 IRON-9 v3 [SC] 共享契约层引入 seL4 风格的 syscall.xml 接口契约定义，由代码生成器自动生成用户态 stub 与内核态 entry 表。
+> **OS-STD-070**（✅ 已落地，v2.9 完成于 2026-07-22）: 为 IRON-9 v3 [SC] 共享契约层引入 seL4 风格的 syscall.xml 接口契约定义，由代码生成器自动生成用户态 stub 与内核态 entry 表。
 
 | 维度 | 详情 |
 |------|------|
 | 借鉴来源 | seL4 `tools/syscall.xml` + `tools/syscall_generator.py`（ES-SEL4-6） |
-| 落地范围 | 10 个 [SC] 头文件的接口契约 XML 化 |
+| 落地范围 | 4 核心 syscall（548-551）的接口契约 XML 化 |
 | 预计工时 | ~16h |
-| 落地里程碑 | 1.0.1 M1（架构与模块设计完善） |
+| 落地里程碑 | ✅ 已落地（v2.9，2026-07-22） |
 | 依赖 | 无 |
 | 收益 | 接口契约与实现分离，自动生成 stub 减少手写错误，CI 可校验契约与实现一致性 |
+| **落地产物** | `kernel/include/uapi/linux/airymax/syscall.xml`（89 行，codegen 契约源）+ `tools/codegen/syscall_gen.py`（314 行，生成器）+ `tools/codegen/Makefile`（45 行，构建入口） |
+| **状态** | ✅ 已落地，ES-SEL4-6 状态从"待落地"更新为"已落地（v2.9）" |
 
 ### 14.2 R-02：structures.bf 式 bitfield codegen
 
@@ -1255,13 +1257,13 @@ formal-verification/
 
 ### 14.5 P2 增强建议工时与里程碑汇总
 
-| 建议 | 工时 | 里程碑 | 依赖 | 合计 |
+| 建议 | 工时 | 里程碑 | 依赖 | 状态 |
 |------|------|--------|------|------|
-| R-01 syscall.xml | ~16h | M1 | 无 | |
-| R-02 structures.bf | ~12h | M1 | 无 | |
-| R-03 MAINTAINERS | ~8h | M5 | M0 目录骨架 | |
-| R-04 合规检查增补 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | |
-| **合计** | | | | **~40h** |
+| R-01 syscall.xml | ~16h | M1 | 无 | ✅ 已落地（v2.9，2026-07-22） |
+| R-02 structures.bf | ~12h | M1 | 无 | 待落地 |
+| R-03 MAINTAINERS | ~8h | M5 | M0 目录骨架 | 待落地 |
+| R-04 合规检查增补 | ~4h | R-01/R-02/R-03 后 | R-01 + R-02 + R-03 | 待落地（R-01 已满足） |
+| **合计** | | | | **~40h（R-01 已落地 ~16h）** |
 
 > **注**: 4 项 P2 增强建议合计 ~40h，非阻断项。根据版本路线规划（非设计延期）：0.1.1 阶段完成 P0/P1 全部强制规则与设计文档，P2 增强建议作为 1.0.1 开发阶段增量落地——此为版本路线规划（IRON-8 版本过渡规则），非设计层面延期至 1.0.1。落地后 agentrt-linux 综合成熟度将从 100/100（A+）进一步提升至工程思想深度落地的新高度。
 
@@ -1291,7 +1293,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | **H2** | capability_badge 字段进 [SC] ipc.h，Badge 校验机制属 [SS] |
 | **H3** | agentrt 用户态 capability_badge=0（跳过 C-S9） |
 | **H4** | agentrt-linux 内核 Badge 由 sec_d 编译、fastpath C-S9 校验 |
-| **H5** | 纯 C LSM 职责不变（不使用 BPF LSM） |
+| **H5** | 纯 C LSM 职责不变（不使用 BPF LSM，airy_lsm 代码完整性通过编译期校验 + CBMC 形式化验证保证，eBPF kfunc 仅用于 90-observability 可观测性探针） |
 | **H6** | [DSL] 降级 capability_badge=0 跳过 C-S9 |
 
 ### 15.3 12 daemon 命名统一（v2.0 决策，无例外）
@@ -1339,13 +1341,40 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | capability_badge offset | 40（D-9 修复后 8 字节对齐） |
 | crc32 offset | 52 |
 | reserved 大小 | 72 字节（offset 56-127） |
-| Syscall 数 | 4 核心 + 20 预留 = 24 槽位（Linux 注册号 512-535） |
+| Syscall 数 | 4 核心 + 20 预留 = 24 槽位（Linux 注册号 548-571） |
+
+### 15.6 SSoT 权威源体系（v3.0 新增）
+
+agentrt-linux 的 SSoT（Single Source of Truth）权威源体系由五大权威源构成，覆盖规则编号、syscall 编号、ABI 三方一致性、codegen 契约、ABI 检查工具。任何文档/代码/工具与 SSoT 权威源冲突时，以 SSoT 为准。
+
+| 权威源 | SSoT 文档/工具 | 覆盖范围 | 强制约束 | 冲突裁决 |
+|--------|---------------|---------|---------|---------|
+| 规则编号 SSoT | `09-ssot-registry.md` | OS-IRON/BAN/STD/ACC 等全部规则编号 | OS-IRON-015 | 以 SSoT 为准 |
+| syscall 编号 SSoT | `07-syscall-registry.md` | 4 核心 syscall（548-551）+ 20 预留（552-571）+ op-dispatch 映射 | OS-IRON-018 | 以 SSoT 为准 |
+| ABI 三方一致性 | SSoT + `unistd.h` + `syscall_64.tbl` | syscall 编号三方必须完全一致 | OS-IRON-019 | `abi_check.py` 强制检查 |
+| codegen 契约 SSoT | `syscall.xml` | syscall stub 生成契约（4 syscall + linux_base=548） | OS-IRON-020 | 禁止手写 syscall 编号 |
+| ABI 检查工具 SSoT | `abi_check.py` | CI 强制 ABI 一致性检查（6 项） | OS-IRON-021 | 6/6 PASS 方可合并 |
+
+**变更流程（强制）**：任何对 syscall 编号的变更必须遵循以下顺序：
+
+1. 先更新 SSoT `07-syscall-registry.md`
+2. 同步更新 `unistd.h` 和 `syscall_64.tbl`
+3. 更新 codegen 契约 `syscall.xml`
+4. 运行 `abi_check.py` 验证三方一致性（6/6 PASS）
+5. 同步更新下游文档
+6. 更新 ABI 基线 `abi_baseline.json`
+
+**禁止行为**：
+- 禁止在任何非 SSoT 文档中重新定义 syscall 编号（违反 OS-IRON-018）
+- 禁止 `unistd.h` / `syscall_64.tbl` / SSoT 三方编号不一致（违反 OS-IRON-019）
+- 禁止手写 syscall stub 而非从 `syscall.xml` 生成（违反 OS-IRON-020）
+- 禁止跳过 `abi_check.py` 检查合并代码（违反 OS-IRON-021）
 
 ---
 
 ## 附录 A 规则编号注册表
 
-> **SSoT 声明（2026-07-15 升级）**：本附录为闭源侧摘要登记，**完整规则编号登记的唯一权威来源**为 [`09-ssot-registry.md`](../../docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)（已升级为 Airymax 全局规则 SSoT 注册表，覆盖 AirymaxOS `OS-*` 第 2-9 章 + agentrt 无前缀第 10 章 17 类 751 条规则）。当本附录与 SSoT 冲突时，以 SSoT 为准。本附录仅登记闭源侧关键规则摘要，完整 OS-KER（155+条）/OS-STD（含 CODE/FMT/STY/GOV/DRV/OBS 子域）/OS-ACC（110 项）/OS-SEC（54 条）请直接查阅 SSoT 对应章节。
+> **SSoT 声明（v3.0 升级，2026-07-23）**：本附录为闭源侧摘要登记，**完整规则编号登记的唯一权威来源**为 [`09-ssot-registry.md`](../../docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)（已升级为 Airymax 全局规则 SSoT 注册表，覆盖 AirymaxOS `OS-*` 第 2-9 章 + agentrt 无前缀第 10 章 17 类 751 条规则）。**syscall 编号的唯一权威来源**为 [`07-syscall-registry.md`](../../docs/AirymaxOS/140-application-development/07-syscall-registry.md)（v1.0.1 Capability Folding 统一模型，4 核心 syscall 548-551 + 20 预留 552-571 + op-dispatch 映射）。当本附录与 SSoT 冲突时，以 SSoT 为准。本附录仅登记闭源侧关键规则摘要，完整 OS-KER（155+条）/OS-STD（含 CODE/FMT/STY/GOV/DRV/OBS 子域）/OS-ACC（110 项）/OS-SEC（54 条）请直接查阅 SSoT 对应章节。SSoT 权威源体系详见 §15.6（OS-IRON-018~021）。
 
 ### A.1 OS-IRON 工程铁律（不可妥协）
 
@@ -1368,6 +1397,10 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | OS-IRON-015 | 编号管理元规则——OS-KER / OS-STD / OS-OBS / OS-DRV 等所有规则编号一经分配不得复用；废弃规则标记 `DEPRECATED` 但保留编号（原 OS-STD-017，2026-07-15 提升） | SSoT §2 |
 | OS-IRON-016 | 12 daemon 命名统一 `*_d` 后缀（v2.0 决策，无例外，ADR-013） | §15.3 |
 | OS-IRON-017 | v1.0.1 Capability Folding 6 条硬约束 H1-H6 不可妥协 | §15.2 |
+| OS-IRON-018 | syscall 编号 SSoT——`07-syscall-registry.md` 是 syscall 编号唯一权威源，所有文档/代码/工具的 syscall 编号必须以此为准，禁止在任何其他位置重新定义 syscall 编号（v3.0 新增） | §15.6 |
+| OS-IRON-019 | ABI 三方一致性——SSoT 文档 / `unistd.h` / `syscall_64.tbl` 三方 syscall 编号必须完全一致，由 `abi_check.py` 在 CI 中强制检查，任何一方变更必须同步更新其他两方（v3.0 新增） | §15.6 |
+| OS-IRON-020 | codegen 契约 SSoT——`syscall.xml` 是 codegen 管道契约唯一源，所有 syscall stub 生成必须基于此契约，禁止手写 syscall 编号定义（v3.0 新增） | §15.6 |
+| OS-IRON-021 | ABI 检查工具 SSoT——`abi_check.py` 是 ABI 一致性检查唯一工具，CI 流水线必须强制执行，6 项检查全部 PASS 方可合并（v3.0 新增） | §15.6 |
 
 ### A.2 OS-BAN 禁止规则
 
@@ -1591,7 +1624,7 @@ seL4 的 10 项工程思想（ES-SEL4-1~10）在 agentrt-linux 中的借鉴方�
 |-----------|----------|---------|
 | `security/airy/` | 10 | `airy_lsm.o` + `airy_cap_init.o` + `airy_cap_array.o` + `airy_cap_derive.o` + `airy_cap_check.o` + `airy_cap_revoke.o` + `airy_cap_rotate.o` + `airy_ipc_freeze.o` + `airy_die_notify.o` + `airy_eventfd.o`（组合为 `airy.o`） |
 | `kernel/superv/` | 4 | `airy_cap_check.o` + `airy_die_notify.o` + `airy_eventfd.o` + `airy_ipc_freeze.o`（组合为 `airy_superv.o`，**与 security/airy/ 同名但内容不同**，详见 §F.4） |
-| `kernel/syscalls/` | 1 | `airy_syscalls.o`（4 个系统调用 454-457 入口） |
+| `kernel/syscalls/` | 1 | `airy_syscalls.o`（4 个系统调用 548-551 入口） |
 | `kernel/log/` | 3 | `airy_log_kern.o` + `airy_log_persist.o` + `airy_log_ring.o` |
 | `kernel/ipc/` | 2 | `airy_ipc_capability.o` + `airy_ipc_syscall.o` |
 | `kernel/corekern/` | 19 | `api/airy_kern_api.o` + `sched/{stc_policy,stc_dispatch,stc_mcs_map,stc_stats}.o` + `ipc/{airy_uring_cmd,airy_ipc_ring,airy_ipc_fastpath,airy_ipc_zero_copy}.o` + `taskflow/{airy_task_desc,airy_task_lifecycle}.o` + `memory/{airy_mem_alloc,airy_mem_tier}.o` + `time/airy_time.o` + `object/airy_object.o` + `locking/airy_locking.o` + `irq/airy_irq.o` + `bpf/{airy_bpf_probe,airy_struct_ops}.o` |
@@ -1654,7 +1687,7 @@ obj-$(CONFIG_AIRY_IPC)		+= ipc/
 | 1 | `security_types.h` | capability 41 ID 枚举 + 派生模型 + Vault backend 抽象 | 4 |
 | 2 | `lsm_types.h` | LSM blob 布局（task/inode/file/cred）+ 5 钩子枚举 | 4 |
 | 3 | `error.h` | A-UEF 统一错误码框架（120 个 AIRY_E* 错误码 + AIRY_FAULT_* 故障码） | 3 |
-| 4 | `syscalls.h` | 4 个系统调用编号（454-457）+ 20 预留槽（458-477） | 4 |
+| 4 | `syscalls.h` | 4 个系统调用编号（548-551）+ 20 预留槽（552-571） | 4 |
 | 5 | `uapi_compat.h` | 跨语言类型桥接（C/Rust/Go/TS）+ `__u32`/`__u64` 固定宽度 | 4 |
 | 6 | `cognition_types.h` | Agent 8 态状态机 + 双系统协同契约 | 4 |
 | 7 | `memory_types.h` | MGLRU 多代 LRU + CXL/PMEM 分级 + memcg 隔离 | 4 |
