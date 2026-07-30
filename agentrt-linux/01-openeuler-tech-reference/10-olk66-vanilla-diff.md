@@ -6,8 +6,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **版本**: 1.0.0
 > **最后更新**: 2026-07-30
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **数据来源**: `openeuler/OLK-6.6`（gitee.com/openeuler/kernel，shallow fetch）对比 `linux-stable/linux-6.6.y`（kernel.org 6.6.145）
-> **上游 tip**: `5078a3a23a1e` ("update README.")
+> **数据来源**: `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel，shallow fetch）对比 `linux-stable/linux-6.6.y`（kernel.org 6.6.145）
+> **上游 tip**: `4e4aa165baf8` ("!25188 [OLK-6.6][linux-6.6.y sync] Backport 6.6.143-6.6.144 LTS Patches")
 
 ---
 
@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 维度 | vanilla | OLK-6.6 |
 |------|---------|---------|
-| 仓库 | git.kernel.org/linux-stable | gitee.com/openeuler/kernel |
+| 仓库 | git.kernel.org/linux-stable | atomgit.com/openeuler/kernel |
 | 分支 | linux-6.6.y | OLK-6.6 |
 | 版本 | 6.6.145 | 6.6.0 + openEuler backport |
 | 版本标记 | — | `Makefile.oever`: OPENEULER_LTS=0, MAJOR=9999, MINOR=0 |
@@ -131,7 +131,7 @@ OLK 与 vanilla 在这些架构上的差异为 openEuler 厂商增强（Kunpeng/
 
 **结论**：sched_ext 于 Linux 6.12 合入主线，6.6 LTS（vanilla 与 OLK-6.6）均不含。既有文档 `00-alk-kernel-overview.md` §2.2 item 3 称"OLK 6.6 backport 了 sched_ext"为**事实错误**，已在 P1-6 修正。
 
-> **工程师参考目录警告**：`/home/spharx/.engineer-reference/kernel-OLK-6.6/` 工作树含 `kernel/sched/ext.c`，但其 `.git` remote 指向 `atomgit.com:openairymax/spharxworks.git`（非 openEuler），该工作树已被修改/污染，**不可作为 OLK-6.6 权威源**。权威源为 `openeuler/OLK-6.6` git ref。
+> **工程师参考目录说明**：`/home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/` 已于 2026-07-30 从 `atomgit.com/openeuler/kernel` 重新浅克隆（OLK-6.6 分支，depth=1），origin 正确指向 openEuler 官方源，可作为 OLK-6.6 源码查阅参考。权威 diff 数据仍以 `openeuler/OLK-6.6` git ref（kernel 仓库内）为准。
 
 ---
 
@@ -203,7 +203,7 @@ openEuler 版本系统（OPENEULER_LTS/MAJOR/MINOR/RELEASE），注入 `OPENEULE
 
 ## 9. 一致性声明
 
-1. **权威源**：本文档差异数据以 `openeuler/OLK-6.6` 与 `linux-stable/linux-6.6.y` 的 git diff 为唯一权威。工程师参考目录工作树已污染，不作权威源。
+1. **权威源**：本文档差异数据以 `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel）与 `linux-stable/linux-6.6.y` 的 git diff 为唯一权威。工程师参考目录已重新 clone 自 atomgit 官方源，可供源码查阅。
 2. **sched_ext 事实**：OLK-6.6 与 vanilla 6.6.145 均不含 sched_ext（6.12 合入主线）。既有文档相关表述已在 P1-6 修正。
-3. **BAN-INTERNAL-002**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。开源架构文档以中性术语（"国产硬件驱动层"）引用，详见 `00-alk-kernel-overview.md` §3.1 与 [README.md 参考声明](../../docs/AirymaxOS/README.md)。
+3. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）；驱动层提取的逐文件差异数据仍属内部参考，不进入开源文档。
 4. **IRON-7**：vanilla linux-stable 6.6.145 为唯一基线（v1.0.1），Euler 驱动层为硬件适配附加层，不改变核心子系统基线纯净性。
