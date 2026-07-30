@@ -3,8 +3,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 # openEuler 技术规范参考
 
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
-> **版本**: 0.1.1
-> **最后更新**: 2026-07-07
+> **版本**: 0.2.0
+> **最后更新**: 2026-07-30
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 
 ---
@@ -37,6 +37,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | `07-rust-support-spec.md` | Rust 内核模块支持规范 | `rust/`、`Documentation/rust/` | 70-build-system、多语言支持 |
 | `08-coding-standard-spec.md` | 编码规范与工程标准对照 | `Documentation/process/coding-style.rst` | 50-engineering-standards |
 | `10-olk66-vanilla-diff.md` | OLK-6.6 与 vanilla 6.6.145 差异对比（LAYER 方案依据） | `openeuler/OLK-6.6` git ref | 10-architecture/00-alk-kernel-overview |
+| `11-layer-feasibility-study.md` | LAYER 方案可行性论证（技术/维护/法律/工程四维度） | `openeuler/OLK-6.6` git ref | 10-architecture/00-alk-kernel-overview |
+| `12-build-and-flash-strategy.md` | 编译与烧录策略（全面复用 openEuler 构建体系） | openEuler 24.03 LTS 构建工具链 | 10-architecture/00-alk-kernel-overview |
 
 ---
 
