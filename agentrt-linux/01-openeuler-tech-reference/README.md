@@ -36,6 +36,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | `06-ipc-spec.md` | IPC 子系统规范 | `ipc/msg.c`、`ipc/mqueue.c` | 30-interfaces/02-ipc-protocol |
 | `07-rust-support-spec.md` | Rust 内核模块支持规范 | `rust/`、`Documentation/rust/` | 70-build-system、多语言支持 |
 | `08-coding-standard-spec.md` | 编码规范与工程标准对照 | `Documentation/process/coding-style.rst` | 50-engineering-standards |
+| `10-olk66-vanilla-diff.md` | OLK-6.6 与 vanilla 6.6.145 差异对比（LAYER 方案依据） | `openeuler/OLK-6.6` git ref | 10-architecture/00-alk-kernel-overview |
 
 ---
 
