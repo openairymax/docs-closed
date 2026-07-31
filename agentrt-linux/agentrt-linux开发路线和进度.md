@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
 > **版本**: v1.0.1（内核框架验证版，版本号按 IRON-8 统一）（v1.1 基础 + M0 内核框架编译验证完成 39 .o 零错误零警告 + airy_defconfig CONFIG_SECURITY=y 依赖修复 + CI/CD defconfig 引用修正 5 处 + 文档体系全面一致性修复：MAC_MAX_AGENTS→AIRY_CAP_MAX_AGENTS 15 文档 19 处 + v1.0.0 引用清除 13 文件 38 处 + agent_lsm→airy_lsm 闭源文档 2 处 + LSM 钩子描述修正 250→5 实现 + 文档数量模型三作用域对齐 + [DSL] 降级层 10/10 头文件 39 处 AIRY_SC_FALLBACK + Kbuild/Kconfig 5 层依赖链集成验证 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现问题：security/airy 与 kernel/superv 同名文件不同内容 4 对，纳入 M1 修复清单 + v2.9/v3.0 P0 系统性修复：P0-014 syscall 编号统一 548-551 + P0-016 v0.2.8 清除 + P0-017 codegen 管道落地（R-01 已落地）+ P0-018 ABI 检查工具 6/6 PASS + SSoT 权威加强 OS-IRON-018~021 + 20 份文档修改 + 6 份工具新增）/ 1.0.1（开发）
-> **最后更新**: 2026-07-27（v7.2 同步：M0 100% 就绪）
+> **最后更新**: 2026-07-31（任务2 openEuler 驱动复用层落地 + 文档体系 8 处一致性修复）
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线 + seL4 源代码深度研究（v0.2.1）确立的工程基线；v0.2.4 确立核心价值标准"一切以生产级的 Linux 发行版为标准"；Wave 2 v2（2026-07-13）源码级深读审查完成，三层对齐度评分从 61/C+ 跃升至 80/B；v1.0 系统性复审（2026-07-14）11 项问题全部修复，零设计延期，达到"可以按方案开始全面开发"状态；v1.0 大检查（2026-07-15）消解 OS-STD-CODE-031 与跨子系统 OS-STD-0xx 编号冲突；v1.1 大检查（2026-07-20）：方案推进至"经过严密科学研究和论证"+"可全面开发"状态，闭源审查报告 _review_v2.2（37 份）与开源方案对齐度 ~92.8%，6 条硬约束 H1-H6 + 17 份文档同步清单落地，12 daemon 命名统一 `*_d`（v2.0 决策），[SC] 10 头文件 + IRON-9 v3 四层模型 + v1.0.1 Capability Folding（Badge 64-bit + fastpath C-S9 + `agent_caps[1024]`）；v1.2 内核框架验证（2026-07-21）：M0 框架编译验证通过 39 .o 零错误零警告 + vmlinux 生成正常 + Kbuild/Kconfig 5 层依赖链集成验证 + airy_defconfig CONFIG_SECURITY=y 修复 + 10 项历史问题全部修复 + H1-H6 硬约束全部通过 + 1 项 P1-MAJOR 新发现（superv/ 同名文件）纳入 M1 修复清单，详见 `agentrt-linux基本工程标准规范.md` 附录 F；v2.9/v3.0 P0 系统性修复（2026-07-22/23）：v2.8 审查确认 4 项 P0 + 2 项 GAP，v2.9 系统性修复（SSoT 重写 914 行 + 18 文档修改 + 6 工具新增 + 2 代码修改）+ v3.0 深度残留修复（2 文档 13 处），ABI 三方一致性 6/6 PASS，SSoT 权威加强 OS-IRON-018~021，详见 `00-reviews/_review_v3.0/`
 > **关联研究**: `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行）+ `00-reviews/_research_0.2.1/02-airymaxos-recheck-report.md`（235 行）+ `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1903 行，v0.2.4 生产级修正版 + v0.2.4-review 二次审查 8 项修正）+ Wave 2 v2 源码级深读报告（`00-reviews/_review_0.9.0/` 7 份报告）+ v1.0 系统性复审报告（`00-reviews/_review_v1.0/01-systematic-recheck.md`）+ 开源目录结构 SSoT（`docs/AirymaxOS/10-architecture/07-directory-structure.md` v2.0，~1800 行 + 闭源审查报告 `00-reviews/_review_v2.2/`（37 份，含 37-capability-folding-decision-and-roadmap.md 决策总纲））
@@ -1170,6 +1170,7 @@ airy_superv-y := airy_cap_check_superv.o airy_die_notify_superv.o \
 | P2 增强建议 | 已规划（R-01~R-04，~40h），属工程实现层面，1.0.1 阶段落地 |
 | 4 项 P2 建议 | R-01/R-02 → M1、R-03 → M5、R-04 → R-01/R-02/R-03 后 |
 | 1.0.1 M1 就绪判定 | ✅ 通过（v1.0 系统性复审 11 项全部修复 + 零设计延期 + v1.2 M0 框架编译验证通过 + 1 项 P1 新发现纳入 M1 修复清单） |
+| **任务2 openEuler 驱动复用层落地** | **✅ 完成（2026-07-31）**——arch/sw_64/（366 文件）+ openeuler_defconfig 底座（x86/arm64）+ euler_hw 硬件碎片 + defconfig-agent IRON-7 覆盖 + airy-kernel.spec + meta-airymax/ + custom/cfg_airymax/ + ks-airymax.cfg。三架构配置生成验证通过，x86 完整编译通过。详见 12-build-and-flash-strategy.md §11 |
 
 ---
 

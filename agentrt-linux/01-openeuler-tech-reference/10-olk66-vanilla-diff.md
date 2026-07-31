@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# OLK-6.6 与 vanilla 6.6.145 差异对比（SSoT）
+# OLK-6.6 与 vanilla 6.6.144 差异对比（SSoT）
 
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 1.0.0
 > **最后更新**: 2026-07-30
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
-> **数据来源**: `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel，shallow fetch）对比 `linux-stable/linux-6.6.y`（kernel.org 6.6.145）
+> **数据来源**: `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel，shallow fetch）对比 `linux-stable/linux-6.6.y`（kernel.org 6.6.144）
 > **上游 tip**: `4e4aa165baf8` ("!25188 [OLK-6.6][linux-6.6.y sync] Backport 6.6.143-6.6.144 LTS Patches")
 
 ---
@@ -17,13 +17,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|---------|---------|
 | 仓库 | git.kernel.org/linux-stable | atomgit.com/openeuler/kernel |
 | 分支 | linux-6.6.y | OLK-6.6 |
-| 版本 | 6.6.145 | 6.6.0 + openEuler backport |
+| 版本 | 6.6.144 | 6.6.0 + openEuler backport |
 | 版本标记 | — | `Makefile.oever`: OPENEULER_LTS=0, MAJOR=9999, MINOR=0 |
 | Airymax remote | `linux-stable` | `openeuler`（本次新增） |
 
 **对比命令**：`git diff --stat linux-stable/linux-6.6.y openeuler/OLK-6.6`
 
-**注意**：OLK-6.6 基于 6.6.0，Airymax vanilla 为 6.6.145。两者无共同祖先（OLK shallow fetch），故 `git diff` 为树对树直比，差异含 145 个稳定版补丁的回溯差距 + openEuler 增量。本文档聚焦 **openEuler 增量**。
+**注意**：OLK-6.6 基于 6.6.0，Airymax vanilla 为 6.6.144。两者无共同祖先（OLK shallow fetch），故 `git diff` 为树对树直比，差异含 145 个稳定版补丁的回溯差距 + openEuler 增量。本文档聚焦 **openEuler 增量**。
 
 ---
 
@@ -41,7 +41,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | openEuler 调度增量 | grid/ QoS + bpf_sched + soft_domain + smt_qos | **排除**（与 sched_tac 冲突） |
 | openEuler security/ | 74 文件修改（LSM/capability/landlock） | **排除**（Airymax 用 vanilla + airy_lsm） |
 | openEuler 构建系统 | Makefile.oever + KABI 宏 | **排除**（Makefile.oever）/ **剥离**（KABI 标记） |
-| 6.6.0→6.6.145 稳定版差距 | 145 个稳定版补丁的回溯差异 | 无关（vanilla 已含） |
+| 6.6.0→6.6.144 稳定版差距 | 144 个稳定版补丁的回溯差异 | 无关（vanilla 已含） |
 
 ---
 
@@ -204,6 +204,6 @@ openEuler 版本系统（OPENEULER_LTS/MAJOR/MINOR/RELEASE），注入 `OPENEULE
 ## 9. 一致性声明
 
 1. **权威源**：本文档差异数据以 `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel）与 `linux-stable/linux-6.6.y` 的 git diff 为唯一权威。工程师参考目录已重新 clone 自 atomgit 官方源，可供源码查阅。
-2. **sched_ext 事实**：OLK-6.6 与 vanilla 6.6.145 均不含 sched_ext（6.12 合入主线）。既有文档相关表述已在 P1-6 修正。
+2. **sched_ext 事实**：OLK-6.6 与 vanilla 6.6.144 均不含 sched_ext（6.12 合入主线）。既有文档相关表述已在 P1-6 修正。
 3. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）；驱动层提取的逐文件差异数据仍属内部参考，不进入开源文档。
-4. **IRON-7**：vanilla linux-stable 6.6.145 为唯一基线（v1.0.1），Euler 驱动层为硬件适配附加层，不改变核心子系统基线纯净性。
+4. **IRON-7**：vanilla linux-stable 6.6.144 为唯一基线（v1.0.1），Euler 驱动层为硬件适配附加层，不改变核心子系统基线纯净性。

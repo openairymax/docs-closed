@@ -16,7 +16,7 @@ AirymaxOS 1.x.x 的内核编译、镜像构建、烧录部署、图形 UI 全链
 
 核心依据：
 
-1. **版本天然对齐**：openEuler 24.03 LTS 当前内核版本为 `kernel-6.6.0-145.0.8.135`（安全公告 openEuler-BA-2026-1011 确认），与 AirymaxOS vanilla 6.6.145 在 `6.6.0-145` 段完全对齐（详见 [11-layer-feasibility-study.md §1.3](11-layer-feasibility-study.md)）
+1. **版本天然对齐**：openEuler 24.03 LTS 当前内核版本为 `kernel-6.6.0-144.0.8.135`（安全公告 openEuler-BA-2026-1011 确认），与 AirymaxOS vanilla 6.6.144 在 `6.6.0-144` 段完全对齐（详见 [11-layer-feasibility-study.md §1.3](11-layer-feasibility-study.md)）
 2. **LAYER 正交性**：硬件驱动层与微内核化改造补丁正交，构建可独立叠加（详见 [11-layer-feasibility-study.md §1.1](11-layer-feasibility-study.md)）
 3. **GPL-2.0 兼容**：openEuler 构建工具链（imageTailor/Yocto/isocut 等）均为开源工具，AirymaxOS 可自由复用（详见 [11-layer-feasibility-study.md §3.1](11-layer-feasibility-study.md)）
 
@@ -58,7 +58,7 @@ make O=build/x86-agent -j$(nproc)
 **关键约束**：
 
 1. **IRON-7 不变**：openeuler_defconfig 中触及调度（`CONFIG_SCHED_*`）、安全（`CONFIG_LSM_*`、`CONFIG_LANDLOCK*`）、内存核心子系统的 CONFIG 项，由 `configs/defconfig-agent` 覆盖回 vanilla 默认值
-2. **sched_ext 不存在**：OLK-6.6 与 vanilla 6.6.145 均不含 `CONFIG_SCHED_EXT`（详见 [10-olk66-vanilla-diff.md §5.2](10-olk66-vanilla-diff.md)），无需处理
+2. **sched_ext 不存在**：OLK-6.6 与 vanilla 6.6.144 均不含 `CONFIG_SCHED_EXT`（详见 [10-olk66-vanilla-diff.md §5.2](10-olk66-vanilla-diff.md)），无需处理
 3. **KABI 标记剥离**：openeuler_defconfig 中若引用 `__KABI_*` 宏的 CONFIG，剥离后保留功能、去除 KABI 占位
 
 ### 1.2 airy-kernel.spec RPM 打包
@@ -376,7 +376,7 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 | 组件 | openEuler 版本 | AirymaxOS 版本 | 对齐情况 |
 |------|---------------|---------------|---------|
-| 内核基线 | `kernel-6.6.0-145.0.8.135` | vanilla 6.6.145 | ✓ `6.6.0-145` 段完全对齐 |
+| 内核基线 | `kernel-6.6.0-144.0.8.135` | vanilla 6.6.144 | ✓ `6.6.0-144` 段完全对齐 |
 | glibc | 2.38 | 同步 openEuler | ✓ |
 | systemd | 254 | 同步 openEuler | ✓ |
 | Anaconda | openEuler 定制版 | 复用不改 | ✓ |
@@ -387,7 +387,7 @@ dnf install @ukui-desktop     # 麒麟桌面
 | DDE | openEuler 24.03 LTS 版 | 同步 | ✓ |
 | UKUI | openEuler 24.03 LTS 版 | 同步 | ✓ |
 
-**关键结论**：由于 `6.6.0-145` 段天然对齐，AirymaxOS 无需等待 openEuler 版本迁移，可直接复用 24.03 LTS 全套构建工具链。
+**关键结论**：由于 `6.6.0-144` 段天然对齐，AirymaxOS 无需等待 openEuler 版本迁移，可直接复用 24.03 LTS 全套构建工具链。
 
 ---
 
@@ -419,8 +419,8 @@ dnf install @ukui-desktop     # 麒麟桌面
 ## 9. 一致性声明
 
 1. **不 fork 原则**：AirymaxOS 全面复用 openEuler 构建工具链（imageTailor/Yocto/isocut/Anaconda/OBS/dnf），不 fork 任何工具代码，仅通过配置覆盖（`custom/cfg_airymax/`、`meta-airymax/`、`ks-airymax.cfg`、`airy-kernel.spec`）实现定制
-2. **版本对齐**：openEuler `kernel-6.6.0-145.0.8.135` 与 AirymaxOS vanilla 6.6.145 在 `6.6.0-145` 段完全对齐（详见 [11-layer-feasibility-study.md §1.3](11-layer-feasibility-study.md)），构建工具链无需版本迁移
-3. **IRON-7 不变**：复用 openEuler 构建体系不改变 vanilla 6.6.145 为唯一核心基线的事实——openeuler_defconfig 中的核心子系统 CONFIG 由 `configs/defconfig-agent` 覆盖回 vanilla 默认值
+2. **版本对齐**：openEuler `kernel-6.6.0-144.0.8.135` 与 AirymaxOS vanilla 6.6.144 在 `6.6.0-144` 段完全对齐（详见 [11-layer-feasibility-study.md §1.3](11-layer-feasibility-study.md)），构建工具链无需版本迁移
+3. **IRON-7 不变**：复用 openEuler 构建体系不改变 vanilla 6.6.144 为唯一核心基线的事实——openeuler_defconfig 中的核心子系统 CONFIG 由 `configs/defconfig-agent` 覆盖回 vanilla 默认值
 4. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）
 5. **GPL-2.0 合规**：复用 openEuler 构建工具链满足 GPL-2.0 许可证要求（工具链本身开源，AirymaxOS 产物源码公开）
 
@@ -428,9 +428,9 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 ## 10. 引用
 
-1. [10-olk66-vanilla-diff.md](10-olk66-vanilla-diff.md) — OLK-6.6 与 vanilla 6.6.145 差异对比 SSoT
+1. [10-olk66-vanilla-diff.md](10-olk66-vanilla-diff.md) — OLK-6.6 与 vanilla 6.6.144 差异对比 SSoT
 2. [11-layer-feasibility-study.md](11-layer-feasibility-study.md) — LAYER 方案可行性论证（技术/维护/法律/工程四维度）
-3. openEuler 24.03 LTS 安全公告 openEuler-BA-2026-1011（kernel-6.6.0-145 版本确认）
+3. openEuler 24.03 LTS 安全公告 openEuler-BA-2026-1011（kernel-6.6.0-144 版本确认）
 4. openEuler imageTailor 官方文档（https://docs.openeuler.org/zh/docs/24.03 LTS/docs/Application-Development/imageTailor.html）
 5. openEuler Embedded Yocto 文档（https://docs.openeuler.org/zh/docs/24.03 LTS/docs/embedded/embedded-yocto.html）
 6. Cockpit 项目官方文档（https://cockpit-project.org/）
