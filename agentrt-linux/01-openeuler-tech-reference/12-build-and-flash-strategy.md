@@ -440,6 +440,13 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 ## 11. 实施进度（2026-07-31 落地登记）
 
+本节登记 Task 2 的实际落地产物。LAYER 同步采用**双轨制**（与 [11-layer-feasibility-study.md §2.3](11-layer-feasibility-study.md) 一致）：
+
+- **直接导入轨**：`arch/sw_64/`（366 文件）从 OLK-6.6 整体导入，配合 `openeuler_defconfig` 与 `configs/euler_hw_*.config`。vanilla mainline 无 sw_64 树，直接导入零冲突，维护成本最低。
+- **quilt 补丁轨**：`drivers/hooks/` 及其他 `drivers/` 变更以 `patches/hw-vendor/` quilt 补丁形式维护。`drivers/` 与 vanilla 重叠，须以可审查补丁隔离厂商增量，便于回溯与升级。
+
+Task 2 当前仅落地直接导入轨（见 §11.1），quilt 补丁轨的 `drivers/hooks/` 甄别列入 §11.6 后续工作。
+
 ### 11.1 已落地产物清单
 
 **P0 内核层（kernel 仓库 ALK-6.6-dev）：**

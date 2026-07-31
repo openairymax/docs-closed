@@ -108,9 +108,16 @@ openEuler 24.03 LTS 的维护节奏：
 - **SP2**（2025-06预期）：持续硬件适配更新
 - **SP3/SP4**：后续维护
 
-AirymaxOS 跟踪 openEuler SP 版本的硬件驱动增量，通过 `git diff` 识别新增/修改的驱动文件，cherry-pick 到 `patches/hw-vendor/`。
+AirymaxOS 跟踪 openEuler SP 版本的硬件适配增量，按文件归属采用**双轨制**同步策略：
 
-**维护成本估算**：每季度约 2-5 人日（diff 分析 + cherry-pick + 编译验证）。
+| 轨道 | 适用范围 | 同步方式 | 理由 |
+|------|---------|---------|------|
+| 直接导入 | `arch/sw_64/`（申威架构树，366 文件） | 从 OLK-6.6 整体导入，配合 `openeuler_defconfig` 与 `configs/euler_hw_sw64.config` | vanilla mainline 不含 sw_64 架构树，直接导入不会与 vanilla 冲突；整体导入维护成本低于逐文件 cherry-pick |
+| quilt 补丁 | `drivers/hooks/` 及其他 `drivers/` 变更 | `git diff` 识别新增/修改文件，cherry-pick 到 `patches/hw-vendor/` | `drivers/` 与 vanilla 重叠，须以可审查的 quilt 补丁维护厂商增量，便于回溯与升级 |
+
+**为何双轨而非单一模式**：`arch/sw_64/` 在 vanilla mainline 无对应树，直接导入零冲突且维护成本最低；`drivers/` 与 vanilla 重叠，必须以补丁隔离避免上游 fast-forward/merge 时厂商增量被吞没或冲突。二者上游重叠情况相反，故采用不同轨道。
+
+**维护成本估算**：每季度约 2-5 人日（diff 分析 + 双轨同步 + 编译验证）。
 
 ### 2.4 长期演进（6.6 → 7.1 迁移）
 
