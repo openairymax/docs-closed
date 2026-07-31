@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# LAYER 方案可行性论证（vanilla 6.6.145 + openEuler 硬件适配层）
+# LAYER 方案可行性论证（vanilla 6.6.144 + openEuler 硬件适配层）
 
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 1.0.0
@@ -12,10 +12,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 方案概述
 
-**LAYER 方案**：以 vanilla linux-stable 6.6.145 为唯一核心基线（IRON-7），在其上叠加**复用openEuler的硬件适配能力**形成的国产硬件驱动层。驱动层与 agentrt-linux 微内核化改造补丁正交，仅触及 `drivers/`、`arch/` 硬件适配，不触及调度/安全/IPC/内存核心子系统。
+**LAYER 方案**：以 vanilla linux-stable 6.6.144 为唯一核心基线（IRON-7），在其上叠加**复用openEuler的硬件适配能力**形成的国产硬件驱动层。驱动层与 agentrt-linux 微内核化改造补丁正交，仅触及 `drivers/`、`arch/` 硬件适配，不触及调度/安全/IPC/内存核心子系统。
 
 ```
-ALK-6.6 = vanilla 6.6.145 (IRON-7 基线)
+ALK-6.6 = vanilla 6.6.144 (IRON-7 基线)
          + openEuler 硬件适配层（LAYER，架构可选）
          + agentrt-linux 微内核化改造补丁（≤ 2 万行）
 ```
@@ -60,15 +60,15 @@ LAYER 提取的驱动均为标准 Linux 内核模块，依赖关系清晰：
 
 | 维度 | vanilla | OLK-6.6 | 对齐情况 |
 |------|---------|---------|---------|
-| 基线版本 | 6.6.145 | 6.6.0 + backport | OLK-6.6 最新 tip `4e4aa165b` 已 backport 6.6.143-6.6.144 LTS 补丁 |
+| 基线版本 | 6.6.144 | 6.6.0 + backport | OLK-6.6 最新 tip `4e4aa165b` 已 backport 6.6.143-6.6.144 LTS 补丁 |
 | LTS 支持窗口 | 2027-12（延长后） | 跟随 openEuler 24.03 LTS SP 节奏 | 覆盖 AirymaxOS 1.x.x 全生命周期 |
 | 架构覆盖 | 22 架构 | +sw_64（申威） | sw_64 由 LAYER 补充 |
 
-**关键发现**：openEuler 24.03 LTS 当前内核版本为 `kernel-6.6.0-145.0.8.135`（安全公告 openEuler-BA-2026-1011 确认），与 AirymaxOS 选择的 vanilla 6.6.145 在 `6.6.0-145` 段完全对齐。这意味着 openEuler 的硬件适配补丁天然适用于 6.6.145 基线，无需版本迁移。
+**关键发现**：openEuler 24.03 LTS 当前内核版本为 `kernel-6.6.0-145.0.8.135`（安全公告 openEuler-BA-2026-1011 确认），与 AirymaxOS 选择的 vanilla 6.6.144 在 `6.6.0-145` 段完全对齐。这意味着 openEuler 的硬件适配补丁天然适用于 6.6.144 基线，无需版本迁移。
 
 ### 1.4 sched_ext 事实确认
 
-经 [10-olk66-vanilla-diff.md §5.2](10-olk66-vanilla-diff.md) 验证：OLK-6.6 与 vanilla 6.6.145 **均不含 sched_ext**（sched_ext 于 Linux 6.12 合入主线）。因此 LAYER 方案不存在 sched_ext 与 sched_tac 的冲突风险。
+经 [10-olk66-vanilla-diff.md §5.2](10-olk66-vanilla-diff.md) 验证：OLK-6.6 与 vanilla 6.6.144 **均不含 sched_ext**（sched_ext 于 Linux 6.12 合入主线）。因此 LAYER 方案不存在 sched_ext 与 sched_tac 的冲突风险。
 
 ### 1.5 技术可行性结论
 
@@ -238,13 +238,13 @@ LAYER 驱动补丁的提取流程（已部分落地于 [10-olk66-vanilla-diff.md
 | 法律可行性 | **可行**——GPL-2.0 完全兼容，合规要求明确 | 高 |
 | 工程可行性 | **可行**——提取流程落地，构建系统复用 openEuler | 高 |
 
-**总体结论**：LAYER 方案（vanilla 6.6.145 + 复用openEuler的硬件适配能力）在技术、维护、法律、工程四维度均**可行**，建议正式采纳为 AirymaxOS 1.x.x 系列的硬件适配方案。
+**总体结论**：LAYER 方案（vanilla 6.6.144 + 复用openEuler的硬件适配能力）在技术、维护、法律、工程四维度均**可行**，建议正式采纳为 AirymaxOS 1.x.x 系列的硬件适配方案。
 
 ---
 
 ## 7. 引用
 
-1. [10-olk66-vanilla-diff.md](10-olk66-vanilla-diff.md) — OLK-6.6 与 vanilla 6.6.145 差异对比 SSoT
+1. [10-olk66-vanilla-diff.md](10-olk66-vanilla-diff.md) — OLK-6.6 与 vanilla 6.6.144 差异对比 SSoT
 2. openEuler 24.03 LTS 安全公告 openEuler-BA-2026-1011（kernel-6.6.0-145 版本确认）
 3. Linux 6.6 LTS 支持延长至 2027-12（kernel.org 公告）
 4. GPL-2.0 许可证全文（https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt）
