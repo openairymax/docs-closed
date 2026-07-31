@@ -438,4 +438,76 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 ---
 
+## 11. 实施进度（2026-07-31 落地登记）
+
+### 11.1 已落地产物清单
+
+**P0 内核层（kernel 仓库 ALK-6.6-dev）：**
+
+| # | 产物 | 路径 | 规模 | 来源 |
+|---|------|------|------|------|
+| 1 | sw_64 架构完整导入 | `arch/sw_64/` | 366 文件（327 源 + 39 配置/脚本） | openEuler OLK-6.6 LAYER 导入 |
+| 2 | sw_64 Airymax defconfig | `arch/sw_64/configs/airy_defconfig` | 695 行 | openeuler_defconfig + Airymax CONFIG |
+| 3 | x86 openEuler 底座 | `arch/x86/configs/openeuler_defconfig` | 9573 行 | openEuler OLK-6.6 LAYER 导入 |
+| 4 | arm64 openEuler 底座 | `arch/arm64/configs/openeuler_defconfig` | 8448 行 | openEuler OLK-6.6 LAYER 导入 |
+| 5 | x86 硬件碎片 | `configs/euler_hw_x86.config` | 9390 行 | 提取自 openeuler_defconfig，剥离核心子系统 |
+| 6 | arm64 硬件碎片 | `configs/euler_hw_arm64.config` | 8267 行 | 同上 |
+| 7 | sw_64 硬件碎片 | `configs/euler_hw_sw64.config` | 634 行 | 同上 |
+| 8 | defconfig-agent IRON-7 增强 | `configs/defconfig-agent` | 54 行 | 追加 IRON-7 覆盖块 |
+| 9 | Kconfig 修复 | `Kconfig` | -1 行 | 移除 stale `source "config/Kconfig.alk"` |
+
+**P1 构建链（agentrt-linux 管理仓 build/ 目录）：**
+
+| # | 产物 | 路径 | 规模 |
+|---|------|------|------|
+| 10 | RPM 打包模板 | `build/airy-kernel.spec` | 164 行（5 包拆分） |
+| 11 | Yocto 层骨架 | `build/meta-airymax/` | 5 文件（layer.conf + 3 recipes + defconfig） |
+| 12 | imageTailor 配置 | `build/custom/cfg_airymax/` | 3 文件（XML + repo + grub.cfg） |
+| 13 | Kickstart 脚本 | `build/ks-airymax.cfg` | 56 行 |
+
+### 11.2 IRON-7 覆盖明细
+
+`configs/defconfig-agent` 追加的 IRON-7 覆盖项（将 openEuler 特有扩展覆盖回 vanilla 默认值）：
+
+- **调度器**：`# CONFIG_SCHED_STEAL is not set`、`SCHED_PARAL`、`SCHED_SOFT_QUOTA`、`SCHED_SOFT_DOMAIN`、`SCHED_CLASS_EXT`
+- **内存 cgroup**：`# CONFIG_MEMCG_QOS is not set`、`MEMCG_MEMFS_INFO`、`MEMCG_OOM_PRIORITY`、`MEMCG_SWAP_QOS`、`MEMCG_KMEM_STOCK`
+- **NUMA**：`# CONFIG_NUMA_AWARE_SPINLOCKS is not set`、`NUMA_EMU`、`NUMABALANCING_MEM_SAMPLING`
+- **安全**：`# CONFIG_SECURITY_FEATURE_BYPASS is not set`、`# CONFIG_BPF_LSM is not set`
+
+### 11.3 验证结果
+
+| 验证项 | 结果 |
+|--------|------|
+| `make ARCH=sw_64 airy_defconfig` | ✅ 生成 .config（3851 行），CONFIG_SW64=y，CONFIG_SECURITY_AIRY=y |
+| `make ARCH=x86 airy_defconfig` | ✅ 生成 .config（1369 行），CONFIG_X86_64=y，CONFIG_SECURITY_AIRY=y |
+| `make ARCH=arm64 airy_defconfig` | ✅ 生成 .config（1314 行），CONFIG_ARM64=y，CONFIG_SECURITY_AIRY=y |
+| `make ARCH=x86 -j$(nproc)` | ✅ 编译通过，`arch/x86/boot/bzImage is ready` |
+| `grep -r '__KABI' arch/sw_64/ configs/` | ✅ 零命中 |
+| `grep -r 'Makefile.oever' arch/sw_64/ configs/` | ✅ 零命中 |
+| arch/sw_64/ 不触及 kernel/sched/、security/ | ✅ 验证通过 |
+
+### 11.4 附带修复
+
+修复 commit `1e61116e6153` ("airymax: correct sched_tac, capability MDB tree
+and LSM entry symmetry") 遗留的 stale `source "config/Kconfig.alk"` 引用
+——该 commit 删除了 `config/Kconfig.alk` 文件（消除与 `security/airy/Kconfig`
+的重复定义）但未移除顶层 Kconfig 的 source 行，导致所有 `make *defconfig`
+调用失败。本次实施中移除该 stale 引用，恢复配置生成能力。
+
+### 11.5 提交登记
+
+- **kernel 仓库**（ALK-6.6-dev）：`airy/arch: import sw_64 and add LAYER config fragments`（374 文件，+93636/-2）
+- **agentrt-linux 管理仓**（main）：`airy/build: add LAYER build artifacts for openEuler toolchain reuse`（11 文件，+418）
+- **docs-closed 仓库**（main）：本文档实施进度章节
+
+### 11.6 后续工作
+
+1. sw_64 交叉编译链配置（当前仅验证配置生成，未验证完整编译）
+2. arm64 完整编译验证（x86 已通过）
+3. `drivers/hooks/` Vendor Hooks 逐个甄别（排除触及 sched/security 的钩子）
+4. OBS 多架构构建配置（`AirymaxOS:Factory:Kernel` 项目）
+5. CI 门禁：编译后 `diffconfig` 验证核心子系统 CONFIG 与 vanilla 一致
+
+---
+
 > **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开
