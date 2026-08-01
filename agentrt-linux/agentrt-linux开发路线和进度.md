@@ -211,11 +211,11 @@ docs 仓 `06-acceptance-criteria.md` §12.2 已定义"里程碑门禁：M0 过 O
 **前置依赖**：Phase 0（已完成）；`kernel/corekern/ipc/` 的 ring/fastpath/zero-copy 基础设施（已存在）；`security/airy/airy_cap_check.c` 5-phase 校验（已存在）。
 
 **实现步骤**：
-1. **Badge 校验接入**：在 `copy_from_user` 与 magic 校验之后、opcode 分发之前，调用 `airy_cap_badge_ok(cap, current_agent_id, AIRY_CAP_IPC)`——复用 `security/airy/airy_cap.h` 的 fastpath inline（~10ns，已实测 2-10ns）；校验失败返回 `-AIRY_ECAP_MISSING`。
+1. **Badge 校验接入**：在 `copy_from_user` 与 magic 校验之后、opcode 分发之前，调用 `airy_cap_badge_ok(cap, current_agent_id, AIRY_CAP_PERM_SEND)`——复用 `security/airy/airy_cap.h` 的 fastpath inline（~10ns，已实测 2-10ns）与 `security_types.h` 的 `AIRY_CAP_PERM_*` 权限位（SEND=0x0001/RECV=0x0002/…/SUPERVISE=0x0040）；校验失败返回 `-AIRY_ECAP_MISSING`。
 2. **SEND/SEND_BATCH**：调用 `airy_ipc_ring_post()` 将 `hdr` 投递到 `current` 的 `ipc_ring`（经 `airy_ipc_ring_for_task(current)` 取 ring，N3 接线项），成功返回 `0` + 通过 CQE 语义反馈；ring frozen 返回 `-AIRY_EIPC_FROZEN`。
 3. **RECV**：调用 `airy_ipc_ring_consume()` 取出一条消息拷贝到用户态 `msg`（`copy_to_user`），返回消费字节数。
 4. **CANCEL**：调用 `airy_ipc_cancel_badged_sends()`（P1-8 已实现），按 badge 取消在途发送，返回取消条数。
-5. **FREEZE**：校验 `AIRY_CAP_IPC_FREEZE` 权限（Badge perms 位）后调用 `airy_ipc_freeze_ring()`；无权限返回 `-EACCES`（supervisor-only）。
+5. **FREEZE**：校验 `AIRY_CAP_PERM_SUPERVISE` 权限（Badge perms 位，0x0040 Micro-Supervisor 权威位）后调用 `airy_ipc_freeze_ring()`；无权限返回 `-EACCES`（supervisor-only）。
 6. **CAP_REQUEST/CAP_RESPONSE**：引导期走 io_uring_cmd 路径（本 syscall 明确拒绝返回 `-EINVAL`，保持与注释声明的"bootstrap 走 uring_cmd"一致）。
 7. **并发与内存序**：SEND/RECV 遵循 SPSC acquire/release 配对（`smp_store_release`/`smp_load_acquire`），不做额外加锁；CANCEL/FREEZE 在 ring 级锁内执行。
 
