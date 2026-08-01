@@ -106,7 +106,7 @@ M2 启动前需完成以下 P1 收敛：
 
 1. **openEuler 证据来自 OLK-6.6 单一版本**：未对比 RHEL/Ubuntu 等其他发行版的调度/安全扩展。
 2. **seL4 证据来自 master 分支**：未区分 MCS 与非 MCS 配置的编译时差异（cnode.c L36-40）。
-3. **性能数据为设计估算**：~10ns Badge 校验、~158ns fastpath 等数据来自设计文档，未在本轮实测验证。
+3. **性能数据已实测（设计估算已替代）**：原 ~10ns Badge 校验、~158ns fastpath 为设计估算、未实测。已新增 KUnit 微基准套件 `airy_fastpath_bench`（[airy_fastpath_bench.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_fastpath_bench.c)，CONFIG_AIRY_KUNIT 挂载）实测真实生产函数：`airy_cap_badge_ok` hit 均值 2-10ns（4 次运行中位 ~3-4ns）、miss 1-8ns；`airy_ipc_fastpath_send` 完整路径（frozen 门 + ring_post）均值 37-61ns（中位 ~46ns）；`airy_ipc_ring_post` 51-83ns；`airy_ipc_ring_consume` 13-33ns；fastpath frozen 门 2-6ns；模拟 5-phase slowpath 2-6ns。环境：UML x86_64（WSL2，宿主内核 6.18.33.1-microsoft-standard-WSL2）、gcc 13.3.0、-Os，ktime_get_ns 批量计时（64/32 ops 每对），Badge 循环 1e6 次 / ring 1e5 次，预热 1000 次。注意：UML 为进程内热缓存执行（无缺页/TLB/系统调用成本），真机数值通常更高；函数级 fastpath 实测（~46ns）远低于 ~158ns 设计估算，因为估算含完整 io_uring_cmd 入口开销。
 4. **Airymax 代码为 M1 脚手架状态**：syscall 返回 -ENOSYS，部分建议需待 M2-M5 真实实现后重新评估。
 
 ---

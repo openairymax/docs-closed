@@ -48,7 +48,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.1 设计优势（Airymax 领先项）
 
-1. **Badge folding**：64-bit Badge 三段式布局（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）实现 O(1) 定向撤销 + ~10ns fastpath，优于 seL4 TCB badge 和 POSIX bitmap。
+1. **Badge folding**：64-bit Badge 三段式布局（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）实现 O(1) 定向撤销 + ~10ns fastpath（已由微基准实测 2-10ns，见 [08-closure-summary](08-closure-summary-v3.6.md) §5.3 实测标注），优于 seL4 TCB badge 和 POSIX bitmap。
 2. **SSoT + codegen CI**：[syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/tools/codegen/syscall_gen.py) L310-364 的 check_mode/check_tbl_mode 保证 syscall.xml → syscall.h → syscall_64.tbl 三方一致性，工程严谨性领先。
 3. **ALK 策略**：只新增文件不改主线，天然规避 KABI 债务，优于 openEuler KABI_REPLACE/KABI_USE2 宏补丁。
 4. **5-phase slowpath**：[airy_cap_check.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_check.c) L191-260 的 ring frozen → CAP_REQUEST → DSL → recheck → enforce 分层校验，防御纵深优于参考项目。
