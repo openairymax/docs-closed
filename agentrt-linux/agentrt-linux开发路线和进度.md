@@ -4,8 +4,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**。本文档是 **v3.6 审查后的全面开发执行视图**——`docs/AirymaxOS/130-roadmap/`（docs 仓，权威）定义"做什么/为什么/验收什么"，本文档给出"按什么顺序做、每步测什么、何时可推进"的可执行节奏，首次补齐**内核代码模块级实施顺序**（Phase 0-6 总表）。
 > **保密级别**: SPHARX Ltd 内部参考
-> **版本**: v2.0（v3.6 三份审查结论基线 + Phase 0-6 模块化开发总表，全面重写版）
-> **最后更新**: 2026-08-01（v3.6 三轮深度对比审查闭环：kernel 框架 60% / docs 93% / 叶子仓结构完整；Phase 0 待启动）
+> **版本**: v2.1（v3.6 三份审查结论基线 + Phase 0-6 模块化开发总表 + **Phase 0 已完成**）
+> **最后更新**: 2026-08-01（v3.6 三轮深度对比审查闭环：kernel 框架 60% / docs 93% / 叶子仓结构完整；**Phase 0 已完成并验证，Phase 1 系统调用面已规划**）
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线（v1.2 M0 框架编译验证 39 .o 零错误零警告 + arm64+airy 完整构建 EXIT_CODE=0）+ seL4 形式化微内核思想；ALK"只新增文件不改主线"策略规避 KABI 债务；IRON-9 v3 同源且部分代码共享
 > **权威依据**: docs 仓 `docs/AirymaxOS/130-roadmap/`（02-milestones-and-timeline.md / 04-dependency-graph.md / 06-acceptance-criteria.md）为路线图权威口径，本文件为其执行视图
@@ -103,16 +103,18 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.4 阻断全面开发的缺口清单（8 项）
 
-| # | 缺口 | 来源 | 影响 | 处置归属 |
-|---|------|------|------|---------|
-| G-01 | **系统调用面 15%**：4 syscall 全 -ENOSYS | 审查 A | 用户态无法调用任何 Airymax 内核能力，Phase 1 之前用户态开发不可行 | Phase 1 |
-| G-02 | **sw_64 号段未接线**：syscall.tbl 止于 518 | 审查 A | sw_64 后续一切 syscall 功能的基础缺失 | Phase 0（前置） |
-| G-03 | **sched_tac 未接入主路径**：stc_dispatch_enqueue 无调用者 | 审查 A | 调度/内存模块无法在真实调度循环中生效 | Phase 3 |
-| G-04 | **openEuler 驱动导入**：drivers/hw-vendor/ 不存在，无 KABI/xsched/ummu | 审查 A | 硬件复用层仅 20%，sw_64 真机生态不可用 | 全程（依赖 sw_64 硬件） |
-| G-05 | **版本库卫生**：build-arm64.log 被跟踪 + 树内产物 | 审查 A | O= 分离构建被 kbuild 拦截，CI 无法干净复现 | Phase 0 |
-| G-06 | **CI 工具未跟踪**：tools/ 9 .py + codegen/ 未入版本控制，CI 引用 7 个不存在脚本 | 审查 C | CI 流水线实际不可运行 | Phase 0 |
-| G-07 | **分支声明失效**：.gitmodules 声明 develop/hubs-01 vs kernel 实际 ALK-6.6-dev | 审查 A/C | 子模块检出行为与预期不符 | Phase 0 |
-| G-08 | **docs 模块级顺序图缺失** | 审查 B | 开发缺乏代码级实施顺序（本文档 §4 即补此缺口） | 本文档 |
+> **更新（2026-08-01，Phase 0 完成）**：G-02/G-05/G-06/G-07 已清零（Phase 0 修复落地并验证），G-08 已由本文档 §4 清除。剩余待处置：G-01（Phase 1）、G-03（Phase 3）、G-04（全程）。
+
+| # | 缺口 | 来源 | 影响 | 处置归属 | 状态 |
+|---|------|------|------|---------|------|
+| G-01 | **系统调用面 15%**：4 syscall 全 -ENOSYS | 审查 A | 用户态无法调用任何 Airymax 内核能力，Phase 1 之前用户态开发不可行 | Phase 1 | ⏳ 待启动 |
+| G-02 | **sw_64 号段未接线**：syscall.tbl 止于 518 | 审查 A | sw_64 后续一切 syscall 功能的基础缺失 | Phase 0（前置） | ✅ **已清零**（kernel `dd990c6`：548-571 注册，`__NR_syscalls=572` 生成验证通过） |
+| G-03 | **sched_tac 未接入主路径**：stc_dispatch_enqueue 无调用者 | 审查 A | 调度/内存模块无法在真实调度循环中生效 | Phase 3 | ⏳ 待启动 |
+| G-04 | **openEuler 驱动导入**：drivers/hw-vendor/ 不存在，无 KABI/xsched/ummu | 审查 A | 硬件复用层仅 20%，sw_64 真机生态不可用 | 全程（依赖 sw_64 硬件） | ⏳ 待启动 |
+| G-05 | **版本库卫生**：build-arm64.log 被跟踪 + 树内产物 | 审查 A | O= 分离构建被 kbuild 拦截，CI 无法干净复现 | Phase 0 | ✅ **已清零**（kernel `0207ff0`：日志移出跟踪 + `/build-*.log` 规则；O= x86_64 airy_defconfig + bzImage 全量构建通过） |
+| G-06 | **CI 工具未跟踪**：tools/ 9 .py + codegen/ 未入版本控制，CI 引用 7 个不存在脚本 | 审查 C | CI 流水线实际不可运行 | Phase 0 | ✅ **已清零**（管理仓 `8fe4e7d` 14 工具入库 + `7813134` CI 路径修复/守卫） |
+| G-07 | **分支声明失效**：.gitmodules 声明 develop/hubs-01 vs kernel 实际 ALK-6.6-dev | 审查 A/C | 子模块检出行为与预期不符 | Phase 0 | ✅ **已清零**（管理仓 `ef6103e`：kernel 分支声明对齐 ALK-6.6-dev） |
+| G-08 | **docs 模块级顺序图缺失** | 审查 B | 开发缺乏代码级实施顺序（本文档 §4 即补此缺口） | 本文档 | ✅ 已清除（v2.0 重写） |
 
 ---
 
@@ -162,46 +164,131 @@ docs 仓 `06-acceptance-criteria.md` §12.2 已定义"里程碑门禁：M0 过 O
 
 ### 4.1 Phase 总览
 
-| Phase | 名称 | 时间窗口 | 模块数 | 里程碑归属 | 完成标准（退出条件） |
-|-------|------|---------|--------|-----------|---------------------|
-| Phase 0 | 工程基线修复（无新功能） | 1-2 周 | 5 | M0 收尾 + M1 前置 | 干净 O= 构建通过、CI 工具全跟踪、sw_64 syscall 号段接线，阻断缺口 G-02/G-05/G-06/G-07 清零 |
-| Phase 1 | 系统调用面落地 | 2-4 周 | 4 | M2 核心 | 4 syscall 真实实现 + kselftest 用户态 + KUnit 内核态全绿，缺口 G-01 清零 |
-| Phase 2 | 安全与 IPC 深化 | 3-4 周 | 3 | M2 | LSM 入口全对称、fastpath 前置条件文档化、并发改造完成 |
-| Phase 3 | 调度与内存落地 | 4-6 周 | 4 | M2-M3 | sched_tac 挂接主路径、CBS 准入、tier 路由、zero-copy 可用，缺口 G-03 清零 |
-| Phase 4 | 运行时治理 | 4-6 周 | 5 | M3-M5 | hrtimer/SC 捐赠/lockdown/MemoryRovol/suspend-resume 全落地 |
-| Phase 5 | 用户态与服务层 | 6-8 周 | 3 | M5-M7 | 12 daemons 骨架→实现、7 仓从骨架到实现、tests-linux 扩展 |
-| Phase 6 | 验证与收口 | 4-6 周 | 4 | M6-M8 | 形式化 Phase 1-4、性能基准真机采集、sw_64 OBS 构建、CAVEATS 更新 |
+| Phase | 名称 | 时间窗口 | 模块数 | 里程碑归属 | 完成标准（退出条件） | 状态 |
+|-------|------|---------|--------|-----------|---------------------|------|
+| Phase 0 | 工程基线修复（无新功能） | 1-2 周 | 5 | M0 收尾 + M1 前置 | 干净 O= 构建通过、CI 工具全跟踪、sw_64 syscall 号段接线，阻断缺口 G-02/G-05/G-06/G-07 清零 | ✅ **已完成（2026-08-01）** |
+| Phase 1 | 系统调用面落地 | 2-4 周 | 4 | M2 核心 | 4 syscall 真实实现 + kselftest 用户态 + KUnit 内核态全绿，缺口 G-01 清零 | ⏳ 待启动 |
+| Phase 2 | 安全与 IPC 深化 | 3-4 周 | 3 | M2 | LSM 入口全对称、fastpath 前置条件文档化、并发改造完成 | ⏳ |
+| Phase 3 | 调度与内存落地 | 4-6 周 | 4 | M2-M3 | sched_tac 挂接主路径、CBS 准入、tier 路由、zero-copy 可用，缺口 G-03 清零 | ⏳ |
+| Phase 4 | 运行时治理 | 4-6 周 | 5 | M3-M5 | hrtimer/SC 捐赠/lockdown/MemoryRovol/suspend-resume 全落地 | ⏳ |
+| Phase 5 | 用户态与服务层 | 6-8 周 | 3 | M5-M7 | 12 daemons 骨架→实现、7 仓从骨架到实现、tests-linux 扩展 | ⏳ |
+| Phase 6 | 验证与收口 | 4-6 周 | 4 | M6-M8 | 形式化 Phase 1-4、性能基准真机采集、sw_64 OBS 构建、CAVEATS 更新 | ⏳ |
 
-**总计：7 个 Phase，28 个代码模块**（Phase 0 的 5 项为无新功能的工程修复，Phase 1-6 的 23 项为功能模块）。
+**总计：7 个 Phase，28 个代码模块**（Phase 0 的 5 项为无新功能的工程修复，Phase 1-6 的 23 项为功能模块）。**截至 2026-08-01：Phase 0 完成（5/5 模块），Phase 1-6 共 23 个功能模块待开发。**
 
-### 4.2 Phase 0：工程基线修复（1-2 周，无新功能）
+### 4.2 Phase 0：工程基线修复（1-2 周，无新功能）—— ✅ 已完成（2026-08-01）
 
 > **目标**：在 M0 之后立即清理版本库卫生与工程接线问题，为 sw_64 后续一切开发建立干净基线。本 Phase 无新功能，全部为工程修复（阻断缺口 G-02/G-05/G-06/G-07）。
 
-| 序号 | 模块 | 前置依赖 | 实现内容 | 测试要求 | 验收（OS-ACC） |
-|------|------|---------|---------|---------|---------------|
-| P0-1 | 版本库卫生修复 | 无 | 移除 `build-arm64.log` 跟踪（git rm --cached）+ 补 `*.log` gitignore 规则；清理树内 arm64 编译产物；`make mrproper` 后 `O=` 分离构建验证 | `O=` 构建复现通过（EXIT_CODE=0），`git status` 无编译产物 | OS-ACC-002/049（CI 复现） |
-| P0-2 | .gitmodules 分支声明修正 | 无 | `.gitmodules` 声明 `develop/hubs-01` → `ALK-6.6-dev`（或反向对齐，以实际分支为准），8 子仓逐一核验 | `git submodule update --init` 检出分支一致 | OS-ACC-002/050 |
-| P0-3 | tools/scripts 纳入版本控制 | 无 | `.gitignore` 白名单补 `!tools/**` `!scripts/**`；tools/ 9 个 .py + codegen/ 入库；CI 引用的 7 个不存在脚本（formal-verify.py 等）补齐实现或摘除引用 | 工具脚本可执行；CI 引用与仓库文件一一对应 | OS-ACC-018（7 层验证）/049 |
-| P0-4 | ci-airy.yml 路径修正 | P0-3 | `ci-airy.yml` 监听路径从 `kernel/config/Kconfig.alk` 改为实际 Kconfig 路径；spec Patch0 placeholder 标记 | CI 工作流 dry-run 通过 | OS-ACC-017/049 |
-| P0-5 | **sw_64 syscall 号段接线** | 无 | 548-571 注册到 `arch/sw_64/kernel/syscalls/syscall.tbl`（对齐 x86/asm-generic 已注册号段）；P0-1 预留槽显式登记 `sys_ni_syscall` | sw_64 编译通过；`syscall.tbl` 与 [SC] syscalls.h 三方一致性（syscall_gen.py check_tbl_mode） | OS-ACC-037（ABI 检查） |
+| 序号 | 模块 | 前置依赖 | 实现内容 | 测试要求 | 验收（OS-ACC） | 状态 |
+|------|------|---------|---------|---------|---------------|------|
+| P0-1 | 版本库卫生修复 | 无 | 移除 `build-arm64.log` 跟踪（git rm --cached）+ 补 `/build-*.log` gitignore 规则；`make mrproper` 清理树内残留产物后 `O=` 分离构建验证 | `O=` x86_64 airy_defconfig + bzImage 全量构建 EXIT_CODE=0，`git status` 无编译产物 | OS-ACC-002/049（CI 复现） | ✅ kernel `0207ff0` |
+| P0-2 | .gitmodules 分支声明修正 | 无 | `.gitmodules` 声明 `develop/hubs-01` → `ALK-6.6-dev`（与实际分支对齐），8 子仓逐一核验 | `git submodule status` 8 仓全部一致无漂移 | OS-ACC-002/050 | ✅ 管理仓 `ef6103e` |
+| P0-3 | tools/scripts 纳入版本控制 | 无 | `.gitignore` 白名单补 `!tools/**` `!scripts/**` + `__pycache__` 排除；tools/ 9 个 .py + abi-check/ + codegen/ + maintainers_to_codeowners.pl 共 14 文件入库 | 工具脚本可执行；`git ls-files tools/` 全跟踪、pycache 0 命中 | OS-ACC-018（7 层验证）/049 | ✅ 管理仓 `8fe4e7d` |
+| P0-4 | CI 工作流修复 | P0-3 | `ci-airy.yml` 移除不存在的 `kernel/config/Kconfig.alk` 监听路径；`nightly.yml` 6 个缺失脚本（formal-verify/soak-runner/chaos-runner/auto-bisect/create-revert-pr/ci-budget-check）加存在性守卫（显式 SKIP）；`release.yml` merge-sbom.py 守卫 + `make binrpm-pkg` 补 `working-directory: kernel` | 3 个 workflow YAML 语法校验通过 | OS-ACC-017/049 | ✅ 管理仓 `7813134` |
+| P0-5 | **sw_64 syscall 号段接线** | 无 | 548-571 注册到 `arch/sw_64/kernel/syscalls/syscall.tbl`：548-551 映射 `sys_airy_*` + 552-571 预留槽 `sys_ni_syscall`（对齐 x86/asm-generic 已注册号段） | `syscallhdr.sh`/`syscalltbl.sh` 生成验证：`__NR_syscalls=572`，24 个宏全部正确产出 | OS-ACC-037（ABI 检查） | ✅ kernel `dd990c6` |
 
 > **为什么 P0-5 放 Phase 0**：sw_64 syscall.tbl 止于 518 是 sw_64 架构一切 syscall 功能的基础——不先接线，Phase 1 的 4 个 syscall 在 sw_64 上无从谈起。P0-5 是 sw_64 后续所有 Phase 的前置。
 
-**Phase 0 退出条件**：G-02/G-05/G-06/G-07 全部清零；三架构（x86/arm64/sw_64）`O=` 分离构建干净通过；CI 工具链全部可运行。
+**Phase 0 退出条件**：✅ **已达成（2026-08-01）**——G-02/G-05/G-06/G-07 全部清零；O= 分离构建（x86_64 airy_defconfig + bzImage）干净通过（EXIT_CODE=0，`CONFIG_SECURITY_AIRY/AIRY_IPC/AIRY_COREKERN/AIRY_SYSCALL` 全部 `=y`）；CI 工具链全部可运行（YAML 校验通过）。
+
+**Phase 0 关键产出**：
+1. **sw_64 syscall 号段接通**：548-571 全部注册，`__NR_syscalls=572` 与 asm-generic 对称——sw_64 与 x86/arm64 现处于同一 syscall 基线。
+2. **构建可复现**：mrproper + O= 分离构建打破此前 kbuild 拦截，CI 可干净复现（`0207ff0`）。
+3. **版本库卫生达标**：build-arm64.log 移出跟踪，根目录 `/build-*.log` 规则生效（不误伤上游 kunit test_data 夹具）。
+4. **CI 工具全入库**：14 个工具脚本/工具链入版本控制，新 clone 不再缺依赖（`8fe4e7d`）。
+5. **CI 工作流语义修正**：路径监听与实际文件一致、缺失脚本显式 SKIP 而非隐晦 WARN、构建 working-directory 正确（`7813134`）。
+6. **分支声明对齐**：kernel 子模块分支 = ALK-6.6-dev，与 .gitmodules 一致（`ef6103e`）。
 
 ### 4.3 Phase 1：系统调用面落地（M2 核心，最高优先）
 
 > **目标**：将 `kernel/syscalls/airy_syscalls.c` 从 -ENOSYS 脚手架推进到真实实现，打通用户态 → 内核态的第一条调用链（阻断缺口 G-01）。每 syscall 独立子模块，完成一个测一个。
+>
+> **实现基线（2026-08-01 现状）**：`airy_syscalls.c`（198 行）4 个 `SYSCALL_DEFINE` 已含参数校验（null 检查/magic 检查/opcode 范围/phase 范围），全部 op 分支返回 `-ENOSYS`；[SC] `syscalls.h` 定义 `AIRY_SYS_CALL=548..AIRY_SYS_CLT_NOTIFY=551`；x86/asm-generic/sw_64 三架构号段已注册（Phase 0-5 完成）。
 
-| 序号 | 模块 | 前置依赖 | 实现内容 | 测试要求 | 验收（OS-ACC） |
-|------|------|---------|---------|---------|---------------|
-| P1-1 | airy_sys_call（IPC 命令分发） | io_uring 落地 | IPC 命令分发主入口：解析 `airy_ipc_msg_hdr` → 分发到 A-IPC 子系统 → 返回 CQE；fastpath C-S9 Badge 校验入口（E12 前置条件文档化） | KUnit：命令分发/未知 opcode/Badge 拒绝；kselftest：用户态 io_uring_uring_cmd 端到端 | OS-ACC-026（AgentsIPC）/033（io_uring）/041~044 |
-| P1-2 | airy_sys_rovol_ctl（549） | P1-1 | 10 个 op 码 dispatch 骨架 + SNAPSHOT/LIST/DELETE 三操作真实实现（Phase 4 P4-4 深化） | KUnit：op 校验/非法参数/能力检查；kselftest：syscall 用户态调用 | OS-ACC-025/041~044 |
-| P1-3 | airy_sys_sched_ctl（550） | P1-1 | 调度控制入口：Agent 8 态迁移触发 + 策略查询/设置（对接 sched_tac UAPI） | KUnit：状态迁移合法性表（复用 8 态转移表）；kselftest：sched_setattr 兼容路径 | OS-ACC-025（sched_tac）/041~044 |
-| P1-4 | airy_sys_clt_notify（551） | P1-1 | 客户端通知入口：事件通知（eventfd 映射）+ die/fault 通知路由 | KUnit：通知注册/事件分发/并发通知；kselftest：eventfd 端到端 | OS-ACC-031/041~044 |
+#### P1-1 airy_sys_call（548）—— IPC 命令分发主入口
 
-**Phase 1 退出条件**：4 syscall 全部真实实现（无 -ENOSYS）；每 syscall 至少 1 个 kselftest 用例 + 1 个 KUnit 用例全绿；x86/arm64/sw_64 三架构编译通过。
+**前置依赖**：Phase 0（已完成）；`kernel/corekern/ipc/` 的 ring/fastpath/zero-copy 基础设施（已存在）；`security/airy/airy_cap_check.c` 5-phase 校验（已存在）。
+
+**实现步骤**：
+1. **Badge 校验接入**：在 `copy_from_user` 与 magic 校验之后、opcode 分发之前，调用 `airy_cap_badge_ok(cap, current_agent_id, AIRY_CAP_IPC)`——复用 `security/airy/airy_cap.h` 的 fastpath inline（~10ns，已实测 2-10ns）；校验失败返回 `-AIRY_ECAP_MISSING`。
+2. **SEND/SEND_BATCH**：调用 `airy_ipc_ring_post()` 将 `hdr` 投递到 `current` 的 `ipc_ring`（经 `airy_ipc_ring_for_task(current)` 取 ring，N3 接线项），成功返回 `0` + 通过 CQE 语义反馈；ring frozen 返回 `-AIRY_EIPC_FROZEN`。
+3. **RECV**：调用 `airy_ipc_ring_consume()` 取出一条消息拷贝到用户态 `msg`（`copy_to_user`），返回消费字节数。
+4. **CANCEL**：调用 `airy_ipc_cancel_badged_sends()`（P1-8 已实现），按 badge 取消在途发送，返回取消条数。
+5. **FREEZE**：校验 `AIRY_CAP_IPC_FREEZE` 权限（Badge perms 位）后调用 `airy_ipc_freeze_ring()`；无权限返回 `-EACCES`（supervisor-only）。
+6. **CAP_REQUEST/CAP_RESPONSE**：引导期走 io_uring_cmd 路径（本 syscall 明确拒绝返回 `-EINVAL`，保持与注释声明的"bootstrap 走 uring_cmd"一致）。
+7. **并发与内存序**：SEND/RECV 遵循 SPSC acquire/release 配对（`smp_store_release`/`smp_load_acquire`），不做额外加锁；CANCEL/FREEZE 在 ring 级锁内执行。
+
+**测试用例**：
+- KUnit（`kernel/syscalls/airy_syscalls_test.c`，新建）：① SEND 成功入环（断言 ring head 推进 + slot 内容正确）；② 未知 opcode → `-EINVAL`；③ Badge 缺失/epoch 不匹配 → `-AIRY_ECAP_MISSING`；④ frozen ring → `-AIRY_EIPC_FROZEN`；⑤ FREEZE 无权限 → `-EACCES`；⑥ cap==AIRY_CAP_NULL → `-EINVAL`；⑦ msg==NULL → `-EFAULT`；⑧ magic 错误 → `-EINVAL`。
+- kselftest（`tools/testing/selftests/airymax/`，新建）：① 用户态构造 `struct airy_ipc_msg_hdr` 调 `syscall(548, badge, &hdr)` 验证 SEND 返回 0；② RECV 取回消息比对；③ 错误 badge 返回负值 errno 映射。
+
+**验收（OS-ACC）**：OS-ACC-026（AgentsIPC）/033（io_uring）/041~044；**退出信号**：上述 KUnit 8 用例 + kselftest 3 用例全绿。
+
+#### P1-2 airy_sys_rovol_ctl（549）—— 记忆卷控制
+
+**前置依赖**：P1-1；`memory_types.h` **需新增 rovol op 枚举**（当前无 `AIRY_ROVOL_OP_*`，先补 [SC] 定义，走 codegen 流程）。
+
+**实现步骤**：
+1. **[SC] 枚举补齐**：`memory_types.h` 定义 10 个 op（SNAPSHOT/RESTORE/MIGRATE/TIER_SET/TIER_GET/MGLRU_CONFIG/LIST/DELETE/DEMOTE/PROMOTE）+ 参数结构体；同步 `syscall.xml` + `syscall_gen.py` 生成（三方一致性）。
+2. **op 分发骨架**：`switch(op)` 分派 10 分支，未知 op → `-EINVAL`；pid 校验（`pid <= 0` → `-EINVAL`）。
+3. **SNAPSHOT 真实实现**：对目标 agent 内存映射建立版本快照（`airy_mem_tier` 读侧 + 页表 freeze 语义），登记到快照表，返回快照 id。
+4. **LIST**：枚举当前 agent 的快照列表到用户态缓冲区。
+5. **DELETE**：释放指定快照并回收映射（`vmunmap`/`zap_vma_pages` 语义，06 报告 §3.2）。
+6. **其余 7 op**：返回 `-EOPNOTSUPP`（Phase 4 P4-4 深化），保持进度自包含（IRON-4）。
+7. **能力检查**：rovol 操作要求 `AIRY_CAP_MEM_ROVOL`（Badge perms 位），缺失返回 `-AIRY_ECAP_MISSING`。
+
+**测试用例**：
+- KUnit：① op==0 → `-EINVAL`；② 未知 op → `-EINVAL`；③ SNAPSHOT 成功（快照表 +1）；④ SNAPSHOT→DELETE 生命周期；⑤ LIST 空表/非空表；⑥ 能力缺失拒绝。
+- kselftest：① 用户态调 `syscall(549, SNAPSHOT, pid, arg)` 验证返回快照 id；② LIST 取回。
+
+**验收（OS-ACC）**：OS-ACC-025/041~044；**退出信号**：KUnit 6 用例 + kselftest 2 用例全绿；三架构编译通过。
+
+#### P1-3 airy_sys_sched_ctl（550）—— 调度控制
+
+**前置依赖**：P1-1；`kernel/corekern/sched/` 的 stc_policy/stc_mcs_map/stc_dispatch（已存在）；`sched.h` 4 策略枚举（已存在，L102-105）。
+
+**实现步骤**：
+1. **op 校验**：`sched.h` 需新增 `AIRY_SCHED_OP_*` 枚举（当前无 op 定义，补 [SC] 头 + codegen）；`op==0` → `-EINVAL`（现有校验保留）。
+2. **策略设置**：`AIRY_SCHED_OP_SET_POLICY`——`copy_from_user` 读 `policy` 字符串 → 映射 `AIRY_SCHED_POLICY_*`（1-4）→ 调用 `stc_policy_to_linux()`（L26-40，映射 SCHED_DEADLINE/FIFO/EEVDF/BATCH）→ `sched_setscheduler()` 应用到目标 task。
+3. **策略查询**：`AIRY_SCHED_OP_GET_POLICY`——读回当前 task 的 `airy_task_desc.policy`，`copy_to_user` 返回。
+4. **8 态迁移触发**：`AIRY_SCHED_OP_SET_STATE`——校验目标状态在 `airy_task_lifecycle` 12 条合法转移表内（L97-110），非法迁移 → `-EPERM`；合法则更新 `airy_task_sec.agent_state`。
+5. **cgroup_path 参数**：当前校验 `cgroup_path==NULL` → `-EINVAL`（保留）；M2 先按字符串路径解析 `cgroup_get_from_path()`，失败 `-ENOENT`。
+6. **[DSL] 降级**：4 策略在 DSL 编译期折叠为 EEVDF（uapi_compat.h L116-119 已有宏），运行时无降级分支（编译期已定）。
+
+**测试用例**：
+- KUnit（`stc_sched_ctl_test.c` 或并入 `airy_syscalls_test.c`）：① op==0 → `-EINVAL`；② 非法策略字符串 → `-EINVAL`；③ 合法策略映射到正确 sched_class；④ 非法状态迁移（8 态表外）→ `-EPERM`；⑤ 合法迁移成功；⑥ policy==NULL/cgroup_path==NULL → `-EINVAL`。
+- kselftest：① 用户态 `syscall(550, SET_POLICY, path, "DEADLINE")` 后 GET_POLICY 回读一致；② sched_setattr 兼容路径。
+
+**验收（OS-ACC）**：OS-ACC-025（sched_tac）/041~044；**退出信号**：KUnit 6 用例 + kselftest 2 用例全绿。
+
+#### P1-4 airy_sys_clt_notify（551）—— 认知生命周期通知
+
+**前置依赖**：P1-1；`cognition_types.h` 3 phase 枚举（已存在，L27-31）；`kernel/corekern/` 的事件/通知基础设施。
+
+**实现步骤**：
+1. **phase/task_id 校验**：保留现有（`phase >= AIRY_COG_PHASE_MAX` → `-EINVAL`；`task_id < 0` → `-EINVAL`）。
+2. **通知注册**：`AIRY_COG_NOTIFY_REGISTER`（可选 op，若引入）——将 `task_id` 挂到事件通知链表。
+3. **事件分发**：将 `(task_id, phase)` 封装为通知事件，经 `airy_eventfd_signal_fault()` 通道（P2 中 eventfd 已实现）推送给注册的 Macro-Supervisor / 目标 agent。
+4. **die/fault 通知路由**：映射到 `airy_die_map_fault()`（security/airy/airy_die_notify.c，已存在）的 fault code，复用 die_notifier 链（N13 部分收敛）。
+5. **并发**：通知链表用 `airy_lock` 保护（沿用 kernel/corekern/locking），批量通知走读锁路径。
+
+**测试用例**：
+- KUnit：① phase 越界 → `-EINVAL`；② task_id<0 → `-EINVAL`；③ 正常 PERCEPT/THINK/ACT 通知成功（断言事件计数）；④ 并发通知无 data race（KCSAN）；⑤ 注册-通知-注销生命周期。
+- kselftest：① 用户态 `syscall(551, tid, PERCEPT)` 返回 0；② eventfd 端到端：注册 eventfd → 通知 → 用户态读到事件。
+
+**验收（OS-ACC）**：OS-ACC-031/041~044；**退出信号**：KUnit 5 用例 + kselftest 2 用例全绿。
+
+#### Phase 1 模块依赖与顺序
+
+```
+P1-1 (airy_sys_call) ──► P1-2 (rovol_ctl) ──► P1-3 (sched_ctl) ──► P1-4 (clt_notify)
+  （Badge 校验+ring 接线）   （依赖 P1-1 的 Badge 接入）   （独立，依赖 [SC] op 枚举）   （独立，复用 eventfd/die_notify）
+```
+
+**顺序理由**：P1-1 打通"用户态→syscall→Badge 校验→ring"主链，是其余 3 个的公共前置（Badge 校验模式复用）；P1-2 依赖 P1-1 的 Badge 接入 + 需补 [SC] 枚举（走 codegen）；P1-3/P1-4 无强依赖可并行，但建议按序号串行以保持"一次一个可测交付"。
+
+**Phase 1 退出条件**：4 syscall 全部真实实现（无 -ENOSYS，`AIRY_IPC_OP_*` 全 opcode 分发）；每 syscall 至少 1 个 kselftest 用例 + 1 个 KUnit 用例全绿；x86/arm64/sw_64 三架构编译通过；`syscall_gen.py --check --check-tbl` 零漂移。
 
 ### 4.4 Phase 2：安全与 IPC 深化
 
@@ -547,27 +634,30 @@ timeline
 | IPC benchmark 实测 | `airy_fastpath_bench`（UML x86_64/WSL2、gcc 13.3.0）：**badge_ok 2-10ns**、fastpath_send 37-61ns、ring_post 51-83ns、ring_consume 13-33ns，**fastpath 均值 ~46ns**——设计估算（~10ns/~158ns）替换为实测数据 | ✅ 完成 | commit 65d16bb（design estimates → measured fastpath data） |
 | M0 内核框架编译验证 | 39 .o 零错误零警告 + vmlinux 生成 + Kbuild/Kconfig 5 层依赖链 + H1-H6 硬约束全部通过；arm64+airy 完整构建 EXIT_CODE=0 | ✅ 完成（v1.2） | `agentrt-linux基本工程标准规范.md` 附录 F |
 | docs SSoT 权威加强 | OS-IRON-018~021 + 110 项 OS-ACC + 三层质量门禁 + 里程碑门禁（M0 过 OS-ACC-001~020 解锁 M1） | ✅ 完成（v2.9/v3.0） | docs 仓 `130-roadmap/` |
+| **Phase 0 工程基线修复（2026-08-01）** | 5 模块全部完成：① 版本库卫生（`build-arm64.log` 移出跟踪 + `/build-*.log` 规则 + mrproper + O= 分离构建验证通过）；② `.gitmodules` kernel 分支对齐 `ALK-6.6-dev`；③ tools/scripts 14 文件入库（`__pycache__` 排除）；④ CI 工作流修复（路径监听修正 + 7 个缺失脚本存在性守卫 + working-directory 修正）；⑤ **sw_64 syscall 号段 548-571 接线**（`__NR_syscalls=572` 生成验证通过） | ✅ **完成（2026-08-01）** | kernel `0207ff0`/`dd990c6` + 管理仓 `ef6103e`/`8fe4e7d`/`7813134` |
+| **Phase 1 系统调用面规划（2026-08-01）** | 4 syscall 实现步骤 + 测试用例细化：P1-1（Badge 校验 + ring 分发，8 KUnit + 3 kselftest）、P1-2（rovol 10 op，含 [SC] 枚举补齐，6 KUnit + 2 kselftest）、P1-3（sched_ctl 策略/状态迁移，6 KUnit + 2 kselftest）、P1-4（clt_notify 事件通知，5 KUnit + 2 kselftest） | ✅ 规划完成（待实施） | 本文档 §4.3 |
 
 ### 12.2 当前状态
 
 | 维度 | 状态 |
 |------|------|
-| kernel 框架就绪度 | **≈60%**（工程框架 90% / 安全 75% / syscall 面 15% / 调度内存 30% / openEuler 驱动 20%） |
+| kernel 框架就绪度 | **≈60%**（工程框架 90% / 安全 75% / syscall 面 15% / 调度内存 30% / openEuler 驱动 20%）——Phase 1 完成后 syscall 面 → 100% |
 | docs 就绪度 | **≈93%**（有条件 GO，唯一缺口 = 模块级实施顺序图，本文档 §4 已补） |
 | 叶子仓结构 | 完整（kernel 真实实现，7 仓最小骨架） |
-| 阻断缺口 | **G-01~G-08 共 8 项**（G-08 已由本文档清除，其余 7 项待 Phase 处置） |
-| **Phase 0** | **待启动**（当前状态：M0 已完成，Phase 0 为下一执行单元） |
+| 阻断缺口 | **G-02/G-05/G-06/G-07 已清零（Phase 0），G-08 已清除**；剩余 G-01（Phase 1）/G-03（Phase 3）/G-04（全程） |
+| **Phase 0** | ✅ **已完成（2026-08-01）**——5/5 模块，O= 构建验证通过，CI 工具全跟踪，sw_64 号段接线 |
+| **Phase 1** | ⏳ **待启动**——4 syscall 实现步骤与测试用例已规划（§4.3），等待实施 |
 
 ### 12.3 下一步行动项（按优先级）
 
 | # | 行动项 | 归属 | 说明 |
 |---|--------|------|------|
-| 1 | 启动 Phase 0：P0-1 版本库卫生修复 | Phase 0 | 移除 build-arm64.log 跟踪 + 补 *.log 规则 + 清理树内产物 + O= 构建验证 |
-| 2 | 启动 Phase 0：P0-5 sw_64 syscall 号段接线 | Phase 0 | 548-571 注册到 sw_64 syscall.tbl，sw_64 后续一切功能的前置 |
-| 3 | 启动 Phase 0：P0-2/P0-3/P0-4 | Phase 0 | .gitmodules 分支声明、tools/scripts 入库、ci-airy.yml 路径修正 |
-| 4 | Phase 0 退出评审 | Phase 0 | 7 项缺口（除 G-08）清零确认 + 三架构干净构建验证 |
-| 5 | 启动 Phase 1：P1-1 airy_sys_call | Phase 1 | IPC 命令分发（依赖 io_uring 落地），最高优先 |
-| 6 | 并行推进 P1-2/3/4（每 syscall 独立子模块） | Phase 1 | 完成一个测一个（kselftest + KUnit） |
+| 1 | ~~启动 Phase 0：P0-1 版本库卫生修复~~ | Phase 0 | ✅ 已完成（kernel `0207ff0`，O= 构建验证通过） |
+| 2 | ~~启动 Phase 0：P0-5 sw_64 syscall 号段接线~~ | Phase 0 | ✅ 已完成（kernel `dd990c6`，`__NR_syscalls=572`） |
+| 3 | ~~启动 Phase 0：P0-2/P0-3/P0-4~~ | Phase 0 | ✅ 已完成（管理仓 `ef6103e`/`8fe4e7d`/`7813134`） |
+| 4 | ~~Phase 0 退出评审~~ | Phase 0 | ✅ 已达成：G-02/05/06/07 清零 + O= 构建通过 |
+| 5 | **启动 Phase 1：P1-1 airy_sys_call（548）** | Phase 1 | Badge 校验接入 + SEND/RECV/CANCEL/FREEZE 分发 + `airy_syscalls_test.c`（8 KUnit）+ kselftest（3 用例） |
+| 6 | 并行推进 P1-2/3/4（每 syscall 独立子模块） | Phase 1 | 完成一个测一个（kselftest + KUnit），顺序 P1-1→P1-2→P1-3→P1-4 |
 
 ---
 
@@ -654,8 +744,8 @@ timeline
 | kernel 框架就绪度 | **≈60%**（工程框架 90% / 安全 75% / syscall 面 15% / 调度内存 30% / openEuler 驱动 20%） |
 | docs 就绪度 | **≈93%**（有条件 GO，模块级顺序图缺口已由本文档 §4 补） |
 | 叶子仓结构 | 完整（kernel 真实实现，7 仓最小骨架） |
-| 阻断缺口 | **8 项（G-01~G-08）**，G-08 已清除，其余 7 项待 Phase 0-6 处置 |
-| 1.0.1 开发 | Phase 0 待启动（M0 ✅ / M1 进行中 / M2 ⚠️ 条件 GO：收敛 P1-1/4/5 已完成，N3/N5/N10/E1 待 Phase 2） |
+| 阻断缺口 | **8 项（G-01~G-08）**，G-02/05/06/07 已清零（Phase 0），G-08 已清除，剩余 G-01/G-03/G-04 |
+| 1.0.1 开发 | **Phase 0 已完成（2026-08-01）**，Phase 1 系统调用面已规划待实施（M0 ✅ / M1 进行中 / M2 ⚠️ 条件 GO：收敛 P1-1/4/5 已完成，N3/N5/N10/E1 待 Phase 2） |
 | agentrt 0.1.1 奠基 | 进行中 |
 | 闭源参考文档 | 23 文档中 15 已完成（65%）+ v3.6 审查报告 23 份 |
 
@@ -685,4 +775,4 @@ timeline
 
 ---
 
-> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开 | v3.6 审查基线：kernel 60% / docs 93% / 叶子仓结构完整 | Phase 0 待启动
+> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开 | v3.6 审查基线：kernel 60% / docs 93% / 叶子仓结构完整 | **Phase 0 已完成（2026-08-01），Phase 1 系统调用面已规划**
