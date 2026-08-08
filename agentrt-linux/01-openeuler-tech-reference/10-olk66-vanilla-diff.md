@@ -166,24 +166,26 @@ openEuler 版本系统（OPENEULER_LTS/MAJOR/MINOR/RELEASE），注入 `OPENEULE
 
 ### 8.1 完整导入
 
-| 项 | 路径 | 规模 |
-|----|------|------|
-| 申威架构 | `arch/sw_64/` | 352 文件, +54,093 行 |
+| 项 | 路径 | 规模 | 落地状态 |
+|----|------|------|---------|
+| 申威架构 | `arch/sw_64/` | 352 文件, +54,093 行 | ✅ 已落地（2026-07-31，ALK-6.6-dev 导入） |
 
 ### 8.2 驱动补丁提取（存入 `patches/euler/{x86,arm64,sw_64}/`）
 
-| 厂商 | 硬件 | 源路径 | 目标架构 |
-|------|------|--------|----------|
-| 海思/鲲鹏 | hns3/hns NIC | `drivers/net/ethernet/hisilicon/` | arm64 |
-| 华为 | hinic3 NIC | `drivers/net/ethernet/huawei/` | arm64, x86 |
-| 海思/鲲鹏 | PMU | `drivers/perf/hisilicon/` | arm64 |
-| 阿里 | DRW PMU | `drivers/perf/alibaba_uncore_drw_pmu.c` | x86, arm64 |
-| 申威 | cpufreq | `drivers/cpufreq/sunway-cpufreq.c` | sw_64 |
-| 跨厂商 | CPU SDC 检测 | `drivers/cpuinspect/` | x86, arm64 |
-| 跨厂商 | Vendor Hooks | `drivers/hooks/`（仅硬件相关） | x86, arm64, sw_64 |
-| 鲲鹏 | RDMA over HMEM | `drivers/roh/` | arm64 |
-| 鲲鹏 | UnifiedBus | `drivers/ub/` | arm64 |
-| 申威 | XCU | `drivers/xcu/` | sw_64 |
+> **ADR-018 范围说明**：v1.0.1 落地范围收敛为 **hooks 极简导入（仅 bonding）** + sw_64 + CONFIG 碎片。其余厂商驱动项（hns3/hinic3/PMU/DRW/cpufreq/cpuinspect/roh/ub/xcu）为 M2+ 可选后续，逐项评估后按需提取。
+
+| 厂商 | 硬件 | 源路径 | 目标架构 | 落地状态 |
+|------|------|--------|----------|---------|
+| 海思/鲲鹏 | hns3/hns NIC | `drivers/net/ethernet/hisilicon/` | arm64 | ⏳ M2+ 待评估 |
+| 华为 | hinic3 NIC | `drivers/net/ethernet/huawei/` | arm64, x86 | ⏳ M2+ 待评估 |
+| 海思/鲲鹏 | PMU | `drivers/perf/hisilicon/` | arm64 | ⏳ M2+ 待评估 |
+| 阿里 | DRW PMU | `drivers/perf/alibaba_uncore_drw_pmu.c` | x86, arm64 | ⏳ M2+ 待评估 |
+| 申威 | cpufreq | `drivers/cpufreq/sunway-cpufreq.c` | sw_64 | ⏳ M2+ 待评估 |
+| 跨厂商 | CPU SDC 检测 | `drivers/cpuinspect/` | x86, arm64 | ⏳ M2+ 待评估 |
+| 跨厂商 | Vendor Hooks | `drivers/hooks/`（仅硬件相关） | x86, arm64, sw_64 | ✅ 已落地（2026-08-07，bonding 极简，ADR-018） |
+| 鲲鹏 | RDMA over HMEM | `drivers/roh/` | arm64 | ⏳ M2+ 待评估 |
+| 鲲鹏 | UnifiedBus | `drivers/ub/` | arm64 | ⏳ M2+ 待评估 |
+| 申威 | XCU | `drivers/xcu/` | sw_64 | ⏳ M2+ 待评估 |
 
 ### 8.3 CONFIG 碎片（存入 `configs/euler_hw_{x86,arm64,sw64}.config`）
 
