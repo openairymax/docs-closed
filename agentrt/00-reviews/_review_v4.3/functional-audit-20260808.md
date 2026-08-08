@@ -107,12 +107,16 @@
 本轮完成：
 - gateway WS/Stdio 接线 → 支持 WebUI 会话、进程内（子进程）交互通道
 - manager CLI 统一入口（daemon/health/model/logs）
+- TUI markdown 渲染（表格/标题/列表/引用/行内样式）：[markdown.rs](file:///home/spharx/SpharxWorks/airymaxhub/sdk/tui/src/markdown.rs)
+- TUI 气泡式对话：[panels/chat.rs](file:///home/spharx/SpharxWorks/airymaxhub/sdk/tui/src/panels/chat.rs) 角色分侧气泡 + 流式增量占位气泡
+- TUI 流式输出：gateway `POST /api/v1/chat/stream`（SSE）→ `client.rs::stream_chat` 逐块回调 → 增量渲染；llm_d 流式发送修复（阻塞式 `llm_stream_send_all` + `[DONE]` 不再误报 STREAM-FAIL）
+- 工具级权限审批交互（Claude Code 风格 permission prompt）：tool_d `interactive_approval`（队列+条件变量+120s 超时）→ gateway `tool.pending`/`tool.approve` 转发 → TUI 审批按键 a/A/n（允许本次/始终允许/拒绝）
+- 会话恢复 --resume（Codex sessions / Claude /resume）：TUI `--resume` 恢复记忆库最近 30 条 user/assistant 轮次
+- 项目上下文文件机制（AGENTS.md 等价物）：TUI `--project` + openlab `project_context.py` 向上查找 AGENTS.md/CLAUDE.md/.airymax/AGENTS.md（.git 为界），注入系统提示首条
 
 持续提升方向（后续项）：
-- TUI markdown 渲染（表格/标题）、气泡式对话、流式输出
-- 工具级权限审批交互（Claude Code 风格 permission prompt）
-- 会话恢复 --resume（Codex sessions / Claude /resume）
-- 项目上下文文件机制（AGENTS.md 等价物）
+- shell_run OS 级沙箱（bwrap/landlock，对标 Codex linux-sandbox）
+- TUI 多会话 tab / 会话列表切换（当前 --resume 单会话恢复）
 
 ---
 
@@ -127,20 +131,38 @@
 
 ## 7. 剩余未实现项（后续排期）
 
-| 优先级 | 项 | 说明 |
+### 7.1 已完成项（本轮收官）
+
+| 优先级 | 项 | 完成情况 |
 |--------|-----|------|
-| P0 | 会话恢复 --resume | agent_d 子进程生命周期即会话；需持久化 messages + 恢复机制（对标 Codex/Claude Code） |
-| P0 | 工具级交互式权限审批 | tool_approval 为静态规则；需用户确认交互（Claude Code 权限提示） |
-| P1 | MemoryRovol 桥接接线 | products/memoryrovol 完整可构建，但 atoms/memoryrovol 桥接 12 处 ENOTSUP；对话链路不经 memoryrovol_bridge |
-| P1 | 工作大厅持久化 | work_hall 看板/任务图重启丢失 |
-| P1 | 服务发现多后端 | 仅 shm 单后端（STD-03 要求 etcd/consul 等） |
-| P1 | 项目上下文文件（AGENTS.md） | agent 启动无项目约定背景 |
-| P1 | git/diff/apply 工具 | coding 场景原子修改（对标 Codex patch） |
-| P2 | shell_run OS 级沙箱 | 当前 fork+/bin/sh；需 bwrap/landlock（对标 Codex linux-sandbox） |
-| P2 | mem_d 向量检索 | 当前 djb2 哈希+子串；向量索引为设计项 |
-| P2 | syscall.xml codegen 管道 | SSoT 登记项，agentrt 侧无 syscall.xml |
-| P2 | MCP 客户端能力 | gateway_d 仅 MCP server，不可消费外部 MCP server 工具 |
-| P2 | cupolas 独立 daemon | cupolas 为静态库内嵌，无 cupolas.* IPC 命名空间 |
+| P0 | 会话恢复 --resume | 完成：TUI `--resume` 恢复记忆库最近 30 条 user/assistant；`resume_session_restores_history` 测试覆盖 |
+| P0 | 工具级交互式权限审批 | 完成：tool_d `interactive_approval`（pending/approve/超时）→ gateway 转发 → TUI 按键 a/A/n；E2E 14/14 通过（allow/deny/超时/缓存防绕过/已授权直放） |
+| P1 | MemoryRovol 桥接接线 | 完成：memoryrovol_bridge 10 处 ENOTSUP → 真实桥接；`test_c_link_12_memoryrovol_bridge` 10/10 通过 |
+| P1 | 工作大厅持久化 | 完成：work_hall 状态 JSON 持久化到 `$AIRY_HOME/state/work_hall_state.json`（原子写 + 变更自动触发） |
+| P1 | 服务发现多后端 | 完成：`AIRY_SD_BACKEND=shm\|file` 双后端（file 后端写 `$AIRY_HOME/state/sd/`） |
+| P1 | 项目上下文文件（AGENTS.md） | 完成：openlab `project_context.py` + TUI `--project` 向上查找注入；182 tests / TUI 44 tests 覆盖 |
+| P1 | git/diff/apply 工具 | 完成：tool_d 注册 git_exec/git_diff/git_apply（fork+pipe+poll，60s 超时 1MB 截断） |
+
+### 7.2 交互式审批触发链路修复（本次新增）
+
+- `handle_execute` 支持可选 `agent_id` 透传：真实 Agent（如 coding_v1）调用工具时以该主体做 ACL 判定，未授权进入 pending（此前固定 "tool_d" 全放行，审批永不触发）
+- 审批链 `tool_approval_check_for_agent` → `safety_guard_bridge_check_for_agent` 按请求主体执行权限/审计守卫
+- SDK `SyscallProxy.tool_execute` / agent `base.py` 透传 `self.agent_id`
+- 缓存防绕过：缓存键纳入 agent_id，且仅静态 ACL 授权主体可命中缓存（allow 为一次性授予，重复调用必须重新审批）
+
+### 7.3 待排期项 → 已全部完成（本轮 P2）
+
+| 优先级 | 项 | 完成情况 |
+|--------|-----|------|
+| P2 | shell_run OS 级沙箱 | 完成：Landlock（内核文件系统白名单，workspace 可写/全局只读/strict 收紧）+ seccomp BPF 黑名单（mount/unshare/ptrace 等 23 个特权 syscall）+ rlimit 资源限制；fork 后 exec 前应用；`AIRY_TOOL_SANDBOX_MODE=off\|workspace\|strict` 配置；单测 22/22 + E2E 6/6（写 $HOME 拒绝、写 /tmp 允许、unshare/mount 拒绝） |
+| P2 | mem_d 向量检索 | 完成：自研 TF-IDF（英文单词 + 中文单字/bigram tokenizer、IDF 平滑）+ 余弦相似度，与子串评分 0.6/0.4 加权融合；可选 OpenAI 兼容 embedding 后端（`AIRY_MEM_EMBEDDING_URL/KEY`，失败自动降级）；JSONL 持久化不变；13 测试通过（语义排序/中文/降级/一致性） |
+| P2 | syscall.xml codegen 管道 | 完成：`atoms/syscall/include/syscall.xml` 为 SSoT（23 syscall），`tools/codegen/syscall_gen.py` 生成枚举头 + 分发表，`--check` 防漂移接入 CMake（构建时校验）+ CI workflow；系统调用测试 3/3 无回归 |
+| P2 | MCP 客户端能力 | 完成：`protocols/standards/mcp/{include/mcp_client.h,src/mcp_client.c}`（stdio 帧解析状态机 + HTTP），gateway_d 经 `AIRY_MCP_CLIENTS` 环境变量连接外部 MCP server、`<client>_<tool>` 前缀注册工具并转发 tools/call；E2E：mock server 工具 `mock_mock_echo` 可列出可调用；同时修复 gateway MCP server tools/list/resources/list 缺 JSON-RPC result 包装的合规 bug |
+| P2 | cupolas 独立 daemon | 完成：`daemons/cupolas_d/`（check_permission/sanitize/execute_command/add_rule/audit_flush/get_stats/shutdown 8 方法，cupolas.sock）；修复 cupolas workbench 既有管道死锁 bug（子进程输出无人读取 → 永久阻塞）；JSON-RPC 全方法验证通过，cupolas_d 独立运行中 |
+
+### 7.4 用户交互/视觉优化（本轮）
+
+- TUI 工具审批提示条（Claude Code 风格 permission prompt）：pending 审批时在输入栏上方插入高亮横幅，展示工具/主体/参数预览与 `[a] 允许本次  [A] 始终允许  [n] 拒绝` 快捷键提示；TUI 44+32 测试通过，release 已部署
 
 ---
 
@@ -152,4 +174,9 @@
 - 契约层：`agentrt/commons/include/airymax/{ipc.h,task_desc.h}`、`agentrt/commons/utils/task/src/task_desc.c`、`02-l2-service-protocol.md`
 - protocols：`agentrt/protocols/src/airy_protocol_interface.c`、`agentrt/protocols/core/router/src/protocol_router.c`、`agentrt/protocols/standards/a2a/src/a2a_v03_adapter.c`
 - manager：`ecosystem/manager/manager.py`、`ecosystem/manager/model/model.yaml`
+- TUI：`sdk/tui/src/{app.rs,client.rs,markdown.rs,memory.rs,main.rs}`、`sdk/tui/src/panels/chat.rs`
+- 流式端点：`agentrt/gateway/src/gateway/http_gateway_routes.c`、`agentrt/daemons/llm_d/src/{main.c,providers/{provider.c,deepseek.c}}`
+- 交互式审批：`agentrt/daemons/tool_d/src/{tool_interactive_approval.c,executor.c,main.c,service.c,cache.c,tool_approval.c,safety_guard_bridge.c}`、`sdk/sdk-python/agentrt/syscall.py`
+- 项目上下文：`ecosystem/openlab/openlab/core/project_context.py`、`ecosystem/agents/airymax_agents/runner.py`
+- sched_d 队列日志：`agentrt/daemons/sched_d/src/sched_service_impl.c`、`agentrt/commons/utils/logging/src/logging.c`（AIRY_LOG_LEVEL）
 - 参考实现：`.engineer-reference/{codex-main,claude-code-main,atomcode-main}`
