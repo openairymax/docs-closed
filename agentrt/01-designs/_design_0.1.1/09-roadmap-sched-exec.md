@@ -176,13 +176,16 @@ L3 走完整五阶段认知管线，内部按五步序列执行（复用现有 G
 
 - **新增 `airy_cancel_token_t`**（`commons/utils/sync/cancel_token.h`）：原子 `cancelled` 标志 + 回调唤醒链，贯穿 taskflow → work_hall → sched_d executor → agent_d/tool_d。
 - **agent_d**：invoke 从阻塞读管道改为 `select/poll` 非阻塞 + token 轮询；取消 → SIGTERM 子进程组 → 2s 优雅窗口 → SIGKILL，以 `AbortedOutput` 收尾（与超时 -2 区分）。
-  - **实施状态（2026-08-09）**：service 层已落地（`agent_read_line_timeout_ex` select 200ms 轮询 + token 检查；`agent_kill_and_reap` SIGTERM→2s→SIGKILL；`AbortedOutput` JSON，`test_service.c` 取消用例验证）；**daemon RPC 层未暴露 cancel 方法**（`main.c` invoke 传 NULL token）——跨进程取消需会话管理，属 §4.1"取消下探"已知暂缓项（见下方"取消下探"）。
+  - **实施状态（2026-08-09）**：service 层已落地（`agent_read_line_timeout_ex` select 200ms 轮询 + token 检查；`agent_kill_and_reap` SIGTERM→2s→SIGKILL；`AbortedOutput` JSON，`test_service.c` 取消用例验证）。
+  - **取消下探（2026-08-10 完成）**：daemon RPC 层暴露 cancel 能力——`handle_invoke` 支持可选 `request_id` 参数并注册 invoke 会话（`agent_service_invoke_begin/end`，request_id → cancel_token 会话表）；新增 `agent.cancel` RPC 方法（按 request_id 取消会话 → service 层 token 轮询命中 → 优雅终止子进程 → AbortedOutput）；`agent_d` 开启 `concurrent_clients`（invoke 长请求不阻塞事件循环，cancel 请求可达）；调用方 `daemon_rpc_call_cancelable` 在等待响应期间短轮询取消令牌，命中时发送 `agent.cancel` 后返回 `AIRY_ERR_CANCELED`；`wh_agent_handler` 透传引擎取消令牌 + 生成唯一 request_id，节点取消 → Agent 调用取消下探（taskflow `taskflow_run_node` 感知取消返回非 0 时节点标记 CANCELED 而非 FAILED）。`test_invoke_session_cancel`/`test_invoke_session_capacity` 验证会话管理。
 - **tool_d**：子进程退出经 `eventfd/pipe` 注册为事件源（复用 daemon_event_driver）；`exec->lock` 仅保护统计字段（取消全段持锁）；支持并行工具并发（RwLock 门控语义：并行工具 read 并发 / 互斥 write 串行）。
-  - **实施状态（2026-08-09）**：`exec->lock` 仅保护统计字段 ✅；RwLock 并发门控（写者优先，read 并发 / write 串行）✅；失败分级四态 ✅。**子进程等待为 select 阻塞循环 + 阻塞 waitpid 回收**（`platform.c` `airy_process_run_capture`，超时 SIGKILL），**未采用 eventfd/pipe 事件源驱动**——并行执行经 tool_d RPC 客户端线程池（`main.c` `concurrent_clients=true`）实现，功能等价；事件源驱动留待后续。
+  - **实施状态（2026-08-09）**：`exec->lock` 仅保护统计字段 ✅；RwLock 并发门控（写者优先，read 并发 / write 串行）✅；失败分级四态 ✅。
+  - **事件源驱动（2026-08-10 完成）**：`platform.c` `airy_process_run_capture_ex` 实现事件源驱动——子进程退出经管道 EOF 事件感知（select 阻塞监听，替代 1s 固定轮询）、`waitpid WNOHANG` 非阻塞回收（替代循环结束后的阻塞 waitpid）、超时判定精确到毫秒（单调时钟 deadline）、取消令牌短片轮询（100ms 片，命中返回 `AIRY_PROCESS_RC_CANCELED` -3）；`airy_process_run_capture` 保留原签名（内部调 ex，token=NULL）。`test_platform.c` 新增正常/超时/取消三用例验证。
 - **taskflow**：`run_to_completion` 改事件驱动循环 + token 检查；`airy_loop_dag_wait` 支持超时参数（消除 loop.c L2032"超时留待后续版本"注释）。
   - **实施状态（2026-08-09）**：`run_to_completion_timeout` 事件驱动 + 取消令牌 ✅（RTC 超时/取消令牌测试）；`airy_loop_dag_wait(timeout_ms)` 透传 `run_to_completion_timeout` ✅；CLI SIGINT 经 `airy_loop_dag_set_cancel_flag` 挂接 ✅。
 - **取消下探**：DAG 节点级取消 → 工具级（当前只能等同步返回后丢弃），且取消事件注入蓝图调度 L1 联动（§4.6 协同点 3）。
-  - **实施状态（2026-08-09）**：协同点 3 已落地（CANCELED → `wh_progress_cb` → `on_cancel` → L1 反向边回退）；**工具级取消下探维持现状**（等同步返回后丢弃，agent_d/tool_d RPC 层未暴露取消）。
+  - **实施状态（2026-08-09）**：协同点 3 已落地（CANCELED → `wh_progress_cb` → `on_cancel` → L1 反向边回退）；工具级取消下探维持现状（等同步返回后丢弃，agent_d/tool_d RPC 层未暴露取消）。
+  - **实施状态（2026-08-10 更新）**：工具级取消下探已落地——agent_d 侧 RPC cancel（invoke 会话 + `agent.cancel` 方法，见上）；调用方侧 `daemon_rpc_call_cancelable` + `wh_agent_handler` 引擎令牌透传；taskflow 节点取消语义（CANCELED ≠ FAILED）。tool_d 执行器（executor → syscall → `airy_process_run_capture`）等待机制已事件源化，取消令牌接口（`run_capture_ex`）就绪，供上层按需接入。
 
 ### 4.2 改进 2：执行产物验证层（Claude 两阶段协议）
 
@@ -595,8 +598,8 @@ admin：跨租户全量 R/W；auditor：全量只读 + 审计日志（所有读�
 |:---|:---|:---|
 | atoms/coreloopthree | 新增 `dispatch/` 子模块（Roadmap Sched：L1 状态机 + L2 缓存 + 三级路由 + 回灌/取消联动）；cognition process 入口挂接；新增 `execution/validators/`；taskflow 事件驱动 + 超时 | 三级系统 / 改进1 / 改进2 / 三协同 |
 | commons/utils/sync | 新增 `cancel_token.h/.c` | 改进1 |
-| daemons/agent_d | invoke 非阻塞化（select/poll + token）——service 层已落地；RPC 层未暴露 cancel 方法（暂缓） | 改进1 |
-| daemons/tool_d | 失败分级三态 + RwLock 并发门控 + 线程池并行——已落地；子进程等待为 select 阻塞（事件源驱动留待后续） | 改进1 / 改进3 |
+| daemons/agent_d | invoke 非阻塞化（select/poll + token）——service 层已落地；**RPC 层已暴露 cancel**（invoke 会话 + `agent.cancel` 方法 + concurrent_clients，2026-08-10） | 改进1 |
+| daemons/tool_d | 失败分级三态 + RwLock 并发门控 + 线程池并行——已落地；**子进程等待已事件源驱动**（`airy_process_run_capture_ex`：EOF 事件 + WNOHANG 回收 + 精确超时 + 取消令牌，2026-08-10） | 改进1 / 改进3 |
 | daemons/sched_d | 失败分支语义（FATAL 才级联）+ transient 重试 + 产物验证挂接 | 改进3 / 改进4 / 改进2 |
 | atoms/coreloopthree/mac | 多方案并行评审（group 复用，无新增接口） | 改进5 |
 | atoms/coreloopthree/work_hall | `wh_progress_cb` 注入回灌事件流（progress_cb → Roadmap Sched） | 三协同 |
@@ -629,7 +632,9 @@ admin：跨租户全量 R/W；auditor：全量只读 + 审计日志（所有读�
 
 **回归基线**：全量 ctest（146/146 全绿，含 ASan/LSan）+ GCCP/GRAD 相关测试（gccp_workhall 等）明确不触碰。
 
-**全功能接线盘点（2026-08-09）**：核心链路全面打通（实码核验）——三级路由（CLI 认知入口 L1/L2 短路）/ plan absorb / TTL 顺延 / 回灌链（`wh_progress_cb` → `wh_rs_feed_back` → absorb / on_cancel）/ L2 语义缓存（HNSW + bigram 降级 + JSON 双写持久化 + 失败指纹 + θ 调整 + PASS 准入）/ 多方案七接口 / 产物验证（sched_d write_back 前置 + work_hall wait）/ FATAL 级联 / transient 分级重试。两处边界如实标注（§4.1）：agent_d RPC 层未暴露 cancel 方法（service 层机制完整）、tool_d 子进程等待为 select 阻塞（未用事件源驱动，并行经线程池），均属功能等价/已知暂缓项，不影响主链路。
+**全功能接线盘点（2026-08-09）**：核心链路全面打通（实码核验）——三级路由（CLI 认知入口 L1/L2 短路）/ plan absorb / TTL 顺延 / 回灌链（`wh_progress_cb` → `wh_rs_feed_back` → absorb / on_cancel）/ L2 语义缓存（HNSW + bigram 降级 + JSON 双写持久化 + 失败指纹 + θ 调整 + PASS 准入）/ 多方案七接口 / 产物验证（sched_d write_back 前置 + work_hall wait）/ FATAL 级联 / transient 分级重试。
+
+**暂缓项清零（2026-08-10）**：§4.1 两处暂缓项均已实现——① agent_d RPC 层暴露 cancel（invoke 会话 + `agent.cancel` 方法 + `concurrent_clients`，调用方 `daemon_rpc_call_cancelable` + `wh_agent_handler` 引擎令牌透传 + taskflow 节点 CANCELED 语义）；② tool_d 子进程等待事件源驱动（`airy_process_run_capture_ex`：EOF 事件感知 + WNOHANG 非阻塞回收 + 精确超时 + 取消令牌 -3）。全量 ctest 151/151 通过。
 
 **新增设计（2026-08-09）**：改进 6 执行中图纸复核回路（§4.7，P3 规划，未实施）——执行期间的产物语义复核与图纸增量修正，补全"执行前设计 / 执行中复核 / 执行后回灌"三段闭环；决策 A/B（§4.8）——日常对话由 B 模型（t1-f）生成与分流、模型三配置点（t2=A / t1-f=B / t1-p=C，云端/本地可选，t1-f 最先激活），已随 CLI 落地。
 
@@ -646,7 +651,33 @@ admin：跨租户全量 R/W；auditor：全量只读 + 审计日志（所有读�
   - work_hall 挂接（节点执行边界）：`config.main_workspace_dir`（BORROW，NULL=不隔离保持现状）；节点执行前快照主工作区 → 独立沙箱目录，invoke 注入 `workspace_dir` + `workspace_mode=isolated`（独立 params 字段，向后兼容不污染 input）；执行成功 merge 回主工作区，冲突不覆盖并写 hall_store issue 事件（`WS_MERGE_CONFLICT`）；执行失败保留隔离区供审计。
   - CLI 挂接：`AIRY_WORKSPACE_MAIN_DIR` 显式指定时启用（默认保持现状）；`AIRY_WORKSPACE_ISOLATION=0` 可整体关闭。
   - 测试：`test_workspace` 19/19（生命周期/降级/快照/三方 merge 更新/冲突/新增应用/删除不传播，ASan 无泄漏）；`test_gccp_workhall` 9/9（新增决策 E 端到端：mock agent_d + 隔离注入断言 + 产物 merge 回主工作区断言）；全量 ctest 148/148 通过。
-- ⏳ **待实施**：P1 决策 F（统一治理）、P3 改进 6 完整复核回路、决策 H（嵌套委派）。
+- ⏳ **待实施**：P3 改进 6 完整复核回路、决策 H（嵌套委派）。
+
+**实施进度（2026-08-09 第五批）**：
+- ✅ **P1 决策 F 完成（统一治理，GRAD R_total 执行期投影）**：
+  - `governance.h/.c` 新增（决策 F 机制层）：Token 预算池（acquire 预扣 / settle 结算校正，记账式门禁非阻塞拒绝，低水位 THROTTLED / 扣尽 CIRCUIT_OPEN）、并发槽信号量（`airy_cond_timedwait` 100ms 分片轮询可超时）、图级 deadline（登记表 + 超时熔断计数）、派生容量 `min(硬上限, 空余槽位, 剩余预算可支撑并发)`、register/unregister 配对一体化（Token 预扣失败熔断拒绝 / 槽位失败全量回吐 / 登记失败回滚前两步；unregister 未登记 no-op 防误释放，`token_actual==0` 按 estimate 中性结算不回吐）。
+  - work_hall 挂接（任务级门禁）：submit 成功后 `airy_governance_register(graph_id=exec_id, est=node_count*token_per_node)`；门禁拒绝（预算不足 BUSY / 槽位满 TIMEOUT）→ cancel 该执行并返回错误码；看板登记失败回滚治理登记；终态（completed/failed/canceled/skipped）`wh_progress_cb` 注销（Token 结算 + 槽位释放 + deadline 清除）。
+  - **引擎同步执行适配**：taskflow 对单节点工作流在 submit 内同步执行完毕（终态 progress_cb 先于 register 触发 → unregister no-op），register 后立即探测终态并结算（settle-sync），防 slot/token 泄漏；多节点图 submit 返回仍 RUNNING，由终态回调正常注销。
+  - CLI 挂接：`AIRY_GOV_TOKEN_BUDGET` / `AIRY_GOV_SLOTS` / `AIRY_GOV_MAX_CONCURRENT` / `AIRY_GOV_TOKEN_PER_NODE` / `AIRY_GOV_DEADLINE_MS` 环境变量注入；全部未配置（无预算且无槽位）→ 不启用治理，保持现状。
+  - 测试：`test_governance` 43/43（生命周期/派生容量/Token 预算三态/预扣结算回吐补扣/并发槽超时/deadline 熔断/register-unregister 一体化/不设限默认 8 槽，ASan 无泄漏）；`test_gccp_workhall` 治理挂接 2 项新增（token 门禁：wf1/wf2 准入 + wf3 BUSY + 运行中 capacity=2 + 结算后容量恢复；并发槽门禁：槽满 TIMEOUT + 释放后重提交成功）——治理测试改用 2 节点串行 DAG（n1 同步 + n2 异步）提供真实运行中窗口；同时修复决策 E 遗留：mock agent socket 就绪等待（消除 spawn RPC 竞态偶发 FAIL）与 submit 失败路径 wf 完整释放（ASan LSan 347 字节泄漏）；全量 ctest **149/149** 通过。
+- ⏳ **待实施**：决策 H（嵌套委派，P3+）。
+
+**实施进度（2026-08-09 第六批）**：
+- ✅ **P3 改进 6 完成（执行中图纸复核回路）**——补全"执行前设计 / 执行中复核 / 执行后回灌"三段闭环：
+  - **复核管线 `execution_review.h/.c` 新增**（机制层）：ADP 交付物（产物 + 自验证报告 + 变更清单）→ 确定性门禁（决策 G 规则集 + 产物结构契约校验：输出非空/上限/输出签名键集 E-01）→ t2（A）语义复核（DRIFT 检测，委托注入）→ t1-f（B）终裁（accept/reject，委托注入）→ 判定 PASS/DRIFT/REJECT/SKIP；**降级链**：无语义委托 → 纯门禁（FAIL→REJECT，PASS→SKIP 保持现状）/ 仅 t1-f → 直接终裁 / t1-f 不可用 → 采纳 t2 结论；统计 pass/drift/reject/skip/degraded。
+  - **replan 接口（L1/L2 联动）**：`airy_rs_sm_replan`（图纸修正：受影响节点校验 + 最上游定位 + current_step 回退到受影响节点最近前驱/入口重置，支持新图纸整图重登记）；`airy_roadmap_sched_replan`（L1 回退 + L2 缓存失效受影响节点 + **重入集输出**：受影响节点 + 直接后继，供上层重新入就绪集，复用 sched_d PENDING 重入与取消恢复）。
+  - **work_hall 挂接**：`config.reviewer + config.blueprint`（BORROW，NULL=不启用）；wait 返回前对聚合产物运行复核（与改进 2 验证互补）→ verify 报告写 hall_store（决策 C）→ 复核结果回灌 roadmap_sched（L2 准入：PASS 可缓存 / DRIFT 不入 / REJECT 失效）→ DRIFT/REJECT 触发 replan 联动。
+  - **依赖关系落地**：决策 E（复核输入含隔离区产物/变更清单；复核失败保留隔离区语义对齐）、决策 F（复核为认知层操作消耗 R_total；DRIFT 频发为治理可观测事件；修正后节点重入重新 register 治理）。
+  - 测试：`test_execution_review` 新增（复核管线生命周期/确定性门禁四态/语义委托组合判定/降级链/统计/replan L1 回退 + L2 失效 + 重入集/新图纸重登记/work_hall 端到端 PASS+replan 联动，ASan 无泄漏）；顺带修复 `AIRY_STRNCPY_TERM` 宏对 dst 两次求值导致的 `buf[buf_n++]` 双递增（replan 重入集计数 bug）；全量 ctest **150/150**（cl3_execution 为既有并行偶发，串行稳定，与本次改动无关）。
+- ⏳ **待实施**：决策 H（嵌套委派，P3+）。
+
+**实施进度（2026-08-09 第七批）**：
+- ✅ **P3 决策 H 完成（执行体嵌套委派，CAID 结构化委派）**——Codex `spawn_agent` 等价物：执行体遇复杂子任务可委派子执行体，**图纸节点即任务单**（子任务单 = 子 workflow / 子图纸，JSON 交付），不引入自由对话协作：
+  - **委派器 `execution_delegate.h/.c` 新增**（机制层）：深度控制（max_depth 默认 2，防无限嵌套；超限 → AIRY_EPERM + `n_depth_rejected` 统计）+ 子 workflow 提交执行（`airy_execution_delegate_run`：submit → wait，子产物 JSON 交付）+ 统计（delegated / depth_rejected / failed）；同线程同步嵌套（taskflow 同步推进模型，父 handler → 子 handler 顺序执行，无死锁、无跨线程竞态）。
+  - **work_hall 挂接**：`config.delegate`（BORROW，NULL=不启用）；新增 `airy_work_hall_delegate()` API（未启用 → AIRY_ENOTSUP）；新增节点 handler 路由 **`delegate:<sub_wf_id>`**（wh_register_handlers 自动接管，从 hall 注册表取子 workflow 副本委派执行，去重键改为 handler 全名）；子执行经 submit/wait 完整路径，**天然复用决策 F 治理登记与结算、改进6 复核钩子、决策 E 工作区隔离**。
+  - **replan 委派映射**：`airy_rs_delegation_map_t`（child_node_ids → parent_node_ids）+ `airy_rs_replan_ctx_t.delegation`；`airy_roadmap_sched_replan` 新增**有效受影响集解析**：受影响节点在父图纸 → 原样保留；不在父图纸但命中映射 → 解析为委派者（父节点）回退（L1 回退 + L2 失效 + 重入集基于有效集，映射父节点须在父图纸）；无映射 → NOT_FOUND。**rs_state_machine.c 不侵入**（映射解析在 roadmap_sched 层完成）。
+  - **修复（submit BORROW 语义落地）**：`airy_work_hall_submit` 内部深拷贝后提交引擎（taskflow 浅拷贝所有权契约）——修复委派路径 hall 注册表克隆（生命周期至 hall destroy < loop destroy）导致的 heap-use-after-free；`taskflow_engine_register_workflow` 同 id 重注册时释放旧副本字段（委派场景同 id 子 workflow 多次提交触发泄漏）；start 失败路径完整释放副本。各调用方（airy_cli / 既有测试）同步更新为完整释放。
+  - 测试：`test_execution_delegate` 新增（生命周期/配置 max_depth 默认与显式/深度超限 EPERM + 统计/嵌套返回后 depth 归 0/work_hall API ENOTSUP 与直接委派/delegate handler 端到端子产物交付/replan 委派映射：子节点 → 父节点回退 + 重入集 + L2 失效 + 无映射/映射父节点不在图纸/无 delegation 字段 → NOT_FOUND，ASan 无泄漏）；全量 ctest **151/151** 通过。
 
 ---
 
