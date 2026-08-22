@@ -22,7 +22,7 @@
 | BPF LSM hooks | ✅ 存在 | ✅ 存在（8 处调用） | 内联 Capability 校验可行 |
 | Landlock | ✅ 存在 | ✅ 存在 | 沙箱机制可行 |
 
-**结论**：OLK 6.6 是一个增强版内核，已 backport 了 sched_ext 和 IORING_OP_URING_CMD 等关键特性。此前"标准主线 6.6 不支持"的判定不适用于 OLK 6.6。**agentrt-linux 的基线应明确声明为"OLK 6.6"而非"Linux 6.6"，以消除歧义。**
+**结论**：OLK 6.6 是一个增强版内核，已 backport 了 sched_ext 和 IORING_OP_URING_CMD 等关键特性。此前"标准主线 6.6 不支持"的判定不适用于 OLK 6.6。**agent-linux 的基线应明确声明为"OLK 6.6"而非"Linux 6.6"，以消除歧义。**
 
 ---
 
@@ -428,7 +428,7 @@ VFS 用户态化决策统一
 
 **基线声明修正**：
 
-> agentrt-linux 的内核基线为 **Linux 6.6 OLK（OpenEuler Linux Kernel 6.6 分支）**，该内核已 backport sched_ext 和 IORING_OP_URING_CMD 等关键特性。agentrt-linux 不承诺兼容标准主线 Linux 6.6。
+> agent-linux 的内核基线为 **Linux 6.6 OLK（OpenEuler Linux Kernel 6.6 分支）**，该内核已 backport sched_ext 和 IORING_OP_URING_CMD 等关键特性。agent-linux 不承诺兼容标准主线 Linux 6.6。
 
 ---
 

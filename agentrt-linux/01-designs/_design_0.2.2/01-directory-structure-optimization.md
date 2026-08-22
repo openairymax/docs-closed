@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 8 子仓目录结构优化报告（v0.2.2）
+# agent-linux 8 子仓目录结构优化报告（v0.2.2）
 
-> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构**的深度对照审查，对 [v0.2.1 目录结构设计](../_design_0.2.1/01-agentrt-linux-directory-structure.md) 进行问题识别与优化，作为 1.0.1 开发阶段目录骨架的修正基线
+> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构**的深度对照审查，对 [v0.2.1 目录结构设计](../_design_0.2.1/01-agent-linux-directory-structure.md) 进行问题识别与优化，作为 1.0.1 开发阶段目录骨架的修正基线
 > **版本**: 0.2.2（目录结构优化）
 > **最后更新**: 2026-07-09
 > **审查方法**: 直接测绘 `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6` 与 `/home/spharx/SpharxWorks/01Reference/seL4-master` 的实际目录结构，逐项对照 v0.2.1 设计
-> **关联文档**: `01-designs/_design_0.2.1/01-agentrt-linux-directory-structure.md`（被优化对象，1160 行）+ `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行，工程思想来源）
+> **关联文档**: `01-designs/_design_0.2.1/01-agent-linux-directory-structure.md`（被优化对象，1160 行）+ `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（489 行，工程思想来源）
 
 ---
 
@@ -47,7 +47,7 @@ v0.2.1 目录结构设计声明"基于 OLK-6.6 + seL4 源代码工程思想"，�
 
 1. **客观测绘优先**: 所有结论基于两源实际目录的真实结构（Glob + Read 直接验证），不做主观推断
 2. **双源分层裁决**: 编码风格层完全采纳 OLK-6.6（已确立），架构层选择性借鉴 seL4（已确立）；目录结构属架构层，需逐目录裁决采用何源
-3. **微内核化合理豁免**: agentrt-linux 是 OS 发行版而非纯内核，对 OLK-6.6 的 `fs/`、`net/`、`drivers/`、`block/` 等宏内核子系统，因 ES-SEL4-3 服务用户态化而合理豁免，但需明确标注豁免理由
+3. **微内核化合理豁免**: agent-linux 是 OS 发行版而非纯内核，对 OLK-6.6 的 `fs/`、`net/`、`drivers/`、`block/` 等宏内核子系统，因 ES-SEL4-3 服务用户态化而合理豁免，但需明确标注豁免理由
 4. **可执行性**: 每个修复项给出明确的目录迁移路径与新增/删除清单
 
 ---
@@ -660,7 +660,7 @@ v0.2.1 设计在 `kernel/scripts/` 放置 `syscall_gen.py`（R-01）和 `bitfiel
 
 **修复方案**:
 
-明确 codegen 源文件位置（借鉴 seL4 但适配 agentrt-linux 的 [SC] 头文件宿主模型）：
+明确 codegen 源文件位置（借鉴 seL4 但适配 agent-linux 的 [SC] 头文件宿主模型）：
 
 ```
 kernel/
@@ -724,7 +724,7 @@ tests-linux/
 
 `README.md` 内容要点：
 - seL4 实践：形式化验证在独立仓库（l4v/capDL），通过 CI 触发跨仓库验证
-- agentrt-linux 选择：0.1.1/1.0.1 阶段单仓聚合（降低跨仓依赖复杂度），1.0.1 后期视规模考虑拆分为独立 `airymaxos-proof` 仓库
+- agent-linux 选择：0.1.1/1.0.1 阶段单仓聚合（降低跨仓依赖复杂度），1.0.1 后期视规模考虑拆分为独立 `airymaxos-proof` 仓库
 - 验证范围：仅针对 capability 派生、IPC 协议、调度正确性三核心，非全内核形式化（区别于 seL4 全内核验证）
 
 ---
@@ -735,7 +735,7 @@ tests-linux/
 
 **问题**: v0.2.1 在 kernel 子仓顶层有 `patches/` 目录，但 OLK-6.6 与 seL4 均无顶层 `patches/`。
 
-**建议**: 保留 `patches/`（agentrt-linux 是 OS 发行版，需跟踪上游内核补丁，类似 openEuler 的源包补丁管理），但补充定位说明："`patches/` 是发行版特有目录，用于跟踪上游 Linux 6.6 补丁与 AirymaxOS 微内核化改造补丁集，非上游内核目录"。在 README 中标注此为发行版层决策。
+**建议**: 保留 `patches/`（agent-linux 是 OS 发行版，需跟踪上游内核补丁，类似 openEuler 的源包补丁管理），但补充定位说明："`patches/` 是发行版特有目录，用于跟踪上游 Linux 6.6 补丁与 AirymaxOS 微内核化改造补丁集，非上游内核目录"。在 README 中标注此为发行版层决策。
 
 ### 7.2 DIR-P2-02: `Kbuild` vs `Makefile` 约定统一
 
@@ -1051,7 +1051,7 @@ kernel/                           # airymaxos-kernel（feature/official-hubs-01�
 
 ### 10.2 对 v0.2.1 设计文档的修订
 
-本优化报告完成后，应修订 `01-designs/_design_0.2.1/01-agentrt-linux-directory-structure.md` 的以下章节：
+本优化报告完成后，应修订 `01-designs/_design_0.2.1/01-agent-linux-directory-structure.md` 的以下章节：
 
 | 章节 | 修订内容 |
 |------|---------|

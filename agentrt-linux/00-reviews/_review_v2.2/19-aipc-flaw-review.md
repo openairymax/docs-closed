@@ -5,7 +5,7 @@
 > **报告日期**：2026-07-18
 > **报告性质**：闭源内部 A-IPC 设计缺陷专项深度审查 — 第四轮，在 16/17/18 三轮正确性审查基础上追问"还有什么隐藏的设计缺陷？"
 > **审查方法**：并发竞态分析 + 内存安全审计 + 异常路径遍历 + seL4 语义差异对比
-> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17-uipf-deep-review-v2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18-aipc-systematic-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md)
+> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17-uipf-deep-review-v2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18-aipc-systematic-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md)
 
 ---
 

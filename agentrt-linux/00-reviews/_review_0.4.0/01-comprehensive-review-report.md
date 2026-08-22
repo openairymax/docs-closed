@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）v0.5.0 综合方案审查报告
+# agent-linux（AirymaxOS）v0.5.0 综合方案审查报告
 
 > **审查版本**: v0.5.0
 > **审查日期**: 2026-07-10
-> **审查范围**: agentrt-linux 整体方案（含 docs/AirymaxOS/ 142 份 .md 文件、docs/AirymaxRT/ 112 份文档、docs-closed/agentrt-linux/ 闭源文档、01Reference/ 源码基线）
+> **审查范围**: agent-linux 整体方案（含 docs/AirymaxOS/ 142 份 .md 文件、docs/AirymaxRT/ 112 份文档、docs-closed/agent-linux/ 闭源文档、01Reference/ 源码基线）
 > **审查方法论**: 5 并行 Agent 深度阅读 + 3 补充 Agent 专题审阅 + 15 维度逐一评分 + 源码级交叉验证 + 全量交叉引用完整性检查 + 代码示例可编译性验证
 > **前序版本**: v0.1.0 (71/100,B) → v0.1.1 (93/100,A) → v0.2.0 (100/100,A+) → v0.2.1 (100/100,A+) → v0.3.0 (82/100,B+) → v0.4.0 (78/100,B+)
 
@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 执行摘要
 
-本轮 v0.5.0 审查在 v0.4.0 基础上整合了 3 个补充 Agent 的专题审阅成果，实现了对 agentrt-linux 整体方案的完整覆盖。关键进展：
+本轮 v0.5.0 审查在 v0.4.0 基础上整合了 3 个补充 Agent 的专题审阅成果，实现了对 agent-linux 整体方案的完整覆盖。关键进展：
 
 1. **数据源全覆盖**: 5 并行 Agent（OLK-6.6/seL4/AirymaxOS/AirymaxRT/闭源文档）+ 3 补充 Agent（剩余模块深度审阅/闭源文档与交叉引用一致性/架构与数据流分析）
 2. **模块全覆盖**: 从 0.4.0 的 142 份文档扩展至全 19 模块（含 90-observability/100-operations/120-development-process 的深度审阅）
@@ -87,7 +87,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | D5 | [SC] 共享契约层完整性 | 8% | 6 个头文件的定义、引用、一致性 |
 | D6 | 接口一致性 | 8% | IPC 消息头、错误码、API 签名的跨文档一致性 |
 | D7 | 数值准确性 | 8% | 所有数值声明与 OLK-6.6/seL4 源码的一致性 |
-| D8 | 跨端共享完整性 | 7% | agentrt ↔ agentrt-linux 的 [SC]/[SS] 共享完整度 |
+| D8 | 跨端共享完整性 | 7% | agentrt ↔ agent-linux 的 [SC]/[SS] 共享完整度 |
 | D9 | 代码可编译性 | 5% | 代码示例是否可编译通过 |
 | D10 | 工程标准 SSoT | 7% | 规则编号体系的唯一性与一致性 |
 | D11 | 架构一致性 | 6% | 7 层架构模型与实际文档的一致性 |
@@ -243,7 +243,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### seL4 vs Linux 6.6 编码风格关键差异
 
-| 维度 | seL4 | Linux 6.6 | agentrt-linux 采纳 |
+| 维度 | seL4 | Linux 6.6 | agent-linux 采纳 |
 |------|------|-----------|-------------------|
 | 缩进 | 4 空格 | 8 字符 Tab | **Linux 6.6** |
 | 函数命名 | camelCase | snake_case | **Linux 6.6** |
@@ -254,7 +254,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### seL4 10 项可借鉴设计模式
 
-| 编号 | 设计模式 | 借鉴价值 | agentrt-linux 现状 |
+| 编号 | 设计模式 | 借鉴价值 | agent-linux 现状 |
 |------|---------|---------|-------------------|
 | P1 | 消息寄存器优先 CPU 寄存器 | 极高 | 未涉及，io_uring 路径不同 |
 | P2 | Badge 零拷贝发送者识别 | 高 | 128B 消息头已有 src_task 字段 |
@@ -322,7 +322,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P0-A4-01 | P0 | [SC] 共享契约层在 AirymaxRT 完全缺失 | 112 文档中零匹配 IRON-9/[SC]/[SS]/[IND] 关键词 |
 | P0-A4-02 | P0 | 任务描述符 magic 'AGTS' 在 AirymaxRT 缺失 | 无 `0x41475453`/`AGTS` 任何引用 |
 | P0-A4-03 | P0 | "微核心（microkernel）"术语违规 | `01-l1-runtime-interface.md:13` 出现混用 |
-| P0-A4-04 | P0 | API 签名根本性不一致 | agentrt JSON-RPC 统一入口 vs agentrt-linux 编号 syscall 512-631 |
+| P0-A4-04 | P0 | API 签名根本性不一致 | agentrt JSON-RPC 统一入口 vs agent-linux 编号 syscall 512-631 |
 | P0-A4-05 | P0 | 错误码体系不兼容 | 4 套互不兼容值系统（AGENTRT_E*/AGENTRT_ERR_*/EAGENTRT_*） |
 
 ### 2.5 Agent 5: 闭源文档与历史决策回顾
@@ -486,7 +486,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **ARC-09** | P2 | 03-security.md | 行469-470 | 同层子仓间通信方式未明确 |
 | **ARC-10** | P2 | 40-dataflows/ 目录 | — | 缺少独立的 eBPF 数据流文档 |
 | **ARC-11** | P2 | 03-security.md | 行469-470 | security ↔ memory 加密接口标注为 [IND] 但应有 [SS] 接口 |
-| **ARC-12** | P2 | 01-kernel.md | 行99 | ≤20 系统调用约束未区分 Linux 6.6 原生和 agentrt-linux 新增 |
+| **ARC-12** | P2 | 01-kernel.md | 行99 | ≤20 系统调用约束未区分 Linux 6.6 原生和 agent-linux 新增 |
 
 #### 2.8.2 微内核化改造架构评估
 
@@ -499,7 +499,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### 2.8.3 seL4 架构对比
 
-agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则、capability 单一安全模型、消息传递 IPC、服务用户态化、7 种 CNode 操作、形式化验证预留、Badge 机制、Endpoint 三态状态机、Untyped-Retype 内存模型、机制与策略分离）。差异主要源于 Linux 6.6 基线的工程约束（编码风格、构建系统、调度器、内存管理），这些差异是合理的设计选择。
+agent-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则、capability 单一安全模型、消息传递 IPC、服务用户态化、7 种 CNode 操作、形式化验证预留、Badge 机制、Endpoint 三态状态机、Untyped-Retype 内存模型、机制与策略分离）。差异主要源于 Linux 6.6 基线的工程约束（编码风格、构建系统、调度器、内存管理），这些差异是合理的设计选择。
 
 ---
 
@@ -543,9 +543,9 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 | ES-SEL4-A1~A6 架构抽象 | 5/6 借鉴（A6 未涉及） | 5/6 |
 | ES-SEL4-S1~S4 服务用户态化 | 4/4 全部借鉴 | 4/4 |
 
-*注：形式化验证维度权重降低，因 agentrt-linux 基于 Linux 6.6 改造，形式化验证非当前阶段目标。
+*注：形式化验证维度权重降低，因 agent-linux 基于 Linux 6.6 改造，形式化验证非当前阶段目标。
 
-**D3 发现**: seL4 IPC 的 rendezvous 同步模型（IPC1）、CPU 寄存器优先传递（IPC2）、Reply Capability 机制（IPC5/6）、Badge 机制（IPC7）在 agentrt-linux 方案中未涉及。但 agentrt-linux 基于 io_uring 异步模型，这些差异是合理的设计选择。**新增 P2-11**。
+**D3 发现**: seL4 IPC 的 rendezvous 同步模型（IPC1）、CPU 寄存器优先传递（IPC2）、Reply Capability 机制（IPC5/6）、Badge 机制（IPC7）在 agent-linux 方案中未涉及。但 agent-linux 基于 io_uring 异步模型，这些差异是合理的设计选择。**新增 P2-11**。
 
 ### D4 IRON-9 v2 三层标注（8%，得分 8/9）
 
@@ -597,7 +597,7 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 
 ### D8 跨端共享完整性（8%，得分 2/10）
 
-| 子项 | agentrt 侧 | agentrt-linux 侧 | 得分 |
+| 子项 | agentrt 侧 | agent-linux 侧 | 得分 |
 |------|-----------|-----------------|------|
 | [SC] 6 头文件引用 | 0/6 | 6/6 | 0/3 |
 | IRON-9 v2 模型认知 | 零 | 完整 | 0/2 |
@@ -662,7 +662,7 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 |------|------|
 | 10 项设计模式落地程度 | 3/5（P4/P9/P10 已落地，其余未涉及） |
 
-**D14 发现**: seL4 的 10 项可借鉴设计模式中，仅 3 项在 agentrt-linux 方案中有明确落地。**新增 P2-12~P2-15**。
+**D14 发现**: seL4 的 10 项可借鉴设计模式中，仅 3 项在 agent-linux 方案中有明确落地。**新增 P2-12~P2-15**。
 
 ### D15 工程标准执行一致性（5%，得分 3/5）——**新增维度**
 
@@ -776,7 +776,7 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 | P2-08 | 文档末尾 Copyright 格式统一 | A3 |
 | P2-09 | 04-engineering-baseline.md 重复 §12 编号 | A3 |
 | P2-10 | seL4 IPC rendezvous 模型与 io_uring 异步模型差异说明 | v0.4.0 |
-| P2-11 | seL4 Badge 机制在 agentrt-linux 中的对等设计 | v0.4.0 |
+| P2-11 | seL4 Badge 机制在 agent-linux 中的对等设计 | v0.4.0 |
 | P2-12 | seL4 Reply Capability 原子性保证的对等设计 | v0.4.0 |
 | P2-13 | seL4 Notification 信号-等待机制的对等设计 | v0.4.0 |
 | P2-14 | seL4 Fastpath 不可逆点模式在热路径中的应用 | v0.4.0 |
@@ -879,7 +879,7 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 | v0.4.0 | 2026-07-10 | 78/100 | B+ | 15 | 15 | 18 | 15 | 5 |
 | **v0.5.0** | **2026-07-10** | **76/100** | **B+** | **15** | **13 (活跃)** | **24** | **26** | **8** |
 
-> 趋势解读：v0.5.0 评分 76/100 较 v0.4.0 的 78/100 微降 2 分。P0 活跃数量从 15 降至 13（3 项已修复），但 P1/P2 从 18+15 增至 24+26，反映了 3 个补充 Agent 对新增模块（90/100/120）和架构/交叉引用层面的深度审阅暴露了更多细节问题。v0.5.0 是 agentrt-linux 项目迄今为止覆盖最全面（8 Agent、19 模块全量、15 维度）的审查版本。
+> 趋势解读：v0.5.0 评分 76/100 较 v0.4.0 的 78/100 微降 2 分。P0 活跃数量从 15 降至 13（3 项已修复），但 P1/P2 从 18+15 增至 24+26，反映了 3 个补充 Agent 对新增模块（90/100/120）和架构/交叉引用层面的深度审阅暴露了更多细节问题。v0.5.0 是 agent-linux 项目迄今为止覆盖最全面（8 Agent、19 模块全量、15 维度）的审查版本。
 
 ## 第七部分：关键风险与建议
 
@@ -916,7 +916,7 @@ agentrt-linux 成功借鉴了 seL4 的 10 项关键特征（Liedtke 极简原则
 |---------|----------|--------|
 | docs/AirymaxOS/ | 142 .md 文件（19 模块全量） | 100% |
 | docs/AirymaxRT/ | 112 份文档 | 100% |
-| docs-closed/agentrt-linux/ | 69 闭源文件 | 100% |
+| docs-closed/agent-linux/ | 69 闭源文件 | 100% |
 | 01Reference/kernel-OLK-6.6 | 21 文件，67,112 行 | 核心文件 100% |
 | 01Reference/seL4-master | 64 文件，全量源码 | 100% |
 | .trae 历史决策 | 全部会话记录 | 100% |

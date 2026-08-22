@@ -203,9 +203,9 @@ agentrt 15 个 daemon 均已启动，但存在三处**已设计、未接线**的
 
 ## 9. 同源约束说明
 
-agentrt 是 agentrt-linux（AirymaxOS）的用户态运行时。本方案：
+agentrt 是 agent-linux（AirymaxOS）的用户态运行时。本方案：
 
-- 全部改动位于 agentrt 仓库内（daemons/SDK/ecosystem packaging），**不新增**与 agentrt-linux 的代码共享；
+- 全部改动位于 agentrt 仓库内（daemons/SDK/ecosystem packaging），**不新增**与 agent-linux 的代码共享；
 - 不触碰 [SC] 共享契约层 10 个头文件（`agentrt/commons/include/airymax/`）；
 - 内部服务协议遵循既有 L2 服务协议（02-l2-service-protocol.md）`<daemon>.<method>` 命名空间；
 - 若后续对外协议语义需与内核态能力联动，再同步核对 [SC] 契约语义一致性（IRON-9 v3）。

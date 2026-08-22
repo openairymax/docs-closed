@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）系统性全面审查报告 v1.0
+# agent-linux（AirymaxOS）系统性全面审查报告 v1.0
 
-> **文档定位**： agentrt-linux（AirymaxOS，极境智能体操作系统）"再一次"系统性全面审查报告，作为架构审查专家对整体方案的复核。\
+> **文档定位**： agent-linux（AirymaxOS，极境智能体操作系统）"再一次"系统性全面审查报告，作为架构审查专家对整体方案的复核。\
 > **保密级别**： SPHARX Ltd 内部参考，**闭源不公开**\
 > **版本**： 1.0（2026-07-13）\
 > **审查范围**： 前序 v0.9.0 综合审查（15 项问题）+ Wave 2 v2 源码级深读（34 项差距）处置回顾 / 方案内容冲突检查 / 技术点唯一性检查 / openEuler 工程实践参考充分性 / seL4 微内核化改造参考充分性 / 开发就绪度评估 / 细节完成度检查 / IRON-9 v2 三层共享模型验证 / 8 子仓命名规范验证\
@@ -74,8 +74,8 @@ Wave 2 v2 源码级深读审查（Phase A-F，~27h 工时）于 2026-07-13 完�
 
 **证据**：
 
-- `agentrt-linux开发路线和进度.md` L1010：`Wave 2 v2 源码级深读 ✅ 完成...26 README 重写，34 项差距全部处置`
-- `agentrt-linux开发路线和进度.md` L1019：`1.0.1 M1 就绪判定 ✅ 通过（8 项判定标准全部满足）`
+- `agent-linux开发路线和进度.md` L1010：`Wave 2 v2 源码级深读 ✅ 完成...26 README 重写，34 项差距全部处置`
+- `agent-linux开发路线和进度.md` L1019：`1.0.1 M1 就绪判定 ✅ 通过（8 项判定标准全部满足）`
 - `130-roadmap/README.md` L300：`Phase D D1-D8 8 P0 fixes + D9 directory structure (350 lines) + D10 [SC] header indent verification`
 
 ### 1.3 前序审查小结
@@ -357,7 +357,7 @@ v0.9.0 的 15 项问题中 6 项已修复、3 项部分修复、6 项移交；Wa
 
 **syscall master/MCS 模式区分**（Wave 2 v2 D3 修复）：
 
-- master 模式 8 个 activity syscall / MCS 模式 11 个，agentrt-linux 采用 master 模式（`20-modules/01-kernel.md` L117）
+- master 模式 8 个 activity syscall / MCS 模式 11 个，agent-linux 采用 master 模式（`20-modules/01-kernel.md` L117）
 
 **Reply 原子性**（Wave 2 v2 D4 修复）：
 
@@ -392,7 +392,7 @@ v0.9.0 的 15 项问题中 6 项已修复、3 项部分修复、6 项移交；Wa
 
 **结论**：v0.2.5 声明 8 项判定标准全部通过，本次复核确认 7 项通过、1 项有条件通过。
 
-**证据**（`agentrt-linux开发路线和进度.md` L1019）：
+**证据**（`agent-linux开发路线和进度.md` L1019）：
 
 `1.0.1 M1 就绪判定 ✅ 通过（8 项判定标准全部满足：工程思想统一 + 工程标准规范 + 无方案冲突点 + 对齐 openEuler 代码品味 + 对齐 seL4 微内核思想 + 系统性目录结构 + 全部 README 重写 + v0.9.0 P0 修复）`
 
@@ -499,7 +499,7 @@ v0.9.0 的 15 项问题中 6 项已修复、3 项部分修复、6 项移交；Wa
 
 **证据**：
 
-- `agentrt-linux开发路线和进度.md` L1018：`4 项 P2 建议 | R-01/R-02 → M1、R-03 → M5、R-04 → R-01/R-02/R-03 后`
+- `agent-linux开发路线和进度.md` L1018：`4 项 P2 建议 | R-01/R-02 → M1、R-03 → M5、R-04 → R-01/R-02/R-03 后`
 
 **状态**：已规划，待 1.0.1 阶段按序落地。
 
@@ -748,7 +748,7 @@ AIRY_CAP_OP_ROTATE  = 6,
 
 ### 10.5 最终结论
 
-agentrt-linux（AirymaxOS）整体方案经过 v0.9.0 综合审查 + Wave 2 v2 源码级深读 + 本次 v1.0 系统性复核，**已基本达到可开发状态**，但存在 1 项 P0 级残留冲突（ES-SEL4-7 分类）需立即修复。
+agent-linux（AirymaxOS）整体方案经过 v0.9.0 综合审查 + Wave 2 v2 源码级深读 + 本次 v1.0 系统性复核，**已基本达到可开发状态**，但存在 1 项 P0 级残留冲突（ES-SEL4-7 分类）需立即修复。
 
 **核心优势**：
 
@@ -766,7 +766,7 @@ agentrt-linux（AirymaxOS）整体方案经过 v0.9.0 综合审查 + Wave 2 v2 �
 - airymaxos- 前缀不一致（P1，~4h 修复）
 - 6 项已知遗留移交 1.0.1（tests 简写 / OS-STD-2xx / OS-KER-005 / Rust 编号 / 品味哲学 / agentrt 源码）
 
-**建议**：修复 P0 级 ES-SEL4-7 分类残留冲突后（~2h），agentrt-linux 方案可正式进入 1.0.1 M1 代码开发阶段。
+**建议**：修复 P0 级 ES-SEL4-7 分类残留冲突后（~2h），agent-linux 方案可正式进入 1.0.1 M1 代码开发阶段。
 
 ---
 

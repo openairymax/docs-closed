@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux M0 阶段就绪最终确认清单
+# agent-linux M0 阶段就绪最终确认清单
 > **文档定位**：基于 v7.1 成熟度评分（90/A-），对 M0 设计阶段就绪状态进行逐项最终确认\
 > **文档版本**：v1.0\
 > **最后更新**：2026-07-27\

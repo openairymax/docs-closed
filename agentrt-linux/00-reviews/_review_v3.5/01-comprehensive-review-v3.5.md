@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）方案一致性深度审查报告 v3.5
+# agent-linux（AirymaxOS）方案一致性深度审查报告 v3.5
 
 > **报告编号**：01
 > **报告版本**：v3.5（终稿）
 > **生成时间**：2026-07-25
 > **审查方法**：五层深度验证法 + 代码-文档逐字节比对 + 科学论证 + 跨目录系统性审查 + 内核框架稳固性评估
-> **审查范围**：`docs/AirymaxOS/` 全目录（10-architecture / 20-modules / 30-interfaces / 40-dataflows / 50-engineering-standards / 60-driver-model / 70-build-system / 80-testing / 90-observability / 100-operations / 110-security / 140-application-development / 160-compatibility）+ `agentrt-linux/kernel/` 全部代码（12 个 [SC] 头文件 + superv/ + corekern/ + security/airy/ + include/airymax/）
+> **审查范围**：`docs/AirymaxOS/` 全目录（10-architecture / 20-modules / 30-interfaces / 40-dataflows / 50-engineering-standards / 60-driver-model / 70-build-system / 80-testing / 90-observability / 100-operations / 110-security / 140-application-development / 160-compatibility）+ `agent-linux/kernel/` 全部代码（12 个 [SC] 头文件 + superv/ + corekern/ + security/airy/ + include/airymax/）
 > **上一版本**：v3.4（2026-07-25）
 > **SPDX-License-Identifier**：CC-BY-NC-4.0
 
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 执行摘要
 
-本次审查采用"五层深度验证法"对 agentrt-linux 全方案进行系统性审查，覆盖 5 大目录、13 个子目录、100+ 份文档与 12 个 [SC] 头文件。审查发现并修复了 v3.4 遗漏的 6 个 P0/P1 问题，新发现 35 个 P0 + 48 个 P1 + 37 个 P2 问题，并对所有技术要点进行了科学论证。同时进行了代码-文档逐字节比对、内核框架稳固性评估、命名规范一致性彻底检查、本地路径暴露清查。
+本次审查采用"五层深度验证法"对 agent-linux 全方案进行系统性审查，覆盖 5 大目录、13 个子目录、100+ 份文档与 12 个 [SC] 头文件。审查发现并修复了 v3.4 遗漏的 6 个 P0/P1 问题，新发现 35 个 P0 + 48 个 P1 + 37 个 P2 问题，并对所有技术要点进行了科学论证。同时进行了代码-文档逐字节比对、内核框架稳固性评估、命名规范一致性彻底检查、本地路径暴露清查。
 
 ### 0.1 关键结论
 
@@ -47,7 +47,7 @@ v3.4 遗漏问题的根因是**缺乏文档-[SC] 头文件的自动化一致性�
 | P0 编号 | 问题 | 验证结果 | 验证依据 |
 |---------|------|---------|---------|
 | P0-029 | Agent 生命周期 SSoT 物理宿主 | ⚠️ 核心已修复，下游残留 | SSoT 注册表 L166 已改为 sched.h；但 25 个下游文档仍有 148 处旧 7 态名残留 |
-| P0-030 | 01-kernel.md "设计参考"模糊 | ✅ 已修复 | L302-307 标注"seL4 设计溯源参考，agentrt-linux 不存在对应物理文件" |
+| P0-030 | 01-kernel.md "设计参考"模糊 | ✅ 已修复 | L302-307 标注"seL4 设计溯源参考，agent-linux 不存在对应物理文件" |
 | P0-031 | IPC flags 命名不一致 | ✅ 已修复 | ipc.h L40-45 定义 6 个 `AIRY_IPC_FLAG_*`；grep `AIRY_IPC_F_` 返回 0 匹配 |
 | P0-032 | LSM_ORDER 不一致 | ✅ 已修复 | 03-capability-model.md L42 明确区分 POSIX(LSM_ORDER_FIRST) vs airy_lsm(LSM_ORDER_MUTABLE) |
 | P0-033 | capability ID 数量 | ✅ 已修复 | SSoT 注册表 L161 "44 ID = 41 POSIX + 3 Airymax 扩展" |
@@ -572,7 +572,7 @@ v3.4 遗漏问题的根因是**缺乏文档-[SC] 头文件的自动化一致性�
 **论证**：
 - [SC] / [SS] / [IND] / [DSL] 四层在代码与文档双侧完整落地 ✅
 - 12 个 [SC] 头文件物理宿主统一在 `include/uapi/linux/airymax/`
-- agentrt 用户态与 agentrt-linux 内核双端逐字节共享
+- agentrt 用户态与 agent-linux 内核双端逐字节共享
 
 **代码验证**：12 个 [SC] 头文件全部含 `#ifndef _UAPI_AIRYMAX_*_H` include guard，全部含 [DSL] 降级块。
 
@@ -595,7 +595,7 @@ v3.4 遗漏问题的根因是**缺乏文档-[SC] 头文件的自动化一致性�
 | corekern 代码量 | v3.3 P1 | ❌ | 3,000 行 vs 设计 15,000 行（20.0%） |
 | include/airymax/ 头文件 | v3.3 P1 | ❌ | 仅 2 个文件（70 行），设计目标 ~3,000 行 |
 | CI/CD 部署 | v3.3 P2 | ❌ | 6 个核心 workflow 缺失 |
-| KUnit 测试 | v3.3 P2 | ❌ | 无 agentrt-linux 自有测试 |
+| KUnit 测试 | v3.3 P2 | ❌ | 无 agent-linux 自有测试 |
 
 ### 8.3 P0-029 下游同步残留
 

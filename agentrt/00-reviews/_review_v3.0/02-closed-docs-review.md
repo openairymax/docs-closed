@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v3.0 对 `docs-closed/agentrt/` 闭源文档的全面复审，覆盖 v2.0 修正持久性独立复核、v2.0 延期项验证、v3.0 新发现问题、§11.6 历史改名章节专项审查，作为 1.0.1 M1 启动前闭源文档侧的最终判定基线之一。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：3.0（2026-07-14）。
-> **审查范围**：仅 `docs-closed/agentrt/`（不含 `docs-closed/agentrt-linux/`、`docs/`、源码）。
+> **审查范围**：仅 `docs-closed/agentrt/`（不含 `docs-closed/agent-linux/`、`docs/`、源码）。
 > **审查方法**：v2.0 三份历史报告精读 + Grep 机器检查 + 与开源 SSoT 交叉对照 + 全文系统性扫描。
 > **证据要求**：所有结论附 `文件路径:L行号`，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -37,7 +37,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 3. **v3.0 新发现问题发现**：对 `docs-closed/agentrt/` 下所有文件进行系统性扫描，重点检查手册全文一致性、与开源 SSoT 对齐性、07-subsystem-specs/ 与 06-contracts/ 等其他文件的前缀一致性。
 4. **§11.6 历史改名章节专项审查**：评估 P0-DQC-2 全量替换副作用导致的 §11.6 章节语义变化。
 
-**审查边界**：仅 `docs-closed/agentrt/`（不审查 `docs-closed/agentrt-linux/`、`docs/`、源码）。
+**审查边界**：仅 `docs-closed/agentrt/`（不审查 `docs-closed/agent-linux/`、`docs/`、源码）。
 
 ### 1.2 综合评分
 
@@ -103,7 +103,7 @@ v2.0 验证报告（`fix-verification-report.md`）§8.1 给出"文档质量（�
 | 位置 | 内容 | 版本归属 |
 |------|------|---------|
 | `agentrt工程标准规范手册.md:4` | "适用版本: AgentRT v0.1.1（三大支柱：奠基 + **38 仓拆分** + 生产就绪）" | v28.0 当前 |
-| `agentrt工程标准规范手册.md:5` | "适用范围: Airymax 全项目 **38 个 git 仓库**（伞仓 airymaxhub + 5 管理仓 agentrt/agentrt-linux/sdk/ecosystem/products + 29 叶子仓 + 3 顶层仓 devtools/docs/docs-closed）" | v28.0 当前 |
+| `agentrt工程标准规范手册.md:5` | "适用范围: Airymax 全项目 **38 个 git 仓库**（伞仓 airymaxhub + 5 管理仓 agentrt/agent-linux/sdk/ecosystem/products + 29 叶子仓 + 3 顶层仓 devtools/docs/docs-closed）" | v28.0 当前 |
 | `agentrt工程标准规范手册.md:9` | "v4.0 用户确立 0.1.1 目标扩展为**'奠基 + **29 仓拆分** + 生产就绪'三大支柱**...29 仓 git 拆分：1 伞仓 + 4 管理仓 + 21 叶子仓 + 3 顶层仓" | v26.0 历史 |
 | `agentrt工程标准规范手册.md:19` | "仓库总数变更: 29 仓 → **38 仓**（+9）。1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓。" | v27.0 变动说明 |
 

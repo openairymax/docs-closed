@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）0.1.1 技术方案修订文档清单与变更摘要
+# agent-linux（AirymaxOS）0.1.1 技术方案修订文档清单与变更摘要
 
 > **文档定位**: 交付成果 #2——修订后的技术设计文档集变更摘要。本文档汇总 0.1.1 全面审查与完善工作中所有已实施的文档修改，按修改类别、优先级、文件路径组织，确保每处修改可追溯、可验证。
 > **版本**: 0.1.1（文档体系完成）
@@ -63,7 +63,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 属性 | 内容 |
 |------|------|
-| **问题** | agentrt-linux 文档定义 SCHED_AGENT=7，与 OLK-6.6 已有的 SCHED_EXT=7 编号冲突 |
+| **问题** | agent-linux 文档定义 SCHED_AGENT=7，与 OLK-6.6 已有的 SCHED_EXT=7 编号冲突 |
 | **OLK-6.6 源码验证** | `include/uapi/linux/sched.h:121` — `#define SCHED_EXT 7` |
 | **修复方案** | 删除 SCHED_AGENT 宏定义，统一使用 SCHED_EXT；SCHED_AGENT 仅作为 sched_ext 策略名称 |
 | **修改文件** | [20-modules/01-kernel.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/20-modules/01-kernel.md)（5 处） |
@@ -98,7 +98,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **问题** | 开源文档 8 处 + 闭源文档 2 处使用 "MGLRU 2.0"，违反 BAN-361（禁止引用 Linux 7.0 专属特性） |
 | **修复方案** | 统一改为 "MGLRU 多代 LRU" |
 | **修改文件（开源）** | README.md（2 处）、50-engineering-standards/README.md（1 处）、50-engineering-standards/05-development-process.md（1 处）、170-performance/README.md（2 处）、120-development-process/02-maintainer-hierarchy.md（1 处） |
-| **修改文件（闭源）** | docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md（2 处：L71、L1010） |
+| **修改文件（闭源）** | docs-closed/agent-linux/agent-linux基本工程标准规范.md（2 处：L71、L1010） |
 | **修复状态** | ✅ 已修复（10/10） |
 
 #### P0-05: 目录名 150-cloud-native 与实际 150-cloudnative 不一致
@@ -140,7 +140,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 属性 | 内容 |
 |------|------|
 | **问题** | 17 处文档将 agentrt（用户态）的 MicroCoreRT 误称为"微内核"，应为"微核心" |
-| **修复方案** | agentrt → "微核心"（micro-core）；agentrt-linux → "微内核"（micro-kernel） |
+| **修复方案** | agentrt → "微核心"（micro-core）；agent-linux → "微内核"（micro-kernel） |
 | **修改文件** | [20-modules/01-kernel.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/20-modules/01-kernel.md)（5 处）、[50-specifications/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/10-terminology.md)（9 处）、[50-specifications/20-are-standards/01-l1-runtime-interface.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/20-are-standards/01-l1-runtime-interface.md)（4 处）、[50-specifications/20-are-standards/README.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-specifications/20-are-standards/README.md)（1 处） |
 | **修复状态** | ✅ 已修复（17 处） |
 
@@ -206,7 +206,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P1-11 | 顶层 README.md 使用 "Airymax AgentOS"（有空格，非标准） | 中 | M0 第 2 周 | 命名体系 Agent |
 | P1-12 | agentrt README.md 使用 "微内核原语"（应为"微核心原语"） | 中 | M0 第 2 周 | 命名体系 Agent |
 | P1-13 | 文档明确表述"AirymaxOS 不是微内核"与标准定义存在张力 | 中 | M0 第 2 周 | 命名体系 Agent |
-| P1-14 | agentrt-linux 目录名（linux）与仓库名（linux）存在双命名 | 低 | M1 阶段 | 命名体系 Agent |
+| P1-14 | agent-linux 目录名（linux）与仓库名（linux）存在双命名 | 低 | M1 阶段 | 命名体系 Agent |
 
 ### 3.2 P1 修复优先级矩阵
 
@@ -259,9 +259,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 属性 | 内容 |
 |------|------|
 | **agentrt 标准名称** | "AirymaxAgentRT 极境智能体运行底座平台工程"（简称 "agentrt" 或 "AirymaxRT"） |
-| **agentrt-linux 标准名称** | "AirymaxAgentOS 极境智能体操作系统"（简称 "agentrt-linux" 或 "AirymaxOS"） |
+| **agent-linux 标准名称** | "AirymaxAgentOS 极境智能体操作系统"（简称 "agent-linux" 或 "AirymaxOS"） |
 | **微核心概念** | agentrt（用户态）使用"微核心"（micro-core） |
-| **微内核概念** | agentrt-linux（OS 发行版）使用"微内核"（micro-kernel） |
+| **微内核概念** | agent-linux（OS 发行版）使用"微内核"（micro-kernel） |
 | **开源文档已修复** | 17 处微核心/微内核概念误用已修正 |
 | **待修复（P1）** | 10-terminology.md 中 MicroCoreRT 标准名称、README.md 正式英文名等（见第 3 章） |
 
@@ -285,7 +285,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|---------|------|
 | **[SC] 共享契约层** | Shared-Contract | 完全共享头文件 | bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h（4 个头文件） |
 | **[SS] 语义同源层** | Shared-Semantics | 语义一致，实现独立 | MicroCoreRT 调度语义 / AgentsIPC 128B 消息头 / Cupolas 安全模型 / CoreLoopThree 三层循环 |
-| **[IND] 完全独立层** | Independent | 完全独立 | agentrt-linux 专属：内核驱动框架、Kbuild、内核内部 API；agentrt 专属：跨平台用户态运行时、SDK 四语言 |
+| **[IND] 完全独立层** | Independent | 完全独立 | agent-linux 专属：内核驱动框架、Kbuild、内核内部 API；agentrt 专属：跨平台用户态运行时、SDK 四语言 |
 
 ### 5.3 乔布斯美学"无隐藏瑕疵"审查
 
@@ -302,7 +302,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 机制 | 内容 |
 |------|------|
-| **共享边界** | 仅限 agentrt 与 agentrt-linux 之间（IRON-9 v2 [SC] 共享契约层 4 个头文件） |
+| **共享边界** | 仅限 agentrt 与 agent-linux 之间（IRON-9 v2 [SC] 共享契约层 4 个头文件） |
 | **不共享** | 与 Euler/OLK-6.6 仅技术参考，不共享代码 |
 | **共享头文件清单** | include/airymax/bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h |
 | **IPC magic 统一** | 0x41524531（'ARE1'）—— agentrt 与 AirymaxOS 共享，无需协议转换层 |
@@ -340,7 +340,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | # | 文件路径 | 修改类别 | 修改点数 | 修改摘要 |
 |---|---------|---------|---------|---------|
-| 1 | docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md | 合规性 | 2 | MGLRU 2.0 → MGLRU 多代 LRU（L71、L1010） |
+| 1 | docs-closed/agent-linux/agent-linux基本工程标准规范.md | 合规性 | 2 | MGLRU 2.0 → MGLRU 多代 LRU（L71、L1010） |
 | 2 | docs-closed/0.1.1工程标准规范手册.md | 工程标准 | — | BAN-361 禁词清单（合规引用，未修改） |
 
 ### 6.3 Copyright 批量补齐清单（17 文件）
@@ -399,7 +399,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 7.3 结论
 
-**0.1.1 文档体系修订后综合成熟度从 71% 提升至 95%，达到"有条件 Go"状态。** 13 项 P0 中 12 项已修复（1 项延期不阻断），14 项 P1 中 7 项已修复（7 项 M0 阶段闭环）。基于 5 个后台 Agent 的全面合规性扫描，确认：openEuler 清零、MGLRU 2.0 清零、MicroCoreRT 命名统一、微核心/微内核概念区分正确、命名体系一致率 ~100%。技术方案在满足合规性要求的同时，充分体现了微内核设计思想的技术优势，为 agentrt-linux 构建了坚实的技术基础与工程规范。
+**0.1.1 文档体系修订后综合成熟度从 71% 提升至 95%，达到"有条件 Go"状态。** 13 项 P0 中 12 项已修复（1 项延期不阻断），14 项 P1 中 7 项已修复（7 项 M0 阶段闭环）。基于 5 个后台 Agent 的全面合规性扫描，确认：openEuler 清零、MGLRU 2.0 清零、MicroCoreRT 命名统一、微核心/微内核概念区分正确、命名体系一致率 ~100%。技术方案在满足合规性要求的同时，充分体现了微内核设计思想的技术优势，为 agent-linux 构建了坚实的技术基础与工程规范。
 
 **进入 M1 开发的前置条件**：M0 第 1 周完成剩余高优先级 P1 修复（P1-01/02/05 + Linux 6.6 基线声明补充）后，即可进入 M1 开发阶段。
 
@@ -469,7 +469,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 18 | docs/AirymaxAgentOS/50-specifications/10-contracts/README.md | agentrt_contract→agentrt_contract | 2 处 |
 | 19 | docs/AirymaxAgentOS/20-modules/01-kernel.md | 微核心化→微核心 | 2 处 |
 | 20 | docs/AirymaxAgentOS/10-architecture/01-system-architecture.md | "不是微内核"表述调和 | 1 处 |
-| 21 | docs-closed/agentrt-linux/03-microkernel-design-ref/03-minix3-reference.md | "不是微内核"表述调和 | 1 处 |
+| 21 | docs-closed/agent-linux/03-microkernel-design-ref/03-minix3-reference.md | "不是微内核"表述调和 | 1 处 |
 | 22 | docs/AirymaxAgentOS/50-engineering-standards/00-engineering-standards-handbook.md | 内部矛盾 + 过时注记修复 | 2 处 |
 
 **本轮修改合计**：22 个文件，~70 处修改

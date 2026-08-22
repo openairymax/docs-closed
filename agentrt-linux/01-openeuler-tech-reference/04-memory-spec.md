@@ -22,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 与 AirymaxOS 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。AirymaxOS 开源文档（`docs/AirymaxOS/`）严禁出现"openEuler"等词句；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用 openEuler 工程规范。
+本文档**仅作为内部参考**，不公开引用。AirymaxOS 开源文档（`docs/AirymaxOS/`）严禁出现"openEuler"等词句；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用 openEuler 工程规范。
 
 ### 1.3 术语
 

@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 文档引用校对报告（C-2.8）
 
-> **报告定位**: agentrt-linux（AirymaxOS）方案文档目录 `docs/AirymaxOS/` 的路径引用与交叉引用全面校对报告
+> **报告定位**: agent-linux（AirymaxOS）方案文档目录 `docs/AirymaxOS/` 的路径引用与交叉引用全面校对报告
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0
 > **校对范围**: `/home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/` 全部 137 个 `.md` 文件
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 背景
 
-agentrt-linux（AirymaxOS）项目文档体系历经多次演进：项目正式英文全称为 `AirymaxAgentOS`（简称为 `AirymaxOS`），仓库别名为 `agentrt-linux`；文档目录已统一迁移至 `docs/AirymaxOS/`。在 0.1.1 版本迭代过程中，180-i18n 与 190-distribution 模块经历过文件命名冲突修复、50-engineering-standards 子目录从 `50-specifications/` 迁移、90-maintainers-subsystem-model.md 合并入 07 等多次结构调整。这些变更可能遗留旧路径引用、旧文件名引用、跨模块无效链接以及 README 索引与实际文件不一致等问题。
+agent-linux（AirymaxOS）项目文档体系历经多次演进：项目正式英文全称为 `AirymaxAgentOS`（简称为 `AirymaxOS`），仓库别名为 `agent-linux`；文档目录已统一迁移至 `docs/AirymaxOS/`。在 0.1.1 版本迭代过程中，180-i18n 与 190-distribution 模块经历过文件命名冲突修复、50-engineering-standards 子目录从 `50-specifications/` 迁移、90-maintainers-subsystem-model.md 合并入 07 等多次结构调整。这些变更可能遗留旧路径引用、旧文件名引用、跨模块无效链接以及 README 索引与实际文件不一致等问题。
 
 本报告（任务编号 C-2.8）对上述问题进行穷尽式校对，为后续修复提供逐项可执行的修复清单。
 
@@ -105,10 +105,10 @@ agentrt-linux（AirymaxOS）项目文档体系历经多次演进：项目正式�
 
 | # | 文件 | 行号 | 上下文 | 性质 |
 |---|------|------|--------|------|
-| 1 | `README.md` | 6 | `正式全称: agentrt-linux（极境智能体操作系统，正式英文名：AirymaxAgentOS，简称 AirymaxOS）` | 合规全称 |
-| 2 | `README.md` | 13 | `agentrt-linux（正式英文名：AirymaxAgentOS，简称 AirymaxOS，中文：极境智能体操作系统）` | 合规全称 |
+| 1 | `README.md` | 6 | `正式全称: agent-linux（极境智能体操作系统，正式英文名：AirymaxAgentOS，简称 AirymaxOS）` | 合规全称 |
+| 2 | `README.md` | 13 | `agent-linux（正式英文名：AirymaxAgentOS，简称 AirymaxOS，中文：极境智能体操作系统）` | 合规全称 |
 | 3 | `00-requirements/README.md` | 6 | `正式全称: AirymaxAgentOS（极境智能体操作系统，简称 AirymaxOS）` | 合规全称 |
-| 4 | `50-engineering-standards/00-engineering-standards-handbook.md` | 312 | 命名对照表行 `agentrt-linux \| AirymaxAgentOS 极境智能体操作系统 \| agentrt-linux / AirymaxOS` | 合规全称 |
+| 4 | `50-engineering-standards/00-engineering-standards-handbook.md` | 312 | 命名对照表行 `agent-linux \| AirymaxAgentOS 极境智能体操作系统 \| agent-linux / AirymaxOS` | 合规全称 |
 | 5 | `50-engineering-standards/00-engineering-standards-handbook.md` | 316 | `正式英文名：全称使用 "AirymaxAgentOS"（无空格），简称使用 "AirymaxOS"` | 命名规范定义 |
 | 6 | `50-engineering-standards/00-engineering-standards-handbook.md` | 452 | 路线图条目 `第 2 周 \| 命名体系修正（AirymaxAgentOS 全称）` | 合规引用 |
 
@@ -173,8 +173,8 @@ docs/AirymaxRT/00-basic-theories/04-design-principles-cn.md          ✅ 存在
 | 引用位置 | 目标 | 状态 |
 |----------|------|------|
 | `00-requirements/README.md:402` | `../../AirymaxRT/00-architectural-principles.md` | OK |
-| `10-architecture/03-microkernel-strategy.md:12` | `../../../docs-closed/agentrt-linux/_research_0.2.5/01-sel4-deep-analysis.md` | OK |
-| `20-modules/01-kernel.md:1068` | `../../../docs-closed/agentrt-linux/_research_0.2.5/01-sel4-deep-analysis.md` | OK |
+| `10-architecture/03-microkernel-strategy.md:12` | `../../../docs-closed/agent-linux/_research_0.2.5/01-sel4-deep-analysis.md` | OK |
+| `20-modules/01-kernel.md:1068` | `../../../docs-closed/agent-linux/_research_0.2.5/01-sel4-deep-analysis.md` | OK |
 | `50-engineering-standards/20-contracts/README.md:276` | `../../../AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md` | OK |
 
 > 注意：`50-engineering-standards/20-contracts/README.md` 同样位于 3 级深度，其跨模块链接正确使用了 3 个 `../`（`../../../AirymaxRT/`）。这进一步证实 §4.3 的根因分析——同一项目内存在深度计算不一致：3 级深度的文件有的用 2 个 `../`、有的用 3 个 `../`。
@@ -504,9 +504,9 @@ grep -rn "AirymaxAgentOS" docs/AirymaxOS/ | wc -l
 
 ### 9.2 同批分析报告
 
-- `docs-closed/agentrt-linux/_analysis_0.3.0/01-lessons-learned.md`——经验总结
-- `docs-closed/agentrt-linux/_analysis_0.3.0/02-version-planning-decision.md`——版本规划决策报告
-- `docs-closed/agentrt-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md`——微内核 seL4 来源分析
+- `docs-closed/agent-linux/_analysis_0.3.0/01-lessons-learned.md`——经验总结
+- `docs-closed/agent-linux/_analysis_0.3.0/02-version-planning-decision.md`——版本规划决策报告
+- `docs-closed/agent-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md`——微内核 seL4 来源分析
 
 ### 9.3 外部依赖文档（校验为 OK）
 
@@ -514,9 +514,9 @@ grep -rn "AirymaxAgentOS" docs/AirymaxOS/ | wc -l
 - `docs/AirymaxRT/00-basic-theories/01-mcis-cn.md`——体系并行论（FIX-01 目标）
 - `docs/AirymaxRT/00-basic-theories/04-design-principles-cn.md`——系统设计原则（FIX-02 目标）
 - `docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md`——IPC 协议契约
-- `docs-closed/agentrt-linux/_research_0.2.5/01-sel4-deep-analysis.md`——seL4 深度分析
-- `docs-closed/agentrt-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`——Linux 7.1 前瞻研究
-- `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`——工程标准规范（闭源）
+- `docs-closed/agent-linux/_research_0.2.5/01-sel4-deep-analysis.md`——seL4 深度分析
+- `docs-closed/agent-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`——Linux 7.1 前瞻研究
+- `docs-closed/agent-linux/agent-linux基本工程标准规范.md`——工程标准规范（闭源）
 
 ---
 

@@ -1,9 +1,9 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）技术标准与规范问题点审查报告
+# agent-linux（AirymaxOS）技术标准与规范问题点审查报告
 
 > **审查日期**: 2026-07-09
-> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agentrt-linux/（闭源文档）+ docs/AirymaxAgentRT/50-specifications/
+> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agent-linux/（闭源文档）+ docs/AirymaxAgentRT/50-specifications/
 > **参考基线**:
 > - Linux 6.6 内核源码：`/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6`
 > - seL4 微内核源码：`/home/spharx/SpharxWorks/01Reference/seL4-master`
@@ -35,10 +35,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 审查目标
 
-本报告对 agentrt-linux（AirymaxOS，极境智能体操作系统）技术设计方案执行**技术标准与规范专项审查**，核心目标为：
+本报告对 agent-linux（AirymaxOS，极境智能体操作系统）技术设计方案执行**技术标准与规范专项审查**，核心目标为：
 
 1. **工程思想提炼**：基于 Linux 6.6（OLK-6.6）和 seL4 源码的逐一分析，提炼工程思想和技术标准、规范
-2. **问题点识别**：结合 agentrt-linux 项目方案，系统化识别技术标准和规范的问题点
+2. **问题点识别**：结合 agent-linux 项目方案，系统化识别技术标准和规范的问题点
 3. **微内核优势论证**：充分体现微内核设计思想的技术优势
 4. **IRON-9 v2 验证**：验证 [SC]/[SS]/[IND] 三层共享模型的一致性
 5. **成熟度评估**：五维度评分，给出 Go/No-Go 结论
@@ -59,7 +59,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |---------|--------|--------|--------|
 | 开源文档（docs/AirymaxAgentOS/） | 125 | ~80,000+ | 100% |
 | RT 侧文档（docs/AirymaxAgentRT/50-specifications/） | ~15 | ~8,000+ | 100% |
-| 闭源文档（docs-closed/agentrt-linux/） | ~35 | ~20,000+ | 100% |
+| 闭源文档（docs-closed/agent-linux/） | ~35 | ~20,000+ | 100% |
 | OLK-6.6 源码验证路径 | 12 | — | 关键路径全覆盖 |
 | seL4 源码验证路径 | 10 | — | 关键路径全覆盖 |
 | 用户要求文档（.trae/documents/） | 19 | ~300,000+ 字 | 100% |
@@ -129,7 +129,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **当前状态**：79/100（B- 级）—— **有条件 Go**
 
-agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现 **13 项 P0 阻断性问题**。其中最严重的是：
+agent-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现 **13 项 P0 阻断性问题**。其中最严重的是：
 
 1. **IPC 消息头存在 5 种类型名 + 4 种不同布局**（TS-P0-01）—— [SC] 共享契约层的核心数据结构定义不一致
 2. **错误码体系三套方案冲突**（TS-P0-02）—— AGENTRT_EINVAL 在不同文档中值分别为 -EINVAL、-1、-1001
@@ -147,7 +147,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 接口契约规范 / IRON-9 v2 [SC] 共享契约层 |
-| **问题描述** | IPC 128B 消息头是 [SC] 共享契约层的核心数据结构，但在不同文档中存在 5 种不同的类型名和 4 种不同的字段布局。这直接违反 IRON-9 v2 "[SC] 层两端代码字面一致" 的铁律，导致 agentrt 与 agentrt-linux 无法共享同一头文件。 |
+| **问题描述** | IPC 128B 消息头是 [SC] 共享契约层的核心数据结构，但在不同文档中存在 5 种不同的类型名和 4 种不同的字段布局。这直接违反 IRON-9 v2 "[SC] 层两端代码字面一致" 的铁律，导致 agentrt 与 agent-linux 无法共享同一头文件。 |
 
 **5 种类型名 + 4 种布局详情**：
 
@@ -197,7 +197,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 文档质量与完整性 / 接口契约规范 |
-| **问题描述** | [30-interfaces/04-coding-standard.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/30-interfaces/04-coding-standard.md):14-33 声明"agentrt-linux 8 子仓的全部源代码严格遵循 `50-engineering-standards/10-coding-style/` 下的编码规范文件"，并列出 15 个规范文件。但实际目录下仅存在 5 个文件。被引用但不存在的 11 个文件包括：`NAMING_CONVENTIONS.md`、`Cpp_coding_style_standard.md`、`Go_coding_style_standard.md`、`Python_coding_style_standard.md`、`JavaScript_coding_style_standard.md`、`Go_secure_coding_standard.md`、`Java_secure_coding_standard.md`、`Security_design_standard.md`、`Log_standard.md`、`Code_comment_template.md`、`Config_Audit_Log_standard.md`。 |
+| **问题描述** | [30-interfaces/04-coding-standard.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/30-interfaces/04-coding-standard.md):14-33 声明"agent-linux 8 子仓的全部源代码严格遵循 `50-engineering-standards/10-coding-style/` 下的编码规范文件"，并列出 15 个规范文件。但实际目录下仅存在 5 个文件。被引用但不存在的 11 个文件包括：`NAMING_CONVENTIONS.md`、`Cpp_coding_style_standard.md`、`Go_coding_style_standard.md`、`Python_coding_style_standard.md`、`JavaScript_coding_style_standard.md`、`Go_secure_coding_standard.md`、`Java_secure_coding_standard.md`、`Security_design_standard.md`、`Log_standard.md`、`Code_comment_template.md`、`Config_Audit_Log_standard.md`。 |
 | **验证命令** | `ls docs/AirymaxAgentOS/50-engineering-standards/10-coding-style/` 对比 04-coding-standard.md:14-33 的引用表 |
 | **涉及文件** | [30-interfaces/04-coding-standard.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/30-interfaces/04-coding-standard.md):14-33 |
 | **修复方案** | 修订 04-coding-standard.md 第 1 章表格，仅保留实际存在的 5 个文件（C/Rust 编码规范 + C/Rust 安全编码 + C 补充规范），其余语言改为"同源 agentrt 规范"引用方式（与 10-coding-style/README.md 第 2 章声明的分层原则一致）。 |
@@ -324,7 +324,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P0（阻断性） |
 | **问题类别** | IRON-9 v2 跨项目共享 / 架构原则一致性 |
-| **问题描述** | IRON-9 v2 三层共享模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层）在 OS 侧文档中定义完整（[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md)），但在 RT 侧（AirymaxAgentRT/50-specifications/）完全缺失。RT 侧文档未提及 [SC]/[SS]/[IND] 标注，导致 agentrt 开发者无法知道哪些代码需要与 agentrt-linux 共享。 |
+| **问题描述** | IRON-9 v2 三层共享模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层）在 OS 侧文档中定义完整（[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md)），但在 RT 侧（AirymaxAgentRT/50-specifications/）完全缺失。RT 侧文档未提及 [SC]/[SS]/[IND] 标注，导致 agentrt 开发者无法知道哪些代码需要与 agent-linux 共享。 |
 | **验证命令** | `grep -rn "\[SC\]\|\[SS\]\|\[IND\]" docs/AirymaxAgentRT/50-specifications/` |
 | **涉及文件** | docs/AirymaxAgentRT/50-specifications/ 全部文件 |
 | **修复方案** | 在 RT 侧文档中补充 IRON-9 v2 三层共享模型说明，明确标注 agentrt 中哪些头文件属于 [SC] 层（6 个）、哪些 API 属于 [SS] 层、哪些组件属于 [IND] 层。与 OS 侧 [120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/50-engineering-standards/120-cross-project-code-sharing.md) 保持一致。 |
@@ -338,8 +338,8 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 | **严重级别** | P0（阻断性） |
 | **问题类别** | 交付就绪度 / 资源规划 |
 | **问题描述** | 开源文档工时统计 ~580h，闭源文档工时统计 ~2290h，存在 4 倍差距。这会导致资源规划与里程碑排期的基准不一致，可能导致开发阶段资源错配。 |
-| **验证命令** | `grep -rn "580h\|2290h\|工时" docs/AirymaxAgentOS/README.md docs-closed/agentrt-linux/agentrt-linux开发路线和进度.md` |
-| **涉及文件** | [README.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/README.md) + [agentrt-linux开发路线和进度.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/agentrt-linux开发路线和进度.md) |
+| **验证命令** | `grep -rn "580h\|2290h\|工时" docs/AirymaxAgentOS/README.md docs-closed/agent-linux/agent-linux开发路线和进度.md` |
+| **涉及文件** | [README.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/README.md) + [agent-linux开发路线和进度.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/agent-linux开发路线和进度.md) |
 | **修复方案** | 以闭源 ~2290h 为基准（含 8 子仓开发工时），开源 ~580h 为文档体系工时子集，在 README.md 中明确两者关系：开源工时 = 文档体系工时；闭源工时 = 文档体系工时 + 8 子仓开发工时 + 测试与集成工时。 |
 
 ---
@@ -417,7 +417,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 |------|------|
 | **严重级别** | P1 |
 | **问题描述** | OS 侧文档已修复 17 处微核心/微内核概念误用，但 RT 侧 [50-specifications/10-terminology.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentRT/50-specifications/10-terminology.md) 仍有 9 行将 MicroCoreRT 称为"微内核运行时"（应为"微核心运行时"）。 |
-| **修复方案** | RT 侧同步修复：agentrt → "微核心"（micro-core）；agentrt-linux → "微内核"（micro-kernel）。 |
+| **修复方案** | RT 侧同步修复：agentrt → "微核心"（micro-core）；agent-linux → "微内核"（micro-kernel）。 |
 | **修复计划** | M0 第 1 周 |
 
 ### TS-P1-09: CoreKern 概念在 OS 侧消失
@@ -608,7 +608,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 | 检查项 | 结果 | 状态 |
 |--------|------|------|
 | agentrt 标准名称 | "AirymaxAgentRT 极境智能体运行底座平台工程" | ✅ 一致 |
-| agentrt-linux 标准名称 | "AirymaxAgentOS 极境智能体操作系统" | ⚠️ 部分不一致（TS-P0-10 代码前缀三重冲突） |
+| agent-linux 标准名称 | "AirymaxAgentOS 极境智能体操作系统" | ⚠️ 部分不一致（TS-P0-10 代码前缀三重冲突） |
 | 代码前缀统一性 | `agentrt_*` / `agentos_*` / `are_*` 三重冲突 | ❌ 不合规（TS-P0-10） |
 | 微核心/微内核概念 | OS 侧已修复，RT 侧仍有 9 处误用 | ⚠️ 部分合规（TS-P1-08） |
 
@@ -618,7 +618,7 @@ agentrt-linux 0.1.1 文档体系经技术标准与规范专项审查后，发现
 
 **seL4 工程思想参考**：seL4 统一使用 `seL4_` 前缀，全部公开 API 一致。
 
-agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性原则：
+agent-linux 当前存在三种代码前缀，严重违反工程标准一致性原则：
 
 | 前缀 | 使用位置 | 应统一为 | 修复项 |
 |------|---------|---------|--------|
@@ -641,7 +641,7 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 
 ### 8.2 OLK-6.6 工程标准对齐评估
 
-| OLK-6.6 标准 | agentrt-linux 对齐情况 | 状态 |
+| OLK-6.6 标准 | agent-linux 对齐情况 | 状态 |
 |-------------|----------------------|------|
 | Tab-8 缩进 | OS-KER-005 定义 | ✅ 对齐 |
 | 行宽 80 | OS-STD-FMT-002 定义 | ✅ 对齐 |
@@ -656,7 +656,7 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 
 ### 8.3 seL4 微内核思想对齐评估
 
-| seL4 思想 | agentrt-linux 对齐情况 | 状态 |
+| seL4 思想 | agent-linux 对齐情况 | 状态 |
 |-----------|----------------------|------|
 | Liedtke 极简原则 | 五维原则 K-1 定义，但 io_uring 复杂度有张力 | ⚠️ 部分对齐（TS-P1-05） |
 | Capability 安全 | Cupolas 安全模型已实现，但派生模型不完整 | ⚠️ 部分对齐（TS-P3-02） |
@@ -682,9 +682,9 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 
 ### 9.1 微内核 vs 宏内核：技术优势对比
 
-基于 seL4 源码分析和 OLK-6.6 对比，agentrt-linux 采用微内核设计思想的技术优势：
+基于 seL4 源码分析和 OLK-6.6 对比，agent-linux 采用微内核设计思想的技术优势：
 
-| 优势维度 | 宏内核（传统 Linux） | 微内核（agentrt-linux） | seL4 源码依据 |
+| 优势维度 | 宏内核（传统 Linux） | 微内核（agent-linux） | seL4 源码依据 |
 |---------|---------------------|----------------------|--------------|
 | **隔离性** | 驱动/网络栈在内核态，故障导致 panic | 12 daemon 用户态化，故障可恢复 | `libsel4/` — VFS/网络栈/驱动移到用户态 |
 | **安全性** | root 权限可绕过内核安全 | capability-based，最小权限原则 | `src/object/cnode.c` — mint/copy/move/revoke |
@@ -692,9 +692,9 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 | **可扩展性** | 内核态添加功能需重新编译 | BPF struct_ops 运行时可插拔 | `src/fastpath/fastpath.c` — 快速路径可替换 |
 | **确定性** | 中断处理不可预测 | kthread + wait_event 确定性调度 | `src/kernel/traps.c` — 确定性中断 |
 
-### 9.2 agentrt-linux 微内核化改造的技术优势
+### 9.2 agent-linux 微内核化改造的技术优势
 
-| 改造领域 | 改造前（Linux 6.6 原生） | 改造后（agentrt-linux） | 优势量化 |
+| 改造领域 | 改造前（Linux 6.6 原生） | 改造后（agent-linux） | 优势量化 |
 |---------|------------------------|----------------------|---------|
 | **Agent 调度** | CFS + EEVDF 通用调度 | SCHED_AGENT BPF 策略 + Token 预算感知 | 调度延迟 P99: 120μs → 50μs（-58%） |
 | **IPC 性能** | 传统 syscall IPC | io_uring 零拷贝 + 128B 定长消息 | 吞吐量: 45K msg/s → 250K msg/s（5.6×） |
@@ -706,7 +706,7 @@ agentrt-linux 当前存在三种代码前缀，严重违反工程标准一致性
 
 **OLK-6.6 工程标准融合**：
 
-agentrt-linux 并非完全重写内核，而是在 Linux 6.6 基础上进行微内核化改造，融合两者优势：
+agent-linux 并非完全重写内核，而是在 Linux 6.6 基础上进行微内核化改造，融合两者优势：
 
 1. **复用 Linux 6.6 成熟子系统**：io_uring / sched_ext / MGLRU / eBPF / ftrace 等，避免重复造轮子
 2. **注入微内核设计思想**：用户态服务化 / capability 安全 / 消息传递 IPC / 确定性调度
@@ -714,7 +714,7 @@ agentrt-linux 并非完全重写内核，而是在 Linux 6.6 基础上进行微�
 
 **seL4 工程思想借鉴**：
 
-| seL4 思想 | agentrt-linux 落地方式 | 工程价值 |
+| seL4 思想 | agent-linux 落地方式 | 工程价值 |
 |-----------|---------------------|---------|
 | Liedtke 极简 | 内核态仅保留无法用户态化的最低限度机制 | 减少内核攻击面，提升可验证性 |
 | Capability | Cupolas 安全模型 + 38/41 ID capability 枚举 | 最小权限原则，细粒度访问控制 |
@@ -959,4 +959,4 @@ grep -rn "0x41475453\|AGTS" docs/AirymaxAgentOS/
 
 ---
 
-> **文档结束** | agentrt-linux（AirymaxOS）技术标准与规范问题点审查报告 | v1.0 | 2026-07-09
+> **文档结束** | agent-linux（AirymaxOS）技术标准与规范问题点审查报告 | v1.0 | 2026-07-09

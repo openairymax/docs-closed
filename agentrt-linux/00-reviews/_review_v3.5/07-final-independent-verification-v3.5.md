@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）第三轮独立复核报告 v3.5
+# agent-linux（AirymaxOS）第三轮独立复核报告 v3.5
 
 > **报告编号**：07
 > **报告版本**：v3.5（第三轮独立复核终稿）
@@ -71,10 +71,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 文件 | 行号 | 实际内容 |
 |------|------|---------|
-| `agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h` | 79 | `AIRY_VERDICT_COMPLAIN = 3` |
+| `agent-linux/kernel/include/uapi/linux/airymax/security_types.h` | 79 | `AIRY_VERDICT_COMPLAIN = 3` |
 | `agentrt/commons/include/airymax/security_types.h` | 36 | `AIRY_VERDICT_ASK = 3` |
 
-两文件同为值 3，但名称不同（COMPLAIN vs ASK）。此外，两文件的整体结构差异巨大——agentrt-linux 版为完整 [SC] 头文件（134 行，含 enum 定义、[DSL] 降级块），agentrt commons 版为简化版（50 行，使用 #define 宏）。
+两文件同为值 3，但名称不同（COMPLAIN vs ASK）。此外，两文件的整体结构差异巨大——agent-linux 版为完整 [SC] 头文件（134 行，含 enum 定义、[DSL] 降级块），agentrt commons 版为简化版（50 行，使用 #define 宏）。
 
 **影响**：[SC] 共享契约层"双端逐字节相同"的 SSoT 根基破裂。
 

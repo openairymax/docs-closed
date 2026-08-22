@@ -155,7 +155,7 @@ airymaxhub/                        # 1 伞仓（git superproject）
 │   ├── gateway/                   # 叶子仓（API 网关）
 │   ├── heapstore/                 # 叶子仓（堆存储）
 │   └── protocols/                 # 叶子仓（协议实现）
-├── agentrt-linux/                 # 管理仓 2（AirymaxOS，1.0.1 启动开发）
+├── agent-linux/                 # 管理仓 2（AirymaxOS，1.0.1 启动开发）
 ├── sdk/                           # 管理仓 3（SDK 包，6 语言）
 │   ├── sdk-python/                # 叶子仓
 │   ├── sdk-go/                    # 叶子仓
@@ -219,7 +219,7 @@ SDK（独立，零 C 编译依赖，纯 HTTP 协议调用）
 ```cmake
 # 伞仓顶层 CMakeLists.txt
 add_subdirectory(agentrt)        # 核心运行时
-add_subdirectory(agentrt-linux)  # Linux 加速路径（可选）
+add_subdirectory(agent-linux)  # Linux 加速路径（可选）
 add_subdirectory(sdk)            # SDK（纯 HTTP，不依赖 C）
 add_subdirectory(ecosystem)      # 生态工具
 add_subdirectory(products)       # 产品定义
@@ -330,7 +330,7 @@ gh release create v0.1.1 sbom.json sbom.json.sig
 
 | # | 工作项 | 工时 | 依赖 | 说明 |
 |---|--------|------|------|------|
-| R-1 | AirymaxOS（agentrt-linux）实际开发 | ~400h | 0.1.1 完成 | 8 子仓微内核设计 + openEuler 参考 |
+| R-1 | AirymaxOS（agent-linux）实际开发 | ~400h | 0.1.1 完成 | 8 子仓微内核设计 + openEuler 参考 |
 | R-2 | taskflow pregel_engine 多 worker 启用 | ~40h | 0.1.1 完成 | 从 max_workers=1 升级为并行执行 |
 | R-3 | API 冻结 + 语义化版本 | ~30h | W-1~W-11 完成 | 公开 ABI 锁定，不再允许破坏性变更 |
 | R-4 | 性能基准建立 | ~80h | API 冻结 | 对标 langchain/autogen，公开 benchmark |

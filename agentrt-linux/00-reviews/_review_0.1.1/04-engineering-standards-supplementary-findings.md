@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）工程标准补充发现报告
+# agent-linux（AirymaxOS）工程标准补充发现报告
 
 > **审查日期**: 2026-07-09
 > **文档定位**: [03-technical-standards-and-specifications-review.md](./03-technical-standards-and-specifications-review.md) 的补充发现。主报告已识别 39 项问题（13 P0 + 14 P1 + 8 P2 + 4 P3），本文档记录经源码级**二次验证**后确认的补充发现，以及对工程标准 Agent 部分初步报告的**误报澄清**。
@@ -144,7 +144,7 @@ grep -rn "OS-KER-007" docs/AirymaxAgentOS/ | grep -v "07-maintainers-and-governa
 
 **核心合规风险**：
 
-1. **AGPL-3.0 与 GPL-2.0 不兼容**：AGPL-3.0（策略 A）与 GPL-2.0（策略 B）在许可证条款上**不兼容**。Linux 内核代码必须使用 GPL-2.0（`include/uapi/linux/capability.h` 等内核头文件均为 GPL-2.0），但项目文档头声明 AGPL-3.0。若 agentrt-linux 内核代码引用 AGPL-3.0 许可证，将无法与 GPL-2.0 内核代码合法链接
+1. **AGPL-3.0 与 GPL-2.0 不兼容**：AGPL-3.0（策略 A）与 GPL-2.0（策略 B）在许可证条款上**不兼容**。Linux 内核代码必须使用 GPL-2.0（`include/uapi/linux/capability.h` 等内核头文件均为 GPL-2.0），但项目文档头声明 AGPL-3.0。若 agent-linux 内核代码引用 AGPL-3.0 许可证，将无法与 GPL-2.0 内核代码合法链接
 2. **策略边界未声明**：三套许可证的使用边界未在任何文档中明确声明（何时用 AGPL-3.0、何时用 GPL-2.0、何时用 Apache-2.0）
 3. **`-only` 后缀不一致**：`C_coding_style_standard.md:615` 使用 `GPL-2.0-only`，其他位置使用 `GPL-2.0`（默认含 or-later），条款范围不一致
 
@@ -472,6 +472,6 @@ Go 条件（M0 第 1 周内完成）：
 
 ---
 
-> **文档结束** | agentrt-linux（AirymaxOS）工程标准补充发现报告 | v1.0 | 2026-07-09
+> **文档结束** | agent-linux（AirymaxOS）工程标准补充发现报告 | v1.0 | 2026-07-09
 > 
 > **配套文档**：[03-technical-standards-and-specifications-review.md](./03-technical-standards-and-specifications-review.md)（主报告，39 项问题）

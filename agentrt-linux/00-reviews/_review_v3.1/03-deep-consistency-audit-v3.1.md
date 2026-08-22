@@ -1,9 +1,9 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 深层一致性审查报告 v3.1
+# agent-linux 深层一致性审查报告 v3.1
 
 > **审查日期**：2026-07-23\
-> **审查范围**：`docs/AirymaxOS/` 全部文档 + `agentrt-linux/kernel/` 代码 + `docs-closed/agentrt-linux/` 闭源文档\
+> **审查范围**：`docs/AirymaxOS/` 全部文档 + `agent-linux/kernel/` 代码 + `docs-closed/agent-linux/` 闭源文档\
 > **审查方法**：SSoT 权威源逐行交叉验证 + 代码-文档双向比对\
 > **前序版本**：v3.0 深层一致性审查（02-deep-consistency-audit-v3.0.md）
 
@@ -218,14 +218,14 @@ DEFINE_LSM(airy) = {
 
 ### 正确项 1：syscall 编号 548-551 三方一致
 - [07-syscall-registry.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/140-application-development/07-syscall-registry.md)（SSoT）：548-551 ✅
-- [unistd.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/asm-generic/unistd.h#L833-840)：`__NR_airy_sys_call 548` 等 ✅
-- [syscall_64.tbl](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L384-387)：548-551 ✅
+- [unistd.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/asm-generic/unistd.h#L833-840)：`__NR_airy_sys_call 548` 等 ✅
+- [syscall_64.tbl](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L384-387)：548-551 ✅
 - [00-alk-kernel-overview.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/00-alk-kernel-overview.md#L96)：4 核心 syscall（548-551）✅
 
 ### 正确项 2：airy_superv_lsm.c 重命名一致性
-- [kernel/superv/airy_superv_init.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/superv/airy_superv_init.c)：已重命名 ✅
-- [kernel/superv/Kbuild](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/superv/Kbuild#L11)：`airy_superv_init.o` ✅
-- [security/airy/airy_superv_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_superv_lsm.c#L9)：引用 `kernel/superv/airy_superv_init.c` ✅
+- [kernel/superv/airy_superv_init.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/superv/airy_superv_init.c)：已重命名 ✅
+- [kernel/superv/Kbuild](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/superv/Kbuild#L11)：`airy_superv_init.o` ✅
+- [security/airy/airy_superv_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_superv_lsm.c#L9)：引用 `kernel/superv/airy_superv_init.c` ✅
 - [00-alk-kernel-overview.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/00-alk-kernel-overview.md#L130)：`airy_superv_init.c` ✅
 - [07-directory-structure.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/07-directory-structure.md#L549-554)：5 个文件全部 `_superv` 后缀 ✅
 

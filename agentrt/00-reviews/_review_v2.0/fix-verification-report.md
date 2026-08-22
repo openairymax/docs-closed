@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v2.0 系统性修正（Task #41-44）的最终验证收敛文档，整合 4 份修正日志（fix-log-p0-docs / fix-log-p1-docs / fix-log-p0-closed-docs / fix-log-source-code），并通过 Grep 机器检查独立复核所有修正项的实际效果，作为 v2.0 修正阶段的最终判定基线。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：1.0（2026-07-13）。
-> **修正范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` 开源文档 + `docs-closed/agentrt/` 闭源手册 + `agentrt/` 源码）；**不涉及** `agentrt-linux` 模块（按用户约束）。
+> **修正范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` 开源文档 + `docs-closed/agentrt/` 闭源手册 + `agentrt/` 源码）；**不涉及** `agent-linux` 模块（按用户约束）。
 > **验证方法**：4 份修正日志整合 + Grep 机器检查独立复核 + 残留合法性逐项确认。
 > **证据要求**：所有结论附 `文件路径:L行号` 或 Grep 命令与匹配数，可通过工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -55,8 +55,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 >
 > **关键变化**：
 > - P0 阻断项：v2.0 报告判定 8 项 P0 + 2 项 v2.0 新发现 P0 = 10 项 → 修正后 **0 项残留**（含 1 项 v1.0 误判 P0-3 已降级）。
-> - P1 阻断项：v2.0 报告判定 13 项 P1 → 修正后 **9 项清零**（agentrt 范围内），4 项延期至 1.0.1（agentrt-linux 范围或非阻断性）。
-> - 综合评分：v2.0 报告综合 64/C+ → 修正后预估 **72/B-**（agentrt 范围；agentrt-linux 未修正维持 76/B）。
+> - P1 阻断项：v2.0 报告判定 13 项 P1 → 修正后 **9 项清零**（agentrt 范围内），4 项延期至 1.0.1（agent-linux 范围或非阻断性）。
+> - 综合评分：v2.0 报告综合 64/C+ → 修正后预估 **72/B-**（agentrt 范围；agent-linux 未修正维持 76/B）。
 >
 > **1.0.1 M1 启动判定**：agentrt 模块的 v2.0 P0 阻断项已全部清零，**满足 1.0.1 M1 代码开发的最低启动条件**。剩余 P1/P2 项可在 M1 阶段并行处理。
 
@@ -66,23 +66,23 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.1 用户约束
 
-> "针对agentrt的整体方案问题，进行全方面的系统性修正，涉及agentrt-linux的问题不进行处理"
+> "针对agentrt的整体方案问题，进行全方面的系统性修正，涉及agent-linux的问题不进行处理"
 
 ### 2.2 约束遵守确认
 
 | 约束 | 遵守情况 | 验证方法 |
 |------|---------|---------|
 | 仅修正 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码） | ✅ 通过 | 4 份日志的修改文件清单均在范围内 |
-| 不修改 `agentrt-linux` 相关内容（`docs/AirymaxOS/`、`docs-closed/agentrt-linux/`、`agentrt-linux/`） | ✅ 通过 | Grep 验证未触及 agentrt-linux 路径下任何文件 |
+| 不修改 `agent-linux` 相关内容（`docs/AirymaxOS/`、`docs-closed/agent-linux/`、`agent-linux/`） | ✅ 通过 | Grep 验证未触及 agent-linux 路径下任何文件 |
 | `docs/AirymaxOS/50-engineering-standards/`（SSoT 实体目录）未修改 | ✅ 通过 | 仅通过符号链接引用，未修改实体文件 |
 | 源码修正遵守 IRON-1~5 工程铁律（无桩函数/无简化/无绕开编译集成） | ✅ 通过 | 7 项源码修正均为真实功能改进（CAS 状态机/copy-to-buffer/yield+timeout 等） |
 | 跨平台兼容性（Linux/macOS/Windows）维持 | ✅ 通过 | N1 使用 `#ifdef _WIN32 Sleep(0) #else sched_yield()`；P0-7/N2/N3/N5/N6 均使用跨平台 API |
 
 ### 2.3 未修改范围（按约束）
 
-- `docs/AirymaxOS/` —— agentrt-linux 开源文档（未修改）
-- `docs-closed/agentrt-linux/` —— agentrt-linux 闭源文档（未修改）
-- `agentrt-linux/` —— agentrt-linux 源码（未修改）
+- `docs/AirymaxOS/` —— agent-linux 开源文档（未修改）
+- `docs-closed/agent-linux/` —— agent-linux 闭源文档（未修改）
+- `agent-linux/` —— agent-linux 源码（未修改）
 - `docs/OpenStandards/` —— 开放标准（未修改，OpenStandards 优化方案另案处理）
 
 ---
@@ -124,7 +124,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **残留合法性确认**（37 处全部合法，详见 §7.1）：
 - 指代宿主 OS（如"运行于操作系统之上"、"操作系统: uname -a"）
-- 指代 agentrt-linux/AirymaxOS（真正的 OS）
+- 指代 agent-linux/AirymaxOS（真正的 OS）
 - OS 概念借鉴（如"借鉴操作系统设计的经典智慧"）
 - 显式否定（如"MicroCoreRT 不是操作系统内核"、"非操作系统内核"）
 
@@ -165,7 +165,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------------|------------|------|
 | 总匹配数 | 51 处/18 文件 | 37 处/16 文件（全部合法） | ✅ |
 | 误称修正数 | — | 17 处/10 文件 | ✅ |
-| 合法用法保留 | — | 37 处（host OS/agentrt-linux/概念借鉴/显式否定） | ✅ |
+| 合法用法保留 | — | 37 处（host OS/agent-linux/概念借鉴/显式否定） | ✅ |
 | 关键定位术语 | "操作系统" | "运行时平台"/"用户态微核心，非操作系统内核" | ✅ |
 
 ### 4.4 P0-6：WebSocket 适配器协议类型错误（源码）
@@ -349,7 +349,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P2-DQC-2 | TERMINOLOGY.md 路径自指错误 | ✅ 已随 P0-9 修正 |
 | P2-DQC-3 | OpenStandards 7 个主题标准文档未跟进 1.1 版本号 | ⚠️ OpenStandards 范围，未处理 |
 | P2-DQC-4 | 闭源 agentrt 手册 daemon 数量 16 vs 12 | ⚠️ 闭源 P1 级，延期 |
-| P2-DQC-5 | AirymaxOS/TERMINOLOGY.md 缺失 | ⚠️ agentrt-linux 范围，未处理 |
+| P2-DQC-5 | AirymaxOS/TERMINOLOGY.md 缺失 | ⚠️ agent-linux 范围，未处理 |
 
 ---
 
@@ -365,7 +365,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | `TERMINOLOGY.md` | 4 | 全部合法（host OS IPC 机制 + OS 虚拟内存借鉴 + 显式否定 ×2） |
 | `40-philosophy/01-design-philosophy.md` | 2 | 全部合法（OS 设计智慧借鉴 + 显式否定） |
 | `23-troubleshooting-faq.md` | 2 | 全部合法（host OS 支持 + `uname -a` 检测） |
-| 其他 12 文件 | 各 1 | 全部合法（host OS / agentrt-linux / 概念借鉴 / 显式否定） |
+| 其他 12 文件 | 各 1 | 全部合法（host OS / agent-linux / 概念借鉴 / 显式否定） |
 
 **代表性合法残留**：
 
@@ -413,7 +413,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 跨平台一致性 | 54/D+ | **68/C+** | +14 | N6 错误码映射 + N1 跨平台 yield + 函数前缀三层定义补充 |
 | 文档质量（闭源） | 58/D+ | **78/B+** | +20 | P0-DQC-1/P0-DQC-2 全部修正 |
 | **agentrt 总评** | **63/C+** | **72/B-** | **+9** | 19 项验证全部通过，3 项合法残留经确认 |
-| agentrt-linux 总评 | 76/B | 76/B | 0 | 未修正（按用户约束） |
+| agent-linux 总评 | 76/B | 76/B | 0 | 未修正（按用户约束） |
 
 ### 8.2 v1.0 vs v2.0 修正后对比
 
@@ -451,14 +451,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 8 | P2-DQC-4 | 闭源手册 daemon 数量 16 vs 12 | P2 级 | ~0.5h |
 | 9 | — | 闭源手册 §11.6 `agentrt_*` 作为改名目标的表述 | P0-DQC-2 全量替换副作用，需作为 P1 单独处理 | ~1h |
 
-### 9.2 agentrt-linux 范围（按用户约束不处理）
+### 9.2 agent-linux 范围（按用户约束不处理）
 
 | 编号 | 问题 | 说明 |
 |------|------|------|
-| P0-10 | ES-SEL4-7 分类残留冲突 | agentrt-linux 闭源总纲范围 |
-| v2.0-NEW-P1-01 | OS-FMT-001~007 未在 SSoT 注册 | agentrt-linux 闭源总纲范围 |
-| v2.0-NEW-P1-02 | [SC] 6 头文件清单闭源/开源不一致（agentrt-linux 侧） | agentrt-linux 闭源总纲范围 |
-| v2.0-NEW-P1-03 | ES-SEL4 编号扩展未注册 | agentrt-linux 开源文档范围 |
+| P0-10 | ES-SEL4-7 分类残留冲突 | agent-linux 闭源总纲范围 |
+| v2.0-NEW-P1-01 | OS-FMT-001~007 未在 SSoT 注册 | agent-linux 闭源总纲范围 |
+| v2.0-NEW-P1-02 | [SC] 6 头文件清单闭源/开源不一致（agent-linux 侧） | agent-linux 闭源总纲范围 |
+| v2.0-NEW-P1-03 | ES-SEL4 编号扩展未注册 | agent-linux 开源文档范围 |
 
 ---
 
@@ -493,7 +493,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > 2. 源码 `airy_types.h` 错误码值需在 M1 早期对齐文档 SSoT（~4h）。
 > 3. 9 项延期项需在 M1 阶段处理（合计 ~10h）。
 >
-> **agentrt-linux 模块**：按用户约束未修正，仍维持 v2.0 评分 76/B，其 P0-10/OS-FMT/[SC] 清单 3 项阻断项需在 agentrt-linux 专项修正中处理，**不影响 agentrt 模块的 M1 启动**。
+> **agent-linux 模块**：按用户约束未修正，仍维持 v2.0 评分 76/B，其 P0-10/OS-FMT/[SC] 清单 3 项阻断项需在 agent-linux 专项修正中处理，**不影响 agentrt 模块的 M1 启动**。
 
 ---
 

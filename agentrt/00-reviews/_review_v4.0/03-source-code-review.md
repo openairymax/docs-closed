@@ -8,7 +8,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：agentrt 源码 v4.0 深化审查收敛文档。在 v3.0 系统性修正（域1 错误码 SSoT + 域4 DCLP 并发安全）完成后，对 `agentrt/` 源码进行独立持久性复核 + 副作用检测 + 新发现问题扫描 + 残留项状态复核，作为 1.0.1 M1 阶段源码工程治理的深化判定基线。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：4.0（2026-07-14）。
-> **审查范围**：仅 `agentrt/` 源码（atoms 237 + daemons 243 + cupolas 95 + gateway 33 + commons 184 + protocols 41 = 833 源文件）。不审查 `agentrt-linux/`、`docs/`、`docs-closed/`。
+> **审查范围**：仅 `agentrt/` 源码（atoms 237 + daemons 243 + cupolas 95 + gateway 33 + commons 184 + protocols 41 = 833 源文件）。不审查 `agent-linux/`、`docs/`、`docs-closed/`。
 > **审查方法**：v3.0 修正持久性验证（7 项源码修正）→ v3.0 修正副作用检测（4 维度）→ v4.0 新发现问题扫描（8 维度）→ 残留项状态复核（6 项）→ P0-2 规模统计。
 > **证据要求**：所有结论附 `文件路径:L行号` 或 Grep 命令与匹配数，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v4.3 待决策事项迁移实施计划
+# agent-linux v4.3 待决策事项迁移实施计划
 > **文档定位**：v4.3 闭环报告中 6 项待用户决策事项的详细迁移实施计划，含操作步骤、回滚方案与推进理由\
 > **文档版本**：v1.0\
 > **最后更新**：2026-07-26\
@@ -45,7 +45,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 理由：
 1. **IRON-8 硬约束**：0.1.1 → 1.0.1 直接过渡，禁止兼容层/双轨制。IPC 版本双轨制本质是兼容层，违反此铁律
 2. **0.1.1 是唯一奠基版本**：所有架构、标准、许可证必须在 0.1.1 内完成。IPC 协议基线必须在此阶段锁定
-3. **v1.0 无实际用户**：agentrt-linux 仍处于设计阶段，v1.0 从未发布，无遗留用户需要兼容
+3. **v1.0 无实际用户**：agent-linux 仍处于设计阶段，v1.0 从未发布，无遗留用户需要兼容
 4. **版本协商机制是过度设计**：M0 阶段只需单一协议版本，版本协商逻辑增加 ~500 行代码复杂度，违反"简单即美"原则
 5. **UABI 永不破坏哲学已保障前向兼容**：128B 定长消息头 + reserved 字段策略已确保未来扩展不破坏兼容，无需多版本协商
 
@@ -102,7 +102,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **影响范围**：
 - `agentrt/commons/utils/error/include/error.h`：~80 个 `AIRY_ERR_*` 定义
 - agentrt 用户态源文件：引用 `AIRY_ERR_*` 的文件数量未统计（设计阶段，引用较少）
-- agentrt-linux 内核：**不受影响**（内核 [SC] `error.h` 仅定义 `AIRY_E*` POSIX 风格 + `AIRY_EIPC_*`/`AIRY_ECAP_*` 子空间码，无 `AIRY_ERR_*`）
+- agent-linux 内核：**不受影响**（内核 [SC] `error.h` 仅定义 `AIRY_E*` POSIX 风格 + `AIRY_EIPC_*`/`AIRY_ECAP_*` 子空间码，无 `AIRY_ERR_*`）
 
 ### 2.2 推进理由
 
@@ -231,7 +231,7 @@ agentrt 用户态源文件中**未发现任何 `LOG_*` 前缀的使用**（经 g
 
 ### 4.1 待决策内容详解
 
-**现状**：agentrt-linux 存在两个 LSM 模块实现：
+**现状**：agent-linux 存在两个 LSM 模块实现：
 
 | 模块 | 路径 | 安全上下文管理 | 注册方式 | 用途 |
 |------|------|-------------|---------|------|
@@ -430,7 +430,7 @@ agentrt 用户态源文件中**未发现任何 `LOG_*` 前缀的使用**（经 g
 ├── 步骤 3.1：确认 commons/ipc.h 仍与 kernel/ipc.h 字节级一致
 │   └── diff <(grep -v '#include' kernel/ipc.h) <(grep -v '#include' commons/ipc.h) → 0 差异
 └── 步骤 3.2：确认 ipc_runtime.h 不被 kernel 侧引用
-    └── grep -rn "ipc_runtime.h" agentrt-linux/kernel/ → 0 匹配
+    └── grep -rn "ipc_runtime.h" agent-linux/kernel/ → 0 匹配
 ```
 
 ### 6.4 回滚方案

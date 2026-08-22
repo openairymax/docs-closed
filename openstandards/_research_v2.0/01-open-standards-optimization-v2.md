@@ -35,7 +35,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - **决策者**：阅读第 1、7、8 节，重点关注 v2.0 优化结论与修正后的实施路径。
 - **协议对接工程师**：阅读第 3.2、4.2、4.5 节，理解 MCP/A2A/AG-UI/ANP 与 7 域的精确映射。
 - **治理与法务**：阅读第 3.1、3.3、4.1、4.3、4.6 节，理解 OWFa 1.0 引入步骤与 CNCF 三级孵化的具体落地。
-- **agentrt/agentrt-linux 实现者**：阅读第 3.4、6.4、8 节，理解实现同步的精确窗口。
+- **agentrt/agent-linux 实现者**：阅读第 3.4、6.4、8 节，理解实现同步的精确窗口。
 
 ***
 
@@ -129,7 +129,7 @@ OCI 严格区分规范文档（CC-BY-4.0）与参考实现（Apache-2.0），专
 
 - **agentrt 内核**（MicroCoreRT 微核心运行时）：AGPL-3.0-or-later（强 copyleft 保障网络服务场景代码回流）。
 - **agentrt 用户态库**（如 libairy_ipc、libairy_cap）：Apache-2.0（宽松允许商业闭源派生）。
-- **agentrt-linux 发行版**：作为整体发行版采用 AGPL-3.0-or-later，但其包含的内核模块（基于 Linux 6.6）继承 GPL-2.0。
+- **agent-linux 发行版**：作为整体发行版采用 AGPL-3.0-or-later，但其包含的内核模块（基于 Linux 6.6）继承 GPL-2.0。
 - **第三方参考实现**：Apache-2.0（允许商业闭源派生）。
 
 这一边界设计参考 seL4 的"GPL propagation 在 kernel/user boundary 停止"原则（见 [seL4 Licensing](https://www.sel4.org/Legal/license.html)），确保内核改动回馈的同时不阻碍商业生态。
@@ -308,7 +308,7 @@ v1.0 第 5.1.1 节提出四类产物许可矩阵，v2.0 在此基础上细化为
 | **研究报告**（`_research_v1.0/`、`_research_v2.0/`） | — | CC-BY-4.0 | CC-BY-4.0 | 鼓励学术引用；不引入 OWFa 因研究报告非规范条款 |
 | **参考实现 agentrt 内核**（MicroCoreRT） | AGPL-3.0-or-later OR Apache-2.0 | AGPL-3.0-or-later | AGPL-3.0-or-later | 强 copyleft 保障网络服务场景代码回流；参考 seL4 kernel GPL-2.0 设计理念 |
 | **参考实现 agentrt 用户态库**（libairy_*） | AGPL-3.0-or-later OR Apache-2.0 | Apache-2.0 | Apache-2.0 | 宽松允许商业闭源派生；参考 seL4 userland BSD-2-Clause 边界设计 |
-| **第三方参考实现**（如 agentrt-linux 中的独立组件） | AGPL-3.0-or-later OR Apache-2.0 | Apache-2.0 | Apache-2.0 | 允许商业闭源派生；与 OCI runc 实践一致 |
+| **第三方参考实现**（如 agent-linux 中的独立组件） | AGPL-3.0-or-later OR Apache-2.0 | Apache-2.0 | Apache-2.0 | 允许商业闭源派生；与 OCI runc 实践一致 |
 | **兼容性测试套件**（`compatibility/`） | 内嵌文档 | Apache-2.0 + OWFa 1.0 Patent Only | Apache-2.0 | 鼓励社区贡献测试用例；OWFa 保护测试用例贡献者的专利风险 |
 | **示例代码**（`examples/`） | 内嵌文档 | MIT | MIT | 允许直接复制到商业项目；MIT 是最宽松的常用许可证 |
 
@@ -581,7 +581,7 @@ GOVERNANCE.md
 - DCO（Developer Certificate of Origin）签名要求：所有 PR 必须包含 `Signed-off-by: Name <email>`。
 - CLA 签署流程：个人 CLA（个人贡献者）+ 企业 CLA（企业贡献者，简化版，不含员工 CLA）。
 - SIG 参与方式：如何加入 SIG、如何提交 RFC、如何参与评审。
-- 代码贡献规范：参考 agentrt-linux 工程标准手册（`docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`）。
+- 代码贡献规范：参考 agent-linux 工程标准手册（`docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`）。
 - 文档贡献规范：Markdown 风格、术语约束（微核心 vs 微内核）、引用规范。
 
 **CODE_OF_CONDUCT.md**：
@@ -792,7 +792,7 @@ v1.0 方案与 2026 年 7 月最新行业实践**整体对齐度约 85%**，主�
 | 风险点 | 具体表现 | 缓解措施 |
 |--------|---------|---------|
 | agentrt 桥接层实现滞后 | PROTO/INTEROP 标准发布但 agentrt 未实现 | 实现先行原则：Proposed 阶段必须有 1 个参考实现 |
-| agentrt-linux 桥接层实现滞后 | agentrt-linux 基于 Linux 6.6，桥接层需适配内核接口 | agentrt-linux 实现进度可落后 1 个 MINOR 版本 |
+| agent-linux 桥接层实现滞后 | agent-linux 基于 Linux 6.6，桥接层需适配内核接口 | agent-linux 实现进度可落后 1 个 MINOR 版本 |
 | 形式化验证人力不足 | Isabelle/HOL 或 Coq 专业人力稀缺 | 与高校合作 + 阶段 4 形式化验证为可选交付物 |
 | OpenChain 50 项验证材料拖延 | 法务、工程、运营多角色协作 | 渐进式自认证：阶段 1 基线、阶段 3 完成 50%、阶段 4 完成全部 |
 | OCI-AI v1.3 对接滞后 | OCI-AI v1.3 是 2026-04 新规范，agentrt 可能未跟进 | 阶段 4 启动前完成 OCI-AI v1.3 规范研读 |
@@ -968,20 +968,20 @@ v1.0 方案与 2026 年 7 月最新行业实践**整体对齐度约 85%**，主�
 | W7-W8 | 第三方兼容性审计启动 | 审计委托合同 |
 | W8-W9 | v2.2 发布 | v2.2 正式发布 |
 
-### 8.3 与 agentrt / agentrt-linux 实现同步的精确窗口
+### 8.3 与 agentrt / agent-linux 实现同步的精确窗口
 
-| 标准变更类型 | agentrt 同步窗口 | agentrt-linux 同步窗口 | v2.0 修正 |
+| 标准变更类型 | agentrt 同步窗口 | agent-linux 同步窗口 | v2.0 修正 |
 |------------|----------------|---------------------|----------|
 | L1 条目新增 | 标准发布后 1 个 MINOR 版本内 | 标准发布后 1 个 MINOR 版本内 | 不变 |
 | L2/L3 条目新增 | 标准发布后 2 个 MINOR 版本内 | 标准发布后 2 个 MINOR 版本内 | 不变 |
 | 法律文档变更 | 不影响代码 | 不影响代码 | 不变 |
 | 治理文档变更 | 不影响代码 | 不影响代码 | 不变 |
-| PROTO/INTEROP 新增 | 标准发布后 1 个 MINOR 版本内（实现桥接层） | 标准发布后 2 个 MINOR 版本内（实现桥接层） | **细化**：agentrt-linux 允许落后 1 个 MINOR 版本 |
+| PROTO/INTEROP 新增 | 标准发布后 1 个 MINOR 版本内（实现桥接层） | 标准发布后 2 个 MINOR 版本内（实现桥接层） | **细化**：agent-linux 允许落后 1 个 MINOR 版本 |
 | OCI-AI v1.3 对接 | 标准发布后 2 个 MINOR 版本内 | 标准发布后 3 个 MINOR 版本内 | **新增** |
 | 兼容性测试新增 | 必须通过新测试 | 必须通过新测试 | 不变 |
 | 形式化验证 | 不强制 | 不强制 | **新增**：可选交付物 |
 
-**关键约束**：agentrt 与 agentrt-linux 的实现进度**不得落后**于 OpenStandards 标准发布超过 1 个 MINOR 版本（agentrt）或 2 个 MINOR 版本（agentrt-linux）。若实现滞后，标准发布必须延期。
+**关键约束**：agentrt 与 agent-linux 的实现进度**不得落后**于 OpenStandards 标准发布超过 1 个 MINOR 版本（agentrt）或 2 个 MINOR 版本（agent-linux）。若实现滞后，标准发布必须延期。
 
 ***
 
@@ -996,7 +996,7 @@ v2.0 相对 v1.0 的核心增量价值：
 3. **新增**：OCI-AI v1.3 规范对接（v1.0 关键遗漏）、T/CAMETA XX-2026 中国本地化合规（v1.0 关键遗漏）、OpenChain AI SBOM 自认证、数据出境合规、反垄断风险评估。
 4. **深化**：协议快速演进的 5 类失败模式、专利授权的 5 类法律风险、社区接受度的 5 类表现、实现同步的 6 类风险点、商标与反垄断的 4 类风险点。
 
-v2.0 与 v1.0 的核心理念一致：**"不破坏既有契约，分层叠加新能力"**。所有 L1 永久稳定条目（约 84.5%）保持不变，新增能力以独立域、独立文档、独立许可的形式叠加。这确保了 agentrt、agentrt-linux 及任何已采纳 v1.1 的第三方实现可在零迁移成本下受益于 v2.x 的法律与生态增强。
+v2.0 与 v1.0 的核心理念一致：**"不破坏既有契约，分层叠加新能力"**。所有 L1 永久稳定条目（约 84.5%）保持不变，新增能力以独立域、独立文档、独立许可的形式叠加。这确保了 agentrt、agent-linux 及任何已采纳 v1.1 的第三方实现可在零迁移成本下受益于 v2.x 的法律与生态增强。
 
 本报告作为 v2.x 重建的优化起点，提交标准委员会评审。评审通过后，将按修正后的四阶段路径逐步落地，每阶段交付物独立发布、独立采纳。
 
@@ -1071,7 +1071,7 @@ v2.0 与 v1.0 的核心理念一致：**"不破坏既有契约，分层叠加新
 | 05 认知循环标准 | `docs/OpenStandards/05-airy-cognition-loop-standard.md` |
 | 06 调度标准 | `docs/OpenStandards/06-airy-scheduling-standard.md` |
 | 07 系统调用标准 | `docs/OpenStandards/07-airy-syscall-standard.md` |
-| agentrt-linux 工程标准手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` |
+| agent-linux 工程标准手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` |
 | 跨项目代码共享 | `docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md` |
 
 ***

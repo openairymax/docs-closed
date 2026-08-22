@@ -2,7 +2,7 @@
 
 > **报告编号**：REVIEW-AGENTRT-2026-08-14-XD（跨态组合修正）
 > **报告类型**：架构反推论证修正（对 `agentrt-reversal-slimming-20260814.md` 的精确化纠偏）
-> **论证对象**：`agentrt`（用户态运行时）+ `agentrt-linux`（微内核化 Linux 6.6，8 子仓）的跨态组合系统
+> **论证对象**：`agentrt`（用户态运行时）+ `agent-linux`（微内核化 Linux 6.6，8 子仓）的跨态组合系统
 > **核心澄清**：agentrt 的「操作系统级设计思想」源于「跨态组合」——但需要精确区分「跨态契约（[SC]）」与「用户态内部实现（[IND]）」
 > **产出目录**：`closed-docs/agentrt/00-reviews/_review_v4.3/`
 > **审查日期**：2026-08-14
@@ -12,9 +12,9 @@
 
 ## 摘要（接受纠正 + 精确化判断）
 
-用户提出「agentrt 本身要和 agentrt-linux 组合，所以使用了操作系统级设计思想」——**这一纠正方向正确，且是关键上下文**。但需要进一步精确化：
+用户提出「agentrt 本身要和 agent-linux 组合，所以使用了操作系统级设计思想」——**这一纠正方向正确，且是关键上下文**。但需要进一步精确化：
 
-**正确的判断框架**：agentrt + agentrt-linux 通过 IRON-9 v3 四层模型共享契约：
+**正确的判断框架**：agentrt + agent-linux 通过 IRON-9 v3 四层模型共享契约：
 
 | 层 | 含义 | 跨态关系 | 典型内容 |
 |----|------|---------|---------|
@@ -27,7 +27,7 @@
 
 1. **「操作系统级设计思想」的正确体现是 [SC] 契约层**——syscall 编号、128B IPC 头、`memory_types.h`（四层记忆数据结构）、`security_types.h`（安全类型）。这些是「跨态必须一致的接口契约」，是 agentrt 的核心价值，**不是过度设计**。
 
-2. **但 agentrt 把「操作系统级设计」错误延伸到了 [IND] 层**——用户态内部手写了「四层内存分配器 + OOM（15 文件）」「4 级保护环沙箱」「Pregel DAG 引擎」。这些属于 [IND]（完全独立，无需与 agentrt-linux 对齐），本应用「用户态方式」实现（malloc、进程隔离 + seccomp、成熟库）。
+2. **但 agentrt 把「操作系统级设计」错误延伸到了 [IND] 层**——用户态内部手写了「四层内存分配器 + OOM（15 文件）」「4 级保护环沙箱」「Pregel DAG 引擎」。这些属于 [IND]（完全独立，无需与 agent-linux 对齐），本应用「用户态方式」实现（malloc、进程隔离 + seccomp、成熟库）。
 
 3. **前一份报告的「过度设计」诊断方向正确，但适用范围需修正**：过度设计的不是「操作系统级设计本身」，而是「把 [SC] 契约层的操作系统级设计，错误延伸到了 [IND] 用户态内部实现」。
 
@@ -35,12 +35,12 @@
 
 ## 一、接受纠正：跨态组合是「操作系统级设计」的正当来源
 
-### 1.1 跨态组合架构（agentrt + agentrt-linux）
+### 1.1 跨态组合架构（agentrt + agent-linux）
 
-agentrt 不是孤立的用户态运行时，而是与 agentrt-linux 组成完整系统：
+agentrt 不是孤立的用户态运行时，而是与 agent-linux 组成完整系统：
 
 ```
-agentrt（用户态运行时）          agentrt-linux（微内核化 Linux 6.6）
+agentrt（用户态运行时）          agent-linux（微内核化 Linux 6.6）
 ┌─────────────────────┐          ┌──────────────────────────┐
 │ atoms（corekern/     │          │ kernel / services /       │
 │       coreloopthree/ │  [SC]    │ security / memory /       │
@@ -58,14 +58,14 @@ agentrt（用户态运行时）          agentrt-linux（微内核化 Linux 6.6�
 
 | [SC] 契约 | 内容 | 跨态必要性 |
 |-----------|------|-----------|
-| `syscalls.h` | 12 核心 syscall（8 IPC + 3 控制 + 1 通知）+ 12 预留 = 24 槽位 | agentrt 用户态与 agentrt-linux 内核 syscall 编号必须一致 |
+| `syscalls.h` | 12 核心 syscall（8 IPC + 3 控制 + 1 通知）+ 12 预留 = 24 槽位 | agentrt 用户态与 agent-linux 内核 syscall 编号必须一致 |
 | `ipc.h` | 128B 消息头（magic 0x41524531 'ARE1' + trace_id + correlation_id） | 跨态 IPC 二进制兼容 |
 | `memory_types.h` | MemoryRovol L1-L4 数据结构 + GFP 掩码 + PMEM 接口 | 四层记忆数据结构跨态共享 |
 | `security_types.h` | capability 41 ID + cap_op 7 操作 | 安全类型跨态一致 |
 | `sched.h` | 任务描述符 magic 0x41475453 'AGTS' + SCHED_EXT=7 | 调度类型跨态一致 |
 | `error.h` | AIRY_E* 错误码 | 错误码跨态一致 |
 
-**这 10 个 [SC] 头文件定义的「操作系统级接口」，是 agentrt 与 agentrt-linux 组合的根基，是真正的「操作系统级设计思想」的正确体现。**
+**这 10 个 [SC] 头文件定义的「操作系统级接口」，是 agentrt 与 agent-linux 组合的根基，是真正的「操作系统级设计思想」的正确体现。**
 
 ---
 
@@ -78,7 +78,7 @@ agentrt（用户态运行时）          agentrt-linux（微内核化 Linux 6.6�
 | 概念 | IRON-9 层 | 跨态关系 | 判定 |
 |------|----------|---------|------|
 | **四层记忆**（L1 原始/L2 特征/L3 结构/L4 模式） | [SC]（`memory_types.h`）+ 产品差异化 | 跨态共享数据结构 | **必要**（核心亮点） |
-| **四层内存分配器**（arena/mempool/slab/tcache） | [IND]（用户态内部） | 无需与 agentrt-linux 对齐 | **过度设计** |
+| **四层内存分配器**（arena/mempool/slab/tcache） | [IND]（用户态内部） | 无需与 agent-linux 对齐 | **过度设计** |
 
 **这是关键澄清**：agentrt 的「四层记忆 L1-L4」是 [SC] 契约 + 产品差异化（必要）；而「四层内存分配器」是 [IND] 层的用户态内部实现（过度设计）。两者虽然都叫「四层」，但分属完全不同的层次。
 
@@ -101,8 +101,8 @@ agentrt（用户态运行时）          agentrt-linux（微内核化 Linux 6.6�
 
 **「操作系统级设计思想」的正确边界是 [SC] 契约层**：
 
-- 需要和 agentrt-linux 内核对齐的，只有 [SC] 层（10 头文件 + 12 syscall + 128B IPC）。
-- agentrt 用户态内部的 [IND] 层（内存分配器、沙箱实现、DAG 引擎、基础库），**不需要**和 agentrt-linux 对齐，应该用「用户态方式」实现。
+- 需要和 agent-linux 内核对齐的，只有 [SC] 层（10 头文件 + 12 syscall + 128B IPC）。
+- agentrt 用户态内部的 [IND] 层（内存分配器、沙箱实现、DAG 引擎、基础库），**不需要**和 agent-linux 对齐，应该用「用户态方式」实现。
 
 **agentrt 的错误不是「用了操作系统级设计」，而是「把操作系统级设计从 [SC] 契约层，错误延伸到了 [IND] 用户态内部实现」**——导致用户态内部也「再实现了一套内核」。
 
@@ -132,7 +132,7 @@ agentrt（用户态运行时）          agentrt-linux（微内核化 Linux 6.6�
 
 ## 四、结论
 
-1. **用户的纠正正确且关键**：agentrt 的「操作系统级设计思想」源于「与 agentrt-linux 的跨态组合」，这是之前报告缺失的重要上下文。
+1. **用户的纠正正确且关键**：agentrt 的「操作系统级设计思想」源于「与 agent-linux 的跨态组合」，这是之前报告缺失的重要上下文。
 
 2. **但需要精确化**：「操作系统级设计」的正确边界是 **[SC] 契约层**（10 头文件 + 12 syscall + 128B IPC）——这部分是跨态必须一致的接口契约，是 agentrt 的核心价值，**不是过度设计**。
 

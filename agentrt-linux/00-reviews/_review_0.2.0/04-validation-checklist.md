@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 验证清单 v0.2.0（18 项）
+# agent-linux 验证清单 v0.2.0（18 项）
 
 > **验证日期**: 2026-07-09
 > **验证范围**: docs/AirymaxAgentOS/ 全部 125 篇文档

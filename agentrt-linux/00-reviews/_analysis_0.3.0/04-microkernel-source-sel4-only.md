@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 微内核思想来源收紧分析报告（仅 seL4）
 
-> **文档定位**: agentrt-linux 微内核核心思想来源收紧为仅 seL4 的系统性分析与审查报告
+> **文档定位**: agent-linux 微内核核心思想来源收紧为仅 seL4 的系统性分析与审查报告
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0
 > **决策依据**: ADR-014（微内核设计思想来源单一化——仅 seL4）
@@ -14,12 +14,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 决策要求
 
-用户决策（2026-07-09）：严格确定 agentrt-linux 的微内核核心思想**仅来源于 seL4**（参考 `/home/spharx/SpharxWorks/01Reference/seL4-master`），不引入其他微内核架构（Zircon / Minix3），以避免工程思想在哲学和逻辑学层面的多元化冲突。
+用户决策（2026-07-09）：严格确定 agent-linux 的微内核核心思想**仅来源于 seL4**（参考 `/home/spharx/SpharxWorks/01Reference/seL4-master`），不引入其他微内核架构（Zircon / Minix3），以避免工程思想在哲学和逻辑学层面的多元化冲突。
 
 ### 1.2 分析范围
 
 - 公开方案文档：`docs/AirymaxOS/` 全部微内核相关内容
-- 闭源参考文档：`docs-closed/agentrt-linux/` 全部微内核相关内容
+- 闭源参考文档：`docs-closed/agent-linux/` 全部微内核相关内容
 - seL4 最新技术资料检索（2026）
 
 ### 1.3 分析方法
@@ -42,7 +42,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | `10-architecture/03-microkernel-strategy.md` | ✅ seL4 唯一 | 明确标注"seL4（唯一来源，ADR-014）" |
 | `10-architecture/05-adrs.md` | ✅ ADR-014 已记录 | 明确"微内核设计思想来源单一化（仅 seL4，不引入 Zircon/Minix3）" |
 
-### 2.2 闭源参考文档状态（docs-closed/agentrt-linux/）
+### 2.2 闭源参考文档状态（docs-closed/agent-linux/）
 
 **状态**: ⚠️ 仍引用 Zircon + Minix3，与 ADR-014 不一致
 
@@ -82,7 +82,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.3 seL4 核心设计原则（2026 最新）
 
-| 原则 | 内涵 | agentrt-linux 借鉴方式 |
+| 原则 | 内涵 | agent-linux 借鉴方式 |
 |------|------|------------------------|
 | Liedtke minimality | 微内核只保留无法在用户空间高效实现的最小原语集 | corekern/ 仅 4 原子机制（ES-SEL4-1） |
 | Capability 单一模型 | 所有权限通过 capability 令牌表达 | airymaxos-security capability/（ES-SEL4-2） |
@@ -97,10 +97,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.4 seL4 2026 行业最佳实践
 
-1. **形式化验证范围聚焦**：不追求全内核验证，聚焦关键路径（调度器核心、IPC fastpath、capability 派生）——agentrt-linux 已采纳
-2. **MCS 调度与 Agent 感知融合**：seL4 15.0.0 的 runtime domain schedule 与 Agent 工作负载特性结合——agentrt-linux SCHED_AGENT 策略可借鉴
-3. **capability 动态委托**：seL4 的 mint/mintcopy/derive/revoke 模型——agentrt-linux 已在 security_types.h 定义
-4. **IPC fastpath 优化**：seL4 的快速路径（~150 cycles）——agentrt-linux io_uring 零拷贝目标 <200 cycles
+1. **形式化验证范围聚焦**：不追求全内核验证，聚焦关键路径（调度器核心、IPC fastpath、capability 派生）——agent-linux 已采纳
+2. **MCS 调度与 Agent 感知融合**：seL4 15.0.0 的 runtime domain schedule 与 Agent 工作负载特性结合——agent-linux SCHED_AGENT 策略可借鉴
+3. **capability 动态委托**：seL4 的 mint/mintcopy/derive/revoke 模型——agent-linux 已在 security_types.h 定义
+4. **IPC fastpath 优化**：seL4 的快速路径（~150 cycles）——agent-linux io_uring 零拷贝目标 <200 cycles
 
 ---
 
@@ -130,7 +130,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 #### V-03: 三代微内核横向对比表
 
 **处置**: 保留对比表，但在表前添加声明：
-> ⚠️ **本对比表仅用于历史参考，展示选择 seL4 的技术依据。agentrt-linux 微内核设计思想来源为 seL4 唯一（ADR-014），不从 Zircon 或 Minix3 借鉴设计思想。**
+> ⚠️ **本对比表仅用于历史参考，展示选择 seL4 的技术依据。agent-linux 微内核设计思想来源为 seL4 唯一（ADR-014），不从 Zircon 或 Minix3 借鉴设计思想。**
 
 #### V-04: "参考 Zircon 的 devhost 设计"
 
@@ -192,7 +192,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ```bash
 # 验证 docs-closed 中不再有 Zircon/Minix3 作为设计来源
-grep -rn "Zircon\|Minix3\|Minix" docs-closed/agentrt-linux/03-microkernel-design-ref/
+grep -rn "Zircon\|Minix3\|Minix" docs-closed/agent-linux/03-microkernel-design-ref/
 # 预期：仅在"历史对比表"中出现，且表前有声明标注
 ```
 
@@ -209,10 +209,10 @@ grep -rn "Zircon\|Minix3\|Minix" docs-closed/agentrt-linux/03-microkernel-design
 
 ### 7.2 设计哲学统一
 
-agentrt-linux 微内核设计哲学现已完全统一为 seL4 唯一来源：
+agent-linux 微内核设计哲学现已完全统一为 seL4 唯一来源：
 
 ```
-agentrt-linux 微内核设计思想 = seL4 设计哲学（ES-SEL4-1~10）
+agent-linux 微内核设计思想 = seL4 设计哲学（ES-SEL4-1~10）
 ├── 架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）：极简/capability/服务用户态化/IPC/形式化验证/架构正交
 ├── P2 增强建议（ES-SEL4-6 + ES-SEL4-8）：syscall.xml/structures.bf codegen
 └── 已落地（ES-SEL4-9 + ES-SEL4-10）：libsel4 独立/Meson+Cargo 构建
@@ -226,8 +226,8 @@ agentrt-linux 微内核设计思想 = seL4 设计哲学（ES-SEL4-1~10）
 
 - `docs/AirymaxOS/10-architecture/03-microkernel-strategy.md`（公开微内核策略，已 seL4 唯一）
 - `docs/AirymaxOS/10-architecture/05-adrs.md`（ADR-014 决策记录）
-- `docs-closed/agentrt-linux/03-microkernel-design-ref/04-microkernel-strategy.md`（闭源参考，已修复）
-- `docs-closed/agentrt-linux/_research_0.2.1/01-source-code-engineering-study.md`（seL4 + OLK-6.6 源码研究）
+- `docs-closed/agent-linux/03-microkernel-design-ref/04-microkernel-strategy.md`（闭源参考，已修复）
+- `docs-closed/agent-linux/_research_0.2.1/01-source-code-engineering-study.md`（seL4 + OLK-6.6 源码研究）
 
 ---
 

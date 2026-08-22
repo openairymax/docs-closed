@@ -9,7 +9,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v3.0 全面审查 + 系统性修正任务的阶段 2 综合分析报告。整合 4 份并行 v3.0 审查报告（开源文档 / 闭源文档 / 源码 / 跨文档一致性），对 agentrt 项目进行去重归类、系统性修正路线图制定与 1.0.1 M1 就绪判定。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：3.0（2026-07-14）。
-> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agentrt-linux`。
+> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agent-linux`。
 > **评分模型**：规范声明层（35%）+ 方案设计层（40%）+ 实现落地层（25%）三维度加权。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
 
@@ -288,7 +288,7 @@ Agent 3 源码复审发现 4 项 v2.0 修正引入的副作用或修正不完整
 | 属性 | 内容 |
 |------|------|
 | **严重度** | P1 |
-| **问题摘要** | `coding_conventions.md` §4.4.2 内部自相矛盾：L2606 说 agentrt-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agentrt-linux 专属功能——同一节内直接矛盾。L2601 用 `AIRYMAXOS_*` 作为活跃前缀，但 `06-iron9:270` 说 `airymaxos_*` 已废弃 |
+| **问题摘要** | `coding_conventions.md` §4.4.2 内部自相矛盾：L2606 说 agent-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agent-linux 专属功能——同一节内直接矛盾。L2601 用 `AIRYMAXOS_*` 作为活跃前缀，但 `06-iron9:270` 说 `airymaxos_*` 已废弃 |
 | **证据位置** | `docs/AirymaxOS/50-engineering-standards/10-coding-style/coding_conventions.md:2599-2607`（L2606 vs L2607 直接矛盾；L2601 `AIRYMAXOS_*` vs `06-iron9:270` `~~airymaxos_*~~` 已废弃） |
 | **影响范围** | 函数前缀规则自身矛盾，开发者无法确定正确前缀 |
 | **出处报告** | Agent 4 P1-v3-3 |
@@ -644,7 +644,7 @@ Agent 3 源码复审发现 4 项 v2.0 修正引入的副作用或修正不完整
 | **问题摘要** | 已知 P2-DQC-5 遗留问题，v2.0 未修复。该文件被多处引用但不存在 |
 | **证据位置** | `Glob docs/AirymaxOS/TERMINOLOGY.md` → No file found |
 | **出处报告** | Agent 4 P2-v3-2 |
-| **工作量估算** | ~0.1h（评估是否创建或修正引用；注意此为 agentrt-linux 范围，按约束不处理，仅标注） |
+| **工作量估算** | ~0.1h（评估是否创建或修正引用；注意此为 agent-linux 范围，按约束不处理，仅标注） |
 
 #### v3.0-综合-P2-18：error.h 路线图注释与验证报告不一致
 
@@ -1004,7 +1004,7 @@ Grep "agentos.yaml" docs-closed/agentrt/agentrt工程标准规范手册.md → �
 
 1. **29→38 仓变更标注**（~0.2h，P2-15）：line 9 末尾添加"（注：v27.0 已迁移至 38 仓，详见 line 19）"
 2. **daemon 16→12 修正**（~0.1h，P2-16）：line 40 "16 个 daemon" → "12 个 daemon"
-3. **TERMINOLOGY.md 标注**（~0.1h，P2-17）：评估是否创建或修正引用（agentrt-linux 范围，仅标注）
+3. **TERMINOLOGY.md 标注**（~0.1h，P2-17）：评估是否创建或修正引用（agent-linux 范围，仅标注）
 4. **error.h 路线图注释统一**（~0.1h，P2-18）：统一为 1.0.1 M1
 
 **涉及文件清单**：

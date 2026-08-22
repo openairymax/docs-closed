@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux P0 问题系统性修复最终验证报告（v3.0）
+# agent-linux P0 问题系统性修复最终验证报告（v3.0）
 
-> **报告定位**：agentrt-linux（AirymaxOS）P0 问题系统性修复的最终验证报告，在 v2.9 修复基础上完成深度残留扫描、系统性重写与全维度一致性验证，覆盖 P0-014 / P0-016 / P0-017 / P0-018 四项问题的完整修复闭环
+> **报告定位**：agent-linux（AirymaxOS）P0 问题系统性修复的最终验证报告，在 v2.9 修复基础上完成深度残留扫描、系统性重写与全维度一致性验证，覆盖 P0-014 / P0-016 / P0-017 / P0-018 四项问题的完整修复闭环
 > **报告版本**：v3.0
 > **生成日期**：2026-07-23
 > **上游报告**：[`_review_v2.9/00-p0-fix-report-v2.9.md`](../_review_v2.9/00-p0-fix-report-v2.9.md)
@@ -161,8 +161,8 @@ v2.9 声称已修复但实际未生效，v3.0 重新修复：
 ### 3.5 代码-文档三方一致性（维度 4）
 
 **验证对象**：
-1. `agentrt-linux/kernel/include/uapi/asm-generic/unistd.h` L826-843
-2. `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` L378-387
+1. `agent-linux/kernel/include/uapi/asm-generic/unistd.h` L826-843
+2. `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` L378-387
 3. `docs/AirymaxOS/140-application-development/07-syscall-registry.md`（SSoT）
 
 **验证结果**：
@@ -259,19 +259,19 @@ v2.9 声称已修复但实际未生效，v3.0 重新修复：
 
 | # | 文件路径 | 修改类型 |
 |---|---------|---------|
-| 1 | `agentrt-linux/kernel/include/uapi/asm-generic/unistd.h` | 修改（L826-843） |
-| 2 | `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | 修改（L378-387） |
+| 1 | `agent-linux/kernel/include/uapi/asm-generic/unistd.h` | 修改（L826-843） |
+| 2 | `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | 修改（L378-387） |
 
 ### B.2 新增工具文件（6 份，v2.9 完成）
 
 | # | 文件路径 | 行数 |
 |---|---------|------|
-| 1 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 |
-| 2 | `agentrt-linux/tools/codegen/syscall_gen.py` | 314 |
-| 3 | `agentrt-linux/tools/codegen/Makefile` | 45 |
-| 4 | `agentrt-linux/tools/abi-check/abi_check.py` | ~200 |
-| 5 | `agentrt-linux/tools/abi-check/abi_baseline.json` | ~30 |
-| 6 | `agentrt-linux/tools/abi-check/README.md` | ~40 |
+| 1 | `agent-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 |
+| 2 | `agent-linux/tools/codegen/syscall_gen.py` | 314 |
+| 3 | `agent-linux/tools/codegen/Makefile` | 45 |
+| 4 | `agent-linux/tools/abi-check/abi_check.py` | ~200 |
+| 5 | `agent-linux/tools/abi-check/abi_baseline.json` | ~30 |
+| 6 | `agent-linux/tools/abi-check/README.md` | ~40 |
 
 ### B.3 修改文档文件（20 份，v2.9 完成 18 份 + v3.0 新增 2 份）
 
@@ -323,6 +323,6 @@ v2.9 声称已修复但实际未生效，v3.0 重新修复：
 
 ## 报告结束
 
-> **报告版本** | agentrt-linux P0 问题系统性修复最终验证报告 v3.0 | 生成日期：2026-07-23
+> **报告版本** | agent-linux P0 问题系统性修复最终验证报告 v3.0 | 生成日期：2026-07-23
 >
 > **修复结论**：4 项 P0 问题（P0-014 / P0-016 / P0-017 / P0-018）已全部系统性修复，7 维度一致性验证全部通过，0 个旧 syscall 编号残留，0 个 v0.2.8 版本残留，代码-文档三方完全一致。4 项残留风险均为非阻塞性（P1/P2 级别），可在后续阶段处理。

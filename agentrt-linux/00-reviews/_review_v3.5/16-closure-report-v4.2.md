@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v4.2 最终闭环确认报告
+# agent-linux v4.2 最终闭环确认报告
 > **文档定位**：v4.1 闭环后第二轮系统性审查的修复闭环确认\
 > **文档版本**：v4.2\
 > **最后更新**：2026-07-26\
@@ -64,7 +64,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）+ v4.1 闭环（15）+
 
 | # | 文件 | 行号 | 修复内容 |
 |---|------|------|---------|
-| 1 | `agentrt-linux/kernel/include/uapi/linux/airymax/error.h` | L55-62 | `AIRY_EIPC_FROZEN` 从 -46 → -53，更新注释，调整预留范围 `[-53, -70]` → `[-54, -70]` |
+| 1 | `agent-linux/kernel/include/uapi/linux/airymax/error.h` | L55-62 | `AIRY_EIPC_FROZEN` 从 -46 → -53，更新注释，调整预留范围 `[-53, -70]` → `[-54, -70]` |
 | 2 | `docs/AirymaxOS/30-interfaces/01-syscalls.md` | L556 | 错误码表 `AIRY_EIPC_FROZEN` 值 -46 → -53，描述移除 "alias" |
 | 3 | `docs/AirymaxOS/30-interfaces/08-sc-error-contract.md` | L148-149 | 新增 `AIRY_EIPC_FROZEN (-53)` 定义，预留范围更新 |
 | 4 | `docs/AirymaxOS/30-interfaces/08-sc-error-contract.md` | L543 | "12 个定义 + 1 个 alias" → "13 个定义，含独立值 -53" |
@@ -90,7 +90,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）+ v4.1 闭环（15）+
 | 1 | `docs/AirymaxOS/30-interfaces/07-ipc-fastpath.md` | L203 | C-S0 错误码 `AIRY_ECAP_FROZEN(-82)` → `AIRY_EIPC_FROZEN(-53)` |
 | 2 | `docs/AirymaxOS/30-interfaces/07-ipc-fastpath.md` | L463 | 代码示例 `return -AIRY_ECAP_FROZEN; /* -82 */` → `return -AIRY_EIPC_FROZEN; /* -53 */` |
 | 3 | `docs/AirymaxOS/30-interfaces/07-ipc-fastpath.md` | L1179 | CBMC 验证数组 `-AIRY_ECAP_FROZEN` → `-AIRY_EIPC_FROZEN` |
-| 4 | `agentrt-linux/kernel/include/uapi/linux/airymax/error.h` | L80 | `AIRY_ECAP_FROZEN` 注释 "Ring frozen (C-S0 check)" → "Capability badge frozen (badge revocation)" |
+| 4 | `agent-linux/kernel/include/uapi/linux/airymax/error.h` | L80 | `AIRY_ECAP_FROZEN` 注释 "Ring frozen (C-S0 check)" → "Capability badge frozen (badge revocation)" |
 | 5 | `docs/AirymaxOS/30-interfaces/08-sc-error-contract.md` | L177 | `AIRY_ECAP_FROZEN` 注释移除 "C-S0 检查"，改为 "Capability badge 已冻结（badge 撤销，非 C-S0）" |
 
 **验证**：`grep -rn "ECAP_FROZEN.*C-S0\|C-S0.*ECAP_FROZEN"` 确认 0 残留；C-S0 统一使用 `AIRY_EIPC_FROZEN(-53)`。
@@ -120,7 +120,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）+ v4.1 闭环（15）+
 
 | # | 文件 | 修复内容 |
 |---|------|---------|
-| 1 | `agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h` | 添加 `AIRY_CAP_PERM_ALL`、`AIRY_CAP_PERM_RESERVED`，添加 6 个额外 `_Static_assert`（magic/opcode/payload_len/crc32/reserved offset） |
+| 1 | `agent-linux/kernel/include/uapi/linux/airymax/ipc.h` | 添加 `AIRY_CAP_PERM_ALL`、`AIRY_CAP_PERM_RESERVED`，添加 6 个额外 `_Static_assert`（magic/opcode/payload_len/crc32/reserved offset） |
 | 2 | `agentrt/commons/include/airymax/ipc.h` | 完整重写：SPDX → `BSD-3-Clause OR GPL-2.0`，守卫 → `_UAPI_AIRYMAX_IPC_H`，移除 [IND] 扩展（RING_DEF_ENTRIES/SQE_F/CQE_F），与 kernel/ipc.h 字节级一致 |
 
 **验证**：
@@ -139,12 +139,12 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）+ v4.1 闭环（15）+
 
 | # | 文件 | 行号 | 修复内容 |
 |---|------|------|---------|
-| 1 | `agentrt-linux/README.md` | L156-176 | [SC] 节从 "6+2" 表格改为 10 行完整列表 + 补充文件说明 |
-| 2 | `agentrt-linux/README.md` | L150 | mgmt-orchestrator 触发条件 "6+2 headers" → "10 core headers" |
-| 3 | `agentrt-linux/README.md` | L153 | sc-dual-ci 触发条件 "6+2 headers" → "10 core headers" |
-| 4 | `agentrt-linux/MAINTAINERS` | L132 | [SC] 节 "6+2 headers" → "10 core headers" |
-| 5 | `agentrt-linux/.github/README.md` | L43, L46, L55-58 | 3 处 "6+2" → "10 core headers"，列出完整 10 个头文件 |
-| 6 | `agentrt-linux/SECURITY.md` | L74 | "6+2 header files" → "10 core header files" |
+| 1 | `agent-linux/README.md` | L156-176 | [SC] 节从 "6+2" 表格改为 10 行完整列表 + 补充文件说明 |
+| 2 | `agent-linux/README.md` | L150 | mgmt-orchestrator 触发条件 "6+2 headers" → "10 core headers" |
+| 3 | `agent-linux/README.md` | L153 | sc-dual-ci 触发条件 "6+2 headers" → "10 core headers" |
+| 4 | `agent-linux/MAINTAINERS` | L132 | [SC] 节 "6+2 headers" → "10 core headers" |
+| 5 | `agent-linux/.github/README.md` | L43, L46, L55-58 | 3 处 "6+2" → "10 core headers"，列出完整 10 个头文件 |
+| 6 | `agent-linux/SECURITY.md` | L74 | "6+2 header files" → "10 core header files" |
 
 **验证**：`grep -rn "6+2 headers\|6 \+ 2 headers"` → 0 残留。
 
@@ -165,8 +165,8 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）+ v4.1 闭环（15）+
 
 | # | 文件 | 修复内容 |
 |---|------|---------|
-| 1 | `agentrt-linux/kernel/kernel/ipc/Kbuild` | 改为标准模式：`obj-y += airy_ipc.o` + `airy_ipc-y := airy_ipc_capability.o` |
-| 2 | `agentrt-linux/.github/workflows/ci-airy.yml` | L105 注释 "2 .o files" → "1 .o file" |
+| 1 | `agent-linux/kernel/kernel/ipc/Kbuild` | 改为标准模式：`obj-y += airy_ipc.o` + `airy_ipc-y := airy_ipc_capability.o` |
+| 2 | `agent-linux/.github/workflows/ci-airy.yml` | L105 注释 "2 .o files" → "1 .o file" |
 
 **验证**：Kbuild 模式与 `security/airy/Kbuild`、`kernel/superv/Kbuild` 等一致；CI `test -f kernel/ipc/airy_ipc.o` 将通过。
 
@@ -248,7 +248,7 @@ v3.5 → v4.0 → v4.1 → v4.2 完整审查链识别的所有可修复问题均
 
 **✅ M0 设计阶段就绪。**
 
-agentrt-linux 整体方案设计已达到 M0（设计阶段）就绪标准：
+agent-linux 整体方案设计已达到 M0（设计阶段）就绪标准：
 - 三大设计支柱完整（微内核思想 + Euler 标准 + Airymax 同源）
 - IRON 工程铁律严格执行（15 条全部落实）
 - [SC] 共享契约层 10 个头文件字节级一致
@@ -267,23 +267,23 @@ agentrt-linux 整体方案设计已达到 M0（设计阶段）就绪标准：
 
 | # | 文件路径 | 修复类型 |
 |---|---------|---------|
-| 1 | `agentrt-linux/kernel/include/uapi/linux/airymax/error.h` | #8 值修复 + #9 注释修复 |
-| 2 | `agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h` | #10 SSoT 补充（CAP_PERM_ALL/RESERVED + _Static_assert） |
+| 1 | `agent-linux/kernel/include/uapi/linux/airymax/error.h` | #8 值修复 + #9 注释修复 |
+| 2 | `agent-linux/kernel/include/uapi/linux/airymax/ipc.h` | #10 SSoT 补充（CAP_PERM_ALL/RESERVED + _Static_assert） |
 | 3 | `agentrt/commons/include/airymax/ipc.h` | #10 字节级对齐重写 |
 | 4 | `docs/AirymaxOS/30-interfaces/01-syscalls.md` | #8 错误码表更新 |
 | 5 | `docs/AirymaxOS/30-interfaces/07-ipc-fastpath.md` | #9 C-S0 错误码统一（3 处） |
 | 6 | `docs/AirymaxOS/30-interfaces/08-sc-error-contract.md` | #8 定义补充 + #9 注释修复 |
-| 7 | `agentrt-linux/README.md` | #11 [SC] 节 + 6+2→10（3 处） |
-| 8 | `agentrt-linux/README_zh.md` | （v4.1 已修复，本轮无变更） |
-| 9 | `agentrt-linux/MAINTAINERS` | #11 6+2→10 |
-| 10 | `agentrt-linux/.github/README.md` | #11 6+2→10（3 处） |
-| 11 | `agentrt-linux/SECURITY.md` | #11 6+2→10 |
-| 12 | `agentrt-linux/.github/workflows/ci-airy.yml` | #12 ipc/.o 计数（2→1） |
-| 13 | `agentrt-linux/kernel/kernel/ipc/Kbuild` | #12 标准模式 |
-| 14 | `agentrt-linux/.github/workflows/release.yml` | （v4.1 已修复，本轮无变更） |
+| 7 | `agent-linux/README.md` | #11 [SC] 节 + 6+2→10（3 处） |
+| 8 | `agent-linux/README_zh.md` | （v4.1 已修复，本轮无变更） |
+| 9 | `agent-linux/MAINTAINERS` | #11 6+2→10 |
+| 10 | `agent-linux/.github/README.md` | #11 6+2→10（3 处） |
+| 11 | `agent-linux/SECURITY.md` | #11 6+2→10 |
+| 12 | `agent-linux/.github/workflows/ci-airy.yml` | #12 ipc/.o 计数（2→1） |
+| 13 | `agent-linux/kernel/kernel/ipc/Kbuild` | #12 标准模式 |
+| 14 | `agent-linux/.github/workflows/release.yml` | （v4.1 已修复，本轮无变更） |
 
 **总计：15 个文件，31 个修复点。**
 
 ---
 
-*v4.2 闭环报告完毕。agentrt-linux M0 设计阶段审查正式结束。*
+*v4.2 闭环报告完毕。agent-linux M0 设计阶段审查正式结束。*

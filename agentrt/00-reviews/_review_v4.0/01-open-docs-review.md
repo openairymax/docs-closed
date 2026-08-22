@@ -8,7 +8,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：agentrt 开源文档（`docs/AirymaxRT/`）v4.0 深化审查报告。在 v1.0（综合 65/C+）、v2.0（修正后 72/B-）、v3.0（修正后预估 ~76/B）基础上执行 v3.0 修正持久性独立复核 + v3.0 修正副作用检测 + v4.0 新发现问题扫描 + 残留项状态复核。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：4.0（2026-07-14）。
-> **审查范围**：仅 `docs/AirymaxRT/` 开源文档（87 个 .md + 1 个 .dox + 1 个 .drawio + 2 个 .json + 1 个 Dockerfile）；**不涉及** `docs/AirymaxOS/`、`docs-closed/`、`agentrt/` 源码、`agentrt-linux`、`docs/OpenStandards/`。
+> **审查范围**：仅 `docs/AirymaxRT/` 开源文档（87 个 .md + 1 个 .dox + 1 个 .drawio + 2 个 .json + 1 个 Dockerfile）；**不涉及** `docs/AirymaxOS/`、`docs-closed/`、`agentrt/` 源码、`agent-linux`、`docs/OpenStandards/`。
 > **审查方法**：四维度（v3.0 修正持久性验证 + 副作用检测 + 新问题扫描 + 残留项复核）→ Grep 机器检查独立复核 → 关键文件 Read 深读 → 证据归档。
 > **证据要求**：所有结论附 `文件路径:L行号` 或 Grep 命令与匹配数，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。

@@ -5,7 +5,7 @@
 > **报告日期**：2026-07-18
 > **报告性质**：闭源内部 UIPF 专项深度审查 v2 — 基于 10+ IPC 文档交叉验证 + seL4/Linux io_uring 映射完整性 + 体系内部一致性审计
 > **审查范围**：消息头 SSoT / 通信原语映射 / payload 协议 / 性能 SLO / 版本化 / Capability 集成 / Reconciliation / 跨节点 / 文档一致性
-> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md)（IPC 首次全面审查）
+> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md)（IPC 首次全面审查）
 
 ---
 
@@ -80,7 +80,7 @@ UIPF 体系定义了"5 种 payload 协议"，但**三个文档给出了三种不
 
 ### 1.4 ★ 次要问题：page flipping 残留
 
-[16 号审查](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) 和 [15 号修正方案](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/15-comprehensive-correction-plan.md) 已明确放弃 page flipping，改用 `IORING_OP_URING_CMD` + registered buffer。但仍有残留：
+[16 号审查](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) 和 [15 号修正方案](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/15-comprehensive-correction-plan.md) 已明确放弃 page flipping，改用 `IORING_OP_URING_CMD` + registered buffer。但仍有残留：
 
 | 文件 | 行 | 残留内容 |
 |------|-----|---------|
@@ -89,7 +89,7 @@ UIPF 体系定义了"5 种 payload 协议"，但**三个文档给出了三种不
 | [03-ipc-performance.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/170-performance/03-ipc-performance.md#L106) | §2.2 | `IORING_OP_AIRY_IPC_REGISTER_REGION`（不存在的 OP 码） |
 | [03-ipc-performance.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/170-performance/03-ipc-performance.md#L225) | §3.2 | `IORING_OP_AIRY_IPC_SEND_ZC`（同上） |
 
-**说明**：`AIRY_IPC_OP_SEND_ZC` / `IORING_OP_AIRY_IPC_*` 与 [16 号审查 IPC-01](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md#L154-L194) 发现的 `IORING_OP_IPC_*` 问题**同根**——它们都是 io_uring 中不存在的自定义 OP 码。
+**说明**：`AIRY_IPC_OP_SEND_ZC` / `IORING_OP_AIRY_IPC_*` 与 [16 号审查 IPC-01](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md#L154-L194) 发现的 `IORING_OP_IPC_*` 问题**同根**——它们都是 io_uring 中不存在的自定义 OP 码。
 
 ### 1.5 其他不一致
 

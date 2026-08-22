@@ -8,7 +8,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v4.0 对 `docs-closed/agentrt/` 闭源文档的第四轮深化审查。在前三轮（v1.0/v2.0/v3.0）基础上，独立审查 v3.0 修正持久性、v3.0 修正副作用、v1~v3 未覆盖盲区，作为 1.0.1 M1 启动前闭源文档侧的最终判定基线。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：4.0（2026-07-14）。
-> **审查范围**：仅 `docs-closed/agentrt/`（不含 `docs-closed/agentrt-linux/`、`docs/AirymaxRT/`、`agentrt/` 源码）。
+> **审查范围**：仅 `docs-closed/agentrt/`（不含 `docs-closed/agent-linux/`、`docs/AirymaxRT/`、`agentrt/` 源码）。
 > **审查方法**：v3.0 三份报告精读 + 18 项 Grep 机器检查 + 全文系统性扫描 + 跨文件交叉一致性验证。
 > **证据要求**：所有结论附 `文件路径:L行号`，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -37,7 +37,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 3. **未发现新问题扫描**：v1.0/v2.0/v3.0 未覆盖的盲区，重点：主手册各节间逻辑一致性、主手册与子系统规格/合约间一致性、错误码分段对齐、`daemon/`→`daemons/` 改名同步、路径引用完整性。
 4. **残留项状态复核**：R3-1（1738 处归档声明）/ R3-2（7 处 AirymaxAgentOS 路径）。
 
-**审查边界**：仅 `docs-closed/agentrt/`（不审查 `docs-closed/agentrt-linux/`、`docs/`、源码）。
+**审查边界**：仅 `docs-closed/agentrt/`（不审查 `docs-closed/agent-linux/`、`docs/`、源码）。
 
 ### 1.2 综合评分
 

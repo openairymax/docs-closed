@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v6.0 全量验证性审查报告
+# agent-linux v6.0 全量验证性审查报告
 > **文档定位**：v1.1 基线锁定后的新一轮全量验证性审查，覆盖 v3.5 → v4.0 → v4.1 → v4.2 → v4.3 → v5.0 → v6.0 完整审查链\
 > **文档版本**：v6.0\
 > **最后更新**：2026-07-27\
@@ -252,12 +252,12 @@ v5.0 闭环报告的"0 残留错误"结论基于过窄的 grep 验证模式，�
 
 | 文件 | 行号 |
 |------|------|
-| `agentrt-linux/security/README.md` | L64 |
-| `agentrt-linux/security/.github/README.md` | L30 |
-| `agentrt-linux/cognition/README.md` | L67 |
-| `agentrt-linux/cognition/.github/README.md` | L30 |
-| `agentrt-linux/memory/README.md` | L65 |
-| `agentrt-linux/memory/.github/README.md` | L30 |
+| `agent-linux/security/README.md` | L64 |
+| `agent-linux/security/.github/README.md` | L30 |
+| `agent-linux/cognition/README.md` | L67 |
+| `agent-linux/cognition/.github/README.md` | L30 |
+| `agent-linux/memory/README.md` | L65 |
+| `agent-linux/memory/.github/README.md` | L30 |
 
 ### 2.16 #A-16: 子仓 README 6 处 kernel/include/airymax/ 错误路径
 
@@ -269,20 +269,20 @@ v5.0 闭环报告的"0 残留错误"结论基于过窄的 grep 验证模式，�
 
 | 文件 | 行号 |
 |------|------|
-| `agentrt-linux/security/README.md` | L32 |
-| `agentrt-linux/security/.github/README.md` | L38 |
-| `agentrt-linux/cognition/README.md` | L34 |
-| `agentrt-linux/cognition/.github/README.md` | L40 |
-| `agentrt-linux/memory/README.md` | L33 |
-| `agentrt-linux/memory/.github/README.md` | L38 |
+| `agent-linux/security/README.md` | L32 |
+| `agent-linux/security/.github/README.md` | L38 |
+| `agent-linux/cognition/README.md` | L34 |
+| `agent-linux/cognition/.github/README.md` | L40 |
+| `agent-linux/memory/README.md` | L33 |
+| `agent-linux/memory/.github/README.md` | L38 |
 
-### 2.17 #A-17: agentrt-linux README 多处 sched_ext 活动使用
+### 2.17 #A-17: agent-linux README 多处 sched_ext 活动使用
 
 **严重性**：A 类（中）\
 **子代理**：5\
 **验证方法**：Grep
 
-**问题**：`agentrt-linux/README.md` 和 `README_zh.md` 中有 8 处 sched_ext 活动使用（违反"不使用 sched_ext"原则）：
+**问题**：`agent-linux/README.md` 和 `README_zh.md` 中有 8 处 sched_ext 活动使用（违反"不使用 sched_ext"原则）：
 
 | 文件 | 行号 | 内容 |
 |------|------|------|

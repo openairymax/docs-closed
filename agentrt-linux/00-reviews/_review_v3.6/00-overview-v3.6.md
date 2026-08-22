@@ -3,8 +3,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 00 — v3.6 深度对比研究主索引
 
-> **文档定位**：agentrt-linux 内核设计深度对比研究 · 主索引
-> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agentrt-linux
+> **文档定位**：agent-linux 内核设计深度对比研究 · 主索引
+> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agent-linux
 > **最后更新**：2026-07-30
 > **方法论**：逐字节阅读三项目源码，所有引用标注文件路径+行号，严禁编造
 
@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 1. 研究范围
 
-本研究对 Airymax agentrt-linux 内核设计与两个参考项目（openEuler OLK-6.6、seL4-master）进行 6 子域深度对比，产出 9 份报告（本索引 + 6 子域对比 + 改进汇总 + 闭环总结）。
+本研究对 Airymax agent-linux 内核设计与两个参考项目（openEuler OLK-6.6、seL4-master）进行 6 子域深度对比，产出 9 份报告（本索引 + 6 子域对比 + 改进汇总 + 闭环总结）。
 
 ### 1.1 三个项目根目录
 
@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|------|
 | openEuler | `/home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/` | 通用服务器内核参考（KABI/sched_class/dl_bw/LSM） |
 | seL4 | `/home/spharx/SpharxWorks/.engineer-reference/seL4-master/` | 形式化微内核参考（CNode/MCS/endpoint/badge） |
-| Airymax | `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/` | 被评估对象（ALK/sched_tac/airy_lsm/Badge folding） |
+| Airymax | `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/` | 被评估对象（ALK/sched_tac/airy_lsm/Badge folding） |
 
 ### 1.2 Airymax 设计文档
 
@@ -48,16 +48,16 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.1 设计优势（Airymax 领先项）
 
-1. **Badge folding**：64-bit Badge 三段式布局（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）实现 O(1) 定向撤销 + ~10ns fastpath（已由微基准实测 2-10ns，见 [08-closure-summary](08-closure-summary-v3.6.md) L109 实测标注），优于 seL4 TCB badge 和 POSIX bitmap。
-2. **SSoT + codegen CI**：[syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/tools/codegen/syscall_gen.py) L310-364 的 check_mode/check_tbl_mode 保证 syscall.xml → syscall.h → syscall_64.tbl 三方一致性，工程严谨性领先。
+1. **Badge folding**：64-bit Badge 三段式布局（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）实现 O(1) 定向撤销 + ~10ns fastpath（已由微基准实测 2-10ns，见 [08-closure-summary](08-closure-summary-v3.6.md) L109 实测标注），优于 seL4 TCB badge 和 POSIX bitmap。
+2. **SSoT + codegen CI**：[syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/tools/codegen/syscall_gen.py) L310-364 的 check_mode/check_tbl_mode 保证 syscall.xml → syscall.h → syscall_64.tbl 三方一致性，工程严谨性领先。
 3. **ALK 策略**：只新增文件不改主线，天然规避 KABI 债务，优于 openEuler KABI_REPLACE/KABI_USE2 宏补丁。
-4. **5-phase slowpath**：[airy_cap_check.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_check.c) L191-260 的 ring frozen → CAP_REQUEST → DSL → recheck → enforce 分层校验，防御纵深优于参考项目。
+4. **5-phase slowpath**：[airy_cap_check.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_check.c) L191-260 的 ring frozen → CAP_REQUEST → DSL → recheck → enforce 分层校验，防御纵深优于参考项目。
 
 ### 3.2 主要差距（需收敛项）
 
 1. **[P0] 预留 syscall 槽未显式登记**：syscall_64.tbl 中 552-571 未登记为 sys_ni_syscall，存在被误占用风险（[报告04](04-syscall-codegen-comparison-v3.6.md)）。
-2. **安全入口不对称**：task_kill/file_open 仅检查 agent_state（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm.c) L67-109），io_uring_cmd 路径有完整校验。
-3. **REVOKE 无级联撤销**：[airy_cap_derive.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c) L190-206 仅 per-agent epoch+1，已派生 cap 不受影响，seL4 通过 MDB 链递归撤销。
+2. **安全入口不对称**：task_kill/file_open 仅检查 agent_state（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm.c) L67-109），io_uring_cmd 路径有完整校验。
+3. **REVOKE 无级联撤销**：[airy_cap_derive.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c) L190-206 仅 per-agent epoch+1，已派生 cap 不受影响，seL4 通过 MDB 链递归撤销。
 4. **运行时治理缺失**：CBS 带宽准入、budget 入口检查、SC 捐赠、lockdown 均未实现（M2-M5 项）。
 5. **可观测性不足**：stc_dispatch.c L73 用 pr_info、stc_stats 未暴露 debugfs（[报告01](01-scheduler-comparison-v3.6.md)）。
 
@@ -121,4 +121,4 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 6.3 与 v3.5 审计的关系
 
-v3.5 审计（[27-systematic-audit-v9.0.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v3.5/27-systematic-audit-v9.0.md)）侧重 SSoT/IRON 合规性；v3.6 新增跨项目深度对比维度。两者互补：v3.5 保证"做对了"，v3.6 追问"做得够不够好"。
+v3.5 审计（[27-systematic-audit-v9.0.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v3.5/27-systematic-audit-v9.0.md)）侧重 SSoT/IRON 合规性；v3.6 新增跨项目深度对比维度。两者互补：v3.5 保证"做对了"，v3.6 追问"做得够不够好"。

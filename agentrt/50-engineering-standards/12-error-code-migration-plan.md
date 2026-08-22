@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档版本**：v1.0\
 > **最后更新**：2026-07-17\
 > **上级文档**：[agentrt 工程标准规范手册](agentrt工程标准规范手册.md)\
-> **设计依据**：[15-comprehensive-correction-plan.md](../agentrt-linux/00-reviews/_review_v2.2/15-comprehensive-correction-plan.md) §4.2.1（UEF 设计）+ §6 文档逐一检查 C-05（错误码双轨制）
+> **设计依据**：[15-comprehensive-correction-plan.md](../agent-linux/00-reviews/_review_v2.2/15-comprehensive-correction-plan.md) §4.2.1（UEF 设计）+ §6 文档逐一检查 C-05（错误码双轨制）
 
 ---
 
@@ -191,11 +191,11 @@ agentrt 仓库在历史演进中累积了两套并存的错误码命名：
 
 ---
 
-## §3 时间线：与 agentrt-linux Phase 2 同步
+## §3 时间线：与 agent-linux Phase 2 同步
 
 ### 3.1 同步原则
 
-错误码迁移与 agentrt-linux（AirymaxOS）开发阶段同步推进，确保 agentrt 与 AirymaxOS 在 Phase 2 结束时共享同一 `AIRY_E*` [SC] 契约。与日志收敛计划（[11-log-convergence-plan.md](11-log-convergence-plan.md)）并行推进，但错误码迁移先行——错误码是日志参数的基础，统一错误码后再统一日志可减少中间态复杂度。
+错误码迁移与 agent-linux（AirymaxOS）开发阶段同步推进，确保 agentrt 与 AirymaxOS 在 Phase 2 结束时共享同一 `AIRY_E*` [SC] 契约。与日志收敛计划（[11-log-convergence-plan.md](11-log-convergence-plan.md)）并行推进，但错误码迁移先行——错误码是日志参数的基础，统一错误码后再统一日志可减少中间态复杂度。
 
 ### 3.2 阶段时间线
 
@@ -211,7 +211,7 @@ agentrt 仓库在历史演进中累积了两套并存的错误码命名：
 
 ### 3.3 与 AirymaxOS Phase 2 的协同
 
-agentrt-linux Phase 2（1.x.x+ 阶段）引入 12 daemons 用户态化（见 [03-microkernel-strategy.md](../../docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) §9.1），daemons 与 agentrt 通过 IPC 交互，错误码跨 IPC 边界传递。若 agentrt 仍用 `AIRY_ERR_*` 正数、AirymaxOS 用 `AIRY_E*` 负数，IPC 错误码传递需双向转换，是高频 bug 源。因此：
+agent-linux Phase 2（1.x.x+ 阶段）引入 12 daemons 用户态化（见 [03-microkernel-strategy.md](../../docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) §9.1），daemons 与 agentrt 通过 IPC 交互，错误码跨 IPC 边界传递。若 agentrt 仍用 `AIRY_ERR_*` 正数、AirymaxOS 用 `AIRY_E*` 负数，IPC 错误码传递需双向转换，是高频 bug 源。因此：
 
 - **阶段 2 别名**与 Phase 2 启动同步：Phase 2 新增 daemons 全部使用 `AIRY_E*`，agentrt 侧别名垫片确保旧码与新码共存期 IPC 边界无符号断裂
 - **阶段 3 迁移**与 Phase 2 中期同步：优先迁移与 daemons 有 IPC 交互的 agentrt 子系统，消除跨边界符号转换

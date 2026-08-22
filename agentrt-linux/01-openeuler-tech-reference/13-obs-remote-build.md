@@ -149,7 +149,7 @@ OBS 项目采用两级结构：`AirymaxOS:Factory`（主线滚动）→ `Airymax
   <!-- 1. 从 ALK-6.6-dev 分支拉取内核源码 tarball（全量，含 arch/sw_64/ 与 patches/hw-vendor/） -->
   <service name="tar_scm">
     <param name="scm">git</param>
-    <param name="url"><!-- TODO(待核验): ALK-6.6-dev 仓库地址，例如 https://gitee.example.com/airymax/agentrt-linux.git（私有仓库用 ssh + deploy key） --></param>
+    <param name="url"><!-- TODO(待核验): ALK-6.6-dev 仓库地址，例如 https://gitee.example.com/airymax/agent-linux.git（私有仓库用 ssh + deploy key） --></param>
     <param name="revision">ALK-6.6-dev</param>
     <param name="filename">airy-kernel</param>
     <!-- 版本号：6.6.0 对齐 openEuler kernel-6.6.0-145 段（见 11-layer-feasibility-study.md §1.3）；
@@ -201,7 +201,7 @@ OBS 项目采用两级结构：`AirymaxOS:Factory`（主线滚动）→ `Airymax
 
 ### 3.3 kernel 源码包 + quilt 补丁的处理约定
 
-- **源码包**：`tar_scm` 全量拉取 ALK-6.6-dev（含 `arch/sw_64/`、`configs/`、`patches/hw-vendor/`）。ALK 内核仓库即 agentrt-linux 内核源码树，不含 build/docs 等管理仓内容，全量拉取即为内核源码包。
+- **源码包**：`tar_scm` 全量拉取 ALK-6.6-dev（含 `arch/sw_64/`、`configs/`、`patches/hw-vendor/`）。ALK 内核仓库即 agent-linux 内核源码树，不含 build/docs 等管理仓内容，全量拉取即为内核源码包。
 - **quilt 补丁（双轨制 quilt 轨）**：`patches/hw-vendor/` 下以 `NNNN-<hash>.patch` + `series` 文件组织（sync-euler-drivers.sh E3 Track 2 产出，见 §8.1）。OBS 构建时补丁的应用在 spec 的 `%prep` 区完成（§6.2）：`%patch` 逐条应用，或 `quilt push -a` 按 series 批量应用。sw_64 属**直接导入轨**（[11-layer-feasibility-study.md §2.3](11-layer-feasibility-study.md)），`arch/sw_64/` 不经过 quilt，quilt 补丁仅覆盖 `drivers/` 重叠区。
 - **版本一致性**：`set_version` 注入的 `%{version}` 与 spec `Release: airy.1%{?dist}` 组合为 RPM 版本，与内核源码 `Makefile` 的 `VERSION=6/PATCHLEVEL=6/SUBLEVEL=0` 解耦（借鉴 openEuler `Makefile.oever` 的发行版版本解耦思想，见 §6.1）。
 
@@ -261,7 +261,7 @@ BuildFlags: emulator:none
 | `%define _target_platform sw_64-oe-linux` | 锁定目标 ABI | openEuler sw_64 的标准 toolchain triple，与 openEuler:Main 的 sw_64 包二进制兼容 |
 | `%define _target_cpu sw_64` | 架构标识 | 供 spec `%ifarch sw_64` 判定与 Kbuild 引用 |
 | `Preinstall` / `Require` | 预装与强制构建依赖 | sw_64 构建环境中 gcc/binutils 由 openEuler:Main path 解析，无需交叉包前缀（原生 gcc） |
-| `%oemver_lts/major/minor` | 发行版版本注入 | 借鉴 `Makefile.oever` 占位 + 构建时注入模式（来源：`agentrt-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §9：顶层 Makefile L1252 `include $(srctree)/Makefile.oever`、L1279-1284 生成 version.h；`Makefile.oever` 5 行占位值 `OPENEULER_LTS=0/MAJOR=9999/MINOR=0`，构建时外部注入） |
+| `%oemver_lts/major/minor` | 发行版版本注入 | 借鉴 `Makefile.oever` 占位 + 构建时注入模式（来源：`agent-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §9：顶层 Makefile L1252 `include $(srctree)/Makefile.oever`、L1279-1284 生成 version.h；`Makefile.oever` 5 行占位值 `OPENEULER_LTS=0/MAJOR=9999/MINOR=0`，构建时外部注入） |
 | `%kabi_check 0` | 禁用 KABI 检查 | LAYER 导入已剥离 `__KABI` 标记（[12-build-and-flash-strategy.md §11.3](12-build-and-flash-strategy.md) 验证 `grep -r '__KABI' arch/sw_64/ configs/` 零命中） |
 | `BuildFlags: emulator:none` | 禁用 qemu 回退 | sw_64 无 qemu 仿真（§1.2 阻塞点 #1/#2）；标志名以 OBS 实例版本为准，等价替代：不在 repository meta 声明 emulator 并仅声明 `<arch>sw_64</arch>` |
 
@@ -350,7 +350,7 @@ BuildRequires:  diffutils
 
 ### 6.1 发行版版本号与内核 VERSION 解耦（借鉴 Makefile.oever）
 
-openEuler 将发行版版本号与内核 `VERSION/PATCHLEVEL/SUBLEVEL` 解耦：源码树内 `Makefile.oever` 为占位值（`OPENEULER_LTS=0/OPENEULER_MAJOR=9999/OPENEULER_MINOR=0`），由构建系统在构建时外部注入；顶层 Makefile L1252 `include $(srctree)/Makefile.oever`、L1279-1284 将注入值生成进 `version.h`（来源：`agentrt-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §9）。
+openEuler 将发行版版本号与内核 `VERSION/PATCHLEVEL/SUBLEVEL` 解耦：源码树内 `Makefile.oever` 为占位值（`OPENEULER_LTS=0/OPENEULER_MAJOR=9999/OPENEULER_MINOR=0`），由构建系统在构建时外部注入；顶层 Makefile L1252 `include $(srctree)/Makefile.oever`、L1279-1284 将注入值生成进 `version.h`（来源：`agent-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §9）。
 
 AirymaxOS 对应实现（不改内核源码，在 spec 侧完成）：
 
@@ -472,7 +472,7 @@ install -m 0644 arch/%{build_arch}/configs/airy_defconfig \
 
 ### 6.6 KABI 构建期校验的借鉴与取舍
 
-openEuler 的 KABI 构建期校验体系：`scripts/kabideps`（模块引用符号表）与 `scripts/kabisyms`（生成 kABI baseline `Module.kabi`）在构建期/发布期生成 baseline，`scripts/check-kabi` 对 baseline 做 diff 校验（来源：`agentrt-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §1.1 与 §10）。
+openEuler 的 KABI 构建期校验体系：`scripts/kabideps`（模块引用符号表）与 `scripts/kabisyms`（生成 kABI baseline `Module.kabi`）在构建期/发布期生成 baseline，`scripts/check-kabi` 对 baseline 做 diff 校验（来源：`agent-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` §1.1 与 §10）。
 
 AirymaxOS 取舍：
 - **不启用** openEuler KABI baseline 校验：LAYER 导入已剥离 `__KABI` 标记（[12-build-and-flash-strategy.md §11.3](12-build-and-flash-strategy.md) 零命中验证），无 KABI 占位可校验；`%kabi_check 0`（§4.1）关闭。
@@ -629,7 +629,7 @@ sw_64 OBS 构建的触发条件（满足任一即触发）：
 #!/usr/bin/env bash
 # trigger-obs-sw64.sh —— E4/E5 阶段调用的 OBS sw_64 构建触发器（骨架）
 set -euo pipefail
-ALK_DIR="${ALK_DIR:-/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel}"
+ALK_DIR="${ALK_DIR:-/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel}"
 PROJ="AirymaxOS:Factory:Kernel"
 PKG="airy-kernel"
 # TODO(待核验): OBS API 端点/token 由环境注入（CI secret），不落仓库
@@ -672,7 +672,7 @@ osc commit -m "trigger sw_64 build for ALK-6.6-dev $(git -C "$ALK_DIR" rev-parse
 | [11-layer-feasibility-study.md](11-layer-feasibility-study.md) | §2.3 双轨制：`arch/sw_64/` **直接导入轨**（366 文件，vanilla 无此树、零冲突）；`drivers/` quilt 轨 | sw_64 构建即验证直接导入轨的编译完整性；quilt 补丁经 §3.1 `extract_file`/§6.2 `%patch` 应用 |
 | [12-build-and-flash-strategy.md](12-build-and-flash-strategy.md) | §1.1 defconfig 体系（openeuler_defconfig 底座 + euler_hw_*.config + defconfig-agent，merge_config.sh 合入）；§1.2 airy-kernel.spec 5 包拆分；§3.2 OBS 项目命名（`AirymaxOS:Factory:Kernel`）；§3.1 dnf 仓库 `sw_64/` 子目录；§11 双轨制落地登记（产物 #1-#13） | 本方案的 OBS 项目/包/spec/产物分发全部对齐上述章节；§11.6 后续工作 #1（sw_64 交叉编译链）与 #4（OBS 多架构构建配置）由本文档承接 |
 | sync-euler-drivers.sh（`/home/spharx/SpharxWorks/sync-upstream/sync-euler-drivers.sh`） | E4 三架构 defconfig 验证（sw_64 记录跳过）；E5 diffconfig IRON-7 一致性验证（sw_64 跳过） | §8.1/§8.2 将 sw_64 从"跳过"升级为"OBS 触发构建 + 产物回灌参与 E5 校验" |
-| v3.6 审查报告（`agentrt-linux/00-reviews/_review_v3.6/`） | OBS 相关内容**未提及**（本方案自建）；构建事实来源：`21-openEuler-engineering-standards-v3.6c.md` §9（Makefile.oever/Kbuild filechk_offsets/Makefile.build）、§1.1+§10（KABI 构建期校验 kabideps/kabisyms/check-kabi）；sw_64 唯一提及为 `16-fault-handling-isolation-v3.6b.md` L134 与 `18-closure-summary-v3.6b.md` L152（airy_die_notify 需补 `CONFIG_SW64` 守卫，N13） | §6.1（版本解耦）、§6.6（KABI 取舍）引用上述事实；N13 的 `CONFIG_SW64` 守卫补丁纳入后续内核提交（§10.3），其编译验证经 OBS 通道 |
+| v3.6 审查报告（`agent-linux/00-reviews/_review_v3.6/`） | OBS 相关内容**未提及**（本方案自建）；构建事实来源：`21-openEuler-engineering-standards-v3.6c.md` §9（Makefile.oever/Kbuild filechk_offsets/Makefile.build）、§1.1+§10（KABI 构建期校验 kabideps/kabisyms/check-kabi）；sw_64 唯一提及为 `16-fault-handling-isolation-v3.6b.md` L134 与 `18-closure-summary-v3.6b.md` L152（airy_die_notify 需补 `CONFIG_SW64` 守卫，N13） | §6.1（版本解耦）、§6.6（KABI 取舍）引用上述事实；N13 的 `CONFIG_SW64` 守卫补丁纳入后续内核提交（§10.3），其编译验证经 OBS 通道 |
 
 **保密与合规边界**（与 [12-build-and-flash-strategy.md §9](12-build-and-flash-strategy.md) 一致）：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`；OBS 项目名、API 端点、toolchain path 等内部基础设施信息不对外暴露（BAN-INTERNAL-002 硬件适配语境豁免）；OBS 构建产物（含 LAYER sw_64 驱动源码）发布时须公开源码以满足 GPL-2.0 强 copyleft 要求（[11-layer-feasibility-study.md §3.2](11-layer-feasibility-study.md)）。
 
@@ -739,9 +739,9 @@ osc commit -m "trigger sw_64 build for ALK-6.6-dev $(git -C "$ALK_DIR" rev-parse
 
 1. [12-build-and-flash-strategy.md](12-build-and-flash-strategy.md) — 编译与烧录策略（§1.1 defconfig 合入、§1.2 spec 5 包拆分、§3.1 dnf 仓库、§3.2 OBS 项目命名、§11 双轨制落地登记）
 2. [11-layer-feasibility-study.md](11-layer-feasibility-study.md) — LAYER 方案可行性论证（§1.1 正交性、§1.3 版本对齐、§2.3 双轨制）
-3. `agentrt-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` — openEuler 工程标准研究（§9 Makefile.oever 版本解耦 / Kbuild filechk_offsets / scripts/Makefile.build；§1.1+§10 KABI 构建期校验 kabideps/kabisyms/check-kabi）
-4. `agentrt-linux/00-reviews/_review_v3.6/16-fault-handling-isolation-v3.6b.md` L134 — sw_64 需补 `CONFIG_SW64` 守卫（N13）
-5. `agentrt-linux/00-reviews/_review_v3.6/18-closure-summary-v3.6b.md` L152 — arm64/sw_64 架构未深查声明
+3. `agent-linux/00-reviews/_review_v3.6/21-openEuler-engineering-standards-v3.6c.md` — openEuler 工程标准研究（§9 Makefile.oever 版本解耦 / Kbuild filechk_offsets / scripts/Makefile.build；§1.1+§10 KABI 构建期校验 kabideps/kabisyms/check-kabi）
+4. `agent-linux/00-reviews/_review_v3.6/16-fault-handling-isolation-v3.6b.md` L134 — sw_64 需补 `CONFIG_SW64` 守卫（N13）
+5. `agent-linux/00-reviews/_review_v3.6/18-closure-summary-v3.6b.md` L152 — arm64/sw_64 架构未深查声明
 6. `/home/spharx/SpharxWorks/sync-upstream/sync-euler-drivers.sh` — 五阶段同步脚本（E3 pre-head 回退机制 L363-367、E4 sw_64 跳过 L603-605、E5 IRON-7 校验 L627-736）
 
 ---

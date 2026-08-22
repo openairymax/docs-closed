@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.0 P0/P1 完整回归测试计划
+# agent-linux v3.0 P0/P1 完整回归测试计划
 
-> **文档定位**：agentrt-linux（AirymaxOS）v2.9 + v3.0 P0 系统性修复后的完整回归测试计划，覆盖全部 P0 项（4 项）+ P1 项（2 项）+ GAP 项（2 项）+ v3.0 深度残留修复验证，供手动验证执行
+> **文档定位**：agent-linux（AirymaxOS）v2.9 + v3.0 P0 系统性修复后的完整回归测试计划，覆盖全部 P0 项（4 项）+ P1 项（2 项）+ GAP 项（2 项）+ v3.0 深度残留修复验证，供手动验证执行
 > **报告版本**：v3.0
 > **生成日期**：2026-07-23
 > **上游报告**：[`_review_v2.8/00-full-doc-audit-v2.8.md`](../_review_v2.8/00-full-doc-audit-v2.8.md)（问题发现）→ [`_review_v2.9/00-p0-fix-report-v2.9.md`](../_review_v2.9/00-p0-fix-report-v2.9.md)（首轮修复）→ [`00-p0-fix-report-v3.0.md`](./00-p0-fix-report-v3.0.md)（深度残留修复）
@@ -91,12 +91,12 @@ cd /home/spharx/SpharxWorks/airymaxhub
 |------|------|
 | 开源文档根 | `docs/AirymaxOS/` |
 | SSoT syscall 注册表 | `docs/AirymaxOS/140-application-development/07-syscall-registry.md` |
-| 内核 UAPI 头文件 | `agentrt-linux/kernel/include/uapi/asm-generic/unistd.h` |
-| 内核 syscall 表 | `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` |
-| codegen 契约源 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml` |
-| codegen 生成器 | `agentrt-linux/tools/codegen/syscall_gen.py` |
-| ABI 检查工具 | `agentrt-linux/tools/abi-check/abi_check.py` |
-| ABI 基线 | `agentrt-linux/tools/abi-check/abi_baseline.json` |
+| 内核 UAPI 头文件 | `agent-linux/kernel/include/uapi/asm-generic/unistd.h` |
+| 内核 syscall 表 | `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` |
+| codegen 契约源 | `agent-linux/kernel/include/uapi/linux/airymax/syscall.xml` |
+| codegen 生成器 | `agent-linux/tools/codegen/syscall_gen.py` |
+| ABI 检查工具 | `agent-linux/tools/abi-check/abi_check.py` |
+| ABI 基线 | `agent-linux/tools/abi-check/abi_baseline.json` |
 
 ### 2.3 工具依赖
 
@@ -133,7 +133,7 @@ grep -n "548\|549\|550\|551" docs/AirymaxOS/140-application-development/07-sysca
 2. 读取 unistd.h 编号定义：
 
 ```bash
-grep -n "airy_sys" agentrt-linux/kernel/include/uapi/asm-generic/unistd.h
+grep -n "airy_sys" agent-linux/kernel/include/uapi/asm-generic/unistd.h
 ```
 
 **预期输出**：L826-843 区域包含 4 行 `#define __NR_airy_sys_*` 定义，编号 548-551。
@@ -141,7 +141,7 @@ grep -n "airy_sys" agentrt-linux/kernel/include/uapi/asm-generic/unistd.h
 3. 读取 syscall_64.tbl 编号定义：
 
 ```bash
-grep -n "airy_sys" agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl
+grep -n "airy_sys" agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl
 ```
 
 **预期输出**：L378-387 区域包含 4 行 syscall 入口，编号 548-551。
@@ -173,7 +173,7 @@ grep -rnE "#(5(1[2-7]|2[0-9]|3[0-9]|4[0-7])|6(0[0-9]|1[0-9]))\b" docs/AirymaxOS/
 **步骤**：
 
 ```bash
-grep -rn "454-457\|453-456" docs/AirymaxOS/ docs-closed/agentrt-linux/ agentrt-linux/kernel/include/ agentrt-linux/kernel/arch/
+grep -rn "454-457\|453-456" docs/AirymaxOS/ docs-closed/agent-linux/ agent-linux/kernel/include/ agent-linux/kernel/arch/
 ```
 
 **预期输出**：无任何匹配行。
@@ -333,7 +333,7 @@ sed -n '4,7p' docs/AirymaxOS/190-distribution/06-sbom-generation.md
 1. 验证文件存在：
 
 ```bash
-ls -la agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
+ls -la agent-linux/kernel/include/uapi/linux/airymax/syscall.xml
 ```
 
 **预期输出**：文件存在，大小 > 0。
@@ -341,7 +341,7 @@ ls -la agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
 2. 验证 4 个 syscall 元素：
 
 ```bash
-grep -c "<syscall " agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
+grep -c "<syscall " agent-linux/kernel/include/uapi/linux/airymax/syscall.xml
 ```
 
 **预期输出**：`4`。
@@ -349,7 +349,7 @@ grep -c "<syscall " agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
 3. 验证 linux_base 属性：
 
 ```bash
-grep "linux_base" agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
+grep "linux_base" agent-linux/kernel/include/uapi/linux/airymax/syscall.xml
 ```
 
 **预期输出**：`linux_base="548"`。
@@ -357,7 +357,7 @@ grep "linux_base" agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
 4. 验证 4 个 syscall 名称：
 
 ```bash
-grep "<syscall " agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
+grep "<syscall " agent-linux/kernel/include/uapi/linux/airymax/syscall.xml
 ```
 
 **预期输出**：包含 `airy_sys_call` / `airy_sys_rovol_ctl` / `airy_sys_sched_ctl` / `airy_sys_clt_notify`。
@@ -371,7 +371,7 @@ grep "<syscall " agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml
 1. 验证文件存在：
 
 ```bash
-ls -la agentrt-linux/tools/codegen/syscall_gen.py
+ls -la agent-linux/tools/codegen/syscall_gen.py
 ```
 
 **预期输出**：文件存在。
@@ -379,7 +379,7 @@ ls -la agentrt-linux/tools/codegen/syscall_gen.py
 2. 验证 Python 语法正确：
 
 ```bash
-python3 -c "import ast; ast.parse(open('agentrt-linux/tools/codegen/syscall_gen.py').read()); print('syntax OK')"
+python3 -c "import ast; ast.parse(open('agent-linux/tools/codegen/syscall_gen.py').read()); print('syntax OK')"
 ```
 
 **预期输出**：`syntax OK`。
@@ -387,7 +387,7 @@ python3 -c "import ast; ast.parse(open('agentrt-linux/tools/codegen/syscall_gen.
 3. 验证 --check 模式（契约校验）：
 
 ```bash
-cd agentrt-linux/tools/codegen && python3 syscall_gen.py --check ../../kernel/include/uapi/linux/airymax/syscall.xml 2>&1 | tail -20
+cd agent-linux/tools/codegen && python3 syscall_gen.py --check ../../kernel/include/uapi/linux/airymax/syscall.xml 2>&1 | tail -20
 ```
 
 **预期输出**：输出校验通过信息，无错误。
@@ -401,7 +401,7 @@ cd agentrt-linux/tools/codegen && python3 syscall_gen.py --check ../../kernel/in
 1. 验证文件存在：
 
 ```bash
-ls -la agentrt-linux/tools/codegen/Makefile
+ls -la agent-linux/tools/codegen/Makefile
 ```
 
 **预期输出**：文件存在。
@@ -409,7 +409,7 @@ ls -la agentrt-linux/tools/codegen/Makefile
 2. 验证 Makefile 语法（dry-run）：
 
 ```bash
-cd agentrt-linux/tools/codegen && make -n 2>&1 | head -10
+cd agent-linux/tools/codegen && make -n 2>&1 | head -10
 ```
 
 **预期输出**：输出预期的构建命令（不实际执行），无语法错误。
@@ -423,7 +423,7 @@ cd agentrt-linux/tools/codegen && make -n 2>&1 | head -10
 1. 执行生成：
 
 ```bash
-cd agentrt-linux/tools/codegen && python3 syscall_gen.py --input ../../kernel/include/uapi/linux/airymax/syscall.xml --output /tmp/airy_syscalls_generated.h 2>&1
+cd agent-linux/tools/codegen && python3 syscall_gen.py --input ../../kernel/include/uapi/linux/airymax/syscall.xml --output /tmp/airy_syscalls_generated.h 2>&1
 ```
 
 **预期输出**：生成成功，无错误。
@@ -461,7 +461,7 @@ grep "548\|549\|550\|551" /tmp/airy_syscalls_generated.h
 1. 验证文件存在：
 
 ```bash
-ls -la agentrt-linux/tools/abi-check/abi_check.py agentrt-linux/tools/abi-check/abi_baseline.json agentrt-linux/tools/abi-check/README.md
+ls -la agent-linux/tools/abi-check/abi_check.py agent-linux/tools/abi-check/abi_baseline.json agent-linux/tools/abi-check/README.md
 ```
 
 **预期输出**：3 个文件均存在。
@@ -469,7 +469,7 @@ ls -la agentrt-linux/tools/abi-check/abi_check.py agentrt-linux/tools/abi-check/
 2. 验证 Python 语法：
 
 ```bash
-python3 -c "import ast; ast.parse(open('agentrt-linux/tools/abi-check/abi_check.py').read()); print('syntax OK')"
+python3 -c "import ast; ast.parse(open('agent-linux/tools/abi-check/abi_check.py').read()); print('syntax OK')"
 ```
 
 **预期输出**：`syntax OK`。
@@ -481,7 +481,7 @@ python3 -c "import ast; ast.parse(open('agentrt-linux/tools/abi-check/abi_check.
 1. 执行 ABI 检查：
 
 ```bash
-cd agentrt-linux/tools/abi-check && python3 abi_check.py 2>&1
+cd agent-linux/tools/abi-check && python3 abi_check.py 2>&1
 ```
 
 **预期输出**：输出 6 项检查结果，全部为 `PASS`：
@@ -495,7 +495,7 @@ cd agentrt-linux/tools/abi-check && python3 abi_check.py 2>&1
 2. 验证退出码：
 
 ```bash
-cd agentrt-linux/tools/abi-check && python3 abi_check.py > /dev/null 2>&1; echo "exit code: $?"
+cd agent-linux/tools/abi-check && python3 abi_check.py > /dev/null 2>&1; echo "exit code: $?"
 ```
 
 **预期输出**：`exit code: 0`。
@@ -509,7 +509,7 @@ cd agentrt-linux/tools/abi-check && python3 abi_check.py > /dev/null 2>&1; echo 
 1. 验证基线文件包含 548-551：
 
 ```bash
-grep "548\|549\|550\|551" agentrt-linux/tools/abi-check/abi_baseline.json
+grep "548\|549\|550\|551" agent-linux/tools/abi-check/abi_baseline.json
 ```
 
 **预期输出**：包含 4 个核心 syscall 编号。
@@ -517,7 +517,7 @@ grep "548\|549\|550\|551" agentrt-linux/tools/abi-check/abi_baseline.json
 2. 验证基线文件无旧编号：
 
 ```bash
-grep "454\|455\|456\|457\|512\|513\|514" agentrt-linux/tools/abi-check/abi_baseline.json | grep -v "548\|549\|550\|551"
+grep "454\|455\|456\|457\|512\|513\|514" agent-linux/tools/abi-check/abi_baseline.json | grep -v "548\|549\|550\|551"
 ```
 
 **预期输出**：无匹配（0 个旧编号残留）。
@@ -539,19 +539,19 @@ v1.2 内核框架验证发现 `security/airy/` 与 `kernel/superv/` 存在 4 个
 1. 列出 security/airy/ 的 .c 文件：
 
 ```bash
-ls agentrt-linux/kernel/security/airy/*.c 2>/dev/null || echo "目录不存在或无 .c 文件"
+ls agent-linux/kernel/security/airy/*.c 2>/dev/null || echo "目录不存在或无 .c 文件"
 ```
 
 2. 列出 kernel/superv/ 的 .c 文件：
 
 ```bash
-ls agentrt-linux/kernel/kernel/superv/*.c 2>/dev/null || echo "目录不存在或无 .c 文件"
+ls agent-linux/kernel/kernel/superv/*.c 2>/dev/null || echo "目录不存在或无 .c 文件"
 ```
 
 3. 识别同名文件：
 
 ```bash
-comm -12 <(ls agentrt-linux/kernel/security/airy/*.c 2>/dev/null | xargs -n1 basename | sort) <(ls agentrt-linux/kernel/kernel/superv/*.c 2>/dev/null | xargs -n1 basename | sort)
+comm -12 <(ls agent-linux/kernel/security/airy/*.c 2>/dev/null | xargs -n1 basename | sort) <(ls agent-linux/kernel/kernel/superv/*.c 2>/dev/null | xargs -n1 basename | sort)
 ```
 
 **预期输出**：输出 4 个同名文件（或空，若 M1 阶段已重命名）：
@@ -573,7 +573,7 @@ comm -12 <(ls agentrt-linux/kernel/security/airy/*.c 2>/dev/null | xargs -n1 bas
 1. 验证 kernel/superv/ 下文件已加后缀：
 
 ```bash
-ls agentrt-linux/kernel/kernel/superv/*_superv.c 2>/dev/null
+ls agent-linux/kernel/kernel/superv/*_superv.c 2>/dev/null
 ```
 
 **预期输出**：包含 4 个带 `_superv` 后缀的文件。
@@ -616,7 +616,7 @@ grep -rn "IORING_OP_URING_CMD\|cmd_op=IPC_SEND\|cmd_op=IPC_RECV\|cmd_op=IPC_REGI
 
 ### 9.1 问题描述
 
-v2.8 确认 GAP-01 真实：agentrt-linux 基于 Linux 6.6，有 ~260 个专属补丁，在 6.6→7.1 迁移时需重新适配，存在长期可维护性风险。
+v2.8 确认 GAP-01 真实：agent-linux 基于 Linux 6.6，有 ~260 个专属补丁，在 6.6→7.1 迁移时需重新适配，存在长期可维护性风险。
 
 ### 9.2 测试用例 TC-GAP-01: 补丁追踪文档完整性
 
@@ -799,7 +799,7 @@ sed -n '710,715p' docs/AirymaxOS/140-application-development/04-token-budget.md
 1. 扫描工程标准规范：
 
 ```bash
-grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md
+grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agent-linux/agent-linux基本工程标准规范.md
 ```
 
 **预期输出**：无匹配（0 个旧编号残留）。
@@ -807,7 +807,7 @@ grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agentrt-linux/agentrt-l
 2. 扫描开发路线和进度：
 
 ```bash
-grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agentrt-linux/agentrt-linux开发路线和进度.md
+grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agent-linux/agent-linux开发路线和进度.md
 ```
 
 **预期输出**：无匹配（0 个旧编号残留）。
@@ -815,7 +815,7 @@ grep -n "512-535\|454-457\|453-456\|458-477" docs-closed/agentrt-linux/agentrt-l
 3. 验证 R-01 状态已更新：
 
 ```bash
-grep -n "R-01\|syscall.xml" docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md | head -10
+grep -n "R-01\|syscall.xml" docs-closed/agent-linux/agent-linux基本工程标准规范.md | head -10
 ```
 
 **预期输出**：R-01 标注为"已落地"（非"待落地"）。
@@ -917,8 +917,8 @@ cd /home/spharx/SpharxWorks/airymaxhub
 
 echo "=== TC-014-01: ABI 三方编号一致性 ==="
 echo "[SSoT]"; grep -c "548\|549\|550\|551" docs/AirymaxOS/140-application-development/07-syscall-registry.md
-echo "[unistd.h]"; grep -c "airy_sys" agentrt-linux/kernel/include/uapi/asm-generic/unistd.h
-echo "[syscall_64.tbl]"; grep -c "airy_sys" agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl
+echo "[unistd.h]"; grep -c "airy_sys" agent-linux/kernel/include/uapi/asm-generic/unistd.h
+echo "[syscall_64.tbl]"; grep -c "airy_sys" agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl
 
 echo "=== TC-014-02: 旧编号残留扫描 ==="
 COUNT=$(grep -rnE "#(5(1[2-7]|2[0-9]|3[0-9]|4[0-7])|6(0[0-9]|1[0-9]))\b" docs/AirymaxOS/ | grep -i "airy_sys\|syscall" | wc -l)
@@ -929,7 +929,7 @@ COUNT=$(grep -rn "0\.2\.8" docs/AirymaxOS/ | wc -l)
 echo "v0.2.8 残留数: $COUNT (预期: 0)"
 
 echo "=== TC-018-02: ABI 检查工具 ==="
-cd agentrt-linux/tools/abi-check && python3 abi_check.py 2>&1 | tail -10
+cd agent-linux/tools/abi-check && python3 abi_check.py 2>&1 | tail -10
 
 echo "=== 验证完成 ==="
 ```

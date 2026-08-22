@@ -1,13 +1,13 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 34 — 从 agentrt-linux 整体方案高度对 A-IPC 重构的科学论证
+# 34 — 从 agent-linux 整体方案高度对 A-IPC 重构的科学论证
 
 ## "A-IPC 是 AirymaxOS 的第一块基石——基石的形状决定整座建筑"
 
-> **文档性质**：跳出 A-IPC 单点视角，从 agentrt-linux 整体工程方案高度的科学严谨论证
+> **文档性质**：跳出 A-IPC 单点视角，从 agent-linux 整体工程方案高度的科学严谨论证
 > **撰写日期**：2026-07-18
 > **审查依据**：逐份阅读 AirymaxOS 22 个子目录核心文档 + _review_v2.2 全部 34 份审查报告
-> **核心问题**：对于 agentrt-linux 是否要采用 Capability Folding 重构方案，从整体方案高度进行科学、严谨的推论
+> **核心问题**：对于 agent-linux 是否要采用 Capability Folding 重构方案，从整体方案高度进行科学、严谨的推论
 > **设计哲学**：乔布斯/艾夫"简约就是美"——"对复杂事物的精髓进行深度挖掘和精准提炼"
 
 ---
@@ -18,9 +18,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 用户在 14 轮对话后提出一个根本性质疑：
 
-> "目前的近十多轮对话，都是只看 A-IPC 方案本身，没有在 agentrt-linux 的整体方案上去深度总结和思考，这样的技术方案是孤立的。"
+> "目前的近十多轮对话，都是只看 A-IPC 方案本身，没有在 agent-linux 的整体方案上去深度总结和思考，这样的技术方案是孤立的。"
 
-这一质疑是正确的。前 33 份审查报告虽然深度逐增，但视角始终聚焦于 A-IPC 内部——从漏洞到修复，从耦合到隔离，从物理鸿沟到简约化。**没有一份报告从 agentrt-linux 整体工程的高度，论证 Capability Folding 重构是否是正确的选择。**
+这一质疑是正确的。前 33 份审查报告虽然深度逐增，但视角始终聚焦于 A-IPC 内部——从漏洞到修复，从耦合到隔离，从物理鸿沟到简约化。**没有一份报告从 agent-linux 整体工程的高度，论证 Capability Folding 重构是否是正确的选择。**
 
 本论证补足这个缺口。论证框架如下：
 
@@ -66,7 +66,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 在建筑工程学中，基石（cornerstone）有三个不可妥协的属性：
 
-| 属性 | 建筑学含义 | agentrt-linux 工程含义 |
+| 属性 | 建筑学含义 | agent-linux 工程含义 |
 |------|----------|---------------------|
 | **不可移动性** | 基石一旦奠定，整座建筑以它为参照 | A-IPC 的 128B 消息头、magic、opcode 一旦发布即冻结 |
 | **承重性** | 基石承受整座建筑的重量 | A-IPC 承载 12 daemon 通信网格 + 5 模块协作 |
@@ -168,7 +168,7 @@ offset  56: __reserved[72]  (72B) ← 缩减（原 reserved[84]）
 | 约束 | 是否冲突 | 分析 |
 |------|---------|------|
 | IC-1（物理宿主） | 不冲突 | `ipc.h` 仍在 `kernel/include/airymax/` |
-| IC-2（逐字节相同） | **需要同步** | agentrt 和 agentrt-linux 两端 `ipc.h` 必须同步修改 |
+| IC-2（逐字节相同） | **需要同步** | agentrt 和 agent-linux 两端 `ipc.h` 必须同步修改 |
 | IC-3（变更分类） | **向后兼容** | 新增字段在原 reserved 空间内，128B 总长不变，magic 不变。属于"新增字段（向后兼容）"分类 |
 | IC-4（magic 冻结） | 不冲突 | magic 仍为 0x41524531 'ARE1' |
 | IC-5（当前定义） | **需要更新** | `reserved[84]` → `capability_badge + crc32 + reserved[72]` |
@@ -189,7 +189,7 @@ offset  56: __reserved[72]  (72B) ← 缩减（原 reserved[84]）
          Badge 校验（fastpath C-S9，3 次 READ_ONCE + 4 次比较）
 ```
 
-**问题**：agentrt 用户态（运行在普通 Linux 上，没有 agentrt-linux 内核）**无法维护这个机制**：
+**问题**：agentrt 用户态（运行在普通 Linux 上，没有 agent-linux 内核）**无法维护这个机制**：
 
 1. agentrt 用户态没有内核静态数组 `agent_caps[]`
 2. agentrt 用户态没有 `get_random_bytes()` 内核函数
@@ -200,7 +200,7 @@ offset  56: __reserved[72]  (72B) ← 缩减（原 reserved[84]）
 
 | 端 | capability_badge 字段语义 |
 |----|--------------------------|
-| agentrt-linux 内核 | 编译的 Badge (Epoch<<48 \| RandomTag<<16)，由 sec_d 生成，内核静态数组校验 |
+| agent-linux 内核 | 编译的 Badge (Epoch<<48 \| RandomTag<<16)，由 sec_d 生成，内核静态数组校验 |
 | agentrt 用户态 | 始终为 0，不使用 Badge 机制，使用传统 capability 引用（cap_t） |
 
 **这违反了 IRON-9 v3 [SC] 层的"逐字节相同 + 语义一致"原则吗？**
@@ -217,7 +217,7 @@ offset  56: __reserved[72]  (72B) ← 缩减（原 reserved[84]）
 
 具体到 IPC 传输，120 号 §5.2 明确：
 - agentrt：用户态消息队列（mqueue/io_uring）
-- agentrt-linux：内核 io_uring 驱动（IORING_OP_URING_CMD）
+- agent-linux：内核 io_uring 驱动（IORING_OP_URING_CMD）
 - [SC] 契约依据：`ipc.h` 128B 消息头 + magic 'ARE1'
 
 **结论**：[SC] 共享的是 128B 消息头的**二进制布局**，不是**校验机制**。两端对 `capability_badge` 字段的校验机制不同，是完全符合 IRON-9 v3 四层模型的——这属于 [SS] 语义同源层的范畴。
@@ -262,7 +262,7 @@ enum airy_ipc_op {
  * 总长保持 128 字节，magic 保持 'ARE1' 不变。
  *
  * 跨端语义（[SS] 语义同源层）：
- * - agentrt-linux 内核：capability_badge 由 sec_d 编译，fastpath C-S9 校验
+ * - agent-linux 内核：capability_badge 由 sec_d 编译，fastpath C-S9 校验
  * - agentrt 用户态：capability_badge 始终为 0，使用传统 cap_t 引用
  * - 两端共享二进制布局，校验机制属于 [SS] 层
  */
@@ -275,7 +275,7 @@ struct airy_ipc_msg_hdr {
     __u64   src_task;           /* offset 24 */
     __u64   dst_task;           /* offset 32 */
     __u32   payload_len;        /* offset 40 */
-    __u64   capability_badge;   /* offset 44, [SS] 语义同源：agentrt-linux 用，agentrt=0 */
+    __u64   capability_badge;   /* offset 44, [SS] 语义同源：agent-linux 用，agentrt=0 */
     __u32   crc32;              /* offset 52, CRC32 覆盖 header[0:52) + payload */
     __u8    reserved[72];       /* offset 56, 保留，必须为零 */
 } __attribute__((packed));
@@ -301,10 +301,10 @@ Capability Folding 与 IRON-9 v3 四层模型**没有不可调和的冲突**。�
 
 ### 3.1 0 行代码现状的战略价值
 
-读取 [00-comprehensive-analysis-v2.2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/00-comprehensive-analysis-v2.2.md) 后确认：
+读取 [00-comprehensive-analysis-v2.2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/00-comprehensive-analysis-v2.2.md) 后确认：
 
 ```
-agentrt-linux 当前工程状态：
+agent-linux 当前工程状态：
   .md 文档：128+ 份（设计完整）
   .c 源文件：0 行（代码真空）
   .h 头文件：0 个
@@ -459,7 +459,7 @@ A-IPC   使用    使用     -      使用     -
 
 **缺点**：
 1. 牺牲 seL4 架构级隔离（31 号审查论证，可接受）
-2. 丧失 seL4 形式化验证路径（30 号审查论证，agentrt-linux 不需要）
+2. 丧失 seL4 形式化验证路径（30 号审查论证，agent-linux 不需要）
 3. 原子性丢失（30 号审查论证，异步场景可接受）
 4. 需要同步更新 11 份文档（成本可控）
 
@@ -501,7 +501,7 @@ A-IPC   使用    使用     -      使用     -
   - R2（uring_lock）：33 号审查已修复
 
 可接受 trade-off（经过论证，不阻塞重构）：
-  - R3（隔离丧失）：31 号审查论证 agentrt-linux 不需要架构级隔离
+  - R3（隔离丧失）：31 号审查论证 agent-linux 不需要架构级隔离
   - R4（原子性丢失）：30 号审查论证异步场景不需要原子性
 
 工程成本（可控，不阻塞重构）：
@@ -518,7 +518,7 @@ A-IPC   使用    使用     -      使用     -
 
 ### 6.1 最终决策
 
-**基于 6 个维度的科学论证，agentrt-linux 应当采用 Capability Folding 重构方案。**
+**基于 6 个维度的科学论证，agent-linux 应当采用 Capability Folding 重构方案。**
 
 决策依据：
 1. **维度 1（定位）**：A-IPC 作为"第一块基石"，Capability Folding 提供更强的基石属性
@@ -554,7 +554,7 @@ A-IPC   使用    使用     -      使用     -
 H1: Layout C v4 总长保持 128 字节，magic 保持 0x41524531 'ARE1'
 H2: capability_badge 字段进入 [SC] ipc.h，但校验机制属于 [SS] 层
 H3: agentrt 用户态 capability_badge 始终为 0，使用传统 cap_t 引用
-H4: agentrt-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
+H4: agent-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
 H5: 纯 C LSM 模块职责不变（策略/撤销/审计/执法），Badge 校验是其 fastpath 内联
 H6: [DSL] 降级模式下 capability_badge 字段存在但被忽略（值=0，跳过校验）
 ```
@@ -588,7 +588,7 @@ H6: [DSL] 降级模式下 capability_badge 字段存在但被忽略（值=0，�
 
 ### 7.1 一句话结论
 
-**从 agentrt-linux 整体方案高度的科学严谨论证得出：应当采用 Capability Folding 重构 A-IPC，因为它是"第一块基石"的正确形状，与 IRON-9 v3 四层模型没有不可调和的冲突，在 0 行代码现状下是最佳时间窗口，且所有风险可控。**
+**从 agent-linux 整体方案高度的科学严谨论证得出：应当采用 Capability Folding 重构 A-IPC，因为它是"第一块基石"的正确形状，与 IRON-9 v3 四层模型没有不可调和的冲突，在 0 行代码现状下是最佳时间窗口，且所有风险可控。**
 
 ### 7.2 论证的局限性
 

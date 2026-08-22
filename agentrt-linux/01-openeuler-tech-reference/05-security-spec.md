@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 阶段 | 内容 | 输出 |
 |------|------|------|
-| **第一段** | 参考 openEuler 安全规范（本文档） | 闭源 `docs-closed/agentrt-linux/01-openeuler-tech-reference/05-security-spec.md` |
+| **第一段** | 参考 openEuler 安全规范（本文档） | 闭源 `docs-closed/agent-linux/01-openeuler-tech-reference/05-security-spec.md` |
 | **第二段** | 参考行业最新安全理论 | seL4 capability / Zircon handle / BeyondCorp / CCC 机密计算 / Landlock UAPI |
 | **第三段** | 形成 AirymaxOS 技术方案 | 开源 `docs/AirymaxOS/110-security/` + `20-modules/03-security.md` 修订 |
 

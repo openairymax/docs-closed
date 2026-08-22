@@ -1,4 +1,4 @@
-# agentrt-linux v0.8.0 文档审查报告
+# agent-linux v0.8.0 文档审查报告
 
 > **审查日期**: 2026-07-11  
 > **审查范围**: `docs/AirymaxOS/` 全量 + `docs/AirymaxRT/` 全量 + `docs/README.md`  
@@ -163,7 +163,7 @@ AirymaxRT 侧（48 处替换）:
 
 **检查结果**: ✅ 通过
 
-根据用户指示"agentrt自己的文档是要保留的，如果agentrt自己的文档进行分类后，没有agentrt-linux对应的模块，则不创建"，移除了 14 个空占位目录:
+根据用户指示"agentrt自己的文档是要保留的，如果agentrt自己的文档进行分类后，没有agent-linux对应的模块，则不创建"，移除了 14 个空占位目录:
 
 | 移除的空目录 | 对应的 AirymaxOS 模块 |
 |-------------|---------------------|

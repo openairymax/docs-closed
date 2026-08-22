@@ -55,7 +55,7 @@
 
 ### 4. [0.1.1AgentRT仓库拆分方案.md](./0.1.1AgentRT仓库拆分方案.md)
 
-38 仓拆分方案详述。1 伞仓(airymaxhub) + 5 管理仓(agentrt/sdk/ecosystem/products/agentrt-linux) + 29 叶子仓 + 3 顶层仓(devtools/docs/docs-closed)。
+38 仓拆分方案详述。1 伞仓(airymaxhub) + 5 管理仓(agentrt/sdk/ecosystem/products/agent-linux) + 29 叶子仓 + 3 顶层仓(devtools/docs/docs-closed)。
 
 ### 5. [0.1.1AgentRT仓库拆分方案可行性分析报告.md](./0.1.1AgentRT仓库拆分方案可行性分析报告.md)
 

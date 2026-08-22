@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux v2.6 判定二次深化验证报告 v2.7
+# 00 — agent-linux v2.6 判定二次深化验证报告 v2.7
 
 > **审查日期**：2026-07-22
 > **审查目标**：对 v2.6 报告中的每一项判定进行再次实证验证（"对所有的问题，都要慎重进行再次验证。历史教训。"）
@@ -87,7 +87,7 @@ __SYSCALL(__NR_airy_sys_call, sys_airy_sys_call)
 
 ### 2.3 P0-017 codegen缺失 — ✅ 确认真实
 
-**验证方法**：`find agentrt-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"`
+**验证方法**：`find agent-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"`
 
 **证据**：三个命令均无输出——`tools/codegen/` 目录、`syscall_gen.py`、`.bf` 文件全部不存在。
 
@@ -133,7 +133,7 @@ __SYSCALL(__NR_airy_sys_call, sys_airy_sys_call)
 
 | v2.4 误判 | v2.7 验证 | 证据 |
 |----------|----------|------|
-| CI不存在 | ✅ 确认误判 | `agentrt-linux/.github/workflows/` 有7个文件，ci-kernel.yml有32configs矩阵 |
+| CI不存在 | ✅ 确认误判 | `agent-linux/.github/workflows/` 有7个文件，ci-kernel.yml有32configs矩阵 |
 | decode/invoke未实现 | ✅ 确认误判 | `01-syscalls.md` L114 `airy_decode_and_invoke()` + `07-ipc-fastpath.md` L453 `airy_ipc_validate()` |
 | MCS未实现 | ✅ 确认误判 | `10-sc-sched-extension.md` §5 L248-292 完整MCS映射（scBudget→sched_runtime等） |
 | CI矩阵缺失 | ✅ 确认误判 | ci-kernel.yml: 4架构×4配置×2编译器 |
@@ -239,7 +239,7 @@ __SYSCALL(__NR_airy_sys_call, sys_airy_sys_call)
 
 **核心模式**：每一轮"综合评估"报告都倾向于产生误判，根因是**设计文档搜索不充分**。
 
-- v2.4 检查了 `kernel/.github/` 而非 `agentrt-linux/.github/`
+- v2.4 检查了 `kernel/.github/` 而非 `agent-linux/.github/`
 - v2.6 声称"LSM加载顺序未文档化"但未搜索 `110-security/`
 - v2.6 声称"sec_d无崩溃恢复"但未搜索 `20-modules/`
 - v2.6 声称"fastpath不可观测"但未搜索 `90-observability/`
@@ -291,12 +291,12 @@ v2.7 的每项判定均通过**亲自 Grep/Read/RunCommand** 验证，不完全�
 | P0-019 | `grep -rln "LSM_ORDER\|加载顺序" docs/AirymaxOS/110-security/` | 01-lsm-framework.md + 07-airy-lsm-design.md |
 | GAP-05 | `grep -rn "sec_d.*crash\|sec_d.*restart\|sec_d.*恢复"` | 10-user-supervisor-daemon.md §4.5 |
 | GAP-02 | `grep -rn "tracepoint\|airy_ipc.*trace" docs/AirymaxOS/90-observability/` | 9个文档 + airy_ipc_send/recv |
-| v2.4误判#1 | `ls agentrt-linux/.github/workflows/` | 7个workflow文件 |
+| v2.4误判#1 | `ls agent-linux/.github/workflows/` | 7个workflow文件 |
 | v2.4误判#2 | `grep decode_and_invoke 01-syscalls.md` | L114 完整函数 |
 | v2.4误判#3 | `grep MCS 10-sc-sched-extension.md` | §5 完整映射 |
 | v2.4误判#5 | `grep union security/airy/` | 无匹配 |
 
 ---
 
-> **文档结束** | agentrt-linux v2.7 深化验证报告
+> **文档结束** | agent-linux v2.7 深化验证报告
 > 核心原则：对所有的问题，都要慎重进行再次验证。历史教训。

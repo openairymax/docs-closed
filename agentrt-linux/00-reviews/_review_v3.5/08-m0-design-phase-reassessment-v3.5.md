@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）M0 设计阶段前提下的整体方案系统性审查报告 v3.5
+# agent-linux（AirymaxOS）M0 设计阶段前提下的整体方案系统性审查报告 v3.5
 
 > **报告编号**：08
 > **报告版本**：v3.5（M0 设计阶段重新评估终稿）
 > **生成时间**：2026-07-25
-> **审查前提**：agentrt-linux 目前处于**方案设计阶段（M0/M1）**，仅内核改造框架骨架存在，其他开发未正式开始
+> **审查前提**：agent-linux 目前处于**方案设计阶段（M0/M1）**，仅内核改造框架骨架存在，其他开发未正式开始
 > **审查方法**：基于 M0 设计阶段前提，重新分类 03-07 报告所有 P0 问题，系统性评估整体方案设计质量
 > **上一版本**：07-final-independent-verification-v3.5.md（2026-07-25）
 > **SPDX-License-Identifier**：CC-BY-NC-4.0
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 执行摘要
 
-本报告基于用户明确指出的关键前提——**agentrt-linux 目前处于方案设计阶段（M0/M1），仅内核改造框架骨架存在，其他开发未正式开始**——对 03-07 报告发现的所有 P0 问题进行重新分类和评估。
+本报告基于用户明确指出的关键前提——**agent-linux 目前处于方案设计阶段（M0/M1），仅内核改造框架骨架存在，其他开发未正式开始**——对 03-07 报告发现的所有 P0 问题进行重新分类和评估。
 
 前序报告（03-07）的根本性评分错误在于：**将 M0 设计阶段应有的状态（-ENOSYS 桩、测试缺失、CI 脚本缺失）当作"实现缺陷"来扣分**，导致就绪度评分从应有的 68/B- 被严重低估至 52/D。
 
@@ -49,7 +49,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 来源 | 证据 |
 |------|------|
-| 用户明确声明 | "agentrt-linux 目前仍然是方案设计阶段，除了内核的改造框架，其他开发还没有正式开始" |
+| 用户明确声明 | "agent-linux 目前仍然是方案设计阶段，除了内核的改造框架，其他开发还没有正式开始" |
 | `20-modules/01-kernel.md:1126-1132` | "0.1.1 版本范围：仅完成 M0（文档体系完成）+ M1（[SC] 共享契约层头文件占位）。**不含内核/OS 代码实施**" |
 | `130-roadmap/02-milestones-and-timeline.md:17-27` | M0 = 工程标准框架建立（14 天）；M1 = 架构与模块设计完善（28 天）；M2 = 测试体系建立（21 天） |
 | `130-roadmap/01-development-strategy.md:25` | "渐进式发布：0.1.1 文档体系 → 1.0.1 开发 → 1.1.x 协同" |
@@ -162,7 +162,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [DSL] 降级生存层设计周到
 
 **需修复**：
-- [SC] verdict 双端不一致（A1）——agentrt-linux 用 COMPLAIN，agentrt commons 用 ASK
+- [SC] verdict 双端不一致（A1）——agent-linux 用 COMPLAIN，agentrt commons 用 ASK
 - 双 airy_lsm.c UAF 风险（B1）——需增加安全警告注释
 
 ### 2.5 ABI/IPC/数据流维度评估（75/B）
@@ -361,7 +361,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 8. 结论
 
-agentrt-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实，IRON 工程铁律执行严格。
+agent-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实，IRON 工程铁律执行严格。
 
 前序报告（03-07）将就绪度评为 52/D 的根本错误在于**未考虑 M0 设计阶段前提**，将 M2-M3 才需要的测试/CI/脚本缺失当成当前缺陷扣分。
 

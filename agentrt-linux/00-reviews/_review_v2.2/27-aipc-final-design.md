@@ -2,7 +2,7 @@
 
 ## "以 Capability Folding 为基石的 Unified Airymax IPC Fabric"
 
-> **文档性质**：agentrt-linux A-IPC 模块的完整重构设计 — 基于 184 份 AirymaxOS 文档的全面阅读
+> **文档性质**：agent-linux A-IPC 模块的完整重构设计 — 基于 184 份 AirymaxOS 文档的全面阅读
 > **撰写日期**：2026-07-18
 > **设计层级**：内核级工程
 > **前置基础**：16~26 号共 11 份审查报告 + 184 份 AirymaxOS 文档全文阅读
@@ -34,7 +34,7 @@
 | **IPC 吞吐 > 100K msg/s** | FR-003 | 0.1.1 功能需求的硬验收标准 |
 | **IPC 延迟 < 10μs** | FR-016 | 0.1.1 功能需求的硬验收标准 |
 | **128B 定长消息头，Layout C** | ADR-005 | SSoT 定义，不可改变消息头大小 |
-| **magic = 0x41524531 'ARE1'** | [SC] ipc.h | agentrt 与 agentrt-linux 共享，不可改变 |
+| **magic = 0x41524531 'ARE1'** | [SC] ipc.h | agentrt 与 agent-linux 共享，不可改变 |
 | **io_uring IORING_OP_URING_CMD** | 10-unify-design §8 | 零拷贝机制，不可使用 page flipping |
 | **纯 C LSM** | 10-unify-design §10 | 不使用 BPF LSM，对齐 openEuler |
 | **sched_tac** | 04-engineering-baseline | 三层调度，不依赖 sched_ext |

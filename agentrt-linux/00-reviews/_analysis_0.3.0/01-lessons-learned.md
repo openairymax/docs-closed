@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 项目经验总结报告
+# agent-linux 项目经验总结报告
 
-> **文档定位**: agentrt-linux（AirymaxOS）项目开发历程的结构化经验总结，梳理关键经验教训与共识要点
+> **文档定位**: agent-linux（AirymaxOS）项目开发历程的结构化经验总结，梳理关键经验教训与共识要点
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0（系统性分析与决策阶段）
 > **审查范围**: project_memory.md 全量 + v0.1.0~v0.2.6 全部审查报告 + 历史对话记录
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 报告目的
 
-本报告系统梳理 agentrt-linux 项目自启动以来的全部开发经验与教训，明确记录已达成的共识要点，为 1.0.1 正式开发阶段提供经验基线。报告遵循"经验可追溯、教训可复用、共识可执行"三大原则。
+本报告系统梳理 agent-linux 项目自启动以来的全部开发经验与教训，明确记录已达成的共识要点，为 1.0.1 正式开发阶段提供经验基线。报告遵循"经验可追溯、教训可复用、共识可执行"三大原则。
 
 ### 1.2 报告范围
 
@@ -51,7 +51,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - 一切以生产就绪为目标
 
 **共识 IRON-9 v2（代码共享三层模型，2026-07-07 确立）**：
-- **[SC] 共享契约层**：agentrt ↔ agentrt-linux 完全共享代码（6 个头文件）
+- **[SC] 共享契约层**：agentrt ↔ agent-linux 完全共享代码（6 个头文件）
 - **[SS] 语义同源层**：API 签名同源，实现独立
 - **[IND] 完全独立层**：完全独立实现
 
@@ -84,11 +84,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **共识 NN-2（产品命名体系）**：
 - agentrt 标准名称："AirymaxAgentRT 极境智能体运行底座平台工程"（简称 "agentrt" 或 "AirymaxRT"）
-- agentrt-linux 标准名称："AirymaxAgentOS 极境智能体操作系统"（简称 "agentrt-linux" 或 "AirymaxOS"）
+- agent-linux 标准名称："AirymaxAgentOS 极境智能体操作系统"（简称 "agent-linux" 或 "AirymaxOS"）
 
 **共识 NN-3（微核心 vs 微内核区分）**：
 - agentrt（用户态）= **微核心**（micro-core）
-- agentrt-linux（OS 发行版）= **微内核**（micro-kernel）
+- agent-linux（OS 发行版）= **微内核**（micro-kernel）
 - 禁止混用
 
 ### 2.4 29 仓拆分共识
@@ -96,7 +96,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **共识 RP-1（29 仓拆分方案，2026-07-05 确认）**：
 - OpenAirymax 拆分为 29 个 git 仓库（1 伞仓 + 4 管理仓 + 21 叶子仓 + 3 顶层仓）
 - 4 个分类目录（agentrt/sdk/ecosystem/products）变为管理仓库
-- agentrt-linux 作为管理仓，内含 8 个子仓（leaf 仓）
+- agent-linux 作为管理仓，内含 8 个子仓（leaf 仓）
 
 **共识 RP-2（AirymaxOS 8 子仓设计，2026-07-06 确立）**：
 - 基于 3 大设计支柱：微内核设计思想（seL4）+ openEuler 标准规范 + Airymax 同源性
@@ -402,7 +402,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - `00-reviews/_review_0.2.6/01-completion-state-assessment.md`（最新完成状态评估）
 - `00-reviews/_research_0.2.5/02-linux-7.1-forward-looking.md`（Linux 7.1 前瞻研究）
 - `00-reviews/_research_0.2.1/01-source-code-engineering-study.md`（seL4 + OLK-6.6 源码研究）
-- `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（8 子仓目录结构）
+- `01-designs/_design_0.2.4/01-agent-linux-directory-structure.md`（8 子仓目录结构）
 
 ---
 

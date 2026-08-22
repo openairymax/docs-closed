@@ -1,4 +1,4 @@
-# 13 — agentrt-linux 方案综合最终评估报告 v2.0
+# 13 — agent-linux 方案综合最终评估报告 v2.0
 
 ## 基于 Airymax Unify Design 的系统性技术链追溯 + 源码验证 + 行业实践对标
 
@@ -658,7 +658,7 @@ Airymax 的 Macro-Supervisor 作为 systemd 服务（uid=0），通过 io_uring_
 
 ---
 
-## 6. agentrt-linux 整体方案完整性审查
+## 6. agent-linux 整体方案完整性审查
 
 ### 6.1 方案完整性评估
 
@@ -716,7 +716,7 @@ Airymax 的 Macro-Supervisor 作为 systemd 服务（uid=0），通过 io_uring_
 | 问题 | 建议 |
 |------|------|
 | 0 行可编译源码 | 立即创建 kernel/airy_core.c（最小内核模块） |
-| error.h / log_types.h 两端不存在 | 立即创建于 agentrt-linux/kernel/include/airymax/ |
+| error.h / log_types.h 两端不存在 | 立即创建于 agent-linux/kernel/include/airymax/ |
 | 8 子仓全部为 README-only 空壳 | Phase 0 首先创建 kernel 子仓的实际代码 |
 | agentrt 双错误码/双日志管线 | 统一为 AIRY_E* + LOG_* |
 | sc-dual-ci 双向 CI 无法运行 | Phase 0 创建 [SC] 头文件后启用 |
@@ -761,7 +761,7 @@ Agent A 平台工程）。方案设计先进，但工程实现尚未起步。
 
 ### 7.4 1.0.1 全面开发启动前置条件
 
-- [ ] agentrt-linux/kernel/airy_core.ko 可成功 insmod/rmmod
+- [ ] agent-linux/kernel/airy_core.ko 可成功 insmod/rmmod
 - [ ] 10 个 [SC] 头文件两端存在且 sc-dual-ci 双向全绿
 - [ ] docs/AirymaxOS 完整度 ≥ 95%（20 份缺失文档完成）
 - [ ] agentrt 全仓库双错误码 + 双日志管线收敛完成

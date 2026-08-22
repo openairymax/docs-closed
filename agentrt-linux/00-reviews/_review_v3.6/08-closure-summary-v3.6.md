@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 # 08 — 闭环总结与 Go/No-Go 判断
 
 > **文档定位**：v3.6 深度对比研究 · 闭环总结
-> **研究范围**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agentrt-linux 全量对比
+> **研究范围**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agent-linux 全量对比
 > **最后更新**：2026-07-30
 > **前置文档**：[00-overview](00-overview-v3.6.md) · [01-06 子域报告](01-scheduler-comparison-v3.6.md) · [07 改进建议](07-improvement-recommendations-v3.6.md)
 
@@ -16,13 +16,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 本次深度对比研究覆盖 6 个子域（调度器/安全/IPC/syscall/capability/内存版本治理），产出 29 项改进建议（1 P0 + 11 P1 + 17 P2）。核心发现如下：
 
-1. **Airymax 的工程基线自洽性良好**：ALK"只新增文件"策略天然规避了 openEuler KABI 兼容性债务，SSoT + codegen CI 校验（[syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/tools/codegen/syscall_gen.py) L310-364）在工程严谨性上领先参考项目。
+1. **Airymax 的工程基线自洽性良好**：ALK"只新增文件"策略天然规避了 openEuler KABI 兼容性债务，SSoT + codegen CI 校验（[syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/tools/codegen/syscall_gen.py) L310-364）在工程严谨性上领先参考项目。
 
-2. **Badge folding 设计优于参考项目**：64-bit Badge（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）的 epoch+randtag+perms 三段式布局，实现了 O(1) 定向撤销（[airy_ipc_capability.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/ipc/airy_ipc_capability.c) L61-71）和 ~10ns fastpath 校验（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L50-77），在防重放和性能上优于 seL4 的 TCB badge 存储和 POSIX bitmap。
+2. **Badge folding 设计优于参考项目**：64-bit Badge（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) L47-63）的 epoch+randtag+perms 三段式布局，实现了 O(1) 定向撤销（[airy_ipc_capability.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/ipc/airy_ipc_capability.c) L61-71）和 ~10ns fastpath 校验（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L50-77），在防重放和性能上优于 seL4 的 TCB badge 存储和 POSIX bitmap。
 
 3. **主要差距集中在运行时治理层**：调度带宽准入、budget 入口检查、SC 捐赠、lockdown 机制等"动态治理"能力缺失。这些是 M2-M5 阶段的功能实现项，不影响 M0/M1 基线自洽性。
 
-4. **安全入口存在不对称**：io_uring_cmd 路径有完整 5-phase 校验（[airy_cap_check.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_check.c) L191-260），但 task_kill/file_open 仅检查 agent_state（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm.c) L67-109）。这是 M2 前需收敛的 P1 安全项。
+4. **安全入口存在不对称**：io_uring_cmd 路径有完整 5-phase 校验（[airy_cap_check.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_check.c) L191-260），但 task_kill/file_open 仅检查 agent_state（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm.c) L67-109）。这是 M2 前需收敛的 P1 安全项。
 
 ### 1.2 与参考项目的定位差异
 
@@ -50,7 +50,7 @@ M0 设计基线基本自洽，仅 1 项 P0 需在 0.1.1 冻结前修复：
 
 ### 2.2 M1 脚手架阶段：✅ GO
 
-M1 的 4 个 syscall（[airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c) L78-198）返回 -ENOSYS 是合规的 OS-IRON-004 渐进式开发，不是 IRON-2 桩函数违规。SYSCALL_DEFINE 宏使用规范，参数校验充分。
+M1 的 4 个 syscall（[airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c) L78-198）返回 -ENOSYS 是合规的 OS-IRON-004 渐进式开发，不是 IRON-2 桩函数违规。SYSCALL_DEFINE 宏使用规范，参数校验充分。
 
 ### 2.3 M2 io_uring IPC 集成：⚠️ 条件 GO
 
@@ -113,6 +113,6 @@ M2 启动前需完成以下 P1 收敛：
 
 ## 6. 结论
 
-Airymax agentrt-linux 的内核设计在 ALK 约束下做出了合理的工程权衡。通过 seL4 CNode 语义对齐和 openEuler KABI/sched_class 参考，本次研究确认了 Airymax 的 capability folding 和"映射而非新增"策略的正确性，同时识别出 29 项可执行的改进建议。
+Airymax agent-linux 的内核设计在 ALK 约束下做出了合理的工程权衡。通过 seL4 CNode 语义对齐和 openEuler KABI/sched_class 参考，本次研究确认了 Airymax 的 capability folding 和"映射而非新增"策略的正确性，同时识别出 29 项可执行的改进建议。
 
 **Go 判断成立**：M0 设计阶段就绪，0.1.1 冻结前修复 1 项 P0 + 4 项低工作量 P1/P2 即可进入 M2。

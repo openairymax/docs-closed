@@ -253,9 +253,9 @@ C-2.7 后台 Agent 正在审查 20-modules/01-08 模块文档。当 C-2.7 完成
 
 ### 6.2 同批分析报告
 
-- `docs-closed/agentrt-linux/_analysis_0.3.0/06-engineering-standards-consolidation.md`（C-2.6 原始合并报告，942 行）
-- `docs-closed/agentrt-linux/_analysis_0.3.0/07-engineering-standards-review.md`（C-2 审查报告，756 行）
-- `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`（闭源 SSoT，1444 行）
+- `docs-closed/agent-linux/_analysis_0.3.0/06-engineering-standards-consolidation.md`（C-2.6 原始合并报告，942 行）
+- `docs-closed/agent-linux/_analysis_0.3.0/07-engineering-standards-review.md`（C-2 审查报告，756 行）
+- `docs-closed/agent-linux/agent-linux基本工程标准规范.md`（闭源 SSoT，1444 行）
 
 ---
 

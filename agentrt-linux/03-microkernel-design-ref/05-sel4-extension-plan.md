@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# seL4 微内核拓展型改造方案 → agentrt-linux 微内核化
+# seL4 微内核拓展型改造方案 → agent-linux 微内核化
 
-> **文档定位**: 闭源内部参考，深度研究 seL4 源码（src/、libsel4/、include/、tools/、manual/），提炼 seL4 四大工程思想与工程标准，制定 agentrt-linux（AirymaxOS，极境智能体操作系统）基于 seL4 思想 + Linux 6.6 基线的微内核化拓展型改造方案
+> **文档定位**: 闭源内部参考，深度研究 seL4 源码（src/、libsel4/、include/、tools/、manual/），提炼 seL4 四大工程思想与工程标准，制定 agent-linux（AirymaxOS，极境智能体操作系统）基于 seL4 思想 + Linux 6.6 基线的微内核化拓展型改造方案
 > **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-09
 > **理论根基**: Linux 6.6 内核基线工程思想 + seL4 微内核设计思想 + Airymax 体系并行论
@@ -14,14 +14,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档不是让 agentrt-linux 重写一个 seL4，而是把 seL4 的工程思想"叠加"到 Linux 6.6 基线上，形成 agentrt-linux 自己的微内核化拓展型改造方案。回答四个问题：
+本文档不是让 agent-linux 重写一个 seL4，而是把 seL4 的工程思想"叠加"到 Linux 6.6 基线上，形成 agent-linux 自己的微内核化拓展型改造方案。回答四个问题：
 
 1. **seL4 工程思想是什么**：最小化原则、capability 安全、快速 IPC、形式化验证
 2. **seL4 工程标准是什么**：CMake 构建、DCO 贡献、SECURITY 漏洞治理、LICENSES 许可证治理
-3. **agentrt-linux 如何叠加 seL4 思想**：通过 sched_ext + eBPF kfunc + io_uring（用户态-内核态）+ kfifo（kthread 间）叠加 seL4 思想
+3. **agent-linux 如何叠加 seL4 思想**：通过 sched_ext + eBPF kfunc + io_uring（用户态-内核态）+ kfifo（kthread 间）叠加 seL4 思想
 4. **改造路线与风险**：分阶段实施计划与风险评估
 
-> **术语澄清**：agentrt（用户态运行时）= 微核心（micro-core），基于 seL4 微内核思想抽象；agentrt-linux（OS 发行版）= 微内核（micro-kernel），真正的微内核。本文档严禁使用"微内核原语"描述 agentrt，统一使用"微核心原语"。
+> **术语澄清**：agentrt（用户态运行时）= 微核心（micro-core），基于 seL4 微内核思想抽象；agent-linux（OS 发行版）= 微内核（micro-kernel），真正的微内核。本文档严禁使用"微内核原语"描述 agentrt，统一使用"微核心原语"。
 
 ### 1.2 seL4 源码定位
 
@@ -47,11 +47,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 标注 | 含义 | 本文档适用 |
 |------|------|------------|
-| **[SC]** | 共享契约层（agentrt ↔ agentrt-linux 共享 4 头文件） | Cupolas/AgentsIPC 契约 |
+| **[SC]** | 共享契约层（agentrt ↔ agent-linux 共享 4 头文件） | Cupolas/AgentsIPC 契约 |
 | **[SS]** | 语义同源层（API 签名同源，实现独立） | capability/IPC 语义同源 |
 | **[IND]** | 完全独立层 | seL4 思想叠加实现独立 |
 
-**关键声明**：agentrt-linux 不复制 seL4 源码，而是把 seL4 工程思想（capability 派生、快速 IPC、最小化内核职责、形式化验证目标）叠加到 Linux 6.6 基线（sched_ext + eBPF + io_uring + kfifo）之上，形成 [IND] 独立实现。
+**关键声明**：agent-linux 不复制 seL4 源码，而是把 seL4 工程思想（capability 派生、快速 IPC、最小化内核职责、形式化验证目标）叠加到 Linux 6.6 基线（sched_ext + eBPF + io_uring + kfifo）之上，形成 [IND] 独立实现。
 
 ---
 
@@ -65,7 +65,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 seL4 内核仅提供 4 个原子机制，源码组织精简：
 
-| 机制 | seL4 源码 | 说明 | agentrt-linux 对应 |
+| 机制 | seL4 源码 | 说明 | agent-linux 对应 |
 |------|-----------|------|---------------------|
 | 线程（TCB） | `src/kernel/thread.c:1` / `include/object/tcb.h:1` | 执行单元 + 调度上下文 | sched_ext 调度类（SCHED_AGENT BPF 策略） |
 | 地址空间（VSpace） | `include/object/structures.h` | 页表薄封装 | Linux mm（MemoryRovol） |
@@ -74,9 +74,9 @@ seL4 内核仅提供 4 个原子机制，源码组织精简：
 
 **最小化证据**：seL4 把文件系统、网络、设备驱动、用户态进程管理全部移出内核，由用户态服务承担。`src/kernel/boot.c` 仅做内核初始化，不包含任何策略。
 
-#### 2.1.1 agentrt-linux 复用方式 [IND]
+#### 2.1.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 不重写内核，而是用 Linux 6.6 机制叠加 seL4 最小化思想：
+agent-linux 不重写内核，而是用 Linux 6.6 机制叠加 seL4 最小化思想：
 
 - **内核职责最小化**：通过 sched_ext（BPF 调度策略）+ eBPF kfunc（可编程扩展）把策略移出内核硬编码
 - **机制/策略分离**：内核保留机制（调度类、IPC 通道、capability 框架），策略移到用户态（BPF 程序、daemon）
@@ -88,7 +88,7 @@ agentrt-linux 不重写内核，而是用 Linux 6.6 机制叠加 seL4 最小化�
 
 seL4 capability 是不可伪造的权限令牌，所有内核对象访问都经 capability 校验。`src/object/cnode.c` 实现 5 类核心操作（行号精确引用）：
 
-| 操作 | seL4 函数 | 源码行号 | 语义 | agentrt-linux Cupolas 对应 |
+| 操作 | seL4 函数 | 源码行号 | 语义 | agent-linux Cupolas 对应 |
 |------|-----------|----------|------|----------------------------|
 | Revoke | `invokeCNodeRevoke()` | `cnode.c:315-318` | 递归撤销所有派生 cap | `airymax_cap_revoke()` |
 | Delete | `invokeCNodeDelete()` | `cnode.c:320-323` | 删除单个 cap | `airymax_cap_delete()` |
@@ -125,12 +125,12 @@ exception_t invokeCNodeMove(cap_t cap, cte_t *srcSlot, cte_t *destSlot)
 
 **capability 不可伪造性**：seL4 的 cap 是内核对象，用户态无法直接构造，只能通过现有 cap 派生（Mint/Copy）。这是 Cupolas 安全模型的根基。
 
-#### 2.2.1 agentrt-linux Cupolas capability 迁移 [IND]
+#### 2.2.1 agent-linux Cupolas capability 迁移 [IND]
 
-agentrt-linux 把 seL4 capability 思想叠加到 Linux 6.6 基线，形成 Cupolas 派生模型：
+agent-linux 把 seL4 capability 思想叠加到 Linux 6.6 基线，形成 Cupolas 派生模型：
 
 ```c
-/* agentrt-linux: include/airymax/cupolas_types.h — Cupolas capability（[SC] 共享契约层） */
+/* agent-linux: include/airymax/cupolas_types.h — Cupolas capability（[SC] 共享契约层） */
 #ifndef _AIRYMAX_CUPOLAS_TYPES_H
 #define _AIRYMAX_CUPOLAS_TYPES_H
 
@@ -158,7 +158,7 @@ struct airymax_cap_node {
 ```
 
 ```c
-/* agentrt-linux: security/airymax/cupolas.c — Cupolas 操作（[IND] 独立实现） */
+/* agent-linux: security/airymax/cupolas.c — Cupolas 操作（[IND] 独立实现） */
 /* 等价 seL4 invokeCNodeRevoke（cnode.c:315）—— 递归撤销派生链 */
 int airymax_cap_revoke(struct airymax_cap_node *parent)
 {
@@ -238,12 +238,12 @@ void NORETURN fastpath_call(word_t cptr, word_t msgInfo)
 - 快路径直接线程切换，不经完整调度器
 - 任何不满足快路径条件即 `slowpath()` 退化
 
-#### 2.3.1 agentrt-linux IPC 快路径设计 [IND]
+#### 2.3.1 agent-linux IPC 快路径设计 [IND]
 
-agentrt-linux 用 io_uring（用户态-内核态）+ kfifo（kthread 间）叠加 seL4 fast IPC 思想，形成 AgentsIPC 128B 消息头：
+agent-linux 用 io_uring（用户态-内核态）+ kfifo（kthread 间）叠加 seL4 fast IPC 思想，形成 AgentsIPC 128B 消息头：
 
 ```c
-/* agentrt-linux: include/airymax/agents_ipc.h — AgentsIPC 128B 消息头（[SC] 共享契约层） */
+/* agent-linux: include/airymax/agents_ipc.h — AgentsIPC 128B 消息头（[SC] 共享契约层） */
 #ifndef _AIRYMAX_AGENTS_IPC_H
 #define _AIRYMAX_AGENTS_IPC_H
 
@@ -272,7 +272,7 @@ struct airymax_ipc_hdr {
 ```
 
 ```c
-/* agentrt-linux: ipc/airymax/fastpath.c — AgentsIPC 快路径（[IND] 独立实现） */
+/* agent-linux: ipc/airymax/fastpath.c — AgentsIPC 快路径（[IND] 独立实现） */
 /* 等价 seL4 fastpath_call（fastpath.c:19）—— 快速 IPC 派发 */
 int airymax_ipc_fastpath(struct airymax_ipc_hdr *hdr)
 {
@@ -317,9 +317,9 @@ seL4 验证栈四层：
 
 > Contributions to `master` should additionally either be invisible to the proof in l4v, such as comments, documentation, style, unverified platform, etc, or they should come with proof updates to `l4v`.
 
-#### 2.4.1 agentrt-linux 复用方式 [IND]
+#### 2.4.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 无法达到 seL4 完整形式化验证（基于 Linux 6.6，规模差异巨大），但采纳分阶段验证目标：
+agent-linux 无法达到 seL4 完整形式化验证（基于 Linux 6.6，规模差异巨大），但采纳分阶段验证目标：
 
 - **1.0.1**：关键路径（Cupolas capability 派生、AgentsIPC 128B 头）用 KUnit 单元测试 + TLA+ 模型检查
 - **2.0+**：Cupolas 核心操作（revoke/move/mintcopy）尝试 Isabelle/HOL 部分证明
@@ -370,9 +370,9 @@ RequireTool(XMLLINT_PATH xmllint.sh)
 | ccache | 两文件均启用 | `find_program(CCACHE ccache)` 缓存加速 |
 | 彩色输出 | `gcc.cmake:168-183` | `FORCE_COLORED_OUTPUT` 选项 |
 
-#### 3.2.1 agentrt-linux 复用方式 [IND]
+#### 3.2.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 基于 Linux 6.6 用 Kbuild（非 CMake），但采纳工具链思想：
+agent-linux 基于 Linux 6.6 用 Kbuild（非 CMake），但采纳工具链思想：
 
 - **[SS] 同源**：双编译器（GCC/Clang）、ccache 加速、交叉编译器自动查找
 - **[IND] 独立**：用 Kbuild 而非 CMake；Q16.16 定点数约束（seL4 无此约束）
@@ -381,7 +381,7 @@ agentrt-linux 基于 Linux 6.6 用 Kbuild（非 CMake），但采纳工具链思
 
 **源码路径**: `seL4: CONTRIBUTING.md:1-57`
 
-| 规则 | 源码行号 | agentrt-linux 复用 |
+| 规则 | 源码行号 | agent-linux 复用 |
 |------|----------|---------------------|
 | 提交可二分（bisectable） | L15 | [SS] 采纳 |
 | 提交保持小 | L17 | [SS] 采纳 |
@@ -393,7 +393,7 @@ agentrt-linux 基于 Linux 6.6 用 Kbuild（非 CMake），但采纳工具链思
 
 **源码路径**: `seL4: SECURITY.md:1-99`
 
-| 承诺 | 源码行号 | agentrt-linux 复用 |
+| 承诺 | 源码行号 | agent-linux 复用 |
 |------|----------|---------------------|
 | 14 天内响应 | L50 | [SS] 采纳 |
 | 90 天修复目标（proof 可能更长） | L53 | [SS] 采纳 |
@@ -422,9 +422,9 @@ agentrt-linux 基于 Linux 6.6 用 Kbuild（非 CMake），但采纳工具链思
 
 OLK-6.6 也用同样结构（`LICENSES/preferred/`、`dual/`、`exceptions/`、`deprecated/`）。
 
-#### 3.5.1 agentrt-linux 复用方式 [IND]
+#### 3.5.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 SPDX-License-Identifier + LICENSES 目录治理（[SS] 同源），许可证策略独立：
+agent-linux 采纳 SPDX-License-Identifier + LICENSES 目录治理（[SS] 同源），许可证策略独立：
 
 - **开源部分**（`docs/AirymaxOS/`）：AGPL v3 + Apache 2.0
 - **闭源部分**（`docs-closed/`）：SPHARX Ltd 内部参考，不对外发布
@@ -432,23 +432,23 @@ agentrt-linux 采纳 SPDX-License-Identifier + LICENSES 目录治理（[SS] 同�
 
 ---
 
-## 4. agentrt-linux 微内核化改造策略
+## 4. agent-linux 微内核化改造策略
 
 ### 4.1 改造哲学：叠加而非重写
 
-| seL4 思想 | seL4 实现方式 | agentrt-linux 叠加方式 | 边界 |
+| seL4 思想 | seL4 实现方式 | agent-linux 叠加方式 | 边界 |
 |-----------|--------------|------------------------|------|
 | 最小化内核 | 仅 4 机制，~10K SLOC | sched_ext + eBPF 把策略移出内核 | [IND] |
 | capability 安全 | seL4 CNode + cap_t | Cupolas 派生链（叠加 LSM/eBPF） | [IND] |
 | 快速 IPC | fastpath_call() | AgentsIPC 128B 头 + io_uring | [IND] |
-| 服务用户态化 | seL4 用户态服务 | agentrt-linux 12 daemons | [IND] |
+| 服务用户态化 | seL4 用户态服务 | agent-linux 12 daemons | [IND] |
 | 形式化验证 | Isabelle/HOL 完整证明 | KUnit + TLA+ 阶段化目标 | [IND] |
 
 ### 4.2 capability 安全模型迁移（seL4 cap → Cupolas）
 
 **迁移映射表**：
 
-| seL4 概念 | seL4 源码 | agentrt-linux Cupolas | 实现机制 |
+| seL4 概念 | seL4 源码 | agent-linux Cupolas | 实现机制 |
 |-----------|-----------|------------------------|----------|
 | CNode（cap 表） | `include/object/cnode.h` | `struct airymax_cap_node` | LSM blob（cred/inode/file/task） |
 | cap_t（cap 令牌） | `include/object/structures.h` | `airymax_cap_node` + magic 防伪 | eBPF kfunc 校验 |
@@ -461,10 +461,10 @@ agentrt-linux 采纳 SPDX-License-Identifier + LICENSES 目录治理（[SS] 同�
 
 **不可伪造性实现差异**：
 - seL4：cap 是内核对象，用户态无法直接构造（硬件 MMU 隔离）
-- agentrt-linux：cap 通过 magic + eBPF kfunc 校验（叠加在 Linux cred 上），无法达到 seL4 硬件级不可伪造，但满足智能体场景
+- agent-linux：cap 通过 magic + eBPF kfunc 校验（叠加在 Linux cred 上），无法达到 seL4 硬件级不可伪造，但满足智能体场景
 
 ```c
-/* agentrt-linux: security/airymax/cupolas_bpf.c — eBPF kfunc 校验 cap（[IND]） */
+/* agent-linux: security/airymax/cupolas_bpf.c — eBPF kfunc 校验 cap（[IND]） */
 /* BPF_PROG_TYPE_LSM 程序：校验 cap 不可伪造性 */
 SEC("lsm/airymax_cap_verify")
 int BPF_PROG(airymax_cap_verify, struct airymax_cap_node *cap, int ret)
@@ -481,7 +481,7 @@ int BPF_PROG(airymax_cap_verify, struct airymax_cap_node *cap, int ret)
 
 **设计对照**：
 
-| seL4 fast IPC | agentrt-linux AgentsIPC |
+| seL4 fast IPC | agent-linux AgentsIPC |
 |----------------|-------------------------|
 | `fastpath_call()` 同步调用 | io_uring SQE 提交 + CQE 完成 |
 | `MessageInfo`（word 编码） | 128B 固定消息头 |
@@ -494,7 +494,7 @@ int BPF_PROG(airymax_cap_verify, struct airymax_cap_node *cap, int ret)
 **kthread 间 IPC**：kfifo + `wait_event_interruptible`（禁用 io_uring，避免用户态机制滥用）
 
 ```c
-/* agentrt-linux: ipc/airymax/kfifo_ipc.c — kthread 间快路径（[IND]） */
+/* agent-linux: ipc/airymax/kfifo_ipc.c — kthread 间快路径（[IND]） */
 /* kthread 间通信用 kfifo + wait_event_interruptible（不用 io_uring） */
 int airymax_kthread_send(struct airymax_kfifo_chan *ch, void *msg, size_t len)
 {
@@ -535,9 +535,9 @@ int airymax_kthread_recv(struct airymax_kfifo_chan *ch, void *buf, size_t len)
 }
 ```
 
-### 4.4 服务用户态化（seL4 用户态服务 → agentrt-linux 12 daemons）
+### 4.4 服务用户态化（seL4 用户态服务 → agent-linux 12 daemons）
 
-seL4 把 FS/网络/驱动等移到用户态服务。agentrt-linux 在 Linux 6.6 基线上，把智能体操作系统服务拆分为 12 个用户态 daemon：
+seL4 把 FS/网络/驱动等移到用户态服务。agent-linux 在 Linux 6.6 基线上，把智能体操作系统服务拆分为 12 个用户态 daemon：
 
 | # | daemon | seL4 对应用户态服务 | 边界 |
 |---|--------|---------------------|------|
@@ -556,7 +556,7 @@ seL4 把 FS/网络/驱动等移到用户态服务。agentrt-linux 在 Linux 6.6 
 
 ### 4.5 最小化内核职责清单
 
-| 内核职责 | seL4 | agentrt-linux | 机制 |
+| 内核职责 | seL4 | agent-linux | 机制 |
 |----------|------|----------------|------|
 | 调度机制 | 调度器（内核内） | sched_ext 调度类 | BPF 策略在外 |
 | IPC 机制 | Endpoint（内核内） | io_uring + kfifo | 策略在 daemon |
@@ -615,9 +615,9 @@ seL4 把 FS/网络/驱动等移到用户态服务。agentrt-linux 在 Linux 6.6 
 
 ### 6.1 本质差异风险
 
-seL4 是形式化验证的微内核，agentrt-linux 基于 Linux 6.6 改造，两者本质差异带来风险：
+seL4 是形式化验证的微内核，agent-linux 基于 Linux 6.6 改造，两者本质差异带来风险：
 
-| 风险 | seL4 | agentrt-linux | 影响 | 缓解 |
+| 风险 | seL4 | agent-linux | 影响 | 缓解 |
 |------|------|----------------|------|------|
 | 不可伪造性 | 硬件级（MMU 隔离） | 软件级（magic + eBPF） | cap 可被绕过 | Cupolas + LSM + seccomp 多层 |
 | 形式化验证 | 完整证明 | 阶段化目标 | 关键路径有缺陷 | KUnit + TLA+ 模型检查 |
@@ -637,7 +637,7 @@ seL4 是形式化验证的微内核，agentrt-linux 基于 Linux 6.6 改造，�
 
 ### 6.3 安全风险
 
-| 风险 | seL4 状态 | agentrt-linux 风险 | 缓解 |
+| 风险 | seL4 状态 | agent-linux 风险 | 缓解 |
 |------|-----------|---------------------|------|
 | cap 伪造 | 不可能（硬件） | 可能（软件校验绕过） | eBPF + LSM + 魔数三重 |
 | Rowhammer | seL4 假设内存不可破坏 | 同假设失效 | 同 seL4，无解 |
@@ -657,7 +657,7 @@ seL4 是形式化验证的微内核，agentrt-linux 基于 Linux 6.6 改造，�
 ## 7. 与开源文档的关系
 
 - 本改造方案是**闭源参考**，不对外发布
-- 开源设计文档（`docs/AirymaxOS/`）引用本方案时，必须用 agentrt-linux 自身语言表述
+- 开源设计文档（`docs/AirymaxOS/`）引用本方案时，必须用 agent-linux 自身语言表述
 - 开源文档中**严禁**出现 seL4 源码路径、行号、函数名等直接引用
 - 开源文档中**严禁**出现任何主流 Linux 发行版的名称
 
@@ -672,7 +672,7 @@ seL4 是形式化验证的微内核，agentrt-linux 基于 Linux 6.6 改造，�
 | `02-olk66-source-mapping/01-sched-ext-mapping.md` | sched_ext 源码映射（SCHED_AGENT） |
 | `02-olk66-source-mapping/02-io-uring-mapping.md` | io_uring 源码映射（AgentsIPC） |
 | `02-olk66-source-mapping/07-engineering-toolchain-mapping.md` | 工程工具链映射 |
-| `agentrt-linux基本工程标准规范.md` | 工程标准规范 |
+| `agent-linux基本工程标准规范.md` | 工程标准规范 |
 
 ---
 

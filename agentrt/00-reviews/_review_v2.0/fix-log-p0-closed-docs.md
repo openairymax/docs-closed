@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **修正文件**：`docs-closed/agentrt/agentrt工程标准规范手册.md`（唯一修改文件）
 
 **未修改项**（按任务约束）：
-- `docs-closed/agentrt-linux/` 下的所有文件（agentrt-linux 的问题不在本次修正范围）
+- `docs-closed/agent-linux/` 下的所有文件（agent-linux 的问题不在本次修正范围）
 - 开源文档 `docs/` 下的所有文件
 - 源代码
 
@@ -287,7 +287,7 @@ No matches found
 
 ### 7.1 正面影响
 
-1. **消除事实性失真**：闭源 agentrt 工程标准手册的 [SC] 头文件清单和代码前缀声明现在与实际源码、闭源 agentrt-linux 总纲、开源文档三方对齐。
+1. **消除事实性失真**：闭源 agentrt 工程标准手册的 [SC] 头文件清单和代码前缀声明现在与实际源码、闭源 agent-linux 总纲、开源文档三方对齐。
 2. **恢复工程指导性**：开发者按修正后的手册使用 `airy_*` 前缀和 6 个 [SC] 头文件，将与实际源码一致，CI 门禁不再因前缀不匹配而失败。
 3. **IRON-9 v2 三层模型一致性**：[SC] 共享契约层定义现在跨所有文档仓库一致（6 个头文件）。
 4. **1.0.1 M1 启动条件满足**：v2.0 报告 §6.1 中 P0-DQC-1 和 P0-DQC-2 两项阻断项已清除。
@@ -299,7 +299,7 @@ No matches found
 
 ### 7.3 未受影响的范围
 
-- `docs-closed/agentrt-linux/` 下的所有文件：未修改（按任务约束）
+- `docs-closed/agent-linux/` 下的所有文件：未修改（按任务约束）
 - 开源文档 `docs/` 下的所有文件：未修改（按任务约束）
 - 源代码：未修改（按任务约束）
 - 闭源 agentrt 手册中的非前缀内容（架构原则、BAN 规则编号、ACC 验收标准等）：未修改

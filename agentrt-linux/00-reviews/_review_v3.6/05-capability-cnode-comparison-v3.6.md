@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 # 05 — capability/CNode 系统深度对比：seL4 vs Airymax
 
 > **文档定位**：v3.6 深度对比研究 · capability/CNode 子域（cap 表示 / 派生操作 / 撤销语义 / 并发控制）
-> **对比基准**：seL4-master `src/object/cnode.c`（cap_t 联合体 + decodeCNodeInvocation）· Airymax agentrt-linux `security/airy/airy_cap_derive.c`（64-bit Badge + 7 CNode 操作）
+> **对比基准**：seL4-master `src/object/cnode.c`（cap_t 联合体 + decodeCNodeInvocation）· Airymax agent-linux `security/airy/airy_cap_derive.c`（64-bit Badge + 7 CNode 操作）
 > **最后更新**：2026-07-30
 > **方法论**：逐行阅读 seL4 `cnode.c` 全量 `decodeCNodeInvocation`/`invokeCNode*` 与 Airymax `airy_cap_derive.c` 全量 `airy_cap_derive`；所有引用标注文件路径与行号；严禁编造行号，行号均经 `cat -n` 交叉核验
 
@@ -34,11 +34,11 @@ seL4 的 `cap_t` 是联合体，承载 CNode/Endpoint/Notification/TCB/Untyped/P
 
 ### 2.2 Airymax 单一 Badge 标量
 
-Airymax 将 capability 折叠为 64-bit 标量 `typedef __u64 cap_t`（[security_types.h L20](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h#L20)），按 `EPOCH<<48 | RANDTAG<<16 | PERMS` 布局（[ipc.h L47-59](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h#L47)），由 `AIRY_BADGE_COMPILE` 宏组装。`airy_cap_slot`（[lsm_types.h L45-53](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L45)）以 64 字节对齐存放 badge/agent_id/flags/randtag/perms/epoch，1024 槽以平面数组 `agent_caps` 暴露（[airy_ipc_capability.c L29-32](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/ipc/airy_ipc_capability.c#L29)）。
+Airymax 将 capability 折叠为 64-bit 标量 `typedef __u64 cap_t`（[security_types.h L20](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h#L20)），按 `EPOCH<<48 | RANDTAG<<16 | PERMS` 布局（[ipc.h L47-59](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h#L47)），由 `AIRY_BADGE_COMPILE` 宏组装。`airy_cap_slot`（[lsm_types.h L45-53](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L45)）以 64 字节对齐存放 badge/agent_id/flags/randtag/perms/epoch，1024 槽以平面数组 `agent_caps` 暴露（[airy_ipc_capability.c L29-32](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/ipc/airy_ipc_capability.c#L29)）。
 
 ### 2.3 评价
 
-seL4 联合体支持异构 cap 空间，代价是每次操作需 `cap_get_capType` 分发与类型断言。Airymax 选择**同构**模型：所有 cap 都是同一 64-bit badge，类型信息折叠进 perms 字段，fastpath（[airy_cap.h L49-76](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h#L49)）仅需 3 次 `READ_ONCE` + 位运算即完成校验，约 10ns。这是用表达力换性能的工程取舍——Airymax 不需 seL4 那样细粒度的内核对象授权，只需"代理身份 + 权限位 + 防伪随机标签 + 撤销 epoch"。
+seL4 联合体支持异构 cap 空间，代价是每次操作需 `cap_get_capType` 分发与类型断言。Airymax 选择**同构**模型：所有 cap 都是同一 64-bit badge，类型信息折叠进 perms 字段，fastpath（[airy_cap.h L49-76](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h#L49)）仅需 3 次 `READ_ONCE` + 位运算即完成校验，约 10ns。这是用表达力换性能的工程取舍——Airymax 不需 seL4 那样细粒度的内核对象授权，只需"代理身份 + 权限位 + 防伪随机标签 + 撤销 epoch"。
 
 ---
 
@@ -50,7 +50,7 @@ seL4 在 [cnode.c L36-40](file:///home/spharx/SpharxWorks/.engineer-reference/se
 
 ### 3.2 Airymax 7 操作精确对应 MCS 集
 
-Airymax 在 [security_types.h L82-92](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h#L82) 定义 `enum airy_cap_op`（COPY=0/MINT=1/MOVE=2/MUTATE=3/REVOKE=4/DELETE=5/ROTATE=6），注释明确"seL4 CNode 7 Derivation Operations"。`airy_cap_derive`（[airy_cap_derive.c L50-51](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L50)）以单一 `switch(op)`（[L76](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L76)）分派，操作名表见 [L30-32](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L30)。Airymax **不实现 SaveCaller**——合理选择，因 SaveCaller 与 MCS 的 Reply 语义强绑定，而 Airymax 采用 Linux 既有调度模型，无独立 Reply cap 概念。
+Airymax 在 [security_types.h L82-92](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h#L82) 定义 `enum airy_cap_op`（COPY=0/MINT=1/MOVE=2/MUTATE=3/REVOKE=4/DELETE=5/ROTATE=6），注释明确"seL4 CNode 7 Derivation Operations"。`airy_cap_derive`（[airy_cap_derive.c L50-51](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L50)）以单一 `switch(op)`（[L76](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L76)）分派，操作名表见 [L30-32](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L30)。Airymax **不实现 SaveCaller**——合理选择，因 SaveCaller 与 MCS 的 Reply 语义强绑定，而 Airymax 采用 Linux 既有调度模型，无独立 Reply cap 概念。
 
 ---
 
@@ -70,7 +70,7 @@ dc_ret = deriveCap(srcSlot, srcCap);                     /* L126 */
 
 ### 4.2 Airymax COPY 明确不降级，仅 MINT 降级
 
-Airymax `AIRY_CAP_OP_COPY`（[airy_cap_derive.c L78-103](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L78)）在 [L93](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L93) 注释"Copy badge unchanged (no demotion)"，[L94-99](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L94) 直接复制全部字段，**不调用任何权限掩码逻辑**：
+Airymax `AIRY_CAP_OP_COPY`（[airy_cap_derive.c L78-103](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L78)）在 [L93](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L93) 注释"Copy badge unchanged (no demotion)"，[L94-99](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L94) 直接复制全部字段，**不调用任何权限掩码逻辑**：
 
 ```c
 /* Copy badge unchanged (no demotion) */
@@ -82,7 +82,7 @@ dst->perms    = src->perms;       /* 原样复制，不与 new_perms 求交 */
 dst->epoch    = src->epoch;
 ```
 
-权限降级仅由 `AIRY_CAP_OP_MINT` 承担（[L106-136](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L106)），在 [L124](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L124) 以 `perms = new_perms & src->perms` 求交集（may demotion），再于 [L126](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L126) 用 `AIRY_BADGE_COMPILE` 重组 badge。
+权限降级仅由 `AIRY_CAP_OP_MINT` 承担（[L106-136](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L106)），在 [L124](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L124) 以 `perms = new_perms & src->perms` 求交集（may demotion），再于 [L126](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L126) 用 `AIRY_BADGE_COMPILE` 重组 badge。
 
 ### 4.3 语义差异
 
@@ -98,11 +98,11 @@ seL4 的 `updateCapData` 是类型相关的：对 CNode cap 写 guard/bits，对
 
 ### 5.2 Airymax AIRY_BADGE_COMPILE 宏组装
 
-Airymax 不区分 cap 类型，badge 写入统一通过 `AIRY_BADGE_COMPILE(epoch, randtag, perms)` 宏（[ipc.h L56-59](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h#L56)）：
+Airymax 不区分 cap 类型，badge 写入统一通过 `AIRY_BADGE_COMPILE(epoch, randtag, perms)` 宏（[ipc.h L56-59](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h#L56)）：
 
-- MINT（[L126](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L126)）：以源 epoch/randtag + 降级后 perms 重组 badge 写入 dst。
-- MUTATE（[L180-182](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L180)）：原地保留 epoch/randtag，仅替换 perms，并同步重写 badge。
-- ROTATE（[L238-239](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L238)）：保留 epoch/perms，替换 randtag，重写 badge。
+- MINT（[L126](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L126)）：以源 epoch/randtag + 降级后 perms 重组 badge 写入 dst。
+- MUTATE（[L180-182](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L180)）：原地保留 epoch/randtag，仅替换 perms，并同步重写 badge。
+- ROTATE（[L238-239](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L238)）：保留 epoch/perms，替换 randtag，重写 badge。
 
 seL4 的 `updateCapData` 是函数调用，内部按 `cap_type` switch；Airymax 的 `AIRY_BADGE_COMPILE` 是纯位运算宏，零分支开销，但失去了"按类型校验 capData 合法性"的能力（seL4 会在 `updateCapData` 返回 `cap_null_cap` 表示非法，见 [L181-185](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/object/cnode.c#L181) 的空 cap 校验）。
 
@@ -118,7 +118,7 @@ seL4 `CNodeRevoke` 经 `invokeCNodeRevoke` 直接调用 `cteRevoke(destSlot)`（
 
 ### 6.2 Airymax per-agent epoch+1 仅使目标 agent 自身失效
 
-Airymax `AIRY_CAP_OP_REVOKE`（[airy_cap_derive.c L189-205](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L189)）只递增目标 slot 的 epoch 并清零 randtag：
+Airymax `AIRY_CAP_OP_REVOKE`（[airy_cap_derive.c L189-205](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L189)）只递增目标 slot 的 epoch 并清零 randtag：
 
 ```c
 __u16 old_epoch = READ_ONCE(src->epoch);
@@ -127,9 +127,9 @@ WRITE_ONCE(src->epoch, new_epoch_val);     /* L200 */
 WRITE_ONCE(src->randtag, 0);               /* L201 */
 ```
 
-fastpath（[airy_cap.h L61-64](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h#L61)）校验 `badge_epoch == slot_epoch`，故 epoch 递增后，该 agent 持有的旧 badge 立即失效。但**关键局限**：若 agent A 的 cap 已被 MINT 到 agent B（[L122-131](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L122)），B 的 slot 拥有独立的 epoch 字段（`dst->epoch = src->epoch`，[L131](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L131)），A 的 REVOKE 只改 A 的 epoch，**B 的 cap 不受影响**。换言之，Airymax 的 REVOKE 语义是"撤销该 agent 自身现有授权"，而非 seL4 的"撤销所有派生授权"。
+fastpath（[airy_cap.h L61-64](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h#L61)）校验 `badge_epoch == slot_epoch`，故 epoch 递增后，该 agent 持有的旧 badge 立即失效。但**关键局限**：若 agent A 的 cap 已被 MINT 到 agent B（[L122-131](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L122)），B 的 slot 拥有独立的 epoch 字段（`dst->epoch = src->epoch`，[L131](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L131)），A 的 REVOKE 只改 A 的 epoch，**B 的 cap 不受影响**。换言之，Airymax 的 REVOKE 语义是"撤销该 agent 自身现有授权"，而非 seL4 的"撤销所有派生授权"。
 
-Airymax 的全局撤销走另一条路径——`airy_cap_epoch_bump_all`（[airy_ipc_capability.c L74-84](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/ipc/airy_ipc_capability.c#L74)）O(N) 遍历 1024 槽递增每个 agent 的 epoch 并 `atomic_inc` 全局 epoch，属 UNFREEZE 语义，而非单 cap 的级联撤销。
+Airymax 的全局撤销走另一条路径——`airy_cap_epoch_bump_all`（[airy_ipc_capability.c L74-84](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/ipc/airy_ipc_capability.c#L74)）O(N) 遍历 1024 槽递增每个 agent 的 epoch 并 `atomic_inc` 全局 epoch，属 UNFREEZE 语义，而非单 cap 的级联撤销。
 
 ---
 
@@ -147,7 +147,7 @@ seL4 的 `cteInsert`/`cteMove`/`cteRevoke` 等操作在 `cte_t` 粒度加锁（�
 
 ### 8.2 Airymax 全局 spinlock
 
-Airymax 在 [airy_cap_derive.c L27](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L27) 定义单一全局自旋锁 `DEFINE_SPINLOCK(airy_cap_derive_lock)`。`airy_cap_derive` 在 [L59](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L59) `spin_lock_irqsave` 后，所有 7 操作全程持锁直到 [L254](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L254) `spin_unlock_irqrestore`。任意两个 agent 的派生操作**串行化**——即便操作完全不相关的 slot。注释（[L45-48](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L45)）解释此举为关闭"slot 状态检查与后续写入的 TOCTOU 窗口"，且 `get_random_u32()`/`atomic_inc()` 非睡眠、可在 spinlock 下安全调用。在 1024 agent 高并发场景下，每次 REVOKE（仅递增一个 epoch）也要与全局所有派生操作争用同一锁，成为瓶颈。
+Airymax 在 [airy_cap_derive.c L27](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L27) 定义单一全局自旋锁 `DEFINE_SPINLOCK(airy_cap_derive_lock)`。`airy_cap_derive` 在 [L59](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L59) `spin_lock_irqsave` 后，所有 7 操作全程持锁直到 [L254](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L254) `spin_unlock_irqrestore`。任意两个 agent 的派生操作**串行化**——即便操作完全不相关的 slot。注释（[L45-48](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L45)）解释此举为关闭"slot 状态检查与后续写入的 TOCTOU 窗口"，且 `get_random_u32()`/`atomic_inc()` 非睡眠、可在 spinlock 下安全调用。在 1024 agent 高并发场景下，每次 REVOKE（仅递增一个 epoch）也要与全局所有派生操作争用同一锁，成为瓶颈。
 
 ---
 
@@ -159,7 +159,7 @@ seL4 `CNodeRotate`（[cnode.c L232-310](file:///home/spharx/SpharxWorks/.enginee
 
 ### 9.2 Airymax ROTATE 单槽 randtag 轮换
 
-Airymax `AIRY_CAP_OP_ROTATE`（[airy_cap_derive.c L222-241](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L222)）语义完全不同——不交换 slot，而是原地轮换单个 slot 的 `randtag`：先 `get_random_u32()`（[L226](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L226)）取新 tag，再以 `smp_store_release` 先写 randtag（[L237](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L237)）后写 badge（[L238-239](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L238)，`AIRY_BADGE_COMPILE`）。这是**防伪刷新**：旧 randtag 立即失效，缓存的旧 badge 不再通过 fastpath C-S9.2 校验（[airy_cap.h L66-69](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h#L66)）。`smp_store_release` 保证 randtag 先于 badge 写入，避免弱序架构读到"新 badge + 旧 randtag"的瞬态不一致。Airymax ROTATE 与 seL4 同名异义——前者刷新防伪标签，后者重排 cap 槽位。
+Airymax `AIRY_CAP_OP_ROTATE`（[airy_cap_derive.c L222-241](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L222)）语义完全不同——不交换 slot，而是原地轮换单个 slot 的 `randtag`：先 `get_random_u32()`（[L226](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L226)）取新 tag，再以 `smp_store_release` 先写 randtag（[L237](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L237)）后写 badge（[L238-239](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L238)，`AIRY_BADGE_COMPILE`）。这是**防伪刷新**：旧 randtag 立即失效，缓存的旧 badge 不再通过 fastpath C-S9.2 校验（[airy_cap.h L66-69](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h#L66)）。`smp_store_release` 保证 randtag 先于 badge 写入，避免弱序架构读到"新 badge + 旧 randtag"的瞬态不一致。Airymax ROTATE 与 seL4 同名异义——前者刷新防伪标签，后者重排 cap 槽位。
 
 ---
 
@@ -167,24 +167,24 @@ Airymax `AIRY_CAP_OP_ROTATE`（[airy_cap_derive.c L222-241](file:///home/spharx/
 
 ### [P1] REVOKE 无级联撤销
 
-- **现状**：Airymax `AIRY_CAP_OP_REVOKE`（[airy_cap_derive.c L189-205](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L189)）仅递增目标 agent 自身 epoch（[L200](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L200)），已 MINT 到其他 agent 的派生 cap 不受影响。
+- **现状**：Airymax `AIRY_CAP_OP_REVOKE`（[airy_cap_derive.c L189-205](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L189)）仅递增目标 agent 自身 epoch（[L200](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L200)），已 MINT 到其他 agent 的派生 cap 不受影响。
 - **参考**：seL4 `invokeCNodeRevoke` → `cteRevoke`（[cnode.c L315-318](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/object/cnode.c#L315)）沿 MDB 父子链递归撤销所有派生 cap。
-- **建议**：二选一——(a) 在 `airy_cap_slot` 增加 `derive_parent` 字段（指向源 agent）构建派生树，REVOKE 时沿树递归失效；或 (b) 显式文档化"Airymax REVOKE 语义为 per-agent 非级联"，并在 enum 注释（[security_types.h L88](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h#L88)）将"Revoke capability globally"更正为"Revoke per-agent (non-cascading)"，避免与 seL4 语义混淆。
+- **建议**：二选一——(a) 在 `airy_cap_slot` 增加 `derive_parent` 字段（指向源 agent）构建派生树，REVOKE 时沿树递归失效；或 (b) 显式文档化"Airymax REVOKE 语义为 per-agent 非级联"，并在 enum 注释（[security_types.h L88](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h#L88)）将"Revoke capability globally"更正为"Revoke per-agent (non-cascading)"，避免与 seL4 语义混淆。
 - **风险**：方案(a) 增加 1024 槽的内存开销与递归撤销延迟，且需在 MINT/COPY 时维护 parent 链，改动面大；方案(b) 零代码风险，但需同步更新安全模型文档与测试用例。
 
 ### [P1] COPY 不支持权限子集
 
-- **现状**：Airymax COPY（[airy_cap_derive.c L78-103](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L78)）在 [L93](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L93) 明确"no demotion"，[L98](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L98) 原样复制 perms，调用方无法通过 COPY 获得权限子集。
+- **现状**：Airymax COPY（[airy_cap_derive.c L78-103](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L78)）在 [L93](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L93) 明确"no demotion"，[L98](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L98) 原样复制 perms，调用方无法通过 COPY 获得权限子集。
 - **参考**：seL4 `CNodeCopy`（[cnode.c L124-126](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/object/cnode.c#L124)）通过 `maskCapRights` 支持权限降级，Copy 与 Mint 均可降级。
-- **建议**：为 `airy_cap_derive` 的 COPY 分支增加可选 `new_perms` 参数（当 `new_perms != 0` 时取 `new_perms & src->perms`），或在文档中明确"权限降级仅通过 MINT 实现，COPY 是原样克隆"，并在 enum 注释（[security_types.h L84](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h#L84)）补注。
+- **建议**：为 `airy_cap_derive` 的 COPY 分支增加可选 `new_perms` 参数（当 `new_perms != 0` 时取 `new_perms & src->perms`），或在文档中明确"权限降级仅通过 MINT 实现，COPY 是原样克隆"，并在 enum 注释（[security_types.h L84](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h#L84)）补注。
 - **风险**：若改 COPY 签名，所有调用点需同步；若仅文档化，需确保调用方理解"想要降级必须用 MINT"。
 
 ### [P1] 全局单一 spinlock 可扩展性
 
-- **现状**：`airy_cap_derive_lock`（[airy_cap_derive.c L27](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L27)）保护全部 1024 槽，[L59](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L59) 入锁、[L254](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive.c#L254) 出锁，任意两 agent 派生操作串行化。
+- **现状**：`airy_cap_derive_lock`（[airy_cap_derive.c L27](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L27)）保护全部 1024 槽，[L59](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L59) 入锁、[L254](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive.c#L254) 出锁，任意两 agent 派生操作串行化。
 - **参考**：seL4 以 `cte_t` 粒度加锁，不相关 slot 可并行。
 - **建议**：改为 per-bucket 锁（如 64 个 bucket，按 `agent_id >> 4` 散列）或 per-agent 锁（每个 slot 内嵌 `spinlock_t`，但 `airy_cap_slot` 已 64 字节对齐，需评估 cacheline 占用）。REVOKE/DELETE 等单 slot 操作只需持自身锁；COPY/MINT/MOVE 涉及 src+dst 两锁，按 agent_id 升序加锁避免死锁。
-- **风险**：多锁引入死锁风险，需严格锁序；`airy_cap_epoch_bump_all`（[airy_ipc_capability.c L74-84](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/ipc/airy_ipc_capability.c#L74)）需改为遍历持所有 bucket 锁或改用 RCU，改动面较大。
+- **风险**：多锁引入死锁风险，需严格锁序；`airy_cap_epoch_bump_all`（[airy_ipc_capability.c L74-84](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/ipc/airy_ipc_capability.c#L74)）需改为遍历持所有 bucket 锁或改用 RCU，改动面较大。
 
 ### [P2] 缺少 cancelBadgedSends
 
@@ -195,7 +195,7 @@ Airymax `AIRY_CAP_OP_ROTATE`（[airy_cap_derive.c L222-241](file:///home/spharx/
 
 ### [P2] 缺少 derive_tree（派生关系追踪）
 
-- **现状**：`agent_caps[1024]`（[airy_ipc_capability.c L29-32](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/ipc/airy_ipc_capability.c#L29)）为平面数组，slot 间无父子关系，无法支持级联撤销。
+- **现状**：`agent_caps[1024]`（[airy_ipc_capability.c L29-32](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/ipc/airy_ipc_capability.c#L29)）为平面数组，slot 间无父子关系，无法支持级联撤销。
 - **参考**：seL4 MDB 维护 cap 派生父子链，`cteRevoke` 据此递归。
 - **建议**：与 [P1] REVOKE 建议联动——若决定支持级联撤销，需在 `airy_cap_slot` 增加 `derive_parent`（源 agent_id）字段；若决定保持非级联语义，则文档化"Airymax 刻意不维护派生树，以 O(1) epoch 撤销换取简化"的设计决策。
 - **风险**：维护派生树在 MINT/COPY/MOVE 时需额外写入，且 REVOKE 递归深度不可控（最坏 O(N)）；非级联方案需明确安全边界。

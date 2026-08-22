@@ -167,8 +167,8 @@ v3.0 某域的修正可能在其他域引入新的不一致。以下为检测到
 - **触发域**：v3.0 域1 修正了 9 个 OS 工程标准文档的 SSoT 声明，但未修正此内部矛盾
 - **影响域**：SSoT 自身（coding_conventions.md §4.4.2）
 - **证据**：
-  - `coding_conventions.md:2606`：`agentrt-linux 专属符号（[IND] 层）使用 airy_* 前缀`
-  - `coding_conventions.md:2607`：`airy_* 前缀不得用于 agentrt-linux 专属功能；airy_* 前缀不得用于 agentrt 用户态`
+  - `coding_conventions.md:2606`：`agent-linux 专属符号（[IND] 层）使用 airy_* 前缀`
+  - `coding_conventions.md:2607`：`airy_* 前缀不得用于 agent-linux 专属功能；airy_* 前缀不得用于 agentrt 用户态`
   - L2606 与 L2607 直接矛盾（同一节内）；L2607 与 `06-iron9:274` 矛盾（`airy_*` 是 [SC] + 应用层正确前缀）
 - **影响**：SSoT 函数前缀规则自相矛盾，06-iron9 §3.12 L280 声明以此文件为 SSoT 权威，形成循环引用
 
@@ -280,10 +280,10 @@ v3.0 某域的修正可能在其他域引入新的不一致。以下为检测到
 #### P1-v4-2：coding_conventions.md §4.4.2 函数前缀规则内部矛盾（v3.0 遗漏，v3.0 副作用-5）
 
 - **严重度**: P1
-- **问题摘要**: v3.0 报告 P1-v3-3 指出的问题未修复。L2606 说 agentrt-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agentrt-linux 专属功能——同一节内直接矛盾。L2607 还说 `airy_*` 不得用于 agentrt 用户态，与 SSoT `06-iron9:274` 矛盾。
+- **问题摘要**: v3.0 报告 P1-v3-3 指出的问题未修复。L2606 说 agent-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agent-linux 专属功能——同一节内直接矛盾。L2607 还说 `airy_*` 不得用于 agentrt 用户态，与 SSoT `06-iron9:274` 矛盾。
 - **证据位置**:
-  - `coding_conventions.md:2606`: `agentrt-linux 专属符号（[IND] 层）使用 airy_* 前缀`
-  - `coding_conventions.md:2607`: `禁止混用——airy_* 前缀不得用于 agentrt-linux 专属功能；airy_* 前缀不得用于 agentrt 用户态`
+  - `coding_conventions.md:2606`: `agent-linux 专属符号（[IND] 层）使用 airy_* 前缀`
+  - `coding_conventions.md:2607`: `禁止混用——airy_* 前缀不得用于 agent-linux 专属功能；airy_* 前缀不得用于 agentrt 用户态`
 - **影响范围**: SSoT 函数前缀规则自相矛盾，06-iron9 §3.12 L280 声明以此文件为权威
 - **工作量估算**: ~2h（重写 §4.4.2 消除矛盾）
 
@@ -485,7 +485,7 @@ v3.0 某域的修正可能在其他域引入新的不一致。以下为检测到
 | `agentrt/daemons/` | `agentrt/daemons/` | 0 处 `daemon/` ✅ | — | — | ✅ |
 | `AgentRT/` 大写 | `agentrt/` 小写 | 5 处残留 ❌ | 32 处 ❌ | — | ❌ P1-v4-4/v4-10 |
 | `docs/AirymaxOS/` | SSoT 所在 | 5 处交叉引用 ✅ | L1520 引用 `docs/AirymaxRT/` ❌ | 8 处 ✅ | ⚠️ |
-| `docs/AirymaxAgentOS/` | `docs-closed/agentrt-linux/` | — | 7 处 ❌ (R3-2) | — | ❌ |
+| `docs/AirymaxAgentOS/` | `docs-closed/agent-linux/` | — | 7 处 ❌ (R3-2) | — | ❌ |
 | `AgentRT/agentos/` 双重错误 | `agentrt/agentrt/` | — | L3030-3036 ❌ | — | ❌ |
 
 **D 维度结论**: ❌ 不一致。`daemon/` → `daemons/` 已修复，但 `AgentRT/` 大写在闭源手册 32 处 + docs/AirymaxRT 5 处未清理，`docs/AirymaxAgentOS/` 7 处未修复（R3-2），闭源手册 L3030-3036 双重路径错误。

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）独立复核报告 v3.5
+# agent-linux（AirymaxOS）独立复核报告 v3.5
 
 > **报告编号**：06
 > **报告版本**：v3.5（独立复核终稿）
@@ -121,7 +121,7 @@ task->security = sec;
 
 **结论：✅ 真实存在**
 
-| 值 | agentrt-linux `security_types.h:75-80` | agentrt commons `security_types.h:32-37` |
+| 值 | agent-linux `security_types.h:75-80` | agentrt commons `security_types.h:32-37` |
 |----|---------------------------------------|----------------------------------------|
 | 0 | `AIRY_VERDICT_ALLOW` | `AIRY_VERDICT_ALLOW` |
 | 1 | `AIRY_VERDICT_DENY` | `AIRY_VERDICT_DENY` |
@@ -136,7 +136,7 @@ task->security = sec;
 
 `cat -A` 字节级输出：`#define AIRY_CAP_GPU_SCHED^I^I42^I/* GPU scheduling */$`
 
-`^I` = TAB 字符。宏名 `AIRY_CAP_GPU_SCHED` 和值 `42` 之间是**两个 TAB 字符**，不存在粘连。agentrt-linux 端对应行为 `AIRY_CAP_GPU_SCHED = 42,`（空格分隔），同样正确。
+`^I` = TAB 字符。宏名 `AIRY_CAP_GPU_SCHED` 和值 `42` 之间是**两个 TAB 字符**，不存在粘连。agent-linux 端对应行为 `AIRY_CAP_GPU_SCHED = 42,`（空格分隔），同样正确。
 
 ### 2.3 P0-4：airy_struct_ops.c 重定义
 
@@ -149,7 +149,7 @@ task->security = sec;
 | struct 大小 | 128 bytes（5 字段） | ~24 bytes（4 字段） |
 | include 头文件 | — | **未 include `bpf_struct_ops.h`** |
 
-**额外发现**：双端 `bpf_struct_ops.h` 自身也非 byte-identical——commons 端用 `AIRY_OPS_*` 前缀 + 2 字段 struct，agentrt-linux 端用 `AIRY_STRUCT_OPS_*` 前缀 + 5 字段 128B struct。这是另一处独立 SSoT 破坏。
+**额外发现**：双端 `bpf_struct_ops.h` 自身也非 byte-identical——commons 端用 `AIRY_OPS_*` 前缀 + 2 字段 struct，agent-linux 端用 `AIRY_STRUCT_OPS_*` 前缀 + 5 字段 128B struct。这是另一处独立 SSoT 破坏。
 
 ---
 
@@ -355,4 +355,4 @@ task->security = sec;
 
 ---
 
-© 2025-2026 SPHARX Ltd. All Rights Reserved. | agentrt-linux（AirymaxOS）独立复核报告 | v3.5 | 2026-07-25
+© 2025-2026 SPHARX Ltd. All Rights Reserved. | agent-linux（AirymaxOS）独立复核报告 | v3.5 | 2026-07-25

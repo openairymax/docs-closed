@@ -2,7 +2,7 @@
 
 > **报告编号**：REVIEW-AGENTRT-2026-08-14-FINAL
 > **报告类型**：综合战略评估（核心机制价值论证 + 跨态组合 + 全功能运行路线）
-> **对照对象**：`agentrt`（用户态运行时，0.1.1）+ `agentrt-linux`（AirymaxOS，1.0.1）+ `deepseek-harness-master`（标杆参照）
+> **对照对象**：`agentrt`（用户态运行时，0.1.1）+ `agent-linux`（AirymaxOS，1.0.1）+ `deepseek-harness-master`（标杆参照）
 > **产出目录**：`closed-docs/agentrt/00-reviews/_review_v4.3/`
 > **审查日期**：2026-08-14
 > **审查人**：SPHARX 工程标准组
@@ -17,7 +17,7 @@
 
 1. **agentrt 的 DAG、双思考、蓝图调度、GCCP、GRAD 是否有价值？** —— **有，且是真实的、不可替代的核心价值**。此前 `agentrt-reversal-slimming` 报告"后置 Pregel DAG / orchestrator Phase 0-4 / checkpoint"的结论**部分误伤**：它把"功能语义"与"实现复杂度"混为一谈。正确裁决是——**五个认知机制的"功能语义"必须全功能保留（这是 agentrt 相对 dsh/Kimi/智谱的护城河），真正可瘦身的是"实现复杂度"（Pregel BSP 半成品、orchestrator 与 engine 的重复管线、各增强层）。**
 
-2. **agentrt 与 agentrt-linux 如何可组合？** —— 通过 **IRON-9 v3 的 [SC] 共享契约层**（10 核心头文件 + 12 核心 syscall + 128B IPC 头）实现字节级同源。跨态复用的**正确形态**是：内核态复用"无浮点、无 I/O、可确定性判定"的机制子集（GRAD Kahn 拓扑、Roadmap L1 状态机、graph_engine 拓扑遍历），用户态保留 LLM 驱动的完整协议。
+2. **agentrt 与 agent-linux 如何可组合？** —— 通过 **IRON-9 v3 的 [SC] 共享契约层**（10 核心头文件 + 12 核心 syscall + 128B IPC 头）实现字节级同源。跨态复用的**正确形态**是：内核态复用"无浮点、无 I/O、可确定性判定"的机制子集（GRAD Kahn 拓扑、Roadmap L1 状态机、graph_engine 拓扑遍历），用户态保留 LLM 驱动的完整协议。
 
 **目标锚定**：让 agentrt **全功能运行**（不是"先砍到能跑"），同时**削减实现复杂度**（不是削减功能）。这两者不矛盾——砍掉的是"手写 malloc 替代品、重复的 DAG 引擎、半成品的 BSP 超步"，保留的是"GCCP 事实确认、GRAD 逻辑确认、三级降级、三权分立、依赖调度、认知-执行解耦"这些功能语义。
 
@@ -91,11 +91,11 @@
 
 ---
 
-## 二、agentrt + agentrt-linux 可组合性论证
+## 二、agentrt + agent-linux 可组合性论证
 
 ### 2.1 8 子仓与 agentrt 的同源映射
 
-| agentrt-linux 子仓 | 复用 agentrt 模块 | 职责 |
+| agent-linux 子仓 | 复用 agentrt 模块 | 职责 |
 |-------------------|------------------|------|
 | `kernel/` | atoms/corekern | Linux 6.6 + sched_tac + eBPF + io_uring + 微内核化改造 |
 | `services/` | daemons | 12 daemon systemd 集成 + io_uring 消息传递 |
@@ -200,10 +200,10 @@
 
 2. **"全功能运行"与"削减复杂度"不矛盾**：砍的是"实现复杂度"（四层分配器、Pregel BSP 半成品、重复管线、手写基础库），保留的是"功能语义"。这才是 reversal-slimming 报告的正确解读。
 
-3. **跨态组合靠 [SC] 契约层**：agentrt 与 agentrt-linux 是"同一架构在用户态与内核态的两端"，内核态承接确定性判定子集（GRAD Kahn、Roadmap L1、graph_engine 拓扑），用户态保留认知智能主体。这既符合"内核不思考"硬约束，又让五机制真正跨态复用。
+3. **跨态组合靠 [SC] 契约层**：agentrt 与 agent-linux 是"同一架构在用户态与内核态的两端"，内核态承接确定性判定子集（GRAD Kahn、Roadmap L1、graph_engine 拓扑），用户态保留认知智能主体。这既符合"内核不思考"硬约束，又让五机制真正跨态复用。
 
 4. **行业底座差距在四项非功能性硬伤**：一致性存储、原生沙箱、开源侧记忆完整性、复杂度控制。前三项补短板，第四项做减法——**而第四项是前三项能落地的前提**。
 
 ---
 
-*本报告整合前序 9 篇文档 + 源码审查 + deepseek-harness 逐字节研究 + 核心机制价值论证 + agentrt-linux 跨态分析，是 `_review_v4.3` 文档链的收束之作。*
+*本报告整合前序 9 篇文档 + 源码审查 + deepseek-harness 逐字节研究 + 核心机制价值论证 + agent-linux 跨态分析，是 `_review_v4.3` 文档链的收束之作。*

@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# Linux 7.1 内核技术检索报告 — agentrt-linux 2.x.x 前瞻性设计输入
+# Linux 7.1 内核技术检索报告 — agent-linux 2.x.x 前瞻性设计输入
 
 > **检索日期**：2026-07-09 ｜ **报告版本**：v1.0
 > **信息基线**：kernel.org 官方发布表 + kernelnewbies.org/Linux_7.1 + LWN + Phoronix + Linux Journal（多方交叉验证）
-> **适用对象**：agentrt-linux 2.x.x 版本前瞻性预留设计
+> **适用对象**：agent-linux 2.x.x 版本前瞻性预留设计
 
 ---
 
@@ -13,9 +13,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 1. **Linux 7.1 已发布且为当前 stable**：Linus Torvalds 于 **2026-06-14** 发布 7.1.0，截至 2026-07-04 已迭代至 **7.1.3**；mainline 已推进至 **7.2-rc2**（2026-07-06）。
 2. **Linux 7.0 已 EOL**：7.0 于 2026-04-12 发布，2026-06-27 EOL（仅维护约 2.5 个月，符合非 LTS 常规节奏）。
 3. **版本编号 6.x → 7.x 的原因**：纯美学，与 Linus"指与趾计数"惯例相关——x.19 即终止该主版本，下一个直接跳 (x+1).0。**无任何架构性断裂**。6.19 是 6.x 末版（2026-02-08）。
-4. **7.1 不是 LTS**。当前 LTS 链：6.18（至 2028-12）、6.12（至 2028-12）、**6.6（至 2027-12）**、6.1（至 2027-12）、5.15/5.10（至 2026-12）。agentrt-linux 当前基线 6.6 仍在 LTS 窗口内，但仅剩约 1 年 5 个月。
-5. **对 agentrt-linux 2.x.x 最有价值的 7.1 能力**（按优先级）：① sched_ext cgroup 子调度器（直接服务于 per-cgroup 策略）；② BPF-powered io_uring + ublk zero-copy（服务于 I/O 路径）；③ clone3 三个新 flag + FSMOUNT_NAMESPACE + empty mntns（极大简化容器化）；④ Landlock UNIX socket hook（强化沙箱）；⑤ swap table phase III + hrtimer 重写（性能与实时性基础）。
-6. **对 agentrt-linux 2.x.x 最具冲突性的变化**：① IPv6 不可再编译为模块（破坏嵌入式 defconfig 习惯）；② UDP-Lite / ISDN / AX.25 / hamradio / 486 子架构整体移除（140k+ 行）；③ Rust 工具链要求提升至 1.85 + bindgen 0.71.1；④ 7.2 将引入 Clang 17 最低要求与 Cache-Aware Scheduling。
+4. **7.1 不是 LTS**。当前 LTS 链：6.18（至 2028-12）、6.12（至 2028-12）、**6.6（至 2027-12）**、6.1（至 2027-12）、5.15/5.10（至 2026-12）。agent-linux 当前基线 6.6 仍在 LTS 窗口内，但仅剩约 1 年 5 个月。
+5. **对 agent-linux 2.x.x 最有价值的 7.1 能力**（按优先级）：① sched_ext cgroup 子调度器（直接服务于 per-cgroup 策略）；② BPF-powered io_uring + ublk zero-copy（服务于 I/O 路径）；③ clone3 三个新 flag + FSMOUNT_NAMESPACE + empty mntns（极大简化容器化）；④ Landlock UNIX socket hook（强化沙箱）；⑤ swap table phase III + hrtimer 重写（性能与实时性基础）。
+6. **对 agent-linux 2.x.x 最具冲突性的变化**：① IPv6 不可再编译为模块（破坏嵌入式 defconfig 习惯）；② UDP-Lite / ISDN / AX.25 / hamradio / 486 子架构整体移除（140k+ 行）；③ Rust 工具链要求提升至 1.85 + bindgen 0.71.1；④ 7.2 将引入 Clang 17 最低要求与 Cache-Aware Scheduling。
 
 ---
 
@@ -75,7 +75,7 @@ Linus 在 6.19 公告中明确：
 | Proxy Execution：Simple Donor Migration（部分合入） | **7.1** | 已确认（未完成） |
 | Cache-Aware Scheduling（CONFIG_SCHED_CACHE） | 7.2（merge window） | 推测/预期 |
 
-**对 agentrt-linux 的关键意义**：v0.2.0 审查文档验证项明确要求"`SCHED_AGENT` define 出现次数 = 0"，即**不自定义调度类、复用 sched_ext**。7.1 的 cgroup 子调度器使"per-cgroup 不同调度策略"成为可能，正好契合安全分级 + 容器隔离需求。
+**对 agent-linux 的关键意义**：v0.2.0 审查文档验证项明确要求"`SCHED_AGENT` define 出现次数 = 0"，即**不自定义调度类、复用 sched_ext**。7.1 的 cgroup 子调度器使"per-cgroup 不同调度策略"成为可能，正好契合安全分级 + 容器隔离需求。
 
 ### 3.2 内存管理（MM）
 
@@ -162,7 +162,7 @@ Linus 在 6.19 公告中明确：
 | AI 辅助 bug 查找（"new normal"） | **7.0** | 已确认（流程而非特性） |
 | 键盘新增 3 个 AI agent 专用键 HID 编码 | **7.0** | 已确认 |
 
-**对 agentrt-linux 的关键意义**：agentrt-linux 作为"AgentOS"若需 NPU/GPU 调度能力，应基于 accel 子系统 + DRM-RAS 构建用户态策略层，而非期待内核有"AI 调度类"。
+**对 agent-linux 的关键意义**：agent-linux 作为"AgentOS"若需 NPU/GPU 调度能力，应基于 accel 子系统 + DRM-RAS 构建用户态策略层，而非期待内核有"AI 调度类"。
 
 ### 3.9 架构支持
 
@@ -219,11 +219,11 @@ Linus 在 6.19 公告中明确：
 
 ### 5.2 当前 LTS 全景与 EOL
 
-| LTS | EOL | 与 agentrt-linux 关系 |
+| LTS | EOL | 与 agent-linux 关系 |
 |---|---|---|
 | 6.18 | 2028-12 | 候选升级目标（已稳定 7 个月） |
 | 6.12 | 2028-12 | PREEMPT_RT/sched_ext 主线化的首个 LTS |
-| **6.6** | **2027-12** | **agentrt-linux 当前基线，剩余 ~17 个月** |
+| **6.6** | **2027-12** | **agent-linux 当前基线，剩余 ~17 个月** |
 | 6.1 | 2027-12 | Debian 12 基线 |
 | 5.15 / 5.10 | 2026-12 | **5 个月内 EOL** |
 
@@ -233,11 +233,11 @@ Linus 在 6.19 公告中明确：
 
 ---
 
-## 6. 对 agentrt-linux 2.x.x 的影响
+## 6. 对 agent-linux 2.x.x 的影响
 
-### 6.1 可简化 agentrt-linux 实现的 7.1 特性
+### 6.1 可简化 agent-linux 实现的 7.1 特性
 
-| 7.1 特性 | 对应 agentrt-linux 模块 | 简化点 |
+| 7.1 特性 | 对应 agent-linux 模块 | 简化点 |
 |---|---|---|
 | sched_ext cgroup 子调度器 | security（安全分级）+ kernel（调度） | per-cgroup 调度策略无需自定义 SCHED_AGENT |
 | clone3 CLONE_AUTOREAP/CLONE_NNP/CLONE_PIDFD_AUTOKILL | services（进程/容器管理） | agent 生命周期与 pidfd 绑定、自动 reap |
@@ -250,7 +250,7 @@ Linus 在 6.19 公告中明确：
 | PREEMPT_LAZY 默认 + PREEMPT_RT 主线化 | kernel（实时） | 无需单独 RT 补丁树 |
 | KHO + liveupdate | services（无停机升级） | kexec 保留状态，契合"无停机升级"诉求 |
 
-### 6.2 可能与 agentrt-linux 设计冲突的 7.1 特性
+### 6.2 可能与 agent-linux 设计冲突的 7.1 特性
 
 | 冲突点 | 风险 | 缓解 |
 |---|---|---|
@@ -273,7 +273,7 @@ Linus 在 6.19 公告中明确：
 
 ---
 
-## 7. agentrt-linux 2.x.x 前瞻性预留设计具体建议（10 条）
+## 7. agent-linux 2.x.x 前瞻性预留设计具体建议（10 条）
 
 > 原则：遵循 IRON 规则——所有预留必须以"运行时能力探测 + 条件降级"实现，而非"假设未来内核一定有"。
 
@@ -291,7 +291,7 @@ Linus 在 6.19 公告中明确：
 
 7. **PREEMPT 模型运行时选择**。Kconfig 默认 `CONFIG_PREEMPT_LAZY=y`（对齐 7.0 默认），同时保留 `CONFIG_PREEMPT_FULL` 与 `CONFIG_PREEMPT_RT` 选项给工控/车载场景。在文档中明确三档抢占模型与 <10ms 实时响应目标的对应关系。
 
-8. **NPU/GPU 调度基于 accel 子系统，不期待内核 AI 调度类**。agentrt-linux 的 NPU 调度能力应通过 `drivers/accel/` + DRM-RAS（7.1）构建用户态策略层，内核仅暴露 accel 设备的 sysfs/debugfs 接口。明确文档化"主线无 AI 调度类"，避免社区误导。
+8. **NPU/GPU 调度基于 accel 子系统，不期待内核 AI 调度类**。agent-linux 的 NPU 调度能力应通过 `drivers/accel/` + DRM-RAS（7.1）构建用户态策略层，内核仅暴露 accel 设备的 sysfs/debugfs 接口。明确文档化"主线无 AI 调度类"，避免社区误导。
 
 9. **构建工具链基线锁定与渐进升级**。工程标准应明确：2.x.x 锁定 Rust 1.85 + bindgen 0.71.1（7.1 基线）、Clang/LLVM 15（6.6/6.18 基线）；3.x.x 预留 Clang 17（7.2 基线）。checkpatch 规则映射需对齐 7.1 的 kernel-doc C tokenizer 重写带来的注释规范变化。
 
@@ -328,7 +328,7 @@ Linus 在 6.19 公告中明确：
 
 ## 9. 结论
 
-Linux 7.1 已于 2026-06-14 发布并稳定迭代（当前 7.1.3），但**不是 LTS**。agentrt-linux 当前基线 6.6 LTS 仍可用至 2027-12，时间窗口约 17 个月。建议 2.x.x **不立即迁移内核基线**，而是按本报告第七章 10 条建议进行"运行时能力探测 + 条件降级"式的前瞻性预留，重点复用 sched_ext（不自定义 SCHED_AGENT）、clone3 新 flag、FSMOUNT_NAMESPACE、io_uring struct_ops、Landlock socket hook、ublk zero-copy 等 7.1 能力。3.x.x 评估升级至 6.18 LTS 或 7.4/7.5 LTS（待 2026 末确认）。所有预留必须遵循 IRON 规则——可探测、可降级、不引入未实现功能、不留桩。
+Linux 7.1 已于 2026-06-14 发布并稳定迭代（当前 7.1.3），但**不是 LTS**。agent-linux 当前基线 6.6 LTS 仍可用至 2027-12，时间窗口约 17 个月。建议 2.x.x **不立即迁移内核基线**，而是按本报告第七章 10 条建议进行"运行时能力探测 + 条件降级"式的前瞻性预留，重点复用 sched_ext（不自定义 SCHED_AGENT）、clone3 新 flag、FSMOUNT_NAMESPACE、io_uring struct_ops、Landlock socket hook、ublk zero-copy 等 7.1 能力。3.x.x 评估升级至 6.18 LTS 或 7.4/7.5 LTS（待 2026 末确认）。所有预留必须遵循 IRON 规则——可探测、可降级、不引入未实现功能、不留桩。
 
 ---
 

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux 综合方案评估报告 v2.4
+# 00 — agent-linux 综合方案评估报告 v2.4
 
 > **审查日期**：2026-07-22
 > **审查范围**：v2.2 全部 38 份报告 + v2.3 综合报告 + AirymaxOS 最新方案 + openEuler OLK-6.6 工程实践 + seL4 微内核设计思想
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 核心判定
 
-**agentrt-linux 内核 M0 框架在代码层面已达到基本完整，但在"设计→实现"的工程闭环上存在系统性断层。**
+**agent-linux 内核 M0 框架在代码层面已达到基本完整，但在"设计→实现"的工程闭环上存在系统性断层。**
 
 v2.3 报告判定"M0 框架已就绪，可进入 M1 开发阶段"。v2.4 审查发现这一判定**过于乐观**——v2.3 遗漏了 3 项 P0 级问题和 1 项 IRON-8 违反：
 
@@ -123,7 +123,7 @@ v2.3 报告声称"30+ 份文档版本号统一为 v1.0.1"是**误报**——至�
 
 ### 5.1 openEuler 生产级标准 6 项差距
 
-| # | 维度 | openEuler 做法 | agentrt-linux 现状 | 差距等级 |
+| # | 维度 | openEuler 做法 | agent-linux 现状 | 差距等级 |
 |---|------|---------------|-------------------|---------|
 | 1 | 补丁溯源标签 | `mainline`/`hulk`/`driver inclusion` 三类标签 + bugzilla + CVE | 无标签体系 | 中 |
 | 2 | KABI 守门 | `compare_package` 门禁 + kabi 修复强制 | 设计完成，实现缺失 | 高 |
@@ -134,10 +134,10 @@ v2.3 报告声称"30+ 份文档版本号统一为 v1.0.1"是**误报**——至�
 
 ### 5.2 openEuler 工程哲学启示
 
-1. **上游优先**：openEuler README 明确要求"Upstream your kernel patch to kernel community is strongly recommended"。agentrt-linux 作为 Linux fork 也应建立上游化导向。
-2. **不重新发明轮子**：openEuler 核心子系统与上游高度一致，差异化通过用户态组件实现。agentrt-linux 已遵循此原则（复用 Linux 6.6 调度/内存/网络/VFS）。
-3. **git log 即审计日志**：通过 inclusion 标签，任何补丁来源可追溯。agentrt-linux 需建立类似机制。
-4. **LTS 10 年维护承诺**：openEuler LTS 承诺 10 年安全维护。agentrt-linux 需评估 LTS 维护策略。
+1. **上游优先**：openEuler README 明确要求"Upstream your kernel patch to kernel community is strongly recommended"。agent-linux 作为 Linux fork 也应建立上游化导向。
+2. **不重新发明轮子**：openEuler 核心子系统与上游高度一致，差异化通过用户态组件实现。agent-linux 已遵循此原则（复用 Linux 6.6 调度/内存/网络/VFS）。
+3. **git log 即审计日志**：通过 inclusion 标签，任何补丁来源可追溯。agent-linux 需建立类似机制。
+4. **LTS 10 年维护承诺**：openEuler LTS 承诺 10 年安全维护。agent-linux 需评估 LTS 维护策略。
 
 ---
 
@@ -145,7 +145,7 @@ v2.3 报告声称"30+ 份文档版本号统一为 v1.0.1"是**误报**——至�
 
 ### 6.1 seL4 设计思想 7 项差距
 
-| # | 维度 | seL4 做法 | agentrt-linux 现状 | 差距等级 |
+| # | 维度 | seL4 做法 | agent-linux 现状 | 差距等级 |
 |---|------|----------|-------------------|---------|
 | 1 | decode/invoke 分离 | decode 只检查不改状态，invoke 才改状态 | 未分离 | 高 |
 | 2 | 验证友好代码约束 | 禁 union、禁取栈地址、禁 pre-increment | 无此类约束 | 中 |
@@ -157,10 +157,10 @@ v2.3 报告声称"30+ 份文档版本号统一为 v1.0.1"是**误报**——至�
 
 ### 6.2 seL4 工程哲学启示
 
-1. **代码量是验证成本的线性驱动**：seL4 verified ~10 kSLOC，proof:code 比 20:1。agentrt-linux 的"5-10 万行"预算合理，但需建立量化追踪。
-2. **验证约束反向塑造代码风格**：禁 union、decode/invoke 分离等约束使代码天然适合静态分析。agentrt-linux 应在安全关键路径引入这些约束。
-3. **libsel4 ABI 契约层**：seL4 用 XML IDL 生成用户态 stub，保证 ABI 一致性。agentrt-linux 的 codegen 管道设计已对齐此模式，需落实实现。
-4. **CAVEATS.md 模式**：seL4 显式声明验证范围与假设。agentrt-linux 应建立类似的"已知限制声明"机制（但放在 docs-closed 而非开源 README）。
+1. **代码量是验证成本的线性驱动**：seL4 verified ~10 kSLOC，proof:code 比 20:1。agent-linux 的"5-10 万行"预算合理，但需建立量化追踪。
+2. **验证约束反向塑造代码风格**：禁 union、decode/invoke 分离等约束使代码天然适合静态分析。agent-linux 应在安全关键路径引入这些约束。
+3. **libsel4 ABI 契约层**：seL4 用 XML IDL 生成用户态 stub，保证 ABI 一致性。agent-linux 的 codegen 管道设计已对齐此模式，需落实实现。
+4. **CAVEATS.md 模式**：seL4 显式声明验证范围与假设。agent-linux 应建立类似的"已知限制声明"机制（但放在 docs-closed 而非开源 README）。
 
 ---
 
@@ -247,7 +247,7 @@ v2.3 报告声称"30+ 份文档版本号统一为 v1.0.1"是**误报**——至�
 
 ### 10.1 总体判定
 
-**agentrt-linux 内核 M0 框架在代码层面已达到基本完整，但工程基础设施（CI/codegen/ABI）的缺失使其尚未达到"生产级开发就绪"标准。**
+**agent-linux 内核 M0 框架在代码层面已达到基本完整，但工程基础设施（CI/codegen/ABI）的缺失使其尚未达到"生产级开发就绪"标准。**
 
 v2.3 的"可进入 M1"判定需要修正为：**在完成 §8.1 的 7 项 P0 前置工作后，方可进入 M1 开发。**
 

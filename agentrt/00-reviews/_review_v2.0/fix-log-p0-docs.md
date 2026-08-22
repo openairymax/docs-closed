@@ -87,7 +87,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 
 **问题**: 51 处/18 文件误称 agentrt 为"操作系统"。agentrt 的准确定位是 "AI Agent Runtime Platform Engineering"（AI Agent 运行时平台工程），对标 JVM/containerd 之于语言/容器的运行底座。MicroCoreRT 是用户态微核心（运行在 Ring 3，非操作系统内核）。
 
-**修正方案**: 区分误称（agentrt 被称为 OS）与合法用法（指代宿主 OS、agentrt-linux/AirymaxOS 是真正的 OS、OS 概念借鉴、显式否定如"MicroCoreRT 不是操作系统内核"）。修正 17 处误称，保留 34 处合法用法。
+**修正方案**: 区分误称（agentrt 被称为 OS）与合法用法（指代宿主 OS、agent-linux/AirymaxOS 是真正的 OS、OS 概念借鉴、显式否定如"MicroCoreRT 不是操作系统内核"）。修正 17 处误称，保留 34 处合法用法。
 
 **修正记录**（10 个文件，~17 处修正）:
 
@@ -113,7 +113,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 
 **保留的合法用法**（34 处，未修改）:
 - 指代宿主 OS（如"运行于操作系统之上"）
-- 指代 agentrt-linux/AirymaxOS（真正的 OS）
+- 指代 agent-linux/AirymaxOS（真正的 OS）
 - OS 概念借鉴（如"借鉴操作系统设计的经典智慧"）
 - 显式否定（如"MicroCoreRT 不是操作系统内核"、"不运行在 ring 0"）
 
@@ -212,7 +212,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 
 2. **P0-1 与源码差异**: 文档统一使用 POSIX errno 负值（`AIRY_EINVAL=-22` 等），源码 `airy_types.h` 实际使用不同值（-1, -2, -6）。因任务约束"不修改源码"，文档侧以 POSIX errno 负值为 SSoT。源码侧的对齐留待 1.0.1 M1 阶段处理。
 
-3. **P0-5 合法用法保留**: 34 处"操作系统"合法用法（指代宿主 OS、agentrt-linux/AirymaxOS、OS 概念借鉴、显式否定）已保留，未修改。
+3. **P0-5 合法用法保留**: 34 处"操作系统"合法用法（指代宿主 OS、agent-linux/AirymaxOS、OS 概念借鉴、显式否定）已保留，未修改。
 
 4. **P0-9 文件名映射**: `30-coding-standard/` 下原有 16 份源文件已于 2026-07-13 合并为 5 份合并文档（`C_Cpp_coding_style.md` / `Rust_coding_style.md` / `Go_coding_style.md` / `scripting_coding_style.md` / `coding_conventions.md`），文档引用已全部更新为新文件名。
 

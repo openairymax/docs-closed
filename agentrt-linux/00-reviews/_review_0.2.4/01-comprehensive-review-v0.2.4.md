@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v0.2.4 完整审查报告
+# agent-linux v0.2.4 完整审查报告
 
-> **审查对象**: `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`（1810 行）
+> **审查对象**: `01-designs/_design_0.2.4/01-agent-linux-directory-structure.md`（1810 行）
 > **审查日期**: 2026-07-09
 > **审查员**: 架构委员会（人工逐项验证）
 > **方法论**: 全文逐章精读 + 源代码证据独立复核 + 交叉引用一致性检查 + 模型 A 完整性验证
@@ -120,7 +120,7 @@ scripts        security  sound   tools  usr     virt
 **验证命令**：
 ```bash
 ls -d 01Reference/kernel-OLK-6.6/*/ | wc -l  # 预期 24
-grep -n "28" _design_0.2.4/01-agentrt-linux-directory-structure.md  # 预期 6 处需修正
+grep -n "28" _design_0.2.4/01-agent-linux-directory-structure.md  # 预期 6 处需修正
 ```
 
 ---

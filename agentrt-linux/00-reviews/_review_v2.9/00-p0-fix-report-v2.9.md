@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux P0 问题系统性修复报告（v2.9）
+# agent-linux P0 问题系统性修复报告（v2.9）
 
-> **报告定位**：agentrt-linux（AirymaxOS）v2.8 全量文档审查确认的 4 项 P0 问题系统性修复报告，覆盖 P0-014 / P0-016 / P0-017 / P0-018 四项问题的修复方案、修改文件清单、验证结果与残留风险
+> **报告定位**：agent-linux（AirymaxOS）v2.8 全量文档审查确认的 4 项 P0 问题系统性修复报告，覆盖 P0-014 / P0-016 / P0-017 / P0-018 四项问题的修复方案、修改文件清单、验证结果与残留风险
 > **报告版本**：v2.9
 > **生成日期**：2026-07-22
 > **上游报告**：[`_review_v2.8/00-full-doc-audit-v2.8.md`](../_review_v2.8/00-full-doc-audit-v2.8.md)
@@ -91,8 +91,8 @@ v2.8 审查发现 docs/AirymaxOS 目录下存在 **三套完全矛盾的 syscall
 
 | 文件 | 修改内容 |
 |------|---------|
-| `agentrt-linux/kernel/include/uapi/asm-generic/unistd.h` L826-843 | 新增 548-551 四个 airy syscall 编号 |
-| `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` L378-387 | 新增 548-551 四个 airy syscall 入口 |
+| `agent-linux/kernel/include/uapi/asm-generic/unistd.h` L826-843 | 新增 548-551 四个 airy syscall 编号 |
+| `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` L378-387 | 新增 548-551 四个 airy syscall 入口 |
 
 #### 2.3.2 SSoT 文档重写（本轮完成）
 
@@ -180,9 +180,9 @@ Grep 确认 `docs/AirymaxOS` 目录下无 `文档版本**：0.2.8` 残留。
 
 | 文件 | 行数 | 功能 |
 |------|------|------|
-| `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 | codegen 契约源：4 个 `<syscall>` 元素 + `<reserved>` 段，`linux_base="548"` |
-| `agentrt-linux/tools/codegen/syscall_gen.py` | 314 | codegen 生成器：解析 syscall.xml → 生成 `#define AIRY_SYS_*` 宏 + `__NR_airy_sys_*` 宏 + 函数原型；`--check` 模式用 difflib 对比已提交文件 |
-| `agentrt-linux/tools/codegen/Makefile` | 45 | 构建入口：`all` / `syscall` / `check` / `clean` 四个 target |
+| `agent-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 | codegen 契约源：4 个 `<syscall>` 元素 + `<reserved>` 段，`linux_base="548"` |
+| `agent-linux/tools/codegen/syscall_gen.py` | 314 | codegen 生成器：解析 syscall.xml → 生成 `#define AIRY_SYS_*` 宏 + `__NR_airy_sys_*` 宏 + 函数原型；`--check` 模式用 difflib 对比已提交文件 |
+| `agent-linux/tools/codegen/Makefile` | 45 | 构建入口：`all` / `syscall` / `check` / `clean` 四个 target |
 
 ### 4.3 syscall.xml 契约源结构
 
@@ -209,9 +209,9 @@ Grep 确认 `docs/AirymaxOS` 目录下无 `文档版本**：0.2.8` 残留。
 
 | 文件 | 行数 | 功能 |
 |------|------|------|
-| `agentrt-linux/tools/abi-check/abi_check.py` | ~200 | ABI 稳定性检查工具：从三方源提取 syscall 编号 → 6 项检查 |
-| `agentrt-linux/tools/abi-check/abi_baseline.json` | ~30 | v1.0.1 ABI 基线快照：4 syscalls, base=548, nr=552 |
-| `agentrt-linux/tools/abi-check/README.md` | ~40 | 工具使用说明 |
+| `agent-linux/tools/abi-check/abi_check.py` | ~200 | ABI 稳定性检查工具：从三方源提取 syscall 编号 → 6 项检查 |
+| `agent-linux/tools/abi-check/abi_baseline.json` | ~30 | v1.0.1 ABI 基线快照：4 syscalls, base=548, nr=552 |
+| `agent-linux/tools/abi-check/README.md` | ~40 | 工具使用说明 |
 
 ### 5.3 ABI 检查项（6 项）
 
@@ -332,19 +332,19 @@ Grep 扫描 `airy_sys_cxl_tier_set|cxl_tier_get|mglru_config`：
 
 | # | 文件路径 | 修改类型 |
 |---|---------|---------|
-| 1 | `agentrt-linux/kernel/include/uapi/asm-generic/unistd.h` | 修改（L826-843） |
-| 2 | `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | 修改（L378-387） |
+| 1 | `agent-linux/kernel/include/uapi/asm-generic/unistd.h` | 修改（L826-843） |
+| 2 | `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | 修改（L378-387） |
 
 ### A.2 新增工具文件（6 份，本轮完成）
 
 | # | 文件路径 | 行数 |
 |---|---------|------|
-| 1 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 |
-| 2 | `agentrt-linux/tools/codegen/syscall_gen.py` | 314 |
-| 3 | `agentrt-linux/tools/codegen/Makefile` | 45 |
-| 4 | `agentrt-linux/tools/abi-check/abi_check.py` | ~200 |
-| 5 | `agentrt-linux/tools/abi-check/abi_baseline.json` | ~30 |
-| 6 | `agentrt-linux/tools/abi-check/README.md` | ~40 |
+| 1 | `agent-linux/kernel/include/uapi/linux/airymax/syscall.xml` | 89 |
+| 2 | `agent-linux/tools/codegen/syscall_gen.py` | 314 |
+| 3 | `agent-linux/tools/codegen/Makefile` | 45 |
+| 4 | `agent-linux/tools/abi-check/abi_check.py` | ~200 |
+| 5 | `agent-linux/tools/abi-check/abi_baseline.json` | ~30 |
+| 6 | `agent-linux/tools/abi-check/README.md` | ~40 |
 
 ### A.3 修改文档文件（18 份，本轮完成）
 
@@ -382,4 +382,4 @@ Grep 扫描 `airy_sys_cxl_tier_set|cxl_tier_get|mglru_config`：
 
 ## 报告结束
 
-> **报告版本** | agentrt-linux P0 问题系统性修复报告 v2.9 | 生成日期：2026-07-22
+> **报告版本** | agent-linux P0 问题系统性修复报告 v2.9 | 生成日期：2026-07-22

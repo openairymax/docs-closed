@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 成熟度评估报告 v0.2.0
+# agent-linux 成熟度评估报告 v0.2.0
 
 > **评估日期**: 2026-07-09
 > **评估版本**: v0.2.0
@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 五维度评估模型
 
-agentrt-linux 文档体系成熟度采用五维度评估模型，每个维度满分 100 分：
+agent-linux 文档体系成熟度采用五维度评估模型，每个维度满分 100 分：
 
 | 维度 | 权重 | 核心指标 |
 |------|------|---------|
@@ -182,7 +182,7 @@ v0.2.0 (二轮审查)  → 100/100 (A+) 无条件 Go
 | 06-airymax-scheduling-standard.md | 549 | 调度标准 |
 | **合计** | **3,718** | |
 
-### 6.3 闭源审查文档（docs-closed/agentrt-linux/）
+### 6.3 闭源审查文档（docs-closed/agent-linux/）
 
 | 目录/文件 | 说明 |
 |---------|------|
@@ -197,7 +197,7 @@ v0.2.0 (二轮审查)  → 100/100 (A+) 无条件 Go
 
 ## 7. 结论
 
-agentrt-linux（AirymaxOS）0.1.1 文档体系在 v0.2.0 第二轮审查中达到 **100/100 满分**，五个维度全部满分：
+agent-linux（AirymaxOS）0.1.1 文档体系在 v0.2.0 第二轮审查中达到 **100/100 满分**，五个维度全部满分：
 
 - 合规性 100/100 ✅
 - 文档完整性 100/100 ✅

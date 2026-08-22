@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 第六部分：改进建议与路线图
 
-> **文档定位**： v0.9.0 综合审查报告第六部分。基于前五部分的审查发现，给出 agentrt-linux 工程标准规范的改进建议与路线图，包括 0.1.1 立即修复、0.1.1 收尾修复、1.0.1 M1 阶段和长期演进四个阶段。\
+> **文档定位**： v0.9.0 综合审查报告第六部分。基于前五部分的审查发现，给出 agent-linux 工程标准规范的改进建议与路线图，包括 0.1.1 立即修复、0.1.1 收尾修复、1.0.1 M1 阶段和长期演进四个阶段。\
 > **版本**： 0.9.0\
 > **问题总数**： 15 项（P0-CRITICAL 3 项 + P1-MAJOR 6 项 + P2-MINOR 6 项）\
 > **总工作量**： ~156.5h（文档修复）+ ~240h（源码升级）+ ~120h（长期演进）= ~516.5h\
@@ -67,7 +67,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **验证方法**：
 
 ```bash
-grep -r "OLK-6.6" docs-closed/agentrt-linux/ --include="*.md"
+grep -r "OLK-6.6" docs-closed/agent-linux/ --include="*.md"
 # 预期输出: 空（无残留）
 ```
 
@@ -100,7 +100,7 @@ grep -r "OLK-6.6" docs-closed/agentrt-linux/ --include="*.md"
 **验证方法**：
 
 ```bash
-grep -r "ES-SEL4-1~10" docs-closed/agentrt-linux/ --include="*.md"
+grep -r "ES-SEL4-1~10" docs-closed/agent-linux/ --include="*.md"
 # 预期: 仅在附录 D 标题出现，且标题已改为"ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强"
 ```
 
@@ -201,7 +201,7 @@ grep -rn "OS-ACC-001" docs/AirymaxOS/ --include="*.md"
 ## 1. 信任读者
 ### 1.1 哲学阐释
 ### 1.2 OLK-6.6 源码证据
-### 1.3 agentrt-linux 落地要求
+### 1.3 agent-linux 落地要求
 
 ## 2. 函数应短小精悍
 ...
@@ -243,7 +243,7 @@ grep -rn "OS-ACC-001" docs/AirymaxOS/ --include="*.md"
 ```bash
 # 假设已废除的族索引文件列表
 for file in <已废除的9个文件>; do
-    grep -r "$file" docs/AirymaxOS/ docs-closed/agentrt-linux/ --include="*.md"
+    grep -r "$file" docs/AirymaxOS/ docs-closed/agent-linux/ --include="*.md"
 done
 # 预期: 无引用
 ```
@@ -330,7 +330,7 @@ grep -rn "AIRY_ERR_\|AGENTRT_ERR_" agentrt/ --include="*.{c,h}" | wc -l
 
 **修复步骤**：
 
-1. 1.0.1 M1 阶段填充 agentrt-linux 内核代码
+1. 1.0.1 M1 阶段填充 agent-linux 内核代码
 2. 对内核代码执行源码级 Grep 验证
 3. 重新评估实现落地层评分
 4. 预期从 72 分（代理）提升至 85 分
@@ -350,7 +350,7 @@ grep -rn "AIRY_ERR_\|AGENTRT_ERR_" agentrt/ --include="*.{c,h}" | wc -l
 阶段三完成后，执行以下验证：
 
 1. **源码品味验证**：15 文件 4 空格 / 104 typedef / 10 文件错误宏全部修复
-2. **内核代码验证**：agentrt-linux 内核代码通过 checkpatch.pl
+2. **内核代码验证**：agent-linux 内核代码通过 checkpatch.pl
 3. **实现落地层重新评分**：预期 85 分（A）
 4. **所有 P1/P2 问题修复验证**：15 项问题全部修复
 
@@ -407,7 +407,7 @@ grep -rn "AIRY_ERR_\|AGENTRT_ERR_" agentrt/ --include="*.{c,h}" | wc -l
 
 #### 5.2.3 capability + LSM 融合模型论证
 
-论证 agentrt-linux 同时使用 capability（seL4 借鉴）和 LSM（Linux 6.6 原生）的合理性：
+论证 agent-linux 同时使用 capability（seL4 借鉴）和 LSM（Linux 6.6 原生）的合理性：
 
 1. **capability 层**：细粒度权限控制（agent spawn / GPU sched / NPU access）
 2. **LSM 层**：系统级安全策略（hooks 252 ID）
@@ -522,7 +522,7 @@ grep -rn "AIRY_ERR_\|AGENTRT_ERR_" agentrt/ --include="*.{c,h}" | wc -l
 
 **v0.9.0 审查结论**： **有条件 Go**
 
-agentrt-linux 工程标准规范在规范声明层已达到生产就绪质量（92 分 A），但方案设计层存在 3 项 P0-CRITICAL 问题（68 分 D+），必须在 0.1.1 收尾阶段修复。实现落地层因 0.1.1 仅文档而暂不评分，但 agentrt 现有源码与规范之间的品味鸿沟（19 分差距）是 1.0.1 M1 阶段的主要风险。
+agent-linux 工程标准规范在规范声明层已达到生产就绪质量（92 分 A），但方案设计层存在 3 项 P0-CRITICAL 问题（68 分 D+），必须在 0.1.1 收尾阶段修复。实现落地层因 0.1.1 仅文档而暂不评分，但 agentrt 现有源码与规范之间的品味鸿沟（19 分差距）是 1.0.1 M1 阶段的主要风险。
 
 修复 3 项 P0 后，预计综合评分从 70 分（B-）提升至 78 分（B+），达到 0.1.1 奠基版本的生产就绪标准。
 

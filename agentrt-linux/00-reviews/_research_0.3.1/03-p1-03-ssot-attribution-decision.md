@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 目录 | 定位 | 目标读者 | 平台覆盖 |
 |------|------|---------|---------|
 | **AirymaxRT `50-specifications/`** | agentrt 用户态运行时技术规范 | 应用层开发者、SDK 用户、架构师、安全专家 | 跨平台（Linux/macOS/Windows） |
-| **AirymaxOS `50-engineering-standards/`** | agentrt-linux 内核态工程标准 | 内核开发者、OS 贡献者、维护者 | Linux 6.6 内核专属 |
+| **AirymaxOS `50-engineering-standards/`** | agent-linux 内核态工程标准 | 内核开发者、OS 贡献者、维护者 | Linux 6.6 内核专属 |
 
 ### 1.2 主题重叠清单
 
@@ -83,7 +83,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 5 | 日志规范 | **AirymaxOS** `20-contracts/logging_contract.md` | AirymaxRT 引用 ANSI 颜色 + log_write() + CLOCK_REALTIME 部分 | 工程约定统一为 AirymaxOS（项目记忆：所有日志必须使用核心日志系统） |
 | 6 | IPC 协议契约 | **各自 SSoT**（[SS] 语义同源） | 通过 [SC] `ipc.h` 共享 128B 消息头布局 | AirymaxRT = JSON-RPC 高层，AirymaxOS = 编号 syscall + io_uring 数据面（方案 D） |
 | 7 | syscall API 契约 | **各自 SSoT**（[SS] 语义同源） | 通过 `05-syscall-semantic-mapping.md` 映射 | AirymaxRT = JSON-RPC 统一入口，AirymaxOS = 编号 syscall 512-631（方案 D） |
-| 8 | 运行时接口 L1/L2/L3 | **AirymaxRT** `20-are-standards/` | AirymaxOS 引用 | ARE Standards 是面向第三方的开放标准，agentrt 是参考实现，agentrt-linux 引用之 |
+| 8 | 运行时接口 L1/L2/L3 | **AirymaxRT** `20-are-standards/` | AirymaxOS 引用 | ARE Standards 是面向第三方的开放标准，agentrt 是参考实现，agent-linux 引用之 |
 | 9 | 集成标准 | **各自 SSoT** | 无引用关系 | AirymaxRT = 应用集成（第三方系统/生态伙伴），AirymaxOS = OS 集成（agentrt 嵌入 OS） |
 | 10 | 项目 ERP | **各自 SSoT** | 内容保持一致 | 两端各自维护自己的 SBOM/资源表/手册需求，内容同步更新 |
 | 11 | 错误码参考 | **AirymaxOS** `50-project-erp/error_code_reference.md` | AirymaxRT 对齐数值（Task #46 已完成） | 错误码数值已统一为 AirymaxOS 紧凑编号方案（EINVAL=-1 等） |

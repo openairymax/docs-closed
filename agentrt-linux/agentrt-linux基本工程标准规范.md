@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）基本工程标准规范
+# agent-linux（AirymaxOS）基本工程标准规范
 
-> **文档定位**: agentrt-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲——agentrt 工程标准的**执行细则**，对齐 `docs/AirymaxOS/50-engineering-standards/` 权威体系（00-handbook OS-IRON 16 条 + 04-philosophy + 05-development-process + 130-roadmap/06-acceptance-criteria 110 项 OS-ACC）
+> **文档定位**: agent-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲——agentrt 工程标准的**执行细则**，对齐 `docs/AirymaxOS/50-engineering-standards/` 权威体系（00-handbook OS-IRON 16 条 + 04-philosophy + 05-development-process + 130-roadmap/06-acceptance-criteria 110 项 OS-ACC）
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: v3.6（2026-08-01 三轮审查闭环全面重写版，登记 v3.6/v3.6b/v3.6c 三轮审查 68 项改进闭环状态）
 > **最后更新**: 2026-08-01
@@ -48,7 +48,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 文档定位与更新说明（v3.6 闭环重写）
 
-本规范是 AirymaxOS（agentrt-linux）**闭源工程标准规范的总纲与执行细则**，面向 SPHARX Ltd 内部架构委员会、内核开发组与 8 子仓维护者。它定义了 AirymaxOS 在工程实践层面的全部强制性规则、禁止性规则、验收标准与铁律，是 8 子仓代码开发、审查、测试、发布全生命周期中不可妥协的执行基线。
+本规范是 AirymaxOS（agent-linux）**闭源工程标准规范的总纲与执行细则**，面向 SPHARX Ltd 内部架构委员会、内核开发组与 8 子仓维护者。它定义了 AirymaxOS 在工程实践层面的全部强制性规则、禁止性规则、验收标准与铁律，是 8 子仓代码开发、审查、测试、发布全生命周期中不可妥协的执行基线。
 
 **权威体系对齐**：本文档是 agentrt 工程标准的**执行细则**，规则定义的唯一权威来源是开源权威体系：
 
@@ -58,7 +58,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 工程思想 | `docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md` | 双层稳定性 / 策略机制分离 / regression 零容忍 |
 | 开发流程 | `docs/AirymaxOS/50-engineering-standards/05-development-process.md` | 6 阶段补丁生命周期 / 工具链 / 合规检查 / SPDX |
 | 验收标准 | `docs/AirymaxOS/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层门禁 + 里程碑门禁 |
-| 规则编号 SSoT | `docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md` + `agentrt-linux/ssot-registry.yaml`（v0.2.8） | 全部规则编号唯一登记（26 类规则前缀） |
+| 规则编号 SSoT | `docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md` + `agent-linux/ssot-registry.yaml`（v0.2.8） | 全部规则编号唯一登记（26 类规则前缀） |
 
 本文档与权威体系冲突时，以权威体系（SSoT）为准；本文档负责权威体系未覆盖的**闭源执行细则**：版本库卫生、模块化开发流水线、CI 完整性、文档-实现一致性义务、LAYER 双轨制、OBS 远程构建、E1-E17 落地登记等。
 
@@ -904,12 +904,12 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 
 ### 10.1 兼容性声明与 LAYER 双轨制
 
-AirymaxOS（agentrt-linux）的工程思想与实现方式与 Euler 保持一致性，以便未来兼容 Euler 标准的发行版工具链。**v3.6 更新**：兼容性实现方式从"四层参考"升级为 **LAYER 双轨制**——以 vanilla 6.6.147 为唯一核心基线（IRON-7），在其上叠加 openEuler 硬件适配能力（引用 `01-openeuler-tech-reference/11-layer-feasibility-study.md` §2.3）。
+AirymaxOS（agent-linux）的工程思想与实现方式与 Euler 保持一致性，以便未来兼容 Euler 标准的发行版工具链。**v3.6 更新**：兼容性实现方式从"四层参考"升级为 **LAYER 双轨制**——以 vanilla 6.6.147 为唯一核心基线（IRON-7），在其上叠加 openEuler 硬件适配能力（引用 `01-openeuler-tech-reference/11-layer-feasibility-study.md` §2.3）。
 
 ```
 ALK-6.6 = vanilla 6.6.147（IRON-7 基线）
         + openEuler 硬件适配层（LAYER 双轨制，架构可选）
-        + agentrt-linux 微内核化改造补丁（airy 自有代码）
+        + agent-linux 微内核化改造补丁（airy 自有代码）
 ```
 
 ### 10.2 LAYER 双轨制（v3.6 新增）
@@ -994,7 +994,7 @@ sw_64 构建链 = AirymaxOS:Factory:Kernel（OBS 项目）
 
 ### 10.9 代码共享边界澄清
 
-> **OS-IRON-009**: 代码共享仅限于 agentrt 与 agentrt-linux（AirymaxOS）之间，与 Euler 项目仅技术参考，不共享代码。
+> **OS-IRON-009**: 代码共享仅限于 agentrt 与 agent-linux（AirymaxOS）之间，与 Euler 项目仅技术参考，不共享代码。
 
 ```
 agentrt ←→ AirymaxOS:  [SC] 共享契约层完全共享代码
@@ -1018,7 +1018,7 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 
 ### 11.1 禁词清单
 
-以下词汇在**开源文档**（`docs/AirymaxOS/`）中**严禁出现**。闭源文档（`docs-closed/agentrt-linux/`）中允许引用，但应避免不必要的泄露。
+以下词汇在**开源文档**（`docs/AirymaxOS/`）中**严禁出现**。闭源文档（`docs-closed/agent-linux/`）中允许引用，但应避免不必要的泄露。
 
 > **OS-BAN-010**: 开源文档中严禁出现以下禁词。
 
@@ -1029,7 +1029,7 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 | KADC | kadc, KADC | — | 内部代号 |
 | 智慧中枢 | 智慧中心, 智能中枢 | "认知循环" / "CoreLoopThree" | 旧术语 |
 
-> **完整禁词清单**维护于 `docs-closed/agentrt-linux/forbidden-words.conf`，检查脚本从该文件读取正则表达式进行匹配。
+> **完整禁词清单**维护于 `docs-closed/agent-linux/forbidden-words.conf`，检查脚本从该文件读取正则表达式进行匹配。
 
 ### 11.2 违规等级
 
@@ -1060,11 +1060,11 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 
 ### 12.1 工程取向总纲
 
-> **OS-IRON-010**: agentrt-linux 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 Linux 6.6 内核基线工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
+> **OS-IRON-010**: agent-linux 的工程取向是"Linux 6.6 为基、seL4 为鉴"——以 Linux 6.6 内核基线工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
 
 ### 12.2 双源边界声明
 
-> **OS-IRON-011**: OLK-6.6 与 seL4 的源码仅在本地参考路径中作为研究对象；agentrt-linux 与两者的关系是"技术参考"而非"代码共享"。代码共享仅限 agentrt ↔ AirymaxOS 之间的 IRON-9 v3 [SC] 共享契约层。
+> **OS-IRON-011**: OLK-6.6 与 seL4 的源码仅在本地参考路径中作为研究对象；agent-linux 与两者的关系是"技术参考"而非"代码共享"。代码共享仅限 agentrt ↔ AirymaxOS 之间的 IRON-9 v3 [SC] 共享契约层。
 
 ```
 agentrt ←→ AirymaxOS:  IRON-9 v3 [SC] 共享契约层（完全共享代码）
@@ -1074,7 +1074,7 @@ AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
 
 ### 12.3 编码风格层裁决（7 维度全采纳 Linux 6.6 内核基线）
 
-| 维度 | Linux 6.6 | seL4 | agentrt-linux 裁决 |
+| 维度 | Linux 6.6 | seL4 | agent-linux 裁决 |
 |------|-----------|------|-------------------|
 | 缩进 | Tab 8 字符 | 空格 4 | **Linux 6.6** |
 | 命名 | snake_case | camelCase | **Linux 6.6** |
@@ -1088,7 +1088,7 @@ AirymaxOS ←→ seL4:     技术参考（架构层借鉴），不共享代码
 
 ### 12.4 工程思想层：ES-OLK-1~13 全部采纳
 
-Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）是 agentrt-linux 工程基线层的基石，完整映射见附录 D。
+Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）是 agent-linux 工程基线层的基石，完整映射见附录 D。
 
 ### 12.5 架构层借鉴 seL4（5 项选择性借鉴）
 
@@ -1137,7 +1137,7 @@ seL4 的工程思想在架构层被选择性借鉴（ES-SEL4-1~5）：极简原�
 
 ### 13.1 8 子仓总览与现状
 
-> **OS-IRON-013**: agentrt-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agentrt-linux 管理仓通过 submodule 统一管理，另设 build/tools/scripts 管理仓目录。
+> **OS-IRON-013**: agent-linux 拆分为 8 个独立 git 仓库（leaf 仓），由 agent-linux 管理仓通过 submodule 统一管理，另设 build/tools/scripts 管理仓目录。
 
 **现状登记（审查 C 核验）**：
 
@@ -1189,7 +1189,7 @@ kernel/
 
 ### 13.4 其他 7 子仓目录结构概要
 
-> **OS-STD-062**: 其余 7 子仓完整目录结构见 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md`。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
+> **OS-STD-062**: 其余 7 子仓完整目录结构见 `01-designs/_design_0.2.4/01-agent-linux-directory-structure.md`。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
 
 ### 13.5 构建系统工程标准与 build/ 目录规范
 
@@ -1285,7 +1285,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 | **H1** | Layout C v4 总长 128B / magic 0x41524531 / capability_badge offset 40-47（8 字节对齐） |
 | **H2** | capability_badge 字段进 [SC] ipc.h，Badge 校验机制属 [SS] |
 | **H3** | agentrt 用户态 capability_badge=0（跳过 C-S9） |
-| **H4** | agentrt-linux 内核 Badge 由 sec_d 编译、fastpath C-S9 校验 |
+| **H4** | agent-linux 内核 Badge 由 sec_d 编译、fastpath C-S9 校验 |
 | **H5** | 纯 C LSM 职责不变（不使用 BPF LSM，airy_lsm 代码完整性通过编译期校验 + CBMC 形式化验证保证） |
 | **H6** | [DSL] 降级 capability_badge=0 跳过 C-S9 |
 
@@ -1320,7 +1320,7 @@ Capability Folding 是将 capability check 从独立控制面操作"折叠"到 I
 
 ### 15.6 SSoT 权威源体系（v3.0）
 
-agentrt-linux 的 SSoT 权威源体系由五大权威源构成：规则编号 SSoT（`09-ssot-registry.md`）、syscall 编号 SSoT（`07-syscall-registry.md`）、ABI 三方一致性（SSoT + unistd.h + syscall_64.tbl，`abi_check.py` 强制 6/6 PASS）、codegen 契约 SSoT（`syscall.xml`）、ABI 检查工具 SSoT（`abi_check.py`）。任何文档/代码/工具与 SSoT 冲突时，以 SSoT 为准（OS-IRON-018~021）。
+agent-linux 的 SSoT 权威源体系由五大权威源构成：规则编号 SSoT（`09-ssot-registry.md`）、syscall 编号 SSoT（`07-syscall-registry.md`）、ABI 三方一致性（SSoT + unistd.h + syscall_64.tbl，`abi_check.py` 强制 6/6 PASS）、codegen 契约 SSoT（`syscall.xml`）、ABI 检查工具 SSoT（`abi_check.py`）。任何文档/代码/工具与 SSoT 冲突时，以 SSoT 为准（OS-IRON-018~021）。
 
 **变更流程（强制）**：先更新 SSoT → 同步 unistd.h 与 syscall_64.tbl → 更新 syscall.xml → 运行 abi_check.py（6/6 PASS）→ 同步下游文档 → 更新 abi_baseline.json。
 
@@ -1617,7 +1617,7 @@ Linux 6.6 内核基线的 13 项工程思想（ES-OLK-1~13）在本规范中的�
 
 ## 附录 E ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）
 
-seL4 的 10 项工程思想在 agentrt-linux 中的借鉴方式：
+seL4 的 10 项工程思想在 agent-linux 中的借鉴方式：
 
 | 编号 | seL4 工程思想 | 核心内涵 | 借鉴方式 | 落地规则/子仓 | 章节定位 |
 |------|-------------|---------|---------|-------------|---------|
@@ -1638,7 +1638,7 @@ seL4 的 10 项工程思想在 agentrt-linux 中的借鉴方式：
 
 ## 附录 F 双源融合裁决 16 维度
 
-| # | 维度 | Linux 6.6 | seL4 | agentrt-linux 裁决 | 落地规则 |
+| # | 维度 | Linux 6.6 | seL4 | agent-linux 裁决 | 落地规则 |
 |---|------|-----------|------|-------------------|---------|
 | 1 | 缩进 | Tab 8 字符 | 空格 4 | **Linux 6.6** | OS-STD-FMT-001 |
 | 2 | 命名 | snake_case | camelCase | **Linux 6.6** | OS-STD-CODE-001 |

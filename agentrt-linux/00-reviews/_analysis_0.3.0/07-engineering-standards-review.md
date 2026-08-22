@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）工程标准规范逐章审查报告
+# agent-linux（AirymaxOS）工程标准规范逐章审查报告
 
 > **报告编号**: C-2（工程标准规范审查）
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0（系统性分析与决策阶段）
-> **审查范围**: `docs/AirymaxOS/50-engineering-standards/` 全部 38 份 Markdown 文件（17 顶层 + 5 子目录共 21 子文件）+ 闭源总纲 `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`（1444 行）+ OLK-6.6 参考基线 `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`
+> **审查范围**: `docs/AirymaxOS/50-engineering-standards/` 全部 38 份 Markdown 文件（17 顶层 + 5 子目录共 21 子文件）+ 闭源总纲 `docs-closed/agent-linux/agent-linux基本工程标准规范.md`（1444 行）+ OLK-6.6 参考基线 `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`
 > **机密级别**: 闭源不公开（SPHARX Ltd 内部参考）
 > **核心结论**: 工程标准体系在内容覆盖度上已达 0.1.1 奠基要求（38 文档覆盖编码/格式/风格/思想/流程/工具链/治理/合规 8 大维度），但存在 3 类系统性缺陷——(1) 规则编号体系 14 种前缀并存且 3 段/4 段混用（C-2.6 已识别 15 个重复对，10 项 P0-CRITICAL）；(2) IRON 铁律在公开 00-handbook（10 条）与闭源总纲（14 条）之间存在 003/005/006 三条语义冲突；(3) OLK-6.6 coding-style.rst 19 章中 §19 I/O 未覆盖。本报告整合 C-2.6 合并决策（D-01~D-09）与 C-2.5 可落地工程标准（STD-KABI-01 等 6 项），形成系统性审查结论。
 
@@ -31,7 +31,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 本报告执行用户指令第 2 项任务——"仔细审查修正后的工程标准规范文档，进行逐章逐节的内容核对，确保其完全同步并符合 openEuler 社区的代码编写规范与要求"。具体目标：
 
 1. **逐章核对**：对 `50-engineering-standards/` 全部 38 份文档进行章节级内容核对，验证规则定义的完整性与一致性。
-2. **openEuler 对齐**：以 OLK-6.6 `Documentation/process/coding-style.rst`（19 章）为基线，验证 agentrt-linux 工程标准与 openEuler 编码规范的对齐度。
+2. **openEuler 对齐**：以 OLK-6.6 `Documentation/process/coding-style.rst`（19 章）为基线，验证 agent-linux 工程标准与 openEuler 编码规范的对齐度。
 3. **整合既有分析**：整合 C-2.6 合并审查报告（942 行，9 项决策）与 C-2.5 代码分析报告（831 行，6 项可落地标准）的结论，避免重复劳动。
 4. **形成执行清单**：输出可执行的修复优先级矩阵，为 1.0.1 M0 工程标准奠基阶段提供输入。
 
@@ -42,7 +42,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 1. 文件清查 | `Glob` + `LS` | 列出 50-engineering-standards/ 全部 38 份 .md 文件与 5 子目录 |
 | 2. 章节采样 | `Read`（每文件头部 + `Grep ^## ` 章节标题） | 提取每份文档的章节结构与权威声明 |
 | 3. 规则枚举 | `Grep OS-[A-Z]+` | 抓取所有规则编号及其上下文 |
-| 4. 基线比对 | OLK-6.6 `coding-style.rst` 19 章 | 逐章映射 agentrt-linux 规则到 OLK-6.6 章节 |
+| 4. 基线比对 | OLK-6.6 `coding-style.rst` 19 章 | 逐章映射 agent-linux 规则到 OLK-6.6 章节 |
 | 5. 交叉引用 | C-2.6 报告 §3 重复对 + C-2.5 报告 §6 可落地标准 | 整合既有分析结论 |
 
 ### 1.3 审查范围
@@ -59,7 +59,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 50-project-erp/ 子目录 | 5 | README + resource_management + manuals_module + SBOM + error_code |
 | **合计** | **38** | — |
 
-**闭源参考（1 份）**：`docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`（80KB / 1444 行）。
+**闭源参考（1 份）**：`docs-closed/agent-linux/agent-linux基本工程标准规范.md`（80KB / 1444 行）。
 
 **OLK-6.6 基线（1 份）**：`01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`（44KB / 19 章）。
 
@@ -113,7 +113,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | SSoT 注册表完整性 | ⚠️ P1 缺陷 | §3 列出 OS-STD-CODE 4 条 + OS-STD-FMT 2 条，但 01-coding-standards 实际有 OS-STD-001~020（20 条），注册表不完整 |
 | 7 层验证体系 | ✅ 通过 | §5 清晰定义 Layer 0-7 |
 | 禁词清单 | ✅ 通过 | §6 描述性表述合规（不直接列出禁词） |
-| 微核心 vs 微内核术语 | ✅ 通过 | §7 明确区分"微核心"（agentrt）与"微内核"（agentrt-linux） |
+| 微核心 vs 微内核术语 | ✅ 通过 | §7 明确区分"微核心"（agentrt）与"微内核"（agent-linux） |
 | OLK-6.6 基线声明 | ✅ 通过 | §9 引用 `01Reference/kernel-OLK-6.6/` 源码 |
 
 **发现问题**：4 项 P0（IRON 铁律数量 + 3 条语义冲突）+ 2 项 P1（编号格式 + 注册表不完整）。对应 C-2.6 决策 D-01。
@@ -414,7 +414,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.1 OLK-6.6 coding-style.rst 19 章映射
 
-| OLK-6.6 章节 | 主题 | agentrt-linux 对应规则 | 对齐状态 |
+| OLK-6.6 章节 | 主题 | agent-linux 对应规则 | 对齐状态 |
 |-------------|------|----------------------|---------|
 | §1 | Indentation（Tab 8 字符） | OS-KER-005 / OS-KER-011 / OS-FMT-001 | ✅ 对齐（3 编号冲突需统一，C-2.6 D-04） |
 | §2 | Breaking long lines and strings | OS-KER-005（字符串）/ OS-KER-006（后继行） | ✅ 对齐 |
@@ -438,7 +438,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.2 对齐度量化
 
-| 维度 | OLK-6.6 章节数 | agentrt-linux 覆盖数 | 对齐率 |
+| 维度 | OLK-6.6 章节数 | agent-linux 覆盖数 | 对齐率 |
 |------|--------------|-------------------|--------|
 | 编码风格对齐 | 19 | 18 | **94.7%**（仅 §19 I/O 缺失） |
 | 工程思想覆盖 | 13 | 12 | **92.3%**（ES-OLK-8 MAINTAINERS 未落地，R-03） |
@@ -447,9 +447,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 3.3 OLK-6.6 §19 I/O 缺失分析
 
-OLK-6.6 §19 涉及 I/O 操作规范（`ioremap` / `readl` / `writel` / `iounmap` / `ioport_map` / `pci_iomap` 等），agentrt-linux 当前未覆盖。
+OLK-6.6 §19 涉及 I/O 操作规范（`ioremap` / `readl` / `writel` / `iounmap` / `ioport_map` / `pci_iomap` 等），agent-linux 当前未覆盖。
 
-**影响评估**：agentrt-linux 的 8 子仓中 `airymaxos-kernel` 涉及设备驱动（尤其是 GPU/NPU 加速器接入），I/O 操作规范缺失可能导致不安全的 I/O 访问模式。
+**影响评估**：agent-linux 的 8 子仓中 `airymaxos-kernel` 涉及设备驱动（尤其是 GPU/NPU 加速器接入），I/O 操作规范缺失可能导致不安全的 I/O 访问模式。
 
 **建议**：在 `03-code-style.md` 新增 §10 I/O 风格规范，或新建 `90-driver-engineering.md`（OS-DRV-001~NNN）。内容应覆盖：
 - `ioremap` / `iounmap` 生命周期管理
@@ -549,7 +549,7 @@ C-2.5 代码分析报告（831 行，基于 seL4 + OLK-6.6 源码逐行研读）
 
 ### 5.2 落地建议
 
-1. **STD-KABI-01（P1）**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agentrt-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
+1. **STD-KABI-01（P1）**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agent-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
 
 2. **STD-CODE-07（P1）**：在 `01-coding-standards.md` 增补规则——CI 必须运行 `make C=1`（sparse 检查重编译文件）+ `make W=1`（相关警告）+ `make W=e`（警告即错误）三档。W=2/W=3 可选。
 
@@ -676,7 +676,7 @@ v0.2.1 再检查报告给出综合成熟度 100/100（A+，无条件 Go），本
 # 1. 提取所有 OS-* 编号及其上下文
 grep -rnE '\*\*OS-[A-Z]+(-[A-Z]+)*-[0-9]+\*\*' \
     docs/AirymaxOS/50-engineering-standards/ \
-    docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md \
+    docs-closed/agent-linux/agent-linux基本工程标准规范.md \
     > /tmp/all-rules.txt
 
 # 2. 检查同编号双义
@@ -685,7 +685,7 @@ awk -F: '{print $3}' /tmp/all-rules.txt | sort | uniq -d
 
 # 3. 检查 IRON 铁律 14 条完整性
 IRON_COUNT=$(grep -cE 'OS-IRON-0[01][0-9]' \
-    docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md)
+    docs-closed/agent-linux/agent-linux基本工程标准规范.md)
 if [ "$IRON_COUNT" -lt 14 ]; then
     echo "ERROR: IRON 铁律不足 14 条（当前 $IRON_COUNT）"
     exit 1
@@ -716,11 +716,11 @@ fi
 |------|------|------|
 | 工程标准 README | `docs/AirymaxOS/50-engineering-standards/README.md` | 主索引 |
 | SSoT 手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` | SSoT 索引（需 D-01 重写） |
-| 闭源工程标准总纲 | `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | 闭源 SSoT（附录 A 为权威） |
+| 闭源工程标准总纲 | `docs-closed/agent-linux/agent-linux基本工程标准规范.md` | 闭源 SSoT（附录 A 为权威） |
 | OLK-6.6 编码风格 | `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst` | 参考基线（19 章） |
-| C-2.6 合并报告 | `docs-closed/agentrt-linux/_analysis_0.3.0/06-engineering-standards-consolidation.md` | 编号体系合并决策（942 行） |
-| C-2.5 代码分析报告 | `docs-closed/agentrt-linux/_analysis_0.3.0/05-code-analysis-sel4-olk66.md` | 可落地工程标准（831 行） |
-| C-1 经验总结 | `docs-closed/agentrt-linux/_analysis_0.3.0/01-lessons-learned.md` | 历史经验教训 |
+| C-2.6 合并报告 | `docs-closed/agent-linux/_analysis_0.3.0/06-engineering-standards-consolidation.md` | 编号体系合并决策（942 行） |
+| C-2.5 代码分析报告 | `docs-closed/agent-linux/_analysis_0.3.0/05-code-analysis-sel4-olk66.md` | 可落地工程标准（831 行） |
+| C-1 经验总结 | `docs-closed/agent-linux/_analysis_0.3.0/01-lessons-learned.md` | 历史经验教训 |
 
 ### 8.2 编号体系参考
 

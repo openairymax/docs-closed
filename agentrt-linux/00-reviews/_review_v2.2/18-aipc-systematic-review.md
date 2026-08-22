@@ -5,7 +5,7 @@
 > **报告日期**：2026-07-18
 > **报告性质**：闭源内部 A-IPC 系统性审查 — 基于 Unify Design 总纲（10-unify-design.md）对 A-IPC 模块及全线 10+ IPC 文档的重新审视
 > **审查基准**：Airymax Unify Design 五模块框架（A-UEF / A-ULP / A-UCS / A-ULS / A-IPC）+ SSoT v2 单一权威源模型
-> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17-uipf-deep-review-v2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md)
+> **前置报告**：[16-ipc-comprehensive-review.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17-uipf-deep-review-v2.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md)
 > **重要修正**：前两次审查使用了错误的模块名称 "UIPF"——正确名称为 **A-IPC（Unified Airymax IPC Fabric，统一进程间通信体系）**。
 
 ---

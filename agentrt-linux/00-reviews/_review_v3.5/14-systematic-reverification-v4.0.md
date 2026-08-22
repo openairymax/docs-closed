@@ -1,13 +1,13 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v4.0 系统性终极复核报告
+# agent-linux v4.0 系统性终极复核报告
 > **文档定位**：基于 v3.5 全部审查报告（00-13）的系统性终极复核，对数百个问题逐一进行字节级再验证，确认当前真实状态并识别剩余缺陷\
 > **文档版本**：v4.0\
 > **最后更新**：2026-07-26\
 > **上级文档**：[13-fix-implementation-report-v3.5.md](13-fix-implementation-report-v3.5.md)\
-> **审查依据**：`docs-closed/agentrt-linux/00-reviews/_review_v3.5/` 全部 14 份审查报告\
+> **审查依据**：`docs-closed/agent-linux/00-reviews/_review_v3.5/` 全部 14 份审查报告\
 > **复核方法**：并行子代理扫描 + 主代理字节级 Read/Grep/Glob 直接验证\
-> **项目阶段声明**：agentrt-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发，其他开发未正式开始
+> **项目阶段声明**：agent-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发，其他开发未正式开始
 
 ---
 
@@ -138,7 +138,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 问题编号 | 问题简述 | 当前状态 | 验证证据 |
 |---------|---------|---------|---------|
 | **P0-029** | Agent 生命周期 SSoT 物理宿主错误 | ✅ 已修复 | `sched.h:84-94` 定义 8 态 `enum airy_agent_state`，SSoT 指向 `10-sc-sched-extension.md §2.1` |
-| **P0-030** | 01-kernel.md "设计参考"表述模糊 | ✅ 已修复 | `01-kernel.md:303-307` 标注 "seL4 设计溯源参考（agentrt-linux 不存在对应物理文件）" |
+| **P0-030** | 01-kernel.md "设计参考"表述模糊 | ✅ 已修复 | `01-kernel.md:303-307` 标注 "seL4 设计溯源参考（agent-linux 不存在对应物理文件）" |
 | **P0-031** | IPC flags 命名不一致 | ✅ 已修复 | `ipc.h:40-45` 统一 `AIRY_IPC_FLAG_*` 前缀，contracts.md 对齐 |
 | **P0-032** | LSM_ORDER_FIRST vs MUTABLE 不一致 | ✅ 已修复 | `08-threat-model.md:90` 明确区分 capability（FIRST）与 airy_lsm（MUTABLE） |
 | **P0-033** | capability ID 数量表述不精确 | ✅ 已修复 | "41 ID" 指 POSIX 子集，"44 ID" 指总数，语义明确 |
@@ -341,11 +341,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 9.1 总体结论
 
-agentrt-linux 整体方案在 v3.5 审查后的修复实施基本成功，整体成熟度从 71/100（B-）提升至 80/100（B+）。13 报告的修复声明准确率为 83.3%（20/24），剩余 4 项偏差需立即修复。
+agent-linux 整体方案在 v3.5 审查后的修复实施基本成功，整体成熟度从 71/100（B-）提升至 80/100（B+）。13 报告的修复声明准确率为 83.3%（20/24），剩余 4 项偏差需立即修复。
 
 ### 9.2 设计阶段确认
 
-agentrt-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发。这一阶段定位准确，[SC] 头文件框架完整，IRON 铁律执行良好。剩余的 -ENOSYS 桩、kselftest 缺失等问题均符合 M0 阶段合理性，将在 M2-M5 阶段逐步实现。
+agent-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发。这一阶段定位准确，[SC] 头文件框架完整，IRON 铁律执行良好。剩余的 -ENOSYS 桩、kselftest 缺失等问题均符合 M0 阶段合理性，将在 M2-M5 阶段逐步实现。
 
 ### 9.3 后续行动
 

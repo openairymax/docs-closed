@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.2 综合评估报告：审查报告回顾 + 内核框架评估 + 方案可开发性
+# agent-linux v3.2 综合评估报告：审查报告回顾 + 内核框架评估 + 方案可开发性
 
 > **报告版本**：v3.2\
 > **生成日期**：2026-07-23\
 > **评估范围**：\
-> &nbsp;&nbsp;&nbsp;&nbsp;1. `docs-closed/agentrt-linux/00-reviews/` 路径下全部审查报告（99 份）回顾与问题修复\
-> &nbsp;&nbsp;&nbsp;&nbsp;2. `agentrt-linux/kernel/` 内核模块框架完成度评估\
+> &nbsp;&nbsp;&nbsp;&nbsp;1. `docs-closed/agent-linux/00-reviews/` 路径下全部审查报告（99 份）回顾与问题修复\
+> &nbsp;&nbsp;&nbsp;&nbsp;2. `agent-linux/kernel/` 内核模块框架完成度评估\
 > &nbsp;&nbsp;&nbsp;&nbsp;3. `docs/AirymaxOS/` 整体方案可开发性评估\
 > **评估方法**：逐行代码审查 + SSoT 一致性核对 + 三方 ABI 一致性验证\
 > **SPDX-License-Identifier**：CC-BY-NC-4.0
@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 摘要
 
-本轮评估对 99 份历史审查报告回顾后，识别并修复 **10 项 P0 级** 与 **3 项 P1 级** 问题；逐文件核查 `agentrt-linux/kernel/` 全部代码，确认极境内核框架建设 **已完成**（核心 LSM/Capability/superv 模块实现完整，syscall 表三方一致，corekern 10 子目录齐备）；对 `docs/AirymaxOS/` 整体方案的 7 维度评估显示，方案完整性 **88%**、一致性 **90%**、开发就绪度 **85%**，**可以按照方案开始全面开发**，但需先解决本报告新发现的 P0-025~028 代码与 SSoT 一致性问题（已在本轮修复）。
+本轮评估对 99 份历史审查报告回顾后，识别并修复 **10 项 P0 级** 与 **3 项 P1 级** 问题；逐文件核查 `agent-linux/kernel/` 全部代码，确认极境内核框架建设 **已完成**（核心 LSM/Capability/superv 模块实现完整，syscall 表三方一致，corekern 10 子目录齐备）；对 `docs/AirymaxOS/` 整体方案的 7 维度评估显示，方案完整性 **88%**、一致性 **90%**、开发就绪度 **85%**，**可以按照方案开始全面开发**，但需先解决本报告新发现的 P0-025~028 代码与 SSoT 一致性问题（已在本轮修复）。
 
 ***
 
@@ -23,7 +23,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 历史审查报告清单
 
-`docs-closed/agentrt-linux/00-reviews/` 路径下共 99 份审查报告，覆盖 `_review_0.1.1` 到 `_review_v3.1` 全部版本。关键版本：
+`docs-closed/agent-linux/00-reviews/` 路径下共 99 份审查报告，覆盖 `_review_0.1.1` 到 `_review_v3.1` 全部版本。关键版本：
 
 | 版本 | 报告数 | 关键发现 |
 |------|--------|----------|
@@ -306,7 +306,7 @@ P0-026/P0-028 修复后：
 | 方案一致性 | 90% | 本轮修复后 SSoT 与代码一致，无残留矛盾 |
 | 开发就绪度 | 85% | 文档覆盖完整，无阻塞项 |
 
-**结论：agentrt-linux 可以"按照方案开始全面开发"。**
+**结论：agent-linux 可以"按照方案开始全面开发"。**
 
 ***
 
@@ -333,7 +333,7 @@ P0-026/P0-028 修复后：
    - Agent 8 态完全对齐 SSoT
    - `kernel/syscalls/airy_syscalls.c` M0 stub 是预期渐进开发状态
 
-3. **agentrt-linux 可以按照方案开始全面开发**：
+3. **agent-linux 可以按照方案开始全面开发**：
    - 文档体系完整（77 份文档，7 子目录）
    - SSoT 权威源体系无矛盾
    - 方案内部一致性经本轮修复后达到 90%
@@ -366,15 +366,15 @@ P0-026/P0-028 修复后：
 
 | 文件 | 修复内容 |
 |------|----------|
-| `agentrt-linux/kernel/kernel/superv/airy_superv_init.c` | P0-024（L50 注释 457 → 551） |
-| `agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h` | P0-025（454-457 → 548-551 全文重写） |
-| `agentrt-linux/kernel/include/uapi/linux/airymax/sched.h` | P0-026（Agent 枚举重写为 SSoT 8 态） |
-| `agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c` | P0-027（4 处注释 454-457 → 548-551） |
-| `agentrt-linux/kernel/security/airy/airy_lsm.c` | P0-028（2 处 FROZEN → STOPPED） |
-| `agentrt-linux/kernel/security/airy/airy_superv_lsm.c` | P0-028（3 处 FROZEN → STOPPED） |
-| `agentrt-linux/kernel/security/airy/airy_cap_check.c` | P0-028（1 处 FROZEN → STOPPED） |
-| `agentrt-linux/kernel/kernel/corekern/taskflow/airy_task_desc.c` | P0-028（INIT → INACTIVE） |
-| `agentrt-linux/kernel/kernel/corekern/taskflow/airy_task_lifecycle.c` | P0-028（重写状态机为 SSoT 8 态合法迁移） |
+| `agent-linux/kernel/kernel/superv/airy_superv_init.c` | P0-024（L50 注释 457 → 551） |
+| `agent-linux/kernel/include/uapi/linux/airymax/syscalls.h` | P0-025（454-457 → 548-551 全文重写） |
+| `agent-linux/kernel/include/uapi/linux/airymax/sched.h` | P0-026（Agent 枚举重写为 SSoT 8 态） |
+| `agent-linux/kernel/kernel/syscalls/airy_syscalls.c` | P0-027（4 处注释 454-457 → 548-551） |
+| `agent-linux/kernel/security/airy/airy_lsm.c` | P0-028（2 处 FROZEN → STOPPED） |
+| `agent-linux/kernel/security/airy/airy_superv_lsm.c` | P0-028（3 处 FROZEN → STOPPED） |
+| `agent-linux/kernel/security/airy/airy_cap_check.c` | P0-028（1 处 FROZEN → STOPPED） |
+| `agent-linux/kernel/kernel/corekern/taskflow/airy_task_desc.c` | P0-028（INIT → INACTIVE） |
+| `agent-linux/kernel/kernel/corekern/taskflow/airy_task_lifecycle.c` | P0-028（重写状态机为 SSoT 8 态合法迁移） |
 
 ---
 

@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# C-2.3 agentrt-linux 7 层架构模型与 agentrt 用户态关系论证报告
+# C-2.3 agent-linux 7 层架构模型与 agentrt 用户态关系论证报告
 
-> **文档定位**: agentrt-linux（AirymaxOS）7 层架构模型范围界定与 agentrt 用户态关系的技术论证决策参考报告
+> **文档定位**: agent-linux（AirymaxOS）7 层架构模型范围界定与 agentrt 用户态关系的技术论证决策参考报告
 > **报告版本**: v1.0
 > **生成日期**: 2026-07-09
-> **触发指令**: 用户 C-2.3（"深入分析 agentrt-linux 的架构模型问题：针对 7 层架构模型中是否包含 agentrt 组件，以及 agentrt 是否可以直接作为 agentrt-linux 的用户态（而非仅保持同源映射关系）进行详细技术论证"）
+> **触发指令**: 用户 C-2.3（"深入分析 agent-linux 的架构模型问题：针对 7 层架构模型中是否包含 agentrt 组件，以及 agentrt 是否可以直接作为 agent-linux 的用户态（而非仅保持同源映射关系）进行详细技术论证"）
 > **关联 ADR**: ADR-011（7 层架构模型范围界定与 agentrt 用户态关系论证）、ADR-010（与 agentrt 同源且部分代码共享，IRON-9 v2）
 > **关联文档**: `10-architecture/README.md` §3、`10-architecture/01-system-architecture.md`、`10-architecture/05-adrs.md`、`20-modules/README.md` §2、`50-engineering-standards/120-cross-project-code-sharing.md`
 
@@ -13,11 +13,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 摘要（TL;DR）
 
-本报告针对 agentrt-linux 7 层架构模型的两个核心架构问题进行技术论证：
+本报告针对 agent-linux 7 层架构模型的两个核心架构问题进行技术论证：
 
-1. **7 层架构模型是否包含 agentrt 组件？** —— **结论：不包含**。agentrt 是跨平台用户态运行时（Linux/macOS/Windows），作为外部组件运行于 agentrt-linux 之上，不属于 7 层架构（L1-L7）的任何一层。此结论受三条硬约束支撑：(a) 跨平台硬约束（2026-07-04 用户决策）；(b) 架构正交性原则；(c) IRON-9 v2 已实现零适配层天然契合，无需纳入即可获得同源红利。
+1. **7 层架构模型是否包含 agentrt 组件？** —— **结论：不包含**。agentrt 是跨平台用户态运行时（Linux/macOS/Windows），作为外部组件运行于 agent-linux 之上，不属于 7 层架构（L1-L7）的任何一层。此结论受三条硬约束支撑：(a) 跨平台硬约束（2026-07-04 用户决策）；(b) 架构正交性原则；(c) IRON-9 v2 已实现零适配层天然契合，无需纳入即可获得同源红利。
 
-2. **agentrt 是否可以直接作为 agentrt-linux 的用户态？** —— **结论：不可直接"成为"，但可"运行于"其上**。agentrt 是 agentrt-linux 的**推荐用户态运行时**，但非**唯一**用户态。两者关系是"平台—应用"关系（platform-application），而非"内核—用户态"关系（kernel-userspace）。IRON-9 v2 三层共享模型（[SC] 共享契约层 + [SS] 语义同源层 + [IND] 完全独立层）已是最优实现，无需将 agentrt 纳入 agentrt-linux 内部架构。
+2. **agentrt 是否可以直接作为 agent-linux 的用户态？** —— **结论：不可直接"成为"，但可"运行于"其上**。agentrt 是 agent-linux 的**推荐用户态运行时**，但非**唯一**用户态。两者关系是"平台—应用"关系（platform-application），而非"内核—用户态"关系（kernel-userspace）。IRON-9 v2 三层共享模型（[SC] 共享契约层 + [SS] 语义同源层 + [IND] 完全独立层）已是最优实现，无需将 agentrt 纳入 agent-linux 内部架构。
 
 **关键发现（需修复的问题）**：
 
@@ -32,14 +32,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 用户指令原文
 
-> "2.3 深入分析 agentrt-linux 的架构模型问题：针对 7 层架构模型中是否包含 agentrt 组件，以及 agentrt 是否可以直接作为 agentrt-linux 的用户态（而非仅保持同源映射关系）进行详细技术论证。需提供充分的技术依据、优缺点分析及合理的技术推论，形成决策参考报告，供最终决策使用。"
+> "2.3 深入分析 agent-linux 的架构模型问题：针对 7 层架构模型中是否包含 agentrt 组件，以及 agentrt 是否可以直接作为 agent-linux 的用户态（而非仅保持同源映射关系）进行详细技术论证。需提供充分的技术依据、优缺点分析及合理的技术推论，形成决策参考报告，供最终决策使用。"
 
 ### 1.2 任务要素拆解
 
 | 要素 | 内容 |
 |------|------|
 | 问题一 | 7 层架构模型（L1-L7）是否包含 agentrt 组件？ |
-| 问题二 | agentrt 是否可以直接作为 agentrt-linux 的用户态？（而非仅保持同源映射关系） |
+| 问题二 | agentrt 是否可以直接作为 agent-linux 的用户态？（而非仅保持同源映射关系） |
 | 要求 | 充分的技术依据 + 优缺点分析 + 合理的技术推论 |
 | 产出 | 决策参考报告（供最终决策使用） |
 
@@ -87,26 +87,26 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **决策一**: 7 层架构模型**不包含** agentrt 组件。agentrt 作为独立跨平台项目不属于此 7 层架构的任何一层。
 
-**决策二**: agentrt 是 agentrt-linux 的**推荐用户态运行时**，但非**唯一**用户态。agentrt 不直接"成为"agentrt-linux 的用户态，而是以 IRON-9 v2 同源关系运行于其上。两者关系是"平台—应用"关系，而非"内核—用户态"关系。
+**决策二**: agentrt 是 agent-linux 的**推荐用户态运行时**，但非**唯一**用户态。agentrt 不直接"成为"agent-linux 的用户态，而是以 IRON-9 v2 同源关系运行于其上。两者关系是"平台—应用"关系，而非"内核—用户态"关系。
 
 **ADR-011 给出的 5 条理由**：
 1. 硬约束：agentrt 必须保持跨平台（Linux/macOS/Windows）
-2. 架构正交性：7 层架构是 agentrt-linux 内部依赖管理工具
+2. 架构正交性：7 层架构是 agent-linux 内部依赖管理工具
 3. IRON-9 v2 已是最优实现：三层共享模型已实现零适配层天然契合
 4. seL4 root task 模型验证：agentrt 类比于 seL4 的 root task（独立外部组件）
-5. "微核心"与"微内核"的区分：agentrt 是微核心（MicroCoreRT），agentrt-linux 是微内核
+5. "微核心"与"微内核"的区分：agentrt 是微核心（MicroCoreRT），agent-linux 是微内核
 
 ### 2.3 IRON-9 v2 三层共享模型
 
-[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md) 定义了 agentrt 与 agentrt-linux 的代码共享边界：
+[120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md) 定义了 agentrt 与 agent-linux 的代码共享边界：
 
 | 层次 | 缩写 | 共享程度 | 内容 | 落地路径 |
 |------|------|---------|------|---------|
 | 共享契约层 | [SC] | 完全共享代码 | 6 个头文件（bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h） | `include/airymax/` |
 | 语义同源层 | [SS] | API 签名相同，实现独立 | 调度语义 / 安全模型 / IPC 传输 / 记忆模型 | 各自独立实现 |
-| 完全独立层 | [IND] | 完全独立 | 内核驱动/Kbuild（agentrt-linux）；跨平台用户态/SDK（agentrt） | 各自独立仓库 |
+| 完全独立层 | [IND] | 完全独立 | 内核驱动/Kbuild（agent-linux）；跨平台用户态/SDK（agentrt） | 各自独立仓库 |
 
-**关键洞察**: IRON-9 v2 的 [SC] 层（6 个头文件逐字节共享）已实现"零适配层天然契合"——agentrt 在 agentrt-linux 上运行时，IPC 消息头（magic 0x41524531 'ARE1'）、任务描述符（magic 0x41475453 'AGTS'）、capability 模型、MemoryRovol L1-L4 结构、CoreLoopThree 上下文等全部语义一致，无需任何转换层。这意味着"将 agentrt 纳入 agentrt-linux 内部架构"并非获得同源红利的必要条件。
+**关键洞察**: IRON-9 v2 的 [SC] 层（6 个头文件逐字节共享）已实现"零适配层天然契合"——agentrt 在 agent-linux 上运行时，IPC 消息头（magic 0x41524531 'ARE1'）、任务描述符（magic 0x41475453 'AGTS'）、capability 模型、MemoryRovol L1-L4 结构、CoreLoopThree 上下文等全部语义一致，无需任何转换层。这意味着"将 agentrt 纳入 agent-linux 内部架构"并非获得同源红利的必要条件。
 
 ### 2.4 agentrt 跨平台硬约束
 
@@ -121,7 +121,7 @@ seL4 微内核架构中，**root task**（用户态初始进程）是独立于�
 - root task 负责初始化用户态服务（文件系统、网络、驱动等）
 - root task 与内核通过 capability + IPC 交互，但**不属于内核**
 
-agentrt 与 agentrt-linux 的关系类比于此：agentrt 是 agentrt-linux 上的"root task 级"用户态运行时，但并非内核的一部分。此类比由 ADR-011 理由 4 提出，是 seL4 工程思想在架构关系层面的借鉴（ES-SEL4-3 服务用户态化）。
+agentrt 与 agent-linux 的关系类比于此：agentrt 是 agent-linux 上的"root task 级"用户态运行时，但并非内核的一部分。此类比由 ADR-011 理由 4 提出，是 seL4 工程思想在架构关系层面的借鉴（ES-SEL4-3 服务用户态化）。
 
 ---
 
@@ -137,19 +137,19 @@ agentrt 与 agentrt-linux 的关系类比于此：agentrt 是 agentrt-linux 上�
 
 **依据 1：跨平台硬约束**
 
-agentrt 的核心定位是"跨平台用户态运行时"（Linux/macOS/Windows）。若将 agentrt 纳入 agentrt-linux 的 7 层架构（即作为某一层），意味着 agentrt 成为 agentrt-linux 的内部组件，其演进将受 agentrt-linux 内部层次变化制约，且将丧失在 macOS/Windows 上的独立运行能力——这直接违反 2026-07-04 用户确立的跨平台硬约束。
+agentrt 的核心定位是"跨平台用户态运行时"（Linux/macOS/Windows）。若将 agentrt 纳入 agent-linux 的 7 层架构（即作为某一层），意味着 agentrt 成为 agent-linux 的内部组件，其演进将受 agent-linux 内部层次变化制约，且将丧失在 macOS/Windows 上的独立运行能力——这直接违反 2026-07-04 用户确立的跨平台硬约束。
 
 | 假设场景 | 后果 |
 |---------|------|
-| agentrt 作为 L8（应用层）纳入 7 层架构 | agentrt 演进受 agentrt-linux 制约；macOS/Windows 版本需"剥离"agentrt-linux 依赖 |
-| agentrt 作为 L5/L6 某层纳入 | 破坏层次正交性；agentrt 跨平台语义被 agentrt-linux 特定层污染 |
+| agentrt 作为 L8（应用层）纳入 7 层架构 | agentrt 演进受 agent-linux 制约；macOS/Windows 版本需"剥离"agent-linux 依赖 |
+| agentrt 作为 L5/L6 某层纳入 | 破坏层次正交性；agentrt 跨平台语义被 agent-linux 特定层污染 |
 | agentrt 作为 L1 硬件抽象层 | 语义错位（agentrt 是用户态，非硬件层） |
 
 **依据 2：架构正交性原则**
 
-7 层架构是 agentrt-linux 的**内部依赖管理工具**，仅涵盖 agentrt-linux 自身的 8 个子仓。其设计目的是组织 agentrt-linux 内部 8 子仓的依赖关系（kernel → services/security/memory → cognition → cloudnative → system → tests）。
+7 层架构是 agent-linux 的**内部依赖管理工具**，仅涵盖 agent-linux 自身的 8 个子仓。其设计目的是组织 agent-linux 内部 8 子仓的依赖关系（kernel → services/security/memory → cognition → cloudnative → system → tests）。
 
-agentrt 是**外部独立项目**，有自己的版本节奏、治理结构、发布周期。将其纳入 agentrt-linux 内部架构会破坏架构正交性——两个独立项目的内部架构不应相互嵌套。
+agentrt 是**外部独立项目**，有自己的版本节奏、治理结构、发布周期。将其纳入 agent-linux 内部架构会破坏架构正交性——两个独立项目的内部架构不应相互嵌套。
 
 **依据 3：IRON-9 v2 已实现目标**
 
@@ -163,17 +163,17 @@ agentrt 是**外部独立项目**，有自己的版本节奏、治理结构、�
 - CoreLoopThree 上下文结构完全一致
 - syscall 编号、错误码、规则编号体系一致
 
-这意味着 agentrt 在 agentrt-linux 上运行时，**所有跨边界数据结构逐字节兼容**，无需任何转换层。此"天然契合"程度已等同于"agentrt 是 agentrt-linux 内部组件"的效果，但保留了 agentrt 的跨平台独立性。
+这意味着 agentrt 在 agent-linux 上运行时，**所有跨边界数据结构逐字节兼容**，无需任何转换层。此"天然契合"程度已等同于"agentrt 是 agent-linux 内部组件"的效果，但保留了 agentrt 的跨平台独立性。
 
 **依据 4：seL4 root task 模型验证**
 
-seL4 的 root task 是独立于内核的外部组件，通过 capability 与内核交互，但**不属于内核**。agentrt 与 agentrt-linux 的关系类比于此——agentrt 是 agentrt-linux 上的"root task 级"用户态运行时，但并非 agentrt-linux 内部架构的一部分。
+seL4 的 root task 是独立于内核的外部组件，通过 capability 与内核交互，但**不属于内核**。agentrt 与 agent-linux 的关系类比于此——agentrt 是 agent-linux 上的"root task 级"用户态运行时，但并非 agent-linux 内部架构的一部分。
 
 此类比是 seL4 工程思想（ES-SEL4-3 服务用户态化）在架构关系层面的合法借鉴，且与 ADR-014（微内核来源单一化，仅 seL4）一致。
 
 **依据 5："微核心"与"微内核"的语义区分**
 
-用户决策（2026-07-09）：agentrt 是"微核心"（MicroCoreRT，用户态微核心运行时），agentrt-linux 是"微内核"（基于 Linux 改造的微内核化 OS）。两者是不同层级的概念：
+用户决策（2026-07-09）：agentrt 是"微核心"（MicroCoreRT，用户态微核心运行时），agent-linux 是"微内核"（基于 Linux 改造的微内核化 OS）。两者是不同层级的概念：
 - **微核心**（micro-core）：用户态的极简运行时核心，跨平台
 - **微内核**（micro-kernel）：内核态的极简内核，OS 专属
 
@@ -186,9 +186,9 @@ seL4 的 root task 是独立于内核的外部组件，通过 capability 与内�
 | 维度 | 优点 | 缺点 |
 |------|------|------|
 | 集成度 | 紧密集成，单一架构视图 | 破坏跨平台硬约束（致命） |
-| 演进 | 统一演进 | agentrt 演进受 agentrt-linux 制约 |
+| 演进 | 统一演进 | agentrt 演进受 agent-linux 制约 |
 | 治理 | 统一治理 | 两个独立项目的治理结构冲突 |
-| 复用 | — | macOS/Windows 版本需"剥离"agentrt-linux 依赖 |
+| 复用 | — | macOS/Windows 版本需"剥离"agent-linux 依赖 |
 
 **不纳入（采纳方案）的优缺点**：
 
@@ -201,15 +201,15 @@ seL4 的 root task 是独立于内核的外部组件，通过 capability 与内�
 
 #### 3.1.4 技术推论
 
-基于上述论证，**7 层架构模型不包含 agentrt 组件**是唯一符合所有硬约束的方案。agentrt 作为外部组件运行于 agentrt-linux 之上，通过 IRON-9 v2 [SC] 共享契约层实现零适配层天然契合。
+基于上述论证，**7 层架构模型不包含 agentrt 组件**是唯一符合所有硬约束的方案。agentrt 作为外部组件运行于 agent-linux 之上，通过 IRON-9 v2 [SC] 共享契约层实现零适配层天然契合。
 
 ---
 
-### 3.2 问题二：agentrt 是否可以直接作为 agentrt-linux 的用户态？
+### 3.2 问题二：agentrt 是否可以直接作为 agent-linux 的用户态？
 
 #### 3.2.1 论证结论
 
-**结论：agentrt 不可直接"成为"agentrt-linux 的用户态，但可"运行于"其上。** agentrt 是 agentrt-linux 的**推荐用户态运行时**，但非**唯一**用户态。两者关系是"平台—应用"关系（platform-application），而非"内核—用户态"关系（kernel-userspace）。
+**结论：agentrt 不可直接"成为"agent-linux 的用户态，但可"运行于"其上。** agentrt 是 agent-linux 的**推荐用户态运行时**，但非**唯一**用户态。两者关系是"平台—应用"关系（platform-application），而非"内核—用户态"关系（kernel-userspace）。
 
 #### 3.2.2 术语澄清
 
@@ -217,8 +217,8 @@ seL4 的 root task 是独立于内核的外部组件，通过 capability 与内�
 
 | 语义 | 含含 | 是否采纳 |
 |------|------|---------|
-| "成为"agentrt-linux 的用户态 | agentrt 是 agentrt-linux 专属用户态，agentrt-linux 的用户态只有 agentrt | **不采纳**（违反跨平台硬约束） |
-| "运行于"agentrt-linux 的用户态 | agentrt 作为用户态应用运行于 agentrt-linux 之上，是推荐但非唯一 | **采纳**（IRON-9 v2 同源关系） |
+| "成为"agent-linux 的用户态 | agentrt 是 agent-linux 专属用户态，agent-linux 的用户态只有 agentrt | **不采纳**（违反跨平台硬约束） |
+| "运行于"agent-linux 的用户态 | agentrt 作为用户态应用运行于 agent-linux 之上，是推荐但非唯一 | **采纳**（IRON-9 v2 同源关系） |
 
 用户问题中的"而非仅保持同源映射关系"指向的是第一种语义（"成为"），本报告论证此语义不可行，并论证第二种语义（"运行于"）已由 IRON-9 v2 实现。
 
@@ -226,11 +226,11 @@ seL4 的 root task 是独立于内核的外部组件，通过 capability 与内�
 
 **依据 1：跨平台硬约束禁止"成为"**
 
-若 agentrt"成为"agentrt-linux 的专属用户态，则 agentrt 将绑定于 Linux 6.6 内核基线，丧失在 macOS/Windows 上的独立运行能力。这违反 2026-07-04 用户确立的跨平台硬约束。
+若 agentrt"成为"agent-linux 的专属用户态，则 agentrt 将绑定于 Linux 6.6 内核基线，丧失在 macOS/Windows 上的独立运行能力。这违反 2026-07-04 用户确立的跨平台硬约束。
 
-**依据 2：agentrt-linux 用户态不限于 agentrt**
+**依据 2：agent-linux 用户态不限于 agentrt**
 
-agentrt-linux 作为 Linux 发行版，其用户态遵循 POSIX 标准，任何符合 POSIX 的应用均可运行（如 bash、Python、Go 程序、其他 Linux 应用）。若规定"agentrt-linux 的用户态只有 agentrt"，将：
+agent-linux 作为 Linux 发行版，其用户态遵循 POSIX 标准，任何符合 POSIX 的应用均可运行（如 bash、Python、Go 程序、其他 Linux 应用）。若规定"agent-linux 的用户态只有 agentrt"，将：
 - 破坏 POSIX 兼容性（其他 Linux 应用无法运行）
 - 退化为封闭系统（违反开放生态目标）
 - 与"生产级 Linux 发行版"定位冲突
@@ -238,7 +238,7 @@ agentrt-linux 作为 Linux 发行版，其用户态遵循 POSIX 标准，任何�
 **依据 3：IRON-9 v2 "运行于"已是最优**
 
 IRON-9 v2 的"运行于"模式已实现：
-- agentrt 在 agentrt-linux 上运行时，获得同源红利（零适配层天然契合）
+- agentrt 在 agent-linux 上运行时，获得同源红利（零适配层天然契合）
 - agentrt 在普通 Linux 上运行时，标准 libc/POSIX
 - agentrt 在 macOS 上运行时，标准 libc/POSIX
 - agentrt 在 Windows 上运行时，Win32 API
@@ -247,15 +247,15 @@ IRON-9 v2 的"运行于"模式已实现：
 
 **依据 4：seL4 root task 模型**
 
-seL4 的 root task 是"运行于"内核之上的用户态进程，但不是内核的"专属用户态"——seL4 可以有多个 root task 或用户态进程。agentrt 与 agentrt-linux 的关系类比于此：agentrt 是 agentrt-linux 上"运行于"用户态的推荐运行时，但 agentrt-linux 的用户态不限于 agentrt。
+seL4 的 root task 是"运行于"内核之上的用户态进程，但不是内核的"专属用户态"——seL4 可以有多个 root task 或用户态进程。agentrt 与 agent-linux 的关系类比于此：agentrt 是 agent-linux 上"运行于"用户态的推荐运行时，但 agent-linux 的用户态不限于 agentrt。
 
 **依据 5："微核心"与"微内核"的层级区分**
 
-agentrt 是"微核心"（用户态），agentrt-linux 是"微内核"（内核态 OS）。微核心运行于微内核之上是自然关系，但微核心不是微内核的"专属用户态"——微内核可以承载多种用户态（如 systemd、bash、其他 POSIX 应用），微核心（agentrt）只是其中之一（尽管是推荐的）。
+agentrt 是"微核心"（用户态），agent-linux 是"微内核"（内核态 OS）。微核心运行于微内核之上是自然关系，但微核心不是微内核的"专属用户态"——微内核可以承载多种用户态（如 systemd、bash、其他 POSIX 应用），微核心（agentrt）只是其中之一（尽管是推荐的）。
 
 #### 3.2.4 优缺点分析
 
-**agentrt 直接"成为"agentrt-linux 用户态的优缺点**（假设方案，未采纳）：
+**agentrt 直接"成为"agent-linux 用户态的优缺点**（假设方案，未采纳）：
 
 | 维度 | 优点 | 缺点 |
 |------|------|------|
@@ -270,12 +270,12 @@ agentrt 是"微核心"（用户态），agentrt-linux 是"微内核"（内核态
 |------|------|------|
 | 集成度 | [SC] 6 头文件逐字节共享，零适配层 | 需双向 CI 校验 |
 | 跨平台 | agentrt 保持 Linux/macOS/Windows | — |
-| 生态 | agentrt-linux 保持 POSIX 兼容，开放生态 | — |
+| 生态 | agent-linux 保持 POSIX 兼容，开放生态 | — |
 | 演进 | 两者独立演进 | 设计理念变更需双向同步 |
 
 #### 3.2.5 技术推论
 
-基于上述论证，**agentrt 不直接"成为"agentrt-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上**是唯一符合所有硬约束的方案。此方案已由 IRON-9 v2 三层共享模型实现，无需进一步改造。
+基于上述论证，**agentrt 不直接"成为"agent-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上**是唯一符合所有硬约束的方案。此方案已由 IRON-9 v2 三层共享模型实现，无需进一步改造。
 
 ---
 
@@ -316,8 +316,8 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 **问题描述**: [01-system-architecture.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxOS/10-architecture/01-system-architecture.md) §2.1 的架构分层图显示的是"4 层"概念性架构：
 
 1. Agent 应用层（含 agentrt SDK）
-2. agentrt-linux 用户态服务层（airymaxos-services/cognition/cloudnative）
-3. agentrt-linux 微内核核心（airymaxos-kernel）
+2. agent-linux 用户态服务层（airymaxos-services/cognition/cloudnative）
+3. agent-linux 微内核核心（airymaxos-kernel）
 4. Linux 内核（Linux 6.6 内核基线）
 
 此 4 层概念图与 7 层架构模型（L1-L7）并存，且未明确标注"此为概念性展示，非 7 层架构模型"，易引起读者混淆。
@@ -331,7 +331,7 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 实际上：
 - 4 层概念图是整体栈的概念性展示（含外部组件 agentrt）
-- 7 层架构是 agentrt-linux 内部 8 子仓的依赖管理模型（不含 agentrt）
+- 7 层架构是 agent-linux 内部 8 子仓的依赖管理模型（不含 agentrt）
 - 两者是不同维度的架构描述，应明确区分
 
 **严重度**: **P1（建议修复）**
@@ -340,7 +340,7 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 ### 4.3 P2 观察项：agentrt 在架构图中的位置标注
 
-**观察**: 01-system-architecture.md §2.1 的 4 层概念图中，agentrt SDK 位于"Agent 应用层"内，标注为"同源天然适配"。此标注正确反映了 agentrt 与 agentrt-linux 的关系，但建议在图中或图注中明确"agentrt 是外部组件，运行于 agentrt-linux 之上，非 7 层架构内部"。
+**观察**: 01-system-architecture.md §2.1 的 4 层概念图中，agentrt SDK 位于"Agent 应用层"内，标注为"同源天然适配"。此标注正确反映了 agentrt 与 agent-linux 的关系，但建议在图中或图注中明确"agentrt 是外部组件，运行于 agent-linux 之上，非 7 层架构内部"。
 
 **严重度**: **P2（可选优化）**
 
@@ -357,26 +357,26 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 将 ADR-011 中错误的 7 层架构表：
 
 ```
-| L1 | Linux 6.6 基线（模型 A 自包含于 kernel 子仓） | agentrt-linux 内部 |
-| L2 | kernel | agentrt-linux 内部 |
-| L3 | security / memory | agentrt-linux 内部 |
-| L4 | cognition | agentrt-linux 内部 |
-| L5 | services | agentrt-linux 内部 |
-| L6 | system | agentrt-linux 内部 |
-| L7 | cloudnative / tests-linux | agentrt-linux 内部 |
+| L1 | Linux 6.6 基线（模型 A 自包含于 kernel 子仓） | agent-linux 内部 |
+| L2 | kernel | agent-linux 内部 |
+| L3 | security / memory | agent-linux 内部 |
+| L4 | cognition | agent-linux 内部 |
+| L5 | services | agent-linux 内部 |
+| L6 | system | agent-linux 内部 |
+| L7 | cloudnative / tests-linux | agent-linux 内部 |
 ```
 
 替换为与权威定义一致的版本：
 
 ```
-| L1 | 硬件层（CPU/内存/CXL/PMEM，非子仓） | agentrt-linux 内部（硬件基座） |
-| L2 | airymaxos-kernel | agentrt-linux 内部 |
-| L3 | airymaxos-services + airymaxos-security + airymaxos-memory | agentrt-linux 内部 |
-| L4 | airymaxos-cognition | agentrt-linux 内部 |
-| L5 | airymaxos-cloudnative | agentrt-linux 内部 |
-| L6 | airymaxos-system | agentrt-linux 内部 |
-| L7 | airymaxos-tests-linux（横向测试层） | agentrt-linux 内部 |
-| — | agentrt（跨平台用户态运行时） | 外部组件，运行于 agentrt-linux 之上 |
+| L1 | 硬件层（CPU/内存/CXL/PMEM，非子仓） | agent-linux 内部（硬件基座） |
+| L2 | airymaxos-kernel | agent-linux 内部 |
+| L3 | airymaxos-services + airymaxos-security + airymaxos-memory | agent-linux 内部 |
+| L4 | airymaxos-cognition | agent-linux 内部 |
+| L5 | airymaxos-cloudnative | agent-linux 内部 |
+| L6 | airymaxos-system | agent-linux 内部 |
+| L7 | airymaxos-tests-linux（横向测试层） | agent-linux 内部 |
+| — | agentrt（跨平台用户态运行时） | 外部组件，运行于 agent-linux 之上 |
 ```
 
 并添加注脚："> **权威定义引用**: 7 层架构模型的权威定义见 [10-architecture/README.md §3](../../docs/AirymaxOS/10-architecture/README.md)。本表与权威定义保持完全一致。"
@@ -390,14 +390,14 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 在 §2.1 架构分层图后添加：
 
 ```
-> **概念图澄清**: 上图为 agentrt-linux 整体栈的概念性展示（4 层），用于呈现 agentrt 与 agentrt-linux 的关系。
-> agentrt-linux 内部 8 子仓的依赖关系采用 **7 层架构模型**（L1-L7），权威定义见 [10-architecture/README.md §3](README.md#3-架构层次模型)。
-> 7 层架构模型不包含 agentrt（agentrt 是外部组件，运行于 agentrt-linux 之上，见 ADR-011）。
+> **概念图澄清**: 上图为 agent-linux 整体栈的概念性展示（4 层），用于呈现 agentrt 与 agent-linux 的关系。
+> agent-linux 内部 8 子仓的依赖关系采用 **7 层架构模型**（L1-L7），权威定义见 [10-architecture/README.md §3](README.md#3-架构层次模型)。
+> 7 层架构模型不包含 agentrt（agentrt 是外部组件，运行于 agent-linux 之上，见 ADR-011）。
 ```
 
 ### 5.3 P2 观察：agentrt 位置标注优化
 
-**建议**: 在 01-system-architecture.md §2.1 的 4 层概念图中，将"Agent 应用层"的图注补充"（agentrt 是外部组件，运行于 agentrt-linux 之上）"。
+**建议**: 在 01-system-architecture.md §2.1 的 4 层概念图中，将"Agent 应用层"的图注补充"（agentrt 是外部组件，运行于 agent-linux 之上）"。
 
 此为可选优化，不强制执行。
 
@@ -427,20 +427,20 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 | 方案 | 描述 | 优点 | 缺点 | 是否采纳 |
 |------|------|------|------|---------|
-| **方案 A**: agentrt 纳入 7 层架构 | agentrt 作为 L8 或某层纳入 agentrt-linux 内部架构 | 紧密集成，单一架构视图 | 破坏跨平台硬约束（致命）；破坏架构正交性；agentrt 演进受制约 | ❌ 不采纳 |
-| **方案 B**: agentrt 直接"成为"agentrt-linux 专属用户态 | agentrt 是 agentrt-linux 唯一用户态 | 零适配（但 IRON-9 v2 已实现） | 丧失跨平台（致命）；破坏 POSIX 兼容；退化为封闭系统 | ❌ 不采纳 |
-| **方案 C**: IRON-9 v2 同源关系（采纳） | agentrt 是推荐用户态运行时，以 [SC]+[SS]+[IND] 三层模型运行于 agentrt-linux 之上 | 跨平台 + 同源红利 + 零适配层 + 开放生态 | 需双向 CI 校验 [SC] 变更；需 ADR 流程管理同源关系 | ✅ 采纳 |
+| **方案 A**: agentrt 纳入 7 层架构 | agentrt 作为 L8 或某层纳入 agent-linux 内部架构 | 紧密集成，单一架构视图 | 破坏跨平台硬约束（致命）；破坏架构正交性；agentrt 演进受制约 | ❌ 不采纳 |
+| **方案 B**: agentrt 直接"成为"agent-linux 专属用户态 | agentrt 是 agent-linux 唯一用户态 | 零适配（但 IRON-9 v2 已实现） | 丧失跨平台（致命）；破坏 POSIX 兼容；退化为封闭系统 | ❌ 不采纳 |
+| **方案 C**: IRON-9 v2 同源关系（采纳） | agentrt 是推荐用户态运行时，以 [SC]+[SS]+[IND] 三层模型运行于 agent-linux 之上 | 跨平台 + 同源红利 + 零适配层 + 开放生态 | 需双向 CI 校验 [SC] 变更；需 ADR 流程管理同源关系 | ✅ 采纳 |
 
 ### 7.2 方案 C（采纳）的技术依据汇总
 
 | 依据编号 | 依据内容 | 来源 |
 |---------|---------|------|
 | D-1 | 跨平台硬约束（agentrt 必须 Linux/macOS/Windows） | 用户决策 2026-07-04 |
-| D-2 | 架构正交性（7 层架构是 agentrt-linux 内部依赖管理工具） | S-2 层次分解原则 |
+| D-2 | 架构正交性（7 层架构是 agent-linux 内部依赖管理工具） | S-2 层次分解原则 |
 | D-3 | IRON-9 v2 [SC] 层 6 头文件逐字节共享，已实现零适配层天然契合 | 120-cross-project-code-sharing.md §2 |
 | D-4 | seL4 root task 模型（root task 是独立外部组件，不属于内核） | ES-SEL4-3 服务用户态化 |
-| D-5 | "微核心"（agentrt）与"微内核"（agentrt-linux）的语义区分 | 用户决策 2026-07-09 |
-| D-6 | agentrt-linux 作为 Linux 发行版，用户态遵循 POSIX，不限于 agentrt | POSIX 标准 + 生产级发行版定位 |
+| D-5 | "微核心"（agentrt）与"微内核"（agent-linux）的语义区分 | 用户决策 2026-07-09 |
+| D-6 | agent-linux 作为 Linux 发行版，用户态遵循 POSIX，不限于 agentrt | POSIX 标准 + 生产级发行版定位 |
 | D-7 | ADR-010 已确立 IRON-9 v2 同源且部分代码共享关系 | ADR-010 Accepted |
 
 ### 7.3 方案 C 的边界条件
@@ -451,7 +451,7 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 |---------|---------|---------|
 | [SC] 共享契约层 6 头文件保持逐字节共享 | ✅ 已落地（include/airymax/） | 双向 CI 校验（120-cross-project-code-sharing.md §6） |
 | agentrt 保持跨平台独立性 | ✅ 已确立 | 跨平台硬约束 + ADR 流程 |
-| agentrt-linux 保持 POSIX 兼容 | ✅ 已确立 | 生产级发行版定位 + systemd 集成 |
+| agent-linux 保持 POSIX 兼容 | ✅ 已确立 | 生产级发行版定位 + systemd 集成 |
 | [SC] 变更经双向 CI 校验 | ✅ 已定义 | 120-cross-project-code-sharing.md §6.1 校验流程 |
 
 ---
@@ -462,11 +462,11 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 基于本报告论证，形成以下技术推论：
 
-**推论 T-1**: 7 层架构模型是 agentrt-linux 内部 8 子仓的依赖管理工具，其边界严格限定于 agentrt-linux 自身子仓。agentrt 作为外部独立项目，不属于此 7 层架构。
+**推论 T-1**: 7 层架构模型是 agent-linux 内部 8 子仓的依赖管理工具，其边界严格限定于 agent-linux 自身子仓。agentrt 作为外部独立项目，不属于此 7 层架构。
 
-**推论 T-2**: agentrt 与 agentrt-linux 的关系是"平台—应用"关系（agentrt 运行于 agentrt-linux 之上），而非"内核—用户态"关系（agentrt 不是 agentrt-linux 的专属用户态）。此关系由 IRON-9 v2 三层共享模型实现，已达成零适配层天然契合。
+**推论 T-2**: agentrt 与 agent-linux 的关系是"平台—应用"关系（agentrt 运行于 agent-linux 之上），而非"内核—用户态"关系（agentrt 不是 agent-linux 的专属用户态）。此关系由 IRON-9 v2 三层共享模型实现，已达成零适配层天然契合。
 
-**推论 T-3**: "将 agentrt 纳入 agentrt-linux 内部架构"或"让 agentrt 直接成为 agentrt-linux 专属用户态"均非获得同源红利的必要条件。IRON-9 v2 [SC] 层的逐字节共享已实现等同于"内部组件"的集成效果，同时保留了 agentrt 的跨平台独立性。
+**推论 T-3**: "将 agentrt 纳入 agent-linux 内部架构"或"让 agentrt 直接成为 agent-linux 专属用户态"均非获得同源红利的必要条件。IRON-9 v2 [SC] 层的逐字节共享已实现等同于"内部组件"的集成效果，同时保留了 agentrt 的跨平台独立性。
 
 **推论 T-4**: ADR-011 的决策本身（不包含 agentrt + 不直接成为用户态）是正确的，但其中的 7 层架构表存在事实性错误（与权威定义不一致），必须修复以保持架构文档的一致性。
 
@@ -486,11 +486,11 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 ### 9.1 核心结论
 
-本报告针对 agentrt-linux 7 层架构模型与 agentrt 用户态关系的两个核心问题进行技术论证，结论如下：
+本报告针对 agent-linux 7 层架构模型与 agentrt 用户态关系的两个核心问题进行技术论证，结论如下：
 
-1. **7 层架构模型不包含 agentrt 组件**——agentrt 是外部独立跨平台项目，不属于 agentrt-linux 内部 7 层架构（L1-L7）的任何一层。此结论受跨平台硬约束、架构正交性原则、IRON-9 v2 已实现零适配层天然契合、seL4 root task 模型验证、"微核心"与"微内核"语义区分等 5 条技术依据支撑。
+1. **7 层架构模型不包含 agentrt 组件**——agentrt 是外部独立跨平台项目，不属于 agent-linux 内部 7 层架构（L1-L7）的任何一层。此结论受跨平台硬约束、架构正交性原则、IRON-9 v2 已实现零适配层天然契合、seL4 root task 模型验证、"微核心"与"微内核"语义区分等 5 条技术依据支撑。
 
-2. **agentrt 不直接"成为"agentrt-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上**——agentrt 是 agentrt-linux 的推荐用户态运行时，但非唯一用户态。两者关系是"平台—应用"关系，而非"内核—用户态"关系。此结论受跨平台硬约束、POSIX 兼容性、IRON-9 v2 最优性、seL4 root task 模型、"微核心"与"微内核"层级区分等 5 条技术依据支撑。
+2. **agentrt 不直接"成为"agent-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上**——agentrt 是 agent-linux 的推荐用户态运行时，但非唯一用户态。两者关系是"平台—应用"关系，而非"内核—用户态"关系。此结论受跨平台硬约束、POSIX 兼容性、IRON-9 v2 最优性、seL4 root task 模型、"微核心"与"微内核"层级区分等 5 条技术依据支撑。
 
 ### 9.2 发现的问题
 
@@ -510,9 +510,9 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 > **VP-4（C-2.3 架构模型论证决策确认）**:
 > - 7 层架构模型不包含 agentrt 组件（agentrt 是外部独立跨平台项目）
-> - agentrt 不直接"成为"agentrt-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上
+> - agentrt 不直接"成为"agent-linux 的用户态，而是以 IRON-9 v2 同源关系"运行于"其上
 > - ADR-011 决策本身正确，但 7 层架构表存在事实性错误（P0），需修复
-> - IRON-9 v2 三层共享模型（[SC]+[SS]+[IND]）已实现零适配层天然契合，是 agentrt 与 agentrt-linux 关系的最优实现
+> - IRON-9 v2 三层共享模型（[SC]+[SS]+[IND]）已实现零适配层天然契合，是 agentrt 与 agent-linux 关系的最优实现
 
 ---
 
@@ -528,9 +528,9 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 
 ### 10.2 相关分析报告
 
-- [01-lessons-learned.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_analysis_0.3.0/01-lessons-learned.md) —— C-1 经验总结报告
-- [02-version-planning-decision.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_analysis_0.3.0/02-version-planning-decision.md) —— C-2.1 版本规划决策报告
-- [04-microkernel-source-sel4-only.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md) —— C-2.2 微内核来源收紧报告
+- [01-lessons-learned.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_analysis_0.3.0/01-lessons-learned.md) —— C-1 经验总结报告
+- [02-version-planning-decision.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_analysis_0.3.0/02-version-planning-decision.md) —— C-2.1 版本规划决策报告
+- [04-microkernel-source-sel4-only.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md) —— C-2.2 微内核来源收紧报告
 
 ---
 
@@ -543,7 +543,7 @@ ADR-011 创建于 2026-07-09（v0.2.5 版本），可能在创建时未严格对
 ---
 
 > **报告结束** | C-2.3 架构模型论证报告 v1.0 | 2026-07-09
-> 核心结论：7 层架构不含 agentrt + agentrt 以 IRON-9 v2 同源关系运行于 agentrt-linux 之上
+> 核心结论：7 层架构不含 agentrt + agentrt 以 IRON-9 v2 同源关系运行于 agent-linux 之上
 > 发现问题：P0（ADR-011 7 层架构表 4 处不一致）+ P1（概念图澄清）+ P2（标注优化）
 
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.

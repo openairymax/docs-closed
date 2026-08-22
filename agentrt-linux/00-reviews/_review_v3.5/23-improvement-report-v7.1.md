@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v7.1 改进实施报告
+# agent-linux v7.1 改进实施报告
 > **文档定位**：基于 v7.0 系统性深层复核报告的 12 项新发现问题，逐一实施修复并验证\
 > **文档版本**：v7.1\
 > **最后更新**：2026-07-27\
@@ -90,7 +90,7 @@ v7.0 报告发现 12 项新问题（2 A 类 + 6 B 类 + 4 C 类），本轮 v7.1
 
 ### B-2: sc-dual-ci.yml 增加 diff -q 字节级比对
 
-**位置**：`agentrt-linux/.github/workflows/sc-dual-ci.yml`
+**位置**：`agent-linux/.github/workflows/sc-dual-ci.yml`
 
 **修复**：在 sc-validate job 中增加 `Byte-level [SC] header consistency check (diff -q)` 步骤：
 - 克隆 agentrt 仓获取 commons 端头文件
@@ -101,7 +101,7 @@ v7.0 报告发现 12 项新问题（2 A 类 + 6 B 类 + 4 C 类），本轮 v7.1
 
 ### B-3: README badge 更新为 v1.0.1
 
-**位置**：`agentrt-linux/README.md` L8 + `agentrt-linux/README_zh.md` L8
+**位置**：`agent-linux/README.md` L8 + `agent-linux/README_zh.md` L8
 
 **修复**：badge 从 `version-0.1.1` 更新为 `version-v1.0.1`
 
@@ -127,13 +127,13 @@ v7.0 报告发现 12 项新问题（2 A 类 + 6 B 类 + 4 C 类），本轮 v7.1
 **问题**：L1-L4 数据结构标注"说明性示例，非 SSoT 定义"但未说明实际物理宿主。
 
 **修复**：在 §3.0 增加"物理宿主标注"：
-> §3.0-3.4 中的所有数据结构的**实际实现定义位于 memory 子仓**（`memory/` 目录），非 [SC] 共享契约层内容。agentrt 用户态与 agentrt-linux 内核态各自独立定义这些数据结构。
+> §3.0-3.4 中的所有数据结构的**实际实现定义位于 memory 子仓**（`memory/` 目录），非 [SC] 共享契约层内容。agentrt 用户态与 agent-linux 内核态各自独立定义这些数据结构。
 
 **验证**：✅ 物理宿主明确标注为 memory 子仓
 
 ### B-6: v5.0 闭环报告 UAF 警告路径更新（已确认完成）
 
-**位置**：`docs-closed/agentrt-linux/00-reviews/_review_v3.5/19-closure-report-v5.0.md` L152-155
+**位置**：`docs-closed/agent-linux/00-reviews/_review_v3.5/19-closure-report-v5.0.md` L152-155
 
 **状态**：✅ 已在 v6.0 修复完成。UAF 路径已更新为 `security/airy/airy_lsm.c`，并附 v6.0 更正说明。无需额外修改。
 
@@ -212,9 +212,9 @@ v7.0 报告发现 12 项新问题（2 A 类 + 6 B 类 + 4 C 类），本轮 v7.1
 | 12 | `agentrt/commons/include/airymax/sched.h` | 编辑 | B-1 |
 | 13 | `agentrt/commons/include/airymax/security_types.h` | 编辑 | B-1 |
 | 14 | `agentrt/commons/include/airymax/uapi_compat.h` | 编辑 | B-1 |
-| 15 | `agentrt-linux/.github/workflows/sc-dual-ci.yml` | 编辑 | B-2 |
-| 16 | `agentrt-linux/README.md` | 编辑 | B-3 |
-| 17 | `agentrt-linux/README_zh.md` | 编辑 | B-3 |
+| 15 | `agent-linux/.github/workflows/sc-dual-ci.yml` | 编辑 | B-2 |
+| 16 | `agent-linux/README.md` | 编辑 | B-3 |
+| 17 | `agent-linux/README_zh.md` | 编辑 | B-3 |
 | **总计** | **17 个文件** | | |
 
 ---
@@ -315,7 +315,7 @@ v7.0 的 2 项 A 类阻断问题（A-1 虚构 opcode、A-2 kthread 边界模糊�
 
 ## 11. 最终结论
 
-**✅ agentrt-linux M0 设计阶段正式就绪。**
+**✅ agent-linux M0 设计阶段正式就绪。**
 
 - v7.0 发现的 12 项问题已全部修复或确认无需修改
 - 新增事项 7（CoreLoopThree kthread 职责边界）已纳入 ADR-006

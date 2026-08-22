@@ -119,9 +119,9 @@ grep -rn "AIRY_EINVAL" --include="*.md" docs/AirymaxRT/  # 仍返回 4 种不同
 | `30-interfaces/10-algorithms/README.md` | 179 | "Airymax 是一个先进的智能体操作系统" | ✗ |
 | `30-interfaces/04-mainpage.dox` | 2, 6 | "多体控制论智能操作系统" / "构建的智能体操作系统" | ✗ |
 
-**合理的"操作系统"引用**（指代 AirymaxOS / agentrt-linux，不冲突）：
-- `README.md:105` / `README_zh.md:179`："agentrt-linux 智能体操作系统文档"（指 AirymaxOS）
-- `06-iron9-shared-model.md:34`："agentrt-linux（AirymaxOS）| 智能体操作系统"（指 AirymaxOS）
+**合理的"操作系统"引用**（指代 AirymaxOS / agent-linux，不冲突）：
+- `README.md:105` / `README_zh.md:179`："agent-linux 智能体操作系统文档"（指 AirymaxOS）
+- `06-iron9-shared-model.md:34`："agent-linux（AirymaxOS）| 智能体操作系统"（指 AirymaxOS）
 
 **核心矛盾**：
 - `04-microcorert.md:183`（v1.0 引用）："MicroCoreRT 运行在用户态（Ring 3），依赖宿主操作系统"
@@ -649,7 +649,7 @@ diff 50-specifications/10-contracts/06-glossary-index.md 20-modules/10-contracts
 6. 修正 `01-design-philosophy.md:110, 117, 119` 中"操作系统"相关表述
 7. 修正 `05-logging-format.md:73` "分布式多智能体操作系统" → "分布式多智能体运行时"
 8. 修正 `10-algorithms/README.md:179` "先进的智能体操作系统" → "先进的智能体运行时"
-9. 保留指代 AirymaxOS（agentrt-linux）的"操作系统"引用（README.md:105、README_zh.md:179、06-iron9-shared-model.md:34）
+9. 保留指代 AirymaxOS（agent-linux）的"操作系统"引用（README.md:105、README_zh.md:179、06-iron9-shared-model.md:34）
 
 **影响文件**：9 个
 

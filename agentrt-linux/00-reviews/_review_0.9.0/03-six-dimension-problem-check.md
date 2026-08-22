@@ -2,9 +2,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 第三部分：六维度问题检查
 
-> **文档定位**： v0.9.0 综合审查报告第三部分。对 agentrt-linux 工程标准规范进行用户要求的六维度深度问题检查：工程思想 / 代码编写风格 / 规范标准 / 代码结构 / 代码形式 / 代码品味。每个维度给出问题清单、证据来源和严重程度评级。\
+> **文档定位**： v0.9.0 综合审查报告第三部分。对 agent-linux 工程标准规范进行用户要求的六维度深度问题检查：工程思想 / 代码编写风格 / 规范标准 / 代码结构 / 代码形式 / 代码品味。每个维度给出问题清单、证据来源和严重程度评级。\
 > **版本**： 0.9.0\
-> **审查对象**： 开源工程标准（`docs/AirymaxOS/`）+ 闭源工程标准规范总纲（`docs-closed/agentrt-linux/`）\
+> **审查对象**： 开源工程标准（`docs/AirymaxOS/`）+ 闭源工程标准规范总纲（`docs-closed/agent-linux/`）\
 > **审查方法**： 逐维度 Grep 验证 + 源码级证据 + 文档交叉引用\
 > **SPDX-License-Identifier**： AGPL-3.0-or-later OR Apache-2.0
 
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 检查范围
 
-工程思想维度检查 agentrt-linux 的三大支柱（Linux 6.6 工程思想 + Airymax 五维正交 24 原则 + agentrt 17 类规则编号体系）的声明质量、内在一致性和落地完备性。
+工程思想维度检查 agent-linux 的三大支柱（Linux 6.6 工程思想 + Airymax 五维正交 24 原则 + agentrt 17 类规则编号体系）的声明质量、内在一致性和落地完备性。
 
 ### 1.2 检查发现
 
@@ -40,7 +40,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - L3（内核子系统接口）对应 IRON-002（内部 API 不稳定）？
 - L2（智能体运行时接口）和 L4（内部实现细节）对应哪条铁律？
 
-**证据**： `agentrt-linux基本工程标准规范.md` §4.1-§4.2
+**证据**： `agent-linux基本工程标准规范.md` §4.1-§4.2
 
 **修复建议**： 在 §4.2 的 4 层接口分级表中增加"对应铁律"列，显式映射 L1→IRON-001、L3→IRON-002、L2→IRON-001（版本化演进例外）、L4→无（完全自由）。
 
@@ -52,7 +52,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - 哪些子仓是"策略"（外移至用户空间或可插拔模块）？
 - airymaxos-cognition（双系统协同）是机制还是策略？
 
-**证据**： `agentrt-linux基本工程标准规范.md` §4.3
+**证据**： `agent-linux基本工程标准规范.md` §4.3
 
 **修复建议**： 在 §4.3 增加子仓机制/策略分类表，明确每个子仓的角色。
 
@@ -71,7 +71,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.1 检查范围
 
-代码编写风格维度检查 agentrt-linux 的六大编码规范支柱（Tab 8 / K&R / 最小 typedef / goto 集中出口 / kernel-doc / 80 列）和 7 维度编码风格裁决的声明质量与执行力度。
+代码编写风格维度检查 agent-linux 的六大编码规范支柱（Tab 8 / K&R / 最小 typedef / goto 集中出口 / kernel-doc / 80 列）和 7 维度编码风格裁决的声明质量与执行力度。
 
 ### 2.2 检查发现
 
@@ -90,11 +90,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 闭源总纲 §12.3 的 7 维度编码风格裁决表（缩进 / 命名 / typedef / 大括号 / 行宽 / 错误处理 / 注释）全部采纳 OLK-6.6，裁决理由充分。
 
-**证据**： `agentrt-linux基本工程标准规范.md` 第 976-986 行
+**证据**： `agent-linux基本工程标准规范.md` 第 976-986 行
 
 #### 2.2.3 ❌ P1-MAJOR：agentrt 现有源码与规范差距显著
 
-agentrt 现有源码与 agentrt-linux 规范声明之间存在显著品味鸿沟：
+agentrt 现有源码与 agent-linux 规范声明之间存在显著品味鸿沟：
 
 | 规范声明 | agentrt 现有源码 | 差距 |
 |---------|-----------------|------|
@@ -110,9 +110,9 @@ agentrt 现有源码与 agentrt-linux 规范声明之间存在显著品味鸿沟
 
 **影响**：
 
-- agentrt-linux 规范声明 Tab 8，但 agentrt 现有代码是 4 空格——1.0.1 M1 阶段需要全量缩进转换，工作量大且易引入错误
-- agentrt-linux 规范最小 typedef，但 agentrt 现有代码重度 typedef——转换需要修改 104 处，影响面广
-- agentrt-linux 规范 errno+goto，但 agentrt 现有代码用 4 套错误宏——转换需要重构错误处理路径
+- agent-linux 规范声明 Tab 8，但 agentrt 现有代码是 4 空格——1.0.1 M1 阶段需要全量缩进转换，工作量大且易引入错误
+- agent-linux 规范最小 typedef，但 agentrt 现有代码重度 typedef——转换需要修改 104 处，影响面广
+- agent-linux 规范 errno+goto，但 agentrt 现有代码用 4 套错误宏——转换需要重构错误处理路径
 
 **修复建议**：
 
@@ -149,7 +149,7 @@ agentrt 现有源码与 agentrt-linux 规范声明之间存在显著品味鸿沟
 
 ### 3.1 检查范围
 
-规范标准维度检查 agentrt-linux 的规则编号体系（OS-IRON / OS-BAN / OS-STD / OS-KER / OS-ACC 等）的内在一致性、SSoT 注册表的完备性和跨文档引用的无冲突性。
+规范标准维度检查 agent-linux 的规则编号体系（OS-IRON / OS-BAN / OS-STD / OS-KER / OS-ACC 等）的内在一致性、SSoT 注册表的完备性和跨文档引用的无冲突性。
 
 ### 3.2 检查发现
 
@@ -253,7 +253,7 @@ SSoT 注册表变更日志承认 Rust 文件存在编号登记缺口。
 
 ### 4.1 检查范围
 
-代码结构维度检查 agentrt-linux 的 8 子仓目录结构设计、IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）的落地完备性，以及子仓差异化要求的合理性。
+代码结构维度检查 agent-linux 的 8 子仓目录结构设计、IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）的落地完备性，以及子仓差异化要求的合理性。
 
 ### 4.2 检查发现
 
@@ -265,7 +265,7 @@ SSoT 注册表变更日志承认 Rust 文件存在编号登记缺口。
 - 工程标准侧重点
 - 适用规则前缀
 
-**证据**： `agentrt-linux基本工程标准规范.md` §1.4 第 74-83 行
+**证据**： `agent-linux基本工程标准规范.md` §1.4 第 74-83 行
 
 #### 4.2.2 ✅ 优势：IRON-9 v2 三层共享模型设计精巧
 
@@ -275,7 +275,7 @@ SSoT 注册表变更日志承认 Rust 文件存在编号登记缺口。
 
 #### 4.2.3 ❌ P1-MAJOR：品味层面缺失——规则有但品味哲学层未文档化
 
-agentrt-linux 有六大编码规范支柱和 13 项工程思想的规则，但缺少 OLK-6.6 品味哲学层的显式文档化（详见 [01-olk66-code-taste-distillation.md](./01-olk66-code-taste-distillation.md) §3）。
+agent-linux 有六大编码规范支柱和 13 项工程思想的规则，但缺少 OLK-6.6 品味哲学层的显式文档化（详见 [01-olk66-code-taste-distillation.md](./01-olk66-code-taste-distillation.md) §3）。
 
 8 项隐性智慧未被显式记录：
 
@@ -319,7 +319,7 @@ SSoT 重新设计（2026-07-12）废除了 9 个族索引文件，但可能存�
 
 ### 5.1 检查范围
 
-代码形式维度检查 agentrt-linux 的命名规范、类型规范、错误处理规范、注释规范的具体形式要求是否完备、是否与 OLK-6.6 对齐。
+代码形式维度检查 agent-linux 的命名规范、类型规范、错误处理规范、注释规范的具体形式要求是否完备、是否与 OLK-6.6 对齐。
 
 ### 5.2 检查发现
 
@@ -381,15 +381,15 @@ project_memory 记录了文档计数三作用域模型（~79 / ~85 / ~122），�
 
 ### 6.1 检查范围
 
-代码品味维度检查 agentrt-linux 规范是否传达了超越规则的品味哲学，以及 agentrt 现有源码的品味水平。
+代码品味维度检查 agent-linux 规范是否传达了超越规则的品味哲学，以及 agentrt 现有源码的品味水平。
 
 ### 6.2 检查发现
 
 #### 6.2.1 ❌ P1-MAJOR：品味哲学层缺失（重申）
 
-详见维度四 §4.2.3。agentrt-linux 规范有规则但无品味——规则告诉开发者"怎么做"，但缺少"为什么这么做"和"这么做的品味是什么"的阐释。
+详见维度四 §4.2.3。agent-linux 规范有规则但无品味——规则告诉开发者"怎么做"，但缺少"为什么这么做"和"这么做的品味是什么"的阐释。
 
-OLK-6.6 的 coding-style.rst 不仅给出规则，更给出规则背后的工程理由（如"8 字符 Tab 让深嵌套在视觉上不可忽视"）。agentrt-linux 的规范在这方面较弱——虽然闭源总纲第 2-3 章有部分工程理由（如 OS-FMT-001 的"8 字符 Tab 嵌套警告价值"），但不如 OLK-6.6 深入。
+OLK-6.6 的 coding-style.rst 不仅给出规则，更给出规则背后的工程理由（如"8 字符 Tab 让深嵌套在视觉上不可忽视"）。agent-linux 的规范在这方面较弱——虽然闭源总纲第 2-3 章有部分工程理由（如 OS-FMT-001 的"8 字符 Tab 嵌套警告价值"），但不如 OLK-6.6 深入。
 
 **修复建议**：
 

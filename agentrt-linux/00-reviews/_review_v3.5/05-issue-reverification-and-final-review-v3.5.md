@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）问题复核与最终审查报告 v3.5
+# agent-linux（AirymaxOS）问题复核与最终审查报告 v3.5
 
 > **报告编号**：05
 > **报告版本**：v3.5（终稿）
@@ -55,12 +55,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | P0 | 问题 | 04 报告结论 | 05 复核结论 | 关键证据 |
 |----|------|------------|------------|---------|
-| **P0-1** | verdict 双端不一致（COMPLAIN vs ASK） | 真实存在 | ✅ **真实存在** | agentrt-linux `security_types.h:79` `COMPLAIN=3`；commons `security_types.h:36` `ASK=3`；`test_sc_headers.c:56` 硬编码 `AIRY_VERDICT_ASK` |
-| **P0-2** | AIRY_CAP_GPU_SCHED42 拼写错误 | 真实存在 | ❌ **误报**（撤销） | `cat -A` 证实 commons `security_types.h:24` 为 `AIRY_CAP_GPU_SCHED^I^I42`（TAB 分隔，无粘连）；agentrt-linux `security_types.h:69` 枚举亦正确 |
+| **P0-1** | verdict 双端不一致（COMPLAIN vs ASK） | 真实存在 | ✅ **真实存在** | agent-linux `security_types.h:79` `COMPLAIN=3`；commons `security_types.h:36` `ASK=3`；`test_sc_headers.c:56` 硬编码 `AIRY_VERDICT_ASK` |
+| **P0-2** | AIRY_CAP_GPU_SCHED42 拼写错误 | 真实存在 | ❌ **误报**（撤销） | `cat -A` 证实 commons `security_types.h:24` 为 `AIRY_CAP_GPU_SCHED^I^I42`（TAB 分隔，无粘连）；agent-linux `security_types.h:69` 枚举亦正确 |
 | **P0-3** | 双 airy_lsm.c 并存致 UAF | 真实存在 | ✅ **真实存在** | [SS] `airy_lsm.c:46/150` blob 机制 + 内建；[IND] `airy_lsm.c:113/152-153/212` 直接覆写+free + 模块；Kconfig bool 内建 vs Kbuild obj-m 模块，名称不同可共存 |
 | **P0-4** | airy_struct_ops.c 重定义违反 SSoT | 真实存在 | ✅ **真实存在** | 头文件 `bpf_struct_ops.h:47-53` 4 态 + 128B struct；`airy_struct_ops.c:20-33` 3 态 + 不同 struct；`airy_struct_ops.c:14-17` 未 include 头文件 |
 
-**附加发现**（P0-4 范围内）：双端 `bpf_struct_ops.h` 自身也非 byte-identical——agentrt commons 版用 `AIRY_OPS_*` 命名 + 2 字段 struct，与 agentrt-linux 版的 `AIRY_STRUCT_OPS_*` + 128 字节 struct 不一致。这是另一处独立 SSoT 破坏，建议一并修复。
+**附加发现**（P0-4 范围内）：双端 `bpf_struct_ops.h` 自身也非 byte-identical——agentrt commons 版用 `AIRY_OPS_*` 命名 + 2 字段 struct，与 agent-linux 版的 `AIRY_STRUCT_OPS_*` + 128 字节 struct 不一致。这是另一处独立 SSoT 破坏，建议一并修复。
 
 ### 1.2 P0-5 至 P0-13（架构与 CI 组）复核
 
@@ -433,7 +433,7 @@ agent_state 恒 0 是「设计存在但实现未通电」的典型。
 
 ### 12.1 项目定位
 
-agentrt-linux 项目**设计功底扎实、哲学立场清晰、分支拓扑合理**，但存在三类系统性问题：
+agent-linux 项目**设计功底扎实、哲学立场清晰、分支拓扑合理**，但存在三类系统性问题：
 
 1. **IRON-2 红线未过**（桩函数与隐藏桩）
 2. **设计-实现 wiring 断链**（dispatch 写好不接、agent_state 定义不迁移）
@@ -541,4 +541,4 @@ agentrt-linux 项目**设计功底扎实、哲学立场清晰、分支拓扑合�
 
 ---
 
-© 2025-2026 SPHARX Ltd. All Rights Reserved. | agentrt-linux（AirymaxOS）问题复核与最终审查报告 | v3.5 | 2026-07-25
+© 2025-2026 SPHARX Ltd. All Rights Reserved. | agent-linux（AirymaxOS）问题复核与最终审查报告 | v3.5 | 2026-07-25

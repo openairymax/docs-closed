@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）系统性深度复核终审报告 v3.5
+# agent-linux（AirymaxOS）系统性深度复核终审报告 v3.5
 
 > **报告编号**：12
 > **报告版本**：v3.5（系统性深度复核终稿——直接字节级证据）
 > **生成时间**：2026-07-26
-> **审查前提**：agentrt-linux 目前处于**方案设计阶段（M0/M1）**，仅完成"文档体系 + [SC] 共享契约层头文件占位 + 内核改造框架骨架"，**不含内核/OS 代码实施**。用户明确声明："除了内核的改造框架，其他开发还没有正式开始"。
+> **审查前提**：agent-linux 目前处于**方案设计阶段（M0/M1）**，仅完成"文档体系 + [SC] 共享契约层头文件占位 + 内核改造框架骨架"，**不含内核/OS 代码实施**。用户明确声明："除了内核的改造框架，其他开发还没有正式开始"。
 > **审查方法**：6 个并行子代理独立扫描 + 主代理直接字节级 Read/Grep 验证（不依赖任何前序报告描述）
 > **审查范围**：12 个 [SC] 头文件 + 48+ 个骨架源文件 + 185 个 .md 文档 + 03 报告 130 P0 + 04 报告 18 P0/22 P1/17 P2 + 7 项误报裁定
 > **上一版本**：11-ultimate-independent-reverification-v3.5.md（2026-07-26）
@@ -103,12 +103,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 端 | 文件 | 行号 | 内容 |
 |----|------|------|------|
-| agentrt-linux | `kernel/include/uapi/linux/airymax/security_types.h` | 79 | `AIRY_VERDICT_COMPLAIN = 3` |
+| agent-linux | `kernel/include/uapi/linux/airymax/security_types.h` | 79 | `AIRY_VERDICT_COMPLAIN = 3` |
 | agentrt commons | `agentrt/commons/include/airymax/security_types.h` | 36 | `AIRY_VERDICT_ASK = 3` |
 
 **额外发现**：commons 端与 linux 端存在 **7 类结构性差异**：
 
-| 维度 | agentrt-linux 端 | agentrt commons 端 | 差异 |
+| 维度 | agent-linux 端 | agentrt commons 端 | 差异 |
 |------|------------------|---------------------|------|
 | 行数 | 134 行 | 50 行 | 🔴 |
 | SPDX 许可证 | `BSD-3-Clause OR GPL-2.0` | `AGPL-3.0-or-later OR Apache-2.0` | 🔴 |

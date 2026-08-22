@@ -1,9 +1,9 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux 综合审查报告 v2.3
+# 00 — agent-linux 综合审查报告 v2.3
 
 > **审查日期**：2026-07-22
-> **审查范围**：agentrt-linux 内核全部 39 个 Airymax 专属 .c 文件 + 16 个 .h 头文件 + 5 份核心设计文档
+> **审查范围**：agent-linux 内核全部 39 个 Airymax 专属 .c 文件 + 16 个 .h 头文件 + 5 份核心设计文档
 > **审查基线**：IRON-1~9 铁律 + v1.0.1 Capability Folding + Linux 6.6.144 LTS
 > **上一版本**：v2.2（2026-07-18）
 
@@ -13,7 +13,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 核心判定
 
-**经过 v2.3 审查与修复，agentrt-linux 内核框架已达到 M0 阶段生产级标准。**
+**经过 v2.3 审查与修复，agent-linux 内核框架已达到 M0 阶段生产级标准。**
 
 本次审查识别并修复了：
 - **12 项 P0 问题**（全部修复）：包括 4 项安全漏洞、2 项死代码文件、2 项并发缺陷、1 项假映射、1 项桩文件、1 项设计文档不一致、1 项非 bug 误报
@@ -393,7 +393,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 9.1 M0 框架就绪判定
 
-**agentrt-linux 内核 M0 框架已就绪，可进入 M1 开发阶段。**
+**agent-linux 内核 M0 框架已就绪，可进入 M1 开发阶段。**
 
 判定依据：
 1. ✅ 39 个 .c 文件 + 16 个 .h 文件全部就位，无桩文件
@@ -407,7 +407,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 9.2 与 v2.2 的对比
 
-v2.2 报告判定"agentrt-linux 目前不具备可以根据方案开始全面开发的条件"。经过 v2.3 审查与修复，这一判定已反转：**框架完整、代码正确、设计一致，具备进入 M1 全面开发的条件。**
+v2.2 报告判定"agent-linux 目前不具备可以根据方案开始全面开发的条件"。经过 v2.3 审查与修复，这一判定已反转：**框架完整、代码正确、设计一致，具备进入 M1 全面开发的条件。**
 
 ---
 

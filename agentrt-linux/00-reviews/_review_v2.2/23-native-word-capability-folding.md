@@ -8,7 +8,7 @@
 > - 是否需要全面重构设计？→ 逐层分析修改范围
 > - 是否有风险？→ 枚举风险点 + 可缓解性
 > - 是否更完善和稳健？→ 量化对比融合前后的六维度 + 工程复杂度
-> **前置报告**：[21-ipc-production-readiness.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/21-ipc-production-readiness.md) / [22-capability-folding-causal-analysis.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/22-capability-folding-causal-analysis.md)
+> **前置报告**：[21-ipc-production-readiness.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/21-ipc-production-readiness.md) / [22-capability-folding-causal-analysis.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/22-capability-folding-causal-analysis.md)
 
 ---
 
@@ -147,13 +147,13 @@
 
 **净复杂度：显著降低。新增的两个组件（Epoch + Badge 编译）合计约 80 行 C，但消除了 per-CPU capability cache（~200-300 行 C）和控制面高频同步阻塞（~1000× 频率降低）。**
 
-### 3.3 与 agentrt-linux 三大支柱的对齐
+### 3.3 与 agent-linux 三大支柱的对齐
 
 | 支柱 | 融合前 | 融合后 |
 |------|--------|--------|
 | **微内核设计思想**（机制在内核，策略在用户态） | 部分对齐——数据面机制在内核，能力策略仍在控制面 | **更彻底**——内核仅保留 Epoch 计数器（纯机制），sec_d 编译 Badge（纯策略） |
 | **工程基线**（Linux 6.6 LTS） | `airy_cap_check_fast()` 未实现 + radix tree 运维复杂 | Epoch 管理 + Badge 编译全部使用 Linux 6.6 标准机制（atomic_t + cmpxchg） |
-| **Airymax 同源性**（agentrt ↔ agentrt-linux [SC] 共享） | `ipc.h` 共享 128B 头 | `ipc.h` 共享 128B 头 + `capability_badge` 字段语义同源 |
+| **Airymax 同源性**（agentrt ↔ agent-linux [SC] 共享） | `ipc.h` 共享 128B 头 | `ipc.h` 共享 128B 头 + `capability_badge` 字段语义同源 |
 
 ---
 

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 修复变更日志 v0.2.0
+# agent-linux 修复变更日志 v0.2.0
 
 > **日志日期**: 2026-07-09
 > **版本**: v0.2.0
@@ -39,7 +39,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **修复前**：
 ```c
 /* 新增 SCHED_AGENT 调度类（不与 POSIX 冲突） */
-#define SCHED_AGENT    7   /* agentrt-linux 专属（Linux 6.6 SCHED_EXT=7） */
+#define SCHED_AGENT    7   /* agent-linux 专属（Linux 6.6 SCHED_EXT=7） */
 ```
 
 **修复后**：

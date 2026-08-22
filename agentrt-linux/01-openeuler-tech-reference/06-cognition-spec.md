@@ -29,7 +29,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|------|
 | `docs/AirymaxOS/20-modules/05-cognition.md`（开源） | 公开 | 模块设计（不含 OLK-6.6 引用） |
 | `docs/AirymaxOS/40-dataflows/01-cognition-flow.md`（开源） | 公开 | 数据流设计（不含 OLK-6.6 引用） |
-| `docs-closed/agentrt-linux/02-olk66-source-mapping/06-cognition-mapping.md`（闭源） | 内部 | OLK-6.6 源码映射（38 条 OS-COG-MAP 规则） |
+| `docs-closed/agent-linux/02-olk66-source-mapping/06-cognition-mapping.md`（闭源） | 内部 | OLK-6.6 源码映射（38 条 OS-COG-MAP 规则） |
 | **本文档**（闭源） | 内部 | 工程规范（kthread + LLM 调度 + GPU/NPU + 采纳决策） |
 
 ### 1.3 IRON-9 v2 三层共享模型

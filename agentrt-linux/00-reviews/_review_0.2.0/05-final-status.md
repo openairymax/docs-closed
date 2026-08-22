@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 最终状态声明 v0.2.0
+# agent-linux 最终状态声明 v0.2.0
 
 > **声明日期**: 2026-07-09
 > **版本**: v0.2.0
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 项目 | 值 |
 |------|-----|
-| **项目名称** | agentrt-linux（AirymaxAgentOS，极境智能体操作系统） |
+| **项目名称** | agent-linux（AirymaxAgentOS，极境智能体操作系统） |
 | **版本** | 0.1.1（文档体系完成） |
 | **审查版本** | v0.2.0（第二轮全面审查） |
 | **综合成熟度** | **100/100（A+ 级）** |
@@ -50,9 +50,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 资产 | 数量 | 路径 |
 |------|------|------|
-| 技术参考文档 | ~15 篇 | `docs-closed/agentrt-linux/01-04*/` |
-| v0.1.1 审查报告 | 2 篇 | `docs-closed/agentrt-linux/_review_0.1.1/` |
-| v0.2.0 审查报告 | 5 篇 | `docs-closed/agentrt-linux/_review_0.2.0/` |
+| 技术参考文档 | ~15 篇 | `docs-closed/agent-linux/01-04*/` |
+| v0.1.1 审查报告 | 2 篇 | `docs-closed/agent-linux/_review_0.1.1/` |
+| v0.2.0 审查报告 | 5 篇 | `docs-closed/agent-linux/_review_0.2.0/` |
 
 ### 2.3 v0.2.0 审查报告集（本报告集）
 
@@ -73,7 +73,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 组件 | 定位 | 术语 |
 |------|------|------|
 | agentrt | 用户态运行时 | **微核心**（micro-core），基于 seL4 微内核思想抽象 |
-| agentrt-linux | OS 发行版 | **微内核**（micro-kernel），真正的操作系统内核 |
+| agent-linux | OS 发行版 | **微内核**（micro-kernel），真正的操作系统内核 |
 
 **验证**：全仓"微内核原语"5 处均为合法禁词清单引用，无概念混淆 ✅
 
@@ -163,7 +163,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 6. 最终声明
 
-agentrt-linux（AirymaxOS）0.1.1 文档体系经 v0.2.0 第二轮全面审查与完善，**已达到 100% 综合成熟度**。
+agent-linux（AirymaxOS）0.1.1 文档体系经 v0.2.0 第二轮全面审查与完善，**已达到 100% 综合成熟度**。
 
 ### 6.1 就绪状态确认
 
@@ -182,7 +182,7 @@ agentrt-linux（AirymaxOS）0.1.1 文档体系经 v0.2.0 第二轮全面审查�
 
 **判定：无条件 Go**
 
-agentrt-linux 0.1.1 文档体系已全面就绪，可正式进入 M1 开发阶段。
+agent-linux 0.1.1 文档体系已全面就绪，可正式进入 M1 开发阶段。
 
 ---
 

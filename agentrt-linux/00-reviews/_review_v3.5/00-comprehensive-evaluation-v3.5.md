@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.5 修复验证报告：方案一致性恢复
+# agent-linux v3.5 修复验证报告：方案一致性恢复
 
 > **报告版本**：v3.5\
 > **生成日期**：2026-07-25\
@@ -64,18 +64,18 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.2 P0-030：01-kernel.md "设计参考"表述模糊 ✅ 已修复
 
-**问题根因**：L304-307 引用 seL4 源码文件（cte.c/cspace.c/mdb.c/cnode_ops.c）作为"设计参考"，读者可能误认为 agentrt-linux 有这些物理文件。
+**问题根因**：L304-307 引用 seL4 源码文件（cte.c/cspace.c/mdb.c/cnode_ops.c）作为"设计参考"，读者可能误认为 agent-linux 有这些物理文件。
 
-**科学论证**：文档已部分修复（L303 标注"设计溯源参考"，L308 说明"实际 capability 工程实现位于 security/airy/"），但"设计参考"一词仍有歧义。需要明确标注这些是 seL4 源码文件，agentrt-linux 不存在对应物理文件。
+**科学论证**：文档已部分修复（L303 标注"设计溯源参考"，L308 说明"实际 capability 工程实现位于 security/airy/"），但"设计参考"一词仍有歧义。需要明确标注这些是 seL4 源码文件，agent-linux 不存在对应物理文件。
 
 **修复实施**：
 - [01-kernel.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/20-modules/01-kernel.md) L303-307：
-  - "设计溯源参考" → "seL4 设计溯源参考（seL4 源码文件，**agentrt-linux 不存在对应物理文件**）"
-  - 4 个文件引用加 `seL4` 前缀，"设计参考" → "设计溯源，非 agentrt-linux 文件"
+  - "设计溯源参考" → "seL4 设计溯源参考（seL4 源码文件，**agent-linux 不存在对应物理文件**）"
+  - 4 个文件引用加 `seL4` 前缀，"设计参考" → "设计溯源，非 agent-linux 文件"
 
 **验证结果**：
 - ✅ Grep "设计参考" 在 01-kernel.md 中零匹配
-- ✅ 所有 seL4 源码引用明确标注"非 agentrt-linux 文件"
+- ✅ 所有 seL4 源码引用明确标注"非 agent-linux 文件"
 
 ---
 
@@ -98,7 +98,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 3. **RESERVED 必须添加**：C-S10 校验需要掩码，避免硬编码魔法数字 0xFFE0
 
 **修复实施**：
-1. [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L30-45：
+1. [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) L30-45：
    - 添加 `AIRY_IPC_FLAG_RESERVED 0xFFE0`（bits 5-15 必须为零）
    - 添加注释说明 bit 分配（bits 0-4 active, bits 5-15 reserved）
    - 添加 v1.0.1 NOWAIT/SIGNAL 废弃说明
@@ -129,7 +129,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
   1. L42：明确"POSIX capability 模块（security/commoncap.c）"用 `LSM_ORDER_FIRST`，补充 airy_lsm 用 `LSM_ORDER_MUTABLE`
   2. L60：表格 L3 行改为"POSIX capability 模块 / Linux 内核 security/commoncap.c"
   3. L1267：标题改为"10.1 POSIX capability 模块注册（LSM_ORDER_FIRST）"
-  4. L1269：正文标注"POSIX capability 模块（Linux 内核 security/commoncap.c，非 agentrt-linux 的 airy_lsm）"
+  4. L1269：正文标注"POSIX capability 模块（Linux 内核 security/commoncap.c，非 agent-linux 的 airy_lsm）"
   5. L1287：新增"关键区分"blockquote 段落
   6. L1295：Mermaid 时序图 participant 改为"POSIX capability (commoncap.c, LSM_ORDER_FIRST)"
 
@@ -176,7 +176,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
    - **决策：创建**，包含完整的 struct_ops 状态机定义 + common_value 结构体 + [DSL] 降级块，满足 IRON-2
 
 **修复实施**：
-- 创建 [bpf_struct_ops.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/bpf_struct_ops.h)（116 行）：
+- 创建 [bpf_struct_ops.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/bpf_struct_ops.h)（116 行）：
   - `enum airy_struct_ops_state`（4 态：INIT/REGISTERED/ACTIVE/DRAINING）
   - `struct bpf_struct_ops_common_val`（64 字节，cache line 对齐）
   - `struct airy_struct_ops_value`（128 字节，2 cache lines）
@@ -195,7 +195,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **问题根因**：代码 `error.h` 中 `-46=AIRY_EIPC_FROZEN`、`-47=AIRY_EIPC_BADGE`，与 SSoT `08-sc-error-contract.md` 的 `-46=AIRY_EIPC_FLAGS`、`-47=AIRY_EIPC_NOTSUPP` 冲突。
 
 **修复实施**（v3.4 阶段已完成）：
-- [error.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/error.h) L49-60：IPC 错误码完全重写，对齐 SSoT `08-sc-error-contract.md` §2.3 的 C-S0~C-S12 检查链
+- [error.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/error.h) L49-60：IPC 错误码完全重写，对齐 SSoT `08-sc-error-contract.md` §2.3 的 C-S0~C-S12 检查链
 
 **验证结果**：
 - ✅ `AIRY_EIPC_FLAGS (-46)` 存在
@@ -209,7 +209,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **问题根因**：`syscall.h`（生成产物）和 `syscalls.h`（[SC] 共享契约）都定义 `AIRY_SYS_CALL`，值不同（0 vs 548）。
 
 **修复实施**（v3.4 阶段已完成）：
-- [syscall.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscall.h)：
+- [syscall.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscall.h)：
   - include guard `AIRY_SYSCALLS_H` → `AIRY_SYSCALL_GEN_H`
   - 内部索引 `AIRY_SYS_CALL/ROVOL_CTL/SCHED_CTL/CLT_NOTIFY` → `AIRY_SYS_IDX_CALL/ROVOL_CTL/SCHED_CTL/CLT_NOTIFY`
 
@@ -283,7 +283,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 修复项 | 文件数 | 修改处数 | 说明 |
 |--------|--------|---------|------|
 | P0-029 | 3 | ~15 | SSoT 注册表 + 01-agent-lifecycle.md 8 态重写 + 90-terminology.md |
-| P0-030 | 1 | 5 | 01-kernel.md "设计溯源（非 agentrt-linux 文件）" |
+| P0-030 | 1 | 5 | 01-kernel.md "设计溯源（非 agent-linux 文件）" |
 | P0-031 + P0-037 | 16 | ~71 | AIRY_IPC_F_* → AIRY_IPC_FLAG_* + contracts.md 值修正 |
 | P0-032 | 1 | 7 | 03-capability-model.md 明确区分 POSIX vs airy_lsm |
 | P0-033 | 27 | 57 | capability 41 ID 表述精确化 |
@@ -302,7 +302,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 1. **Linux EEVDF 调度器兼容性**：Linux 6.6 的 EEVDF（Earliest Eligible Virtual Deadline First）调度器区分"在运行队列等待"和"正在 CPU 执行"两种状态。READY 态对应 `TASK_RUNNING`（在运行队列），RUNNING 态对应 `TASK_RUNNING`（正在 CPU 执行）。这一分离使 sched_tac 能够：
    - READY 态：EEVDF 虚拟时间衰减（`airy_vtime_decay()`），计算 Eligibility
    - RUNNING 态：消耗 sched_tac 预算（`runtime_ns`），触发预算耗尽检查
-2. **seL4 TCB 状态映射**：seL4 的 `ThreadState_Running`（正在执行）与 `ThreadState_Restart`（可调度但未在 CPU）分离，agentrt-linux 的 READY/RUNNING 分离与之对齐。
+2. **seL4 TCB 状态映射**：seL4 的 `ThreadState_Running`（正在执行）与 `ThreadState_Restart`（可调度但未在 CPU）分离，agent-linux 的 READY/RUNNING 分离与之对齐。
 3. **sched_tac 精确控制**：如果没有 READY/RUNNING 分离，sched_tac 无法区分"Agent 在等待 CPU"和"Agent 在消耗预算"，导致预算管理不准确。
 
 ### 5.2 IPC flags 命名规范论证
@@ -319,7 +319,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **设计决策**：废弃 NOWAIT/SIGNAL，由 io_uring 原生机制替代
 
 **技术论证**：
-1. **io_uring 原生路径**：agentrt-linux v1.0.1 采用 io_uring `IORING_OP_URING_CMD` 作为用户态-内核态传输通道。io_uring 已提供：
+1. **io_uring 原生路径**：agent-linux v1.0.1 采用 io_uring `IORING_OP_URING_CMD` 作为用户态-内核态传输通道。io_uring 已提供：
    - `IOSQE_ASYNC`：异步提交（替代 NOWAIT 语义——提交后立即返回，不等完成）
    - `IORING_CQE_F_NOTIF`：完成通知（替代 SIGNAL 语义——内核完成后投递通知）
 2. **避免重复抽象**：在 io_uring 之上再定义 NOWAIT/SIGNAL 会引入重复抽象，增加维护成本。
@@ -352,7 +352,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P0 | v3.4 状态 | v3.5 状态 | 修复方式 |
 |----|----------|----------|---------|
 | P0-029 | 真实存在 | ✅ 已修复 | SSoT 注册表 + lifecycle 8 态重写 |
-| P0-030 | 部分存在 | ✅ 已修复 | "设计溯源（非 agentrt-linux 文件）" |
+| P0-030 | 部分存在 | ✅ 已修复 | "设计溯源（非 agent-linux 文件）" |
 | P0-031 | 真实存在 | ✅ 已修复 | FLAG_* 统一 + RESERVED 添加 |
 | P0-032 | 部分存在 | ✅ 已修复 | 明确区分 POSIX vs airy_lsm |
 | P0-033 | 真实存在 | ✅ 已修复 | 27 文档 57 处精确化 |
@@ -381,7 +381,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 7.3 开发就绪判定
 
-**agentrt-linux 整体方案已具备"按照方案可以开始全面开发"的条件**：
+**agent-linux 整体方案已具备"按照方案可以开始全面开发"的条件**：
 - ✅ 9 个 P0 阻断问题全部修复
 - ✅ SSoT 权威源体系完整（96%）
 - ✅ 代码-文档对齐度 98%

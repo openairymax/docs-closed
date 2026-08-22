@@ -1,26 +1,26 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 综合分析报告 v2：OLK-6.6 代码品味 × agentrt 源码对比 × agentrt-linux 工程实现对齐 Euler
+# 综合分析报告 v2：OLK-6.6 代码品味 × agentrt 源码对比 × agent-linux 工程实现对齐 Euler
 
 > **审查日期**: 2026-07-12
 > **审查版本**: v2（在 v0.6.0 基础上重新执行 + 新增 Euler 工程实现对齐维度）
 > **审查范围**:
 > - OLK-6.6 全量源码（Documentation/process/coding-style.rst 全 22 章、.clang-format、Makefile、kernel/sched/core.c、kernel/locking/mutex.c、kernel/printk/printk.c、mm/mmap.c、ipc/msg.c、fs/read_write.c、include/linux/sched.h）
 > - agentrt 全量 C 源码（atoms/corekern/src/mem/{alloc,refcount,slab}.c、atoms/corekern/src/ipc/are_ipc.c、atoms/corekern/src/task/scheduler_core.c、CMakeLists.txt 等）
-> - agentrt-linux 整体方案（docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md 全 14 章 + 附录、docs/AirymaxOS/ 运维文档、_review_0.6.0/01-comprehensive-review-report.md）
+> - agent-linux 整体方案（docs-closed/agent-linux/agent-linux基本工程标准规范.md 全 14 章 + 附录、docs/AirymaxOS/ 运维文档、_review_0.6.0/01-comprehensive-review-report.md）
 > **审查方法论**: 逐行源码重读 + 12 维度逐一评分 + ES-OLK-1~13 工程思想落地验证 + 三层对齐检查（规范声明 → 方案设计 → 实现落地）
 
 ---
 
 ## 执行摘要
 
-本轮 v2 审查在 v0.6.0 基础上**重新执行**了 OLK-6.6 源码深度阅读与 agentrt 源码对比，并**新增**了 agentrt-linux 整体方案工程实现对齐 Euler 的检查维度。三项核心结论：
+本轮 v2 审查在 v0.6.0 基础上**重新执行**了 OLK-6.6 源码深度阅读与 agentrt 源码对比，并**新增**了 agent-linux 整体方案工程实现对齐 Euler 的检查维度。三项核心结论：
 
 1. **OLK-6.6 代码品味**：克制、简洁、信任读者。22 章编码规范的核心可归纳为"Tab 8 + K&R + 最小 typedef + goto 集中出口 + kernel-doc + 80 列"六大支柱，其精髓是"代码应该自解释，注释回答 Why 而非 What"。
 
 2. **agentrt 源码对比**：综合评分 **72/100（B）**，与 OLK-6.6 的 91/100（A+）差距 19 分。差距主要在品味层面而非正确性层面。agentrt 在 C11 原子操作显式内存序和跨平台 compat 抽象层两个维度**领先** OLK-6.6，但在命名冗长、typedef 滥用、宏魔法过多、ASCII 装饰过度、4 空格缩进（非 Tab 8）等方面存在系统性偏差。
 
-3. **agentrt-linux 工程实现对齐 Euler**：**规范声明层强对齐**（ES-OLK-1~13 完整映射 + 第 10 章 4 层兼容性声明 + 第 12 章 7 维度编码风格裁决），但**方案一致性层弱对齐**（v0.6.0 审查发现 [SC] 共享契约层系统性崩溃、规则编号体系崩溃、数据流设计错误），**实现落地层未验证**（agentrt-linux 尚处 0.1.1 奠基阶段，1.0.1 M1 才开始填充实现）。三层对齐综合评分 **61/100（C+）**。
+3. **agent-linux 工程实现对齐 Euler**：**规范声明层强对齐**（ES-OLK-1~13 完整映射 + 第 10 章 4 层兼容性声明 + 第 12 章 7 维度编码风格裁决），但**方案一致性层弱对齐**（v0.6.0 审查发现 [SC] 共享契约层系统性崩溃、规则编号体系崩溃、数据流设计错误），**实现落地层未验证**（agent-linux 尚处 0.1.1 奠基阶段，1.0.1 M1 才开始填充实现）。三层对齐综合评分 **61/100（C+）**。
 
 ---
 
@@ -233,7 +233,7 @@ static void update_peak_unlocked(void)
 
 **评估**: agentrt 全量使用 **4 空格缩进**，直接违反 OLK-6.6 §1 的 Tab 8 铁律。这是最严重的规范偏差——Tab 8 不仅是格式，更是嵌套深度的预警机制。agentrt 的 4 空格允许更深嵌套而不显眼，削弱了"3 层以上就该重构"的信号。
 
-> **注**: 此为 agentrt（用户态运行时）的现状。agentrt-linux 规范文档 §12.3 已声明将采纳 Tab 8，但尚未落地实现。
+> **注**: 此为 agentrt（用户态运行时）的现状。agent-linux 规范文档 §12.3 已声明将采纳 Tab 8，但尚未落地实现。
 
 #### 2.2.2 typedef 滥用：`_t` 后缀违反 OLK-6.6 §5
 
@@ -465,11 +465,11 @@ if (!mem_stats_mutex) {
 
 ---
 
-## 第三部分：agentrt-linux 整体方案工程实现对齐 Euler 检查
+## 第三部分：agent-linux 整体方案工程实现对齐 Euler 检查
 
 ### 3.1 三层对齐模型
 
-agentrt-linux 与 Euler（openEuler）的工程实现对齐需从三个层次验证：
+agent-linux 与 Euler（openEuler）的工程实现对齐需从三个层次验证：
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -480,7 +480,7 @@ agentrt-linux 与 Euler（openEuler）的工程实现对齐需从三个层次验
 │ 方案文档的设计是否与声明一致（8 子仓设计、目录结构、构建系统）│
 ├─────────────────────────────────────────────────────┤
 │ 层次 3：实现落地层                                   │
-│ 实际代码是否按方案实现（agentrt-linux 尚处 0.1.1 奠基阶段）│
+│ 实际代码是否按方案实现（agent-linux 尚处 0.1.1 奠基阶段）│
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -488,7 +488,7 @@ agentrt-linux 与 Euler（openEuler）的工程实现对齐需从三个层次验
 
 #### 3.2.1 ES-OLK-1~13 工程思想映射完整性
 
-`agentrt-linux基本工程标准规范.md` 附录 C 声明了 ES-OLK-1~13 的完整映射：
+`agent-linux基本工程标准规范.md` 附录 C 声明了 ES-OLK-1~13 的完整映射：
 
 | 编号 | 工程思想 | 声明的落地规则 | 声明质量 |
 |------|---------|---------------|---------|
@@ -527,7 +527,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 #### 3.2.3 第 12 章 7 维度编码风格裁决
 
-| 维度 | OLK-6.6 | seL4 | agentrt-linux 裁决 | 裁决合理性 |
+| 维度 | OLK-6.6 | seL4 | agent-linux 裁决 | 裁决合理性 |
 |------|---------|------|-------------------|---------|
 | 缩进 | Tab 8 | 空格 4 | **OLK-6.6** | ✅ 便于 backport |
 | 命名 | snake_case | camelCase | **OLK-6.6** | ✅ C/Unix 主流 |
@@ -547,7 +547,7 @@ AirymaxOS ←→ Euler:    仅技术参考，不共享代码
 
 **问题 1：[SC] 共享契约层系统性崩溃**（D5 评分低）
 
-agentrt-linux 声明通过 IRON-9 v2 [SC] 共享契约层与 agentrt 共享 6 个头文件。但 v0.6.0 审查发现：
+agent-linux 声明通过 IRON-9 v2 [SC] 共享契约层与 agentrt 共享 6 个头文件。但 v0.6.0 审查发现：
 - IPC 消息头在 `kernel.md` 与 `ipc-protocol.md` 中有**不同布局**
 - `task_desc` 在 SSoT 与调度数据流文档中有**两个完全不同的定义**
 - IPC 消息头字段名在 SSoT 与性能文档中**完全不同**
@@ -556,7 +556,7 @@ agentrt-linux 声明通过 IRON-9 v2 [SC] 共享契约层与 agentrt 共享 6 �
 
 **问题 2：规则编号体系系统性崩溃**（D10 评分低）
 
-agentrt-linux 声明继承 agentrt 17 类规则编号体系并新增 OS-* 前缀。但 v0.6.0 审查发现：
+agent-linux 声明继承 agentrt 17 类规则编号体系并新增 OS-* 前缀。但 v0.6.0 审查发现：
 - `OS-KER-002` 被 **4 重定义**
 - 14 种前缀共存（应为 11 种）
 - 15 个重复对
@@ -595,13 +595,13 @@ v0.6.0 审查发现认知数据流中：
 
 #### 3.3.3 模型 A 完整 fork 对齐验证
 
-agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"——自包含完整上游源码树，Airymax 修改直接写入上游目录（如 `mm/airymax_mm.c`），对齐 openEuler `mm/dynamic_pool.c` 实践。
+agent-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"——自包含完整上游源码树，Airymax 修改直接写入上游目录（如 `mm/airymax_mm.c`），对齐 openEuler `mm/dynamic_pool.c` 实践。
 
 **对齐验证**:
 - ✅ openEuler 确实是完整 Linux fork（非 patch 叠加模型）
 - ✅ openEuler `mm/dynamic_pool.c` 确实是直接写入上游目录的扩展
-- ✅ agentrt-linux 声明的 `mm/airymax_*.c` 模式与 openEuler 实践一致
-- ⚠️ 但 agentrt-linux 尚未实际实现（1.0.1 M1 阶段才开始填充）
+- ✅ agent-linux 声明的 `mm/airymax_*.c` 模式与 openEuler 实践一致
+- ⚠️ 但 agent-linux 尚未实际实现（1.0.1 M1 阶段才开始填充）
 
 ### 3.4 层次 3：实现落地层对齐检查（未验证）
 
@@ -615,9 +615,9 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 
 #### 3.4.2 可预测的实现层风险
 
-基于 agentrt（用户态运行时）的现状推断，agentrt-linux 实现层可能面临以下对齐风险：
+基于 agentrt（用户态运行时）的现状推断，agent-linux 实现层可能面临以下对齐风险：
 
-| 风险 | agentrt 现状 | agentrt-linux 声明 | 风险等级 |
+| 风险 | agentrt 现状 | agent-linux 声明 | 风险等级 |
 |------|-------------|-------------------|---------|
 | **缩进** | 4 空格 | Tab 8（声明） | 🔴 高——agentrt 全量 4 空格，习惯需彻底转变 |
 | **typedef** | `_t` 后缀泛滥 | 最小 typedef（声明） | 🔴 高——agentrt 全量 typedef，需大量重构 |
@@ -635,7 +635,7 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 | **实现落地层** | N/A | 未验证 | 尚未实现，基于 agentrt 现状预测高风险 |
 | **综合** | **61/100** | **C+** | 声明强、设计弱、实现未验证 |
 
-### 3.6 提升 agentrt-linux 工程实现对齐 Euler 的建议
+### 3.6 提升 agent-linux 工程实现对齐 Euler 的建议
 
 #### P0：修复方案设计层系统性问题
 
@@ -650,10 +650,10 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 
 | # | 建议 | 对齐的 ES-OLK | 优先级 |
 |---|------|-------------|--------|
-| 1 | **在 agentrt 中先行实践 Tab 8 缩进**：为 agentrt-linux 培养习惯 | §1 缩进 | 1.0.1 M1 |
+| 1 | **在 agentrt 中先行实践 Tab 8 缩进**：为 agent-linux 培养习惯 | §1 缩进 | 1.0.1 M1 |
 | 2 | **在 agentrt 中减少 typedef**：逐步将 `_t` 改为 `struct foo` | §5 typedef | 1.0.1 M1 |
 | 3 | **添加 `.clang-format`**：参照 OLK-6.6 定制，机器强制 | ES-OLK-9 | 1.0.1 M1 |
-| 4 | **集成 checkpatch.pl**：从 agentrt-linux kernel 子仓开始 | ES-OLK-9 | 1.0.1 M2 |
+| 4 | **集成 checkpatch.pl**：从 agent-linux kernel 子仓开始 | ES-OLK-9 | 1.0.1 M2 |
 
 #### P2：深化 Euler 对齐
 
@@ -673,7 +673,7 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 
 2. **agentrt 源码有改进空间但非全面落后**：综合 72/100（B），差距在品味层面（-4 分）而非正确性层面。agentrt 的 C11 显式内存序和跨平台 compat 层甚至**领先** OLK-6.6。改进应聚焦于：Tab 8 缩进、移除 `_t` typedef、统一错误处理宏、goto 标签语义化、移除 ASCII 装饰。
 
-3. **agentrt-linux 工程实现对齐 Euler 是"声明强、设计弱、实现未验证"**：规范声明层 92/100（A）令人印象深刻，但方案设计层 45/100（D+）的 [SC] 崩溃和规则编号崩溃是必须在实现前修复的系统性问题。基于 agentrt 现状（4 空格 + typedef 泛滥），实现落地层面临高风险。
+3. **agent-linux 工程实现对齐 Euler 是"声明强、设计弱、实现未验证"**：规范声明层 92/100（A）令人印象深刻，但方案设计层 45/100（D+）的 [SC] 崩溃和规则编号崩溃是必须在实现前修复的系统性问题。基于 agentrt 现状（4 空格 + typedef 泛滥），实现落地层面临高风险。
 
 ### 4.2 优先行动路径
 
@@ -688,7 +688,7 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
   ├── agentrt 先行实践 Tab 8 缩进（P1）
   ├── agentrt 减少 typedef（P1）
   ├── 添加 .clang-format（P1）
-  └── agentrt-linux kernel 子仓开始 Kbuild 实现（P1）
+  └── agent-linux kernel 子仓开始 Kbuild 实现（P1）
 
 1.0.1 M2-M4 阶段：
   ├── 集成 checkpatch.pl（P2）
@@ -737,10 +737,10 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 | atoms/corekern/include/error.h | L1-84（前轮） | 错误码体系 |
 | daemons/gateway_d/src/main.c | L1-348（前轮） | daemon goto 模式 |
 
-### agentrt-linux 方案文档（本次审查）
+### agent-linux 方案文档（本次审查）
 | 文件 | 行数 | 用途 |
 |------|------|------|
-| agentrt-linux基本工程标准规范.md | L1-150, L842-1001, L1060-1180 | Euler 兼容性 + 工程取向 + 8 子仓设计 |
+| agent-linux基本工程标准规范.md | L1-150, L842-1001, L1060-1180 | Euler 兼容性 + 工程取向 + 8 子仓设计 |
 | _review_0.6.0/01-comprehensive-review-report.md | L1-100 | v0.6.0 18 维度评分基线 |
 | _review_0.6.0/02-code-quality-comparison-report.md | L1-80 | 前轮 12 维度对比报告 |
 
@@ -757,7 +757,7 @@ agentrt-linux kernel 子仓声明采用"模型 A（完整 Linux 6.6 fork）"—�
 - 3-4 分：严重偏差
 - 0-2 分：完全不对齐
 
-### agentrt-linux 三层对齐评分（第三部分）
+### agent-linux 三层对齐评分（第三部分）
 
 | 层次 | 评分依据 | 权重 |
 |------|---------|------|

@@ -1,10 +1,10 @@
-# 15 — agentrt-linux 综合修正方案报告 v1.1
+# 15 — agent-linux 综合修正方案报告 v1.1
 
 ## 基于用户明确决策的系统性全面修正
 
 > **报告日期**：2026-07-17
 > **报告性质**：闭源内部综合修正方案（基于 12 份 \_review\_v2.2 审查报告 + 用户 6 项明确决策 + OLK 6.6/seL4 源码深度研究）
-> **决策基线**：以 Linux 6.6 LTS 为内核开发 agentrt-linux 发行版；以 OLK 6.6 为工程标准参考；以 seL4 为微内核借鉴
+> **决策基线**：以 Linux 6.6 LTS 为内核开发 agent-linux 发行版；以 OLK 6.6 为工程标准参考；以 seL4 为微内核借鉴
 > **内核全称**：极境内核 Airymax Kernel，简称 **ALK 6.6**（Airymax Linux Kernel 6.6）
 > **前置审查**：07\~14 共 12 份 \_review\_v2.2 审查报告全部交叉验证完毕
 > **v1.1 变更**：§0 新增"内核工程全 C 语言""不追求 seL4 级形式化验证"；§1 方案从替代方案 B 升级为方案 C-Prime（基于源码验证的性能修正 + seL4 MCS 映射 + BPF LSM → 纯 C LSM）
@@ -20,7 +20,7 @@
 | **内核基线**   | 标准 Linux 6.6 LTS 主线             |
 | **工程标准参考** | openEuler OLK 6.6（学习其内核改造和应用方案） |
 | **微内核借鉴**  | seL4-master（学习其微内核设计思想和部分技术方案）  |
-| **发行版定位**  | agentrt-linux 操作系统发行版           |
+| **发行版定位**  | agent-linux 操作系统发行版           |
 | **内核全称**   | 极境内核 Airymax Kernel（ALK 6.6）    |
 | **改造目标**   | 对 Linux 6.6 进行微内核化改造，形成 ALK 6.6 |
 | **内核工程语言** | 全 C 语言（内核代码不含 Rust/BPF 程序，用户态服务不限） |
@@ -34,7 +34,7 @@
 | 2 | 强化 SSoT 的权威性，所有技术点只允许有一个         | §2    |
 | 3 | 补齐缺失的所有的关键设计文档                   | §3    |
 | 4 | 确定采用 Airymax Unify Design 设计思想   | §4    |
-| 5 | 重新系统性的思考 agentrt-linux 的整个目录结构   | §5    |
+| 5 | 重新系统性的思考 agent-linux 的整个目录结构   | §5    |
 | 6 | 对 docs/AirymaxOS 每个文档逐一检查一致性和准确性 | §6    |
 
 ***
@@ -374,7 +374,7 @@ Airymax Unify Design 是 ALK 6.6 的核心设计思想，由 5 大组件构成�
 
 #### 4.2.1 UEF（统一错误码与故障定义体系）
 
-**权威源**：[08-sc-error-contract.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/08-sc-error-contract.md) + [error.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/airymax/error.h)
+**权威源**：[08-sc-error-contract.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/08-sc-error-contract.md) + [error.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/airymax/error.h)
 
 **核心设计**：
 
@@ -446,7 +446,7 @@ Airymax Unify Design 是 ALK 6.6 的核心设计思想，由 5 大组件构成�
 
 ***
 
-## 5. 任务 5：重新设计 agentrt-linux 整体目录结构
+## 5. 任务 5：重新设计 agent-linux 整体目录结构
 
 ### 5.1 当前目录结构问题
 
@@ -463,7 +463,7 @@ Airymax Unify Design 是 ALK 6.6 的核心设计思想，由 5 大组件构成�
 基于 Airymax Unify Design 5 模块 + 微内核化原则 + ALK 6.6 定位，重新设计目录结构。
 
 ```
-agentrt-linux/                           # 管理仓（umbrella repo）
+agent-linux/                           # 管理仓（umbrella repo）
 ├── README.md                            # 管理仓说明
 ├── README_zh.md                         # 中文说明
 ├── LICENSE                              # GPL-2.0
@@ -815,7 +815,7 @@ agentrt-linux/                           # 管理仓（umbrella repo）
 
 **立即启动 Phase 0**（5 天）：
 
-1. 创建 `agentrt-linux/kernel/include/airymax/` 目录
+1. 创建 `agent-linux/kernel/include/airymax/` 目录
 2. 创建 \[SC] error.h + log\_types.h
 3. 创建 `kernel/airy_core.c`（最小内核模块）
 4. 创建 `kernel/configs/airy_defconfig`（ALK 6.6 内核配置 fragment，启用 SCHED\_DEADLINE/io\_uring/纯 C LSM）

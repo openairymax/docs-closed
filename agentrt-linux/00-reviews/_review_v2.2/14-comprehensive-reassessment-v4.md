@@ -1,4 +1,4 @@
-# 14 — agentrt-linux 综合重新评估报告 v4.0
+# 14 — agent-linux 综合重新评估报告 v4.0
 ## 基于 7 份审查报告交叉验证 + 源码追溯 + 行业最佳实践对标
 
 > **报告日期**：2026-07-17
@@ -13,7 +13,7 @@
 
 ### 0.1 本轮评估的核心问题
 
-本报告回答一个根本问题：**agentrt-linux 方案是否完整、合理、可实施？还有哪些问题需要改进？**
+本报告回答一个根本问题：**agent-linux 方案是否完整、合理、可实施？还有哪些问题需要改进？**
 
 ### 0.2 核心判定
 
@@ -542,7 +542,7 @@ BOOT_BSS static region_t rootserver_mem;
 
 #### 问题 1：代码真空（P0 — 最大阻塞项）
 
-**问题**：agentrt-linux 8 子仓均为 README-only 空壳，0 行可编译源码。
+**问题**：agent-linux 8 子仓均为 README-only 空壳，0 行可编译源码。
 
 **建议**：
 - Phase 0 立即创建 `kernel/include/airymax/` 目录 + [SC] 头文件
@@ -599,7 +599,7 @@ BOOT_BSS static region_t rootserver_mem;
 |----|--------|--------|
 | D1 | 创建 kernel/include/airymax/ 目录 + [SC] error.h | error.h（~200 行） |
 | D1 | 创建 [SC] log_types.h | log_types.h（~150 行） |
-| D2 | 复制 7 个现有 [SC] 头文件到 agentrt-linux 端 | 7 个 .h 文件 |
+| D2 | 复制 7 个现有 [SC] 头文件到 agent-linux 端 | 7 个 .h 文件 |
 | D2 | 修复 uapi_compat.h 三路桥接 | uapi_compat.h 更新 |
 | D3 | 创建 kernel/airy_core.c（最小内核模块） | airy_core.c（~50 行） |
 | D3 | 创建 kernel/Makefile + kernel/Kconfig | Makefile + Kconfig |

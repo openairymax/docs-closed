@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 # 01 — 调度器深度对比：openEuler / seL4 MCS vs Airymax sched_tac
 
 > **文档定位**：v3.6 深度对比研究 · 调度器子域
-> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agentrt-linux
+> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agent-linux
 > **最后更新**：2026-07-30
 > **方法论**：逐字节阅读参考项目源码 + Airymax 现状代码，所有引用均标注文件路径与行号
 
@@ -44,7 +44,7 @@ L2689-2692 的 `DEFINE_SCHED_CLASS(name)` 宏通过 `__aligned + __section` 实�
 
 ### 2.3 Airymax 现状对比
 
-Airymax **不新增调度类**，而是通过 [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L26-40 的 `stc_policy_to_linux()` 将 4 种 sched_tac 策略映射到原生 Linux 调度类：
+Airymax **不新增调度类**，而是通过 [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L26-40 的 `stc_policy_to_linux()` 将 4 种 sched_tac 策略映射到原生 Linux 调度类：
 
 ```
 AIRY_SCHED_POLICY_DEADLINE   → SCHED_DEADLINE   (L29-30)
@@ -53,7 +53,7 @@ AIRY_SCHED_POLICY_EEVDF      → SCHED_NORMAL      (L33-34)
 AIRY_SCHED_POLICY_BESTEFFORT → SCHED_BATCH       (L35-36)
 ```
 
-[stc_policy.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_policy.h) L23-29 定义枚举别名，数值与 [sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h) L97-100 的 `AIRY_SCHED_POLICY_*` 宏一致。
+[stc_policy.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_policy.h) L23-29 定义枚举别名，数值与 [sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h) L97-100 的 `AIRY_SCHED_POLICY_*` 宏一致。
 
 **评价**：Airymax 的"映射而非新增"策略符合 ALK（只新增文件、不改主线）原则，避免了 openEuler 那样对 sched_class 的侵入式改造。但代价是**无法实现调度类级别的 hook 注入**（如 `task_is_throttled`、`switching_to`），所有调度行为受限于原生类的语义。
 
@@ -88,7 +88,7 @@ seL4 采用不同的实时模型：
 
 ### 3.3 Airymax 现状
 
-[stc_mcs_map.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_mcs_map.c) L18-24 定义 6 个 MCS 关键性标志位：
+[stc_mcs_map.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_mcs_map.c) L18-24 定义 6 个 MCS 关键性标志位：
 
 ```
 STC_MCS_FLAG_REALTIME    0x01  → SCHED_DEADLINE + GFP_ATOMIC|__GFP_HIGH  (L32-34)
@@ -99,7 +99,7 @@ STC_MCS_FLAG_BACKGROUND  0x08  → SCHED_BATCH + GFP_KERNEL|__GFP_NORETRY (L41-4
 
 L27-53 的 `stc_mcs_to_linux()` 将 MCS 标志映射为 `(gfp << 16) | linux_policy` 复合返回值。
 
-[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h) L58-71 定义任务描述符 `airy_task_desc`，包含 `runtime_ns` / `deadline_ns` / `period_ns`（L62-64）三件套，对应 SCHED_DEADLINE 的 CBS 参数。
+[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h) L58-71 定义任务描述符 `airy_task_desc`，包含 `runtime_ns` / `deadline_ns` / `period_ns`（L62-64）三件套，对应 SCHED_DEADLINE 的 CBS 参数。
 
 ### 3.4 差距分析
 
@@ -128,7 +128,7 @@ L736：`struct rb_root_cached tasks_timeline` — EEVDF 红黑树（按虚拟截
 
 ### 4.2 Airymax EEVDF 复用
 
-Airymax **不改造 EEVDF 实现**，而是直接复用 Linux 6.6 原生 EEVDF（SCHED_NORMAL）。[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h) L37-50 定义了 Q16.16 定点虚拟时间类型 `airy_vtime_t` 和衰减函数 `airy_vtime_decay()`：
+Airymax **不改造 EEVDF 实现**，而是直接复用 Linux 6.6 原生 EEVDF（SCHED_NORMAL）。[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h) L37-50 定义了 Q16.16 定点虚拟时间类型 `airy_vtime_t` 和衰减函数 `airy_vtime_decay()`：
 
 ```c
 typedef __s32 airy_vtime_t;                          // L38
@@ -181,7 +181,7 @@ seL4 MCS（Mixed-Criticality Systems）通过 SchedContext（SC）对象实现�
 
 ### 6.2 Airymax MCS 映射
 
-[stc_mcs_map.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_mcs_map.c) 的映射是**单向静态查表**，不涉及 SC 对象的绑定/解绑生命周期。Airymax 没有 SchedContext 等价物，关键性仅影响：
+[stc_mcs_map.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_mcs_map.c) 的映射是**单向静态查表**，不涉及 SC 对象的绑定/解绑生命周期。Airymax 没有 SchedContext 等价物，关键性仅影响：
 
 1. 调度策略选择（SCHED_DEADLINE/FIFO/NORMAL/BATCH）
 2. GFP 分配掩码（GFP_ATOMIC vs GFP_KERNEL）
@@ -194,7 +194,7 @@ seL4 MCS（Mixed-Criticality Systems）通过 SchedContext（SC）对象实现�
 
 ### 7.1 [P1] stc_dispatch.c 用 pr_info 影响性能
 
-**现状**：[stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L73-75 在每次 `stc_dispatch_enqueue` 时调用 `pr_info()` 输出策略映射日志：
+**现状**：[stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L73-75 在每次 `stc_dispatch_enqueue` 时调用 `pr_info()` 输出策略映射日志：
 
 ```c
 pr_info("stc_dispatch: %s → %s (pid=%d comm=%s)\n",
@@ -210,7 +210,7 @@ pr_info("stc_dispatch: %s → %s (pid=%d comm=%s)\n",
 
 ### 7.2 [P1] stc_stats 未通过 debugfs/sysfs 暴露
 
-**现状**：[stc_stats.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_stats.c) L20-23 维护全局 `stc_dispatch_count` + `stc_policy_count[4]` 计数器，L37-39 提供 `stc_stats_read()` 查询接口，但**无 debugfs/sysfs 暴露**，用户态无法读取。
+**现状**：[stc_stats.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_stats.c) L20-23 维护全局 `stc_dispatch_count` + `stc_policy_count[4]` 计数器，L37-39 提供 `stc_stats_read()` 查询接口，但**无 debugfs/sysfs 暴露**，用户态无法读取。
 
 **参考**：openEuler 通过 `/proc/sched_debug` 暴露调度统计（对应 `CONFIG_SCHED_DEBUG`）。
 
@@ -220,7 +220,7 @@ pr_info("stc_dispatch: %s → %s (pid=%d comm=%s)\n",
 
 ### 7.3 [P1] airy_vtime_decay 语义偏差
 
-**现状**：[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h) L42-50 的 `airy_vtime_decay` 注释声称"EEVDF virtual time decay"，但公式 `vtime += slice / weight` 是旧 CFS 语义，非 EEVDF 的 `sum_w_vruntime += delta * weight` 语义。
+**现状**：[sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h) L42-50 的 `airy_vtime_decay` 注释声称"EEVDF virtual time decay"，但公式 `vtime += slice / weight` 是旧 CFS 语义，非 EEVDF 的 `sum_w_vruntime += delta * weight` 语义。
 
 **参考**：openEuler EEVDF 改造证据 [sched.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/kernel/sched/sched.h) L722 `sum_w_vruntime`（加权和）+ L726 `zero_vruntime`（零点基准）。
 
@@ -232,7 +232,7 @@ pr_info("stc_dispatch: %s → %s (pid=%d comm=%s)\n",
 
 ### 7.4 [P2] 缺少 CBS 带宽准入
 
-**现状**：Airymax 未实现 `dl_bw` 等价的带宽准入控制。`stc_dispatch_enqueue`（[stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L54-96）直接调用 `sched_set_scheduler`，不检查总带宽是否溢出。
+**现状**：Airymax 未实现 `dl_bw` 等价的带宽准入控制。`stc_dispatch_enqueue`（[stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L54-96）直接调用 `sched_set_scheduler`，不检查总带宽是否溢出。
 
 **参考**：openEuler [sched.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/kernel/sched/sched.h) L350 `struct dl_bw` + L365 `dl_bw_check_overflow` — SCHED_DEADLINE 准入时检查 `runtime/period` 总和是否超过 CPU 容量。
 
@@ -242,11 +242,11 @@ pr_info("stc_dispatch: %s → %s (pid=%d comm=%s)\n",
 
 ### 7.5 [P2] 缺少 MCS budget 入口检查
 
-**现状**：[airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 4 个 syscall 入口（L78/L143/L164/L189）均**无 budget 检查**。当前返回 -ENOSYS（M1 脚手架），但 M2-M5 实现真实逻辑时需要 budget guard。
+**现状**：[airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 4 个 syscall 入口（L78/L143/L164/L189）均**无 budget 检查**。当前返回 -ENOSYS（M1 脚手架），但 M2-M5 实现真实逻辑时需要 budget guard。
 
 **参考**：seL4 [syscall.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/api/syscall.h) L19-30 的 `MCS_DO_IF_BUDGET` 宏在每个 syscall 入口执行 `updateTimestamp()` + `checkBudgetRestart()`。
 
-**建议**：在 M2 实现 `airy_sys_call` 真实逻辑时，增加 `airy_sched_budget_check(current)` 入口守卫，检查当前 agent 的 `sched_budget_ns`（[lsm_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h) L32）是否耗尽。
+**建议**：在 M2 实现 `airy_sys_call` 真实逻辑时，增加 `airy_sched_budget_check(current)` 入口守卫，检查当前 agent 的 `sched_budget_ns`（[lsm_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h) L32）是否耗尽。
 
 **风险**：低（M2 阶段实施）。预算耗尽时返回 `-AIRY_EAGAIN` 或 `-ETIME`。
 

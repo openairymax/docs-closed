@@ -340,7 +340,7 @@ daemons 模块通过 `SVC_LOG_INFO`/`SVC_LOG_ERROR` 宏（定义于 `commons/uti
 | LSM 钩子 ID | 合规 | `security_types.h:28-29` 定义 `AIRY_LSM_HOOK_TASK_CREATE=0`/`AIRY_LSM_HOOK_IPC_SEND=1`（252 总数，子集） |
 | verdict 4 值 | 合规 | `enum airy_verdict { ALLOW/DENY/AUDIT/ASK }` (security_types.h:32-37) |
 | 用户态 capability 检查 | 合规 | `cupolas_entitlements_check_capability()` (cupolas_entitlements.c:660) |
-| 用户态 LSM 实现 | N/A | cupolas（用户态）不实现 LSM 钩子 —— LSM 是内核态概念，由 agentrt-linux 实现，架构正确 |
+| 用户态 LSM 实现 | N/A | cupolas（用户态）不实现 LSM 钩子 —— LSM 是内核态概念，由 agent-linux 实现，架构正确 |
 
 ### 7.2 安全横切关注点贯穿
 

@@ -1,9 +1,9 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）技术方案全面审查与完善报告
+# agent-linux（AirymaxOS）技术方案全面审查与完善报告
 
 > **审查日期**: 2026-07-08
-> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（95 篇开源文档）+ docs-closed/agentrt-linux/（29 篇闭源文档）
+> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（95 篇开源文档）+ docs-closed/agent-linux/（29 篇闭源文档）
 > **参考基线**: /home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6（Linux 6.6 内核源码）
 > **审查维度**: 合规性 / 文档完整性 / 工程标准 / 技术风险 / 交付就绪度
 > **版本**: v3.0（全面审查与完善）
@@ -27,7 +27,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 审查目标
 
-对 agentrt-linux（AirymaxOS，极境智能体操作系统）技术设计方案执行五维度全面审查与完善：
+对 agent-linux（AirymaxOS，极境智能体操作系统）技术设计方案执行五维度全面审查与完善：
 
 1. **技术方案合规性审查**：排除 openEuler 表述（防抄袭）、验证命名体系一致性、明确微核心/微内核概念区分
 2. **技术文档完整性验证**：100% 迁移至 OpenAirymax/docs/AirymaxAgentOS、100% 就绪状态
@@ -47,7 +47,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 文档类别 | 文件数 | 总行数 | 覆盖率 |
 |---------|--------|--------|--------|
 | 开源文档（docs/AirymaxAgentOS/） | 95 | ~45,136 | 100% |
-| 闭源文档（docs-closed/agentrt-linux/） | 29 | ~15,000+ | 100% |
+| 闭源文档（docs-closed/agent-linux/） | 29 | ~15,000+ | 100% |
 | OLK-6.6 源码验证路径 | 12 | — | 关键路径全覆盖 |
 
 ---
@@ -69,7 +69,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **修复后状态**：93/100（A 级）—— **有条件 Go**
 
-agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% 就绪度**。13 项 P0 阻断性问题中 **12 项已完全修复**，剩余 1 项（工时数据矛盾）需在 M0 阶段首个里程碑前修复。14 项 P1 开发障碍已全部识别并制定修复计划。
+agent-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% 就绪度**。13 项 P0 阻断性问题中 **12 项已完全修复**，剩余 1 项（工时数据矛盾）需在 M0 阶段首个里程碑前修复。14 项 P1 开发障碍已全部识别并制定修复计划。
 
 **Go 条件**：在 M0 阶段第 1 周内完成以下 3 项收尾工作后，可正式进入 M1 开发阶段：
 1. 修复工时 4 倍矛盾（开源 580h vs 闭源 2290h）
@@ -150,7 +150,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | 属性 | 内容 |
 |------|------|
 | **问题** | 17 处概念误用——14 处将 MicroCoreRT（agentrt 用户态微核心）误称"微内核运行时"，3 处将 agentrt 误称"微内核化" |
-| **正确概念** | 微核心（MicroCoreRT，agentrt 用户态运行时）≠ 微内核（agentrt-linux OS 发行版的内核设计思想） |
+| **正确概念** | 微核心（MicroCoreRT，agentrt 用户态运行时）≠ 微内核（agent-linux OS 发行版的内核设计思想） |
 | **修复** | 批量替换：14 处 "微内核运行时" → "微核心运行时"；3 处 agentrt "微内核化" → "微核心化" |
 | **涉及文件** | 10-terminology.md（9 处）、are_standards/L1_runtime_interface.md（4 处）、are_standards/README.md（1 处）、20-modules/01-kernel.md（3 处） |
 
@@ -182,7 +182,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 
 | 属性 | 内容 |
 |------|------|
-| **问题** | docs-closed 中 2 处实际违规：agentrt-linux基本工程标准规范.md L71（"MGLRU 2.0、CXL/PMEM 分级"）和 L1010（"MGLRU 2.0、CXL/PMEM 分级"） |
+| **问题** | docs-closed 中 2 处实际违规：agent-linux基本工程标准规范.md L71（"MGLRU 2.0、CXL/PMEM 分级"）和 L1010（"MGLRU 2.0、CXL/PMEM 分级"） |
 | **状态** | 已识别，待修复（闭源文档不在本次开源审查修复范围内，但已记录在问题跟踪中） |
 | **注** | docs-closed 中其他 8 处 "MGLRU 2.0" 为规则定义/修复记录/检测命令，属合法引用 |
 
@@ -218,7 +218,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | P1-9 | 3 篇核心设计文档行数不足 400 行 | 20-modules/06-cloudnative.md + 07-system.md + 08-tests.md | 设计详细度 | M1 第 1 周 |
 | P1-10 | 2 篇模块文档缺失 Mermaid 图 | 20-modules/07-system.md + 08-tests.md | 可视化表达 | M1 第 1 周 |
 | P1-11 | 命名体系：README.md "正式英文名：AirymaxOS" 应为 "AirymaxAgentOS" | README.md | 命名规范性 | M0 第 1 周 |
-| P1-12 | 命名体系：10-terminology.md L246 "代码仓库名 AirymaxOS" 与 README.md L7 "仓库名 agentrt-linux" 矛盾 | 10-terminology.md | 命名规范性 | M0 第 1 周 |
+| P1-12 | 命名体系：10-terminology.md L246 "代码仓库名 AirymaxOS" 与 README.md L7 "仓库名 agent-linux" 矛盾 | 10-terminology.md | 命名规范性 | M0 第 1 周 |
 | P1-13 | agentrt README 使用"微内核原语"描述 agentrt（应为"微核心原语"） | agentrt/README.md + README_zh.md | 跨项目概念一致性 | M0 第 1 周 |
 | P1-14 | AirymaxOS "不是微内核"表述与用户标准"微内核（是真正的内核）"矛盾 | 10-architecture/ + 10-terminology.md | 产品定位准确性 | M0 第 2 周（需用户确认定位） |
 
@@ -249,20 +249,20 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | 检查项 | 结果 | 状态 |
 |--------|------|------|
 | agentrt 标准名称 | "AirymaxAgentRT 极境智能体运行底座平台工程"（简称 agentrt/AirymaxRT） | ✅ 一致 |
-| agentrt-linux 标准名称 | "AirymaxAgentOS 极境智能体操作系统"（简称 agentrt-linux/AirymaxOS） | ⚠️ 部分（P1-11/P1-12 待修复） |
+| agent-linux 标准名称 | "AirymaxAgentOS 极境智能体操作系统"（简称 agent-linux/AirymaxOS） | ⚠️ 部分（P1-11/P1-12 待修复） |
 | 代码前缀一致性 | `agentrt_*`（两端统一） | ✅ 一致 |
-| 仓库命名 | agentrt-linux（仓库）/ agentrt-linux（项目代号） | ⚠️ 双命名（P1-12） |
+| 仓库命名 | agent-linux（仓库）/ agent-linux（项目代号） | ⚠️ 双命名（P1-12） |
 
 ### 5.3 微核心/微内核概念区分
 
 | 概念 | 适用对象 | 正确用法 | 状态 |
 |------|---------|---------|------|
 | 微核心（MicroCore） | agentrt（用户态运行时） | MicroCoreRT 微核心运行时 | ✅ 17 处误用已修正 |
-| 微内核（Microkernel） | agentrt-linux（OS 发行版） | 微内核化改造（基于 Linux 6.6） | ✅ 概念区分已明确 |
+| 微内核（Microkernel） | agent-linux（OS 发行版） | 微内核化改造（基于 Linux 6.6） | ✅ 概念区分已明确 |
 
 **概念区分原则**：
 - **微核心**（MicroCoreRT）：agentrt 的用户态运行时抽象——不是真正的内核，是"核心级运行时"
-- **微内核**（Microkernel）：agentrt-linux 的 OS 设计思想——基于 Linux 6.6 进行微内核化改造，将 VFS/网络栈/驱动移到用户态
+- **微内核**（Microkernel）：agent-linux 的 OS 设计思想——基于 Linux 6.6 进行微内核化改造，将 VFS/网络栈/驱动移到用户态
 
 ---
 
@@ -310,7 +310,7 @@ agentrt-linux 0.1.1 文档体系经全面审查与完善后，已达到 **93% �
 | 审查维度 | 审查结果 | 状态 |
 |---------|---------|------|
 | 文档 Copyright 完整性 | 95/95 篇（100%） | ✅ |
-| 文档 agentrt-linux 标准名称覆盖 | 95/95 篇（100%） | ✅ |
+| 文档 agent-linux 标准名称覆盖 | 95/95 篇（100%） | ✅ |
 | 规则编号唯一性 | SSoT 注册表，0 冲突 | ✅ |
 | 内核态类型安全性 | float→Q16.16 定点数，0 残留 | ✅ |
 | kthread 通信正确性 | kfifo + wait_event，0 处 io_uring 误用 | ✅ |

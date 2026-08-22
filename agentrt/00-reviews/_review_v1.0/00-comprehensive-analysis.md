@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：agentrt 工程审查 v1.0 总览与决策依据，整合 5 个并行子任务（Agent A/B/C/D/E）的 4 份已落盘审查报告，作为整个 v1.0 审查的收敛文档与 1.0.1 M1 启动的判定基线。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：1.0（2026-07-13）。
-> **审查范围**：agentrt 源码（atoms 237 文件 + daemons/cupolas/gateway/commons/protocols 596 文件 = 833 源文件）+ AirymaxRT 文档方案（88 .md）+ agentrt-linux 方案（系统性复审）。
+> **审查范围**：agentrt 源码（atoms 237 文件 + daemons/cupolas/gateway/commons/protocols 596 文件 = 833 源文件）+ AirymaxRT 文档方案（88 .md）+ agent-linux 方案（系统性复审）。
 > **审查方法**：源码级深读 + 文档交叉验证 + Grep 机器检查 + 三层对齐度评分。
 > **证据要求**：所有结论附文件路径与行号（格式：`文件路径:L行号`）。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -34,8 +34,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | agentrt atoms 源码 | 237 文件（.c 153 + .h 84） | Agent A | `01-atoms-source-deep-review.md`（840 行） |
 | agentrt 其他模块源码 | 596 文件（daemons 243 / cupolas 95 / gateway 33 / commons 184 / protocols 41） | Agent B | `02-daemons-others-source-deep-review.md`（453 行） |
 | AirymaxRT 方案文档 | 88 .md（含 23 共享工程标准） | Agent C | `03-airymaxrt-solution-review.md`（887 行） |
-| agentrt-linux 方案 | v0.2.5 闭源总纲 + 09-ssot-registry + Wave 2 v2 34 项差距 | Agent D | `agentrt-linux/_review_v1.0/01-systematic-recheck.md`（773 行） |
-| **合计** | **833 源文件 + 88 方案文档 + agentrt-linux 方案** | 5 任务 | 4 份报告已落盘 |
+| agent-linux 方案 | v0.2.5 闭源总纲 + 09-ssot-registry + Wave 2 v2 34 项差距 | Agent D | `agent-linux/_review_v1.0/01-systematic-recheck.md`（773 行） |
+| **合计** | **833 源文件 + 88 方案文档 + agent-linux 方案** | 5 任务 | 4 份报告已落盘 |
 
 ### 1.2 综合评分
 
@@ -45,7 +45,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | | daemons 等 | C+ | 用户态全 4 空格、typedef 40+ 处、goto 仅 14 处 |
 | | 综合 | **68/C+** | 工程标准系统性违规是主要扣分项 |
 | **方案设计** | AirymaxRT | 62/C+ | 5 项 P0 系统性一致性问题 |
-| | agentrt-linux | 79/B+ | 1 项 P0（ES-SEL4-7 残留冲突） |
+| | agent-linux | 79/B+ | 1 项 P0（ES-SEL4-7 残留冲突） |
 | | 综合 | **70/B-** | 设计扎实但一致性未收敛 |
 | **跨平台一致性** | 错误码/前缀/IPC | D+ | 错误码 6 套 / agentrt_* 缺失 / IPC 头三重违规 / 8 子仓命名 37 处不一致 |
 | | 综合 | **55/D+** | agentrt 与 AirymaxOS 命名/类型/布局未对齐 SSoT |
@@ -66,7 +66,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | Agent A | atoms 模块 237 文件源码深读 | 840 行报告 | 4 空格缩进 10847 处 / AIRY_ERROR_NULL 7 处潜在 NULL deref / 15 项技术亮点 |
 | Agent B | daemons+cupolas+gateway+commons+protocols 596 文件源码深读 | 453 行报告 | WebSocket 类型错误 / agent_registry 数据竞争 / cupolas 错误码 4 种变体 / goto 仅 14 处 |
 | Agent C | AirymaxRT 88 文档方案审查 | 887 行报告（综合 62/C+） | 错误码 6 套 / "操作系统"15+ 处误称 / [SC] 头文件清单冲突 / IPC 头三重违规 / 路径错误 |
-| Agent D | agentrt-linux 系统性复审 | 773 行报告（综合 79/B+） | ES-SEL4-7 分类残留冲突（5 vs 6）/ airymaxos- 前缀 37 处不一致 / OS-KER-005 跳号 |
+| Agent D | agent-linux 系统性复审 | 773 行报告（综合 79/B+） | ES-SEL4-7 分类残留冲突（5 vs 6）/ airymaxos- 前缀 37 处不一致 / OS-KER-005 跳号 |
 | Agent E | （整合任务，本文档） | 综合分析 | 10 项 P0 / 14 项 P1 整合排序 |
 
 ### 2.2 审查方法
@@ -138,7 +138,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源** | Agent C（AirymaxRT 方案审查 §3.2/§6.2） |
 | **问题描述** | agentrt 定位为"AI Agent 运行时平台工程"（用户态微核心，Ring 3），但 15+ 处文档误称其为"操作系统"。 |
 | **证据** | `10-architecture/00-architectural-principles.md:54` "Airymax 是一个**驱动多智能体协作的操作系统**"；`10-architecture/40-philosophy/01-design-philosophy.md:45/110/117/119/38`（5 处误称）；`10-architecture/04-microcorert.md:19/271`；`10-architecture/05-syscall.md:104`；`20-modules/10-contracts/05-logging-format.md:73`；`00-requirements/04-design-principles-cn.md:99`；`30-interfaces/04-mainpage.dox:2/6`；`30-interfaces/10-algorithms/README.md:179/182`；与 `04-microcorert.md:183` "MicroCoreRT 运行在用户态（Ring 3），依赖宿主操作系统"直接矛盾。 |
-| **影响评估** | 技术定位混乱；开源社区误解 agentrt 为 OS 内核项目；与 AirymaxOS（agentrt-linux）产生定位混淆；用户态 ABI 与内核态概念混用。 |
+| **影响评估** | 技术定位混乱；开源社区误解 agentrt 为 OS 内核项目；与 AirymaxOS（agent-linux）产生定位混淆；用户态 ABI 与内核态概念混用。 |
 | **修复建议** | 全量替换"操作系统"为"运行时平台"或"运行时"（除真正指代宿主 OS 的上下文）；修正 `04-mainpage.dox` 标题"多体控制论智能操作系统" → "多体控制论智能运行时"；保留 `04-microcorert.md` 中正确描述（"借鉴操作系统设计" ≠ "是操作系统"）。 |
 | **工作量估算** | ~4h（13 个文件，40 处匹配） |
 
@@ -190,10 +190,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 属性 | 内容 |
 |------|------|
-| **来源** | Agent D（agentrt-linux 系统性复审 §2.1） |
+| **来源** | Agent D（agent-linux 系统性复审 §2.1） |
 | **问题描述** | v0.2.5 修复 P0-CRITICAL-02 时仅修正了闭源总纲附录 D 标题，但正文对 ES-SEL4-7 的分类与标题声明矛盾——标题声明 5 项强制，正文说 6 项强制。 |
 | **证据** | 标题声明 5 项强制：`闭源总纲:1389` `附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）`；`闭源总纲:1393` `ES-SEL4-1~5 在架构层强制借鉴`；`闭源总纲:1024`（OS-IRON-012）`seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5）`；`闭源总纲:1010`（§12.5 标题）`架构层借鉴 seL4（5 项选择性借鉴）`。正文矛盾：`闭源总纲:1403` `ES-SEL4-7 | 架构正交分层 | ... | 架构层强制（已落地）`；`闭源总纲:1410` `架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）: 6 项`；`闭源总纲:1041/1051`（§12.8）将 ES-SEL4-7 归入"ES-SEL4-6~10"但又标注"已落地"。 |
-| **影响评估** | 违反 SSoT 唯一性原则；审查者无法确定 ES-SEL4-7 究竟是"架构层强制（已落地）"还是"P2 增强（未来落地）"；无法确定架构层强制借鉴是 5 项还是 6 项；阻断 agentrt-linux 1.0.1 M1 启动判定（8 项判定标准中"无方案冲突点"有条件通过）。 |
+| **影响评估** | 违反 SSoT 唯一性原则；审查者无法确定 ES-SEL4-7 究竟是"架构层强制（已落地）"还是"P2 增强（未来落地）"；无法确定架构层强制借鉴是 5 项还是 6 项；阻断 agent-linux 1.0.1 M1 启动判定（8 项判定标准中"无方案冲突点"有条件通过）。 |
 | **修复建议** | 方案 A（推荐）：将 ES-SEL4-7 从"架构层强制"重新分类为"P2 增强建议（已提前落地）"；修改 `闭源总纲:1403` 借鉴方式为"P2 增强建议（已落地）"；修改 `闭源总纲:1410` 为"架构层强制借鉴（ES-SEL4-1~5）: 5 项"；与标题和 OS-IRON-012 对齐。方案 B：修改标题和 OS-IRON-012 扩展范围至 6 项。 |
 | **工作量估算** | ~2h |
 
@@ -421,7 +421,7 @@ cupolas 安全穹顶作为横切关注点贯穿 daemon 启动→请求处理→�
 
 ```
 [Phase 0] 立即修复（~2h，0.1.1 收尾）
-    └── P0-10 ES-SEL4-7 分类残留冲突（agentrt-linux 阻断 1.0.1 M1）
+    └── P0-10 ES-SEL4-7 分类残留冲突（agent-linux 阻断 1.0.1 M1）
 
 [Phase 1] 1.0.1 M1 启动前（~19h，方案侧 P0）
     ├── P0-1 错误码 6 套统一（~8h）
@@ -469,7 +469,7 @@ cupolas 安全穹顶作为横切关注点贯穿 daemon 启动→请求处理→�
 |------|------|----------|
 | **agentrt 源码 vs 工程标准** | **45/D+** | (1) 4 空格缩进 10847 处 vs Tab 8 要求（OS-STD-FMT-001）；(2) 重度 typedef 540 处 vs 禁止结构体 typedef（OS-STD-CODE-020）；(3) goto 集中出口仅 14 处 vs OS-KER-001；(4) 自定义错误宏 1757 处替代 goto；(5) ASCII 装饰分节符 100 文件；(6) fprintf 直接使用 159 处/19 文件；(7) 唯一合规标杆：[SC] 6 头文件全部 Tab 8 + struct 无 typedef + kernel-doc + _Static_assert |
 | **AirymaxRT 文档 vs 源码** | **55/D+** | (1) 错误码 6 套并行（文档）vs `commons/utils/error/` 单一实现（源码）；(2) IPC 头 `are_ipc_message_header_t` 13 字段（文档 `06-ipc/README.md`）vs `airy_ipc_msg_hdr` 8 字段（源码 `commons/include/airymax/ipc.h`）；(3) [SC] 头文件清单 `bpf_struct_ops.h`（文档 `06-iron9-shared-model.md`）vs `syscalls.h`（源码实际存在）；(4) magic 值正确对齐（'ARE1'/'AGTS'） |
-| **AirymaxRT vs AirymaxOS** | **50/D** | (1) 命名前缀：开源文档使用裸名 `kernel`/`services` 等，闭源总纲使用 `airymaxos-kernel` 等 37 处不一致；(2) 函数前缀：开源 `airy_*` vs 闭源 OS-STD-005 仍声明 `airymaxos_*`；(3) IPC 头：AirymaxRT 文档违规 `are_ipc_message_header_t` vs AirymaxOS SSoT `airy_ipc_msg_hdr`；(4) 错误码：AirymaxRT 6 套 vs AirymaxOS SSoT 13 个 `AIRY_E*` 宏；(5) daemon 数量：AirymaxRT `01-system-architecture.md` 标注 10 vs AirymaxOS 实际 12；(6) ES-SEL4-7 分类：agentrt-linux 5 vs 6 项冲突 |
+| **AirymaxRT vs AirymaxOS** | **50/D** | (1) 命名前缀：开源文档使用裸名 `kernel`/`services` 等，闭源总纲使用 `airymaxos-kernel` 等 37 处不一致；(2) 函数前缀：开源 `airy_*` vs 闭源 OS-STD-005 仍声明 `airymaxos_*`；(3) IPC 头：AirymaxRT 文档违规 `are_ipc_message_header_t` vs AirymaxOS SSoT `airy_ipc_msg_hdr`；(4) 错误码：AirymaxRT 6 套 vs AirymaxOS SSoT 13 个 `AIRY_E*` 宏；(5) daemon 数量：AirymaxRT `01-system-architecture.md` 标注 10 vs AirymaxOS 实际 12；(6) ES-SEL4-7 分类：agent-linux 5 vs 6 项冲突 |
 | **OpenStandards vs 实现** | **60/C-** | (1) protocols 模块集成 Claude/OpenAI/openclaw/china_eco/openjiuwen/autogen/langchain/mcp/agntcy/a2a（41 文件）；(2) 但与 2026 生态（MCP 最新规范、A2A 协议演进）存在脱节；(3) gateway 支持 http/ws/stdio + jsonrpc + rate_limiter + mcp_server + syscall_router（33 文件），架构完整；(4) 4 语言 SDK（Go/Python/Rust/TypeScript）文档存在但需充实 |
 
 **对齐度综合评分**：~52/D+（agentrt 源码与工程标准、AirymaxRT 文档与源码、AirymaxRT 与 AirymaxOS 三方均存在系统性不一致，是当前最大的工程债务）。
@@ -498,7 +498,7 @@ cupolas 安全穹顶作为横切关注点贯穿 daemon 启动→请求处理→�
 
 进入 1.0.1 M1 代码开发前必须完成收敛的 10 项 P0：
 
-1. **P0-10**（agentrt-linux 阻断）：ES-SEL4-7 分类残留冲突（5 vs 6 项），~2h
+1. **P0-10**（agent-linux 阻断）：ES-SEL4-7 分类残留冲突（5 vs 6 项），~2h
 2. **P0-1**：错误码 6 套并行，~8h（文档）
 3. **P0-5**："操作系统"定位冲突，~4h
 4. **P0-4**：IPC 头三重违规，~3h
@@ -518,7 +518,7 @@ cupolas 安全穹顶作为横切关注点贯穿 daemon 启动→请求处理→�
 ```
 P0（~21h 方案 + ~5.5h 源码正确性 = ~26.5h）
     ↓
-1.0.1 M1 启动（agentrt-linux 修复 P0-10 后即可启动）
+1.0.1 M1 启动（agent-linux 修复 P0-10 后即可启动）
     ↓
 P1（~23h，M1 内完成）
     ↓
@@ -546,12 +546,12 @@ P2（~19h，1.0.1 全阶段）
 
 ### 8.5 最终结论
 
-agentrt 工程体系经过 5 个并行子任务的全面审查（833 源文件 + 88 方案文档 + agentrt-linux 方案），**架构设计层面质量较高且原创性强**（MicroCoreRT / CoreLoopThree / MemoryRovol / Thinkdual / Cupolas / 12 Daemons / MCIS 体系并行论 / 五维正交 24 原则），**15 项技术亮点突出**（C11 atomic / DCLP / _Thread_local / 编译时查表 / 适配器模式 / BAN-333 串行降级 / ASan 修复注释 等），**历史问题全部修复**（koa-connect / io_uring / MGLRU 2.0 / daemon→daemons）。
+agentrt 工程体系经过 5 个并行子任务的全面审查（833 源文件 + 88 方案文档 + agent-linux 方案），**架构设计层面质量较高且原创性强**（MicroCoreRT / CoreLoopThree / MemoryRovol / Thinkdual / Cupolas / 12 Daemons / MCIS 体系并行论 / 五维正交 24 原则），**15 项技术亮点突出**（C11 atomic / DCLP / _Thread_local / 编译时查表 / 适配器模式 / BAN-333 串行降级 / ASan 修复注释 等），**历史问题全部修复**（koa-connect / io_uring / MGLRU 2.0 / daemon→daemons）。
 
 但存在 **10 项 P0 级阻断问题**（5 项文档 SSoT + 3 项源码正确性/安全 + 1 项方案 SSoT + 1 项系统性源码工程标准违规）和 **14 项 P1 级问题**，需在进入 1.0.1 M1 代码开发前完成方案侧 P0 收敛（~21h），并在 M1 阶段并行推进源码侧 P0 改造（~51.5h）。
 
 **建议**：
-1. **立即**（~2h）：修复 P0-10 ES-SEL4-7 分类残留冲突（agentrt-linux 阻断 1.0.1 M1 启动）。
+1. **立即**（~2h）：修复 P0-10 ES-SEL4-7 分类残留冲突（agent-linux 阻断 1.0.1 M1 启动）。
 2. **立即**（~5.5h）：修复 P0-3 NULL deref / P0-6 WebSocket 类型 / P0-7 数据竞争（源码正确性与安全）。
 3. **1.0.1 M1 启动前**（~19h）：完成方案侧 P0-1/4/5/8/9（错误码统一 / IPC 头重写 / "操作系统"定位 / [SC] 头文件清单 / 路径错误）。
 4. **1.0.1 M1 阶段**（~46h）：配置 `.clang-format` + CI 门禁，渐进重构源码工程标准（P0-2）。
@@ -569,13 +569,13 @@ agentrt 工程体系经过 5 个并行子任务的全面审查（833 源文件 +
 | 01 atoms 源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/01-atoms-source-deep-review.md` | 840 | 架构 A / 技术 A- / 工程标准 C+ / 边界 A+ / 文档 B+ / 安全 B |
 | 02 daemons 等源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/02-daemons-others-source-deep-review.md` | 453 | 用户态工程标准系统性违规 |
 | 03 AirymaxRT 方案审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v1.0/03-airymaxrt-solution-review.md` | 887 | **62/C+** |
-| agentrt-linux 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v1.0/01-systematic-recheck.md` | 773 | **79/B+** |
+| agent-linux 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_review_v1.0/01-systematic-recheck.md` | 773 | **79/B+** |
 
 ## 附录 B：术语对照
 
 | 术语 | 定义 |
 |------|------|
-| OLK-6.6 | Linux 6.6 内核基线编码风格（agentrt-linux 工程标准基线） |
+| OLK-6.6 | Linux 6.6 内核基线编码风格（agent-linux 工程标准基线） |
 | IRON-9 v2 | agentrt 三层模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层） |
 | A 类 | 微核心原语（atoms/corekern） |
 | B 类 | 应用语义层（atoms/coreloopthree/taskflow/syscall/memory + daemons/cupolas/gateway/protocols） |

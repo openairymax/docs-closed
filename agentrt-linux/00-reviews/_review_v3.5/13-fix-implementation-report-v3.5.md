@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.5 审查报告缺陷修复实施报告
+# agent-linux v3.5 审查报告缺陷修复实施报告
 > **文档定位**：v3.5 系统性审查报告（00-12）所识别缺陷的修复实施报告，记录所有已修复的 A 类真实缺陷、修复策略、变更明细与最终一致性验证结果\
 > **文档版本**：v1.0.1\
 > **最后更新**：2026-07-26\
 > **上级文档**：[12-systematic-re-review-byte-level-evidence-v3.5.md](12-systematic-re-review-byte-level-evidence-v3.5.md)\
-> **审查依据**：`docs-closed/agentrt-linux/00-reviews/_review_v3.5/` 全部 13 份审查报告\
-> **修复对象**：`docs/AirymaxOS/` 设计文档体系 + `agentrt-linux/kernel/` 内核代码 + `agentrt/commons/include/airymax/` 用户态 [SC] 头文件\
+> **审查依据**：`docs-closed/agent-linux/00-reviews/_review_v3.5/` 全部 13 份审查报告\
+> **修复对象**：`docs/AirymaxOS/` 设计文档体系 + `agent-linux/kernel/` 内核代码 + `agentrt/commons/include/airymax/` 用户态 [SC] 头文件\
 > **修复原则**：SSoT 单一权威源对齐、IRON-9 v3 同源且部分代码共享、IRON-8 直接过渡到 v1.0.1
 
 ---
@@ -19,7 +19,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 层面 | 修复文件数 | 修复点数 | 验证方式 |
 |------|-----------|---------|---------|
-| 内核代码（`agentrt-linux/kernel/`） | 5 | 6 | 字节级 Read/Grep 验证 |
+| 内核代码（`agent-linux/kernel/`） | 5 | 6 | 字节级 Read/Grep 验证 |
 | 用户态 [SC] 头文件（`agentrt/commons/include/airymax/`） | 1 | 1 | 字节级 Read/Grep 验证 |
 | 设计文档（`docs/AirymaxOS/`） | 14 | 17 | 字节级 Read/Grep 验证 |
 | **合计** | **20** | **24** | — |
@@ -69,7 +69,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **缺陷编号** | P0-1 |
 | **严重级别** | A 类（真实缺陷） |
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md |
-| **缺陷描述** | `agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h` 定义 `AIRY_VERDICT_COMPLAIN = 3`，而 `agentrt/commons/include/airymax/security_types.h` 定义 `AIRY_VERDICT_ASK = 3`，违反 [SC] 双端一致性契约 |
+| **缺陷描述** | `agent-linux/kernel/include/uapi/linux/airymax/security_types.h` 定义 `AIRY_VERDICT_COMPLAIN = 3`，而 `agentrt/commons/include/airymax/security_types.h` 定义 `AIRY_VERDICT_ASK = 3`，违反 [SC] 双端一致性契约 |
 | **修复策略** | 以内核版本为 SSoT，重写用户态版本对齐 |
 | **修复文件** | `agentrt/commons/include/airymax/security_types.h` |
 | **关键变更** | 重写为：`typedef __u64 cap_t`、完整 `enum airy_cap_id`（44 IDs）、`enum airy_verdict` 含 `AIRY_VERDICT_COMPLAIN = 3`、[DSL] Fallback 块 |
@@ -84,7 +84,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md |
 | **缺陷描述** | `kernel/security/airy/airy_lsm.c` 使用 LSM blob 机制（`task->security + offset`），而 `security/airy_lsm/airy_lsm.c` 直接覆写 `task->security = sec`，两者同时加载触发 UAF |
 | **修复策略** | 在 `airy_ind` 模块添加显著安全警告，明确禁止生产环境同时加载，记录 1.0.1 迁移计划 |
-| **修复文件** | `agentrt-linux/security/airy_lsm/airy_lsm.c` |
+| **修复文件** | `agent-linux/security/airy_lsm/airy_lsm.c` |
 | **关键变更** | 添加 `⚠️⚠️⚠️ 安全警告 — UAF 风险` 头部注释，说明风险、使用限制、1.0.1 迁移到 LSM blob 机制的计划 |
 | **验证结果** | ✅ 警告注释已添加，引用 v3.5 审查报告 P0-3 |
 
@@ -97,7 +97,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md |
 | **缺陷描述** | `airy_struct_ops.c` 重定义 `enum airy_struct_ops_state`（3 states）和 `struct airy_struct_ops_value`（4 fields），与 SSoT `bpf_struct_ops.h`（4 states, 5 fields）冲突 |
 | **修复策略** | 移除本地重定义，include SSoT 头文件，使用 SSoT 类型 |
-| **修复文件** | `agentrt-linux/kernel/kernel/corekern/bpf/airy_struct_ops.c` |
+| **修复文件** | `agent-linux/kernel/kernel/corekern/bpf/airy_struct_ops.c` |
 | **关键变更** | 添加 `#include <linux/airymax/bpf_struct_ops.h>`，移除本地 enum/struct 定义，状态名查找表使用 SSoT 的 `AIRY_STRUCT_OPS_INIT/REGISTERED/ACTIVE/DRAINING` |
 | **验证结果** | ✅ grep 确认仅引用 SSoT 类型，无重定义 |
 
@@ -110,7 +110,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md |
 | **缺陷描述** | `Kconfig.alk` 错误标注 syscall 编号为 454-457，实际 `syscalls.h` 为 548-551 |
 | **修复策略** | 修正 Kconfig.alk 与 SSoT `syscalls.h` 对齐 |
-| **修复文件** | `agentrt-linux/kernel/config/Kconfig.alk` |
+| **修复文件** | `agent-linux/kernel/config/Kconfig.alk` |
 | **关键变更** | 编号修正为 548-551，预留槽位修正为 552-571，help 文本说明避开 x32 历史区域 512-547 |
 | **验证结果** | ✅ grep 确认仅 548-551，无 454-457 |
 
@@ -136,7 +136,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md |
 | **缺陷描述** | `sc-dual-ci.yml` 和 `mgmt-orchestrator.yml` 检查不存在的路径 `kernel/include/airymax/`，实际 [SC] 头文件在 `kernel/include/uapi/linux/airymax/` |
 | **修复策略** | 修正 CI 路径，列出全部 12 个 [SC] 头文件 |
-| **修复文件** | `agentrt-linux/.github/workflows/sc-dual-ci.yml`、`agentrt-linux/.github/workflows/mgmt-orchestrator.yml` |
+| **修复文件** | `agent-linux/.github/workflows/sc-dual-ci.yml`、`agent-linux/.github/workflows/mgmt-orchestrator.yml` |
 | **关键变更** | 路径修正为 `kernel/include/uapi/linux/airymax/`，[SC] 头文件清单列出全部 12 个（error.h/log_types.h/ipc.h/sched.h/memory_types.h/security_types.h/cognition_types.h/syscalls.h/uapi_compat.h/lsm_types.h/bpf_struct_ops.h/syscall.h） |
 | **验证结果** | ✅ CI 路径与实际头文件位置一致 |
 
@@ -149,7 +149,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 03-byte-by-byte-full-results-v3.5.md（04 报告误判为 false positive，12 报告确认真实缺陷） |
 | **缺陷描述** | `airy_ipc_freeze.c:88` 和 `airy_cap_check.c:49` 使用 `AIRY_EIPC_FROZEN`，但 `error.h` 未定义，导致编译错误 |
 | **修复策略** | 在 `error.h` 添加 `AIRY_EIPC_FROZEN` 作为 `AIRY_EIPC_FLAGS` 的 alias |
-| **修复文件** | `agentrt-linux/kernel/include/uapi/linux/airymax/error.h` |
+| **修复文件** | `agent-linux/kernel/include/uapi/linux/airymax/error.h` |
 | **关键变更** | 添加 `#define AIRY_EIPC_FROZEN (-46)` 作为 `AIRY_EIPC_FLAGS` 的 alias，用于 fastpath freeze 检查 |
 | **验证结果** | ✅ Read `error.h` L55 确认已定义 |
 
@@ -266,7 +266,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **来源报告** | 05-issue-reverification-and-final-review-v3.5.md §1.3 / 07-final-independent-verification-v3.5.md §P0-17 |
 | **缺陷描述** | `airy_syscalls.c` 中 4 个 syscall（548-551）的所有路径均返回 -ENOSYS（共 8 处：L70/73/76/79/83/105/128/148），代码注释自称"M0 stage"，但设计文档 §15.2 声明"1.0.1 完成 M2-M8 全部里程碑"——**项目阶段声明自相矛盾**。审查报告 05 评分中"项目阶段明确性"维度仅 35/100（F），IRON-2 评分 40（红线未过）。 |
 | **修复策略** | 添加显式 STAGE DECLARATION 文件头注释块，明确：(1) 当前阶段为 M0 设计 + M1 [SC] 头文件 scaffolding（对齐 §15.1）；(2) -ENOSYS 是 OS-IRON-004 渐进式开发的合规产物（每个补丁中点可编译，git bisect 友好），非 IRON-2 桩函数违规；(3) M2-M5 里程碑映射（哪个 syscall 在哪个里程碑落地实现）；(4) 修正 4 个 syscall 注释中"M0 stage" → "M1 scaffolding"，消除与 §15.2 的阶段矛盾 |
-| **修复文件** | `agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c` |
+| **修复文件** | `agent-linux/kernel/kernel/syscalls/airy_syscalls.c` |
 | **关键变更** | (1) 文件头添加 STAGE DECLARATION 块（L13-52），含项目阶段声明、IRON-2 合规性论证、OS-IRON-004 合规性论证、4 syscall → M2-M5 里程碑映射表、历史注释修正说明、v3.5 审查报告引用；(2) `airy_sys_call`（548）注释 "M0 stage" → "M1 scaffolding ... pending M2 io_uring IPC data-plane integration"；(3) `airy_sys_rovol_ctl`（549）注释 "M0 stage" → "M1 scaffolding ... pending M5 memory tiering (MemoryRovol) integration"；(4) `airy_sys_sched_ctl`（550）注释 "M0 stage" → "M1 scaffolding ... pending M3 sched_tac dispatch integration"；(5) `airy_sys_clt_notify`（551）注释 "M0 stage" → "M1 scaffolding ... pending M5 cognition subsystem (CoreLoopThree kthread) integration"；(6) 6 个 opcode 分支注释 "deferred to io_uring fastpath" → "M2 io_uring fastpath pending"（统一里程碑引用） |
 | **验证结果** | ✅ grep `M0 stage\|M0 returns\|M0:` 仅 1 处历史说明引用（L45，解释为何修正）；✅ Read L13-52 确认 STAGE DECLARATION 块完整存在；✅ 4 个 syscall 注释均含 "M1 scaffolding" + "OS-IRON-004 progressive development; not an IRON-2 violation" 标注（grep "not an IRON-2 violation" = 4 处，grep "OS-IRON-004" = 5 处） |
 

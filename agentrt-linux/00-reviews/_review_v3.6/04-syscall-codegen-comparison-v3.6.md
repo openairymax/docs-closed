@@ -3,12 +3,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 04 — syscall 注册与 codegen 深度对比：openEuler/seL4 vs Airymax
 
-> 文档定位：Airymax agentrt-linux v3.6 评审报告第 04 篇，聚焦 syscall 注册机制、KABI 保留槽策略、扩展调度 syscall 设计、SYSCALL_DEFINE 规范、codegen 工具链与 budget 入口检查六个维度，对照 openEuler OLK-6.6 与 seL4-master 实现进行深度对比。
+> 文档定位：Airymax agent-linux v3.6 评审报告第 04 篇，聚焦 syscall 注册机制、KABI 保留槽策略、扩展调度 syscall 设计、SYSCALL_DEFINE 规范、codegen 工具链与 budget 入口检查六个维度，对照 openEuler OLK-6.6 与 seL4-master 实现进行深度对比。
 >
 > 对比基准：
 > - openEuler OLK-6.6（`/home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/`）
 > - seL4-master（`/home/spharx/SpharxWorks/.engineer-reference/seL4-master/`）
-> - Airymax agentrt-linux v3.6（`/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/`）
+> - Airymax agent-linux v3.6（`/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/`）
 >
 > 最后更新：2026-07-30
 >
@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 1. 概述
 
-syscall 是用户态进入内核的唯一受控入口，其注册机制、编号管理、参数校验、codegen 流程直接决定内核的安全基线与可演进性。Airymax agentrt-linux v3.6 在 M1 阶段已搭建 4 个核心 syscall（548-551）的脚手架，并引入 `syscall_gen.py` 实现 SSoT（Single Source of Truth）codegen 流程。本报告对照 openEuler OLK-6.6 的 KABI 保留槽机制与 seL4 的 MCS budget 检查机制，识别 Airymax 当前实现的差距与改进路径。
+syscall 是用户态进入内核的唯一受控入口，其注册机制、编号管理、参数校验、codegen 流程直接决定内核的安全基线与可演进性。Airymax agent-linux v3.6 在 M1 阶段已搭建 4 个核心 syscall（548-551）的脚手架，并引入 `syscall_gen.py` 实现 SSoT（Single Source of Truth）codegen 流程。本报告对照 openEuler OLK-6.6 的 KABI 保留槽机制与 seL4 的 MCS budget 检查机制，识别 Airymax 当前实现的差距与改进路径。
 
 ## 2. syscall 注册机制对比
 
@@ -36,9 +36,9 @@ openEuler 在 [syscall_64.tbl](file:///home/spharx/SpharxWorks/.engineer-referen
 
 ### 2.2 Airymax：syscall.xml SSoT → syscall_gen.py 自动生成
 
-Airymax 采用契约驱动的 codegen 流程。契约源为 [syscall.xml](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml)，由 [syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py) 解析后生成 UAPI 头文件与 syscall_64.tbl 片段。
+Airymax 采用契约驱动的 codegen 流程。契约源为 [syscall.xml](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscall.xml)，由 [syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py) 解析后生成 UAPI 头文件与 syscall_64.tbl 片段。
 
-当前已提交的 [syscall_64.tbl L379-392](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中，Airymax 段如下：
+当前已提交的 [syscall_64.tbl L379-392](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中，Airymax 段如下：
 
 ```
 # L379: # Airymax syscalls (548-551)
@@ -78,7 +78,7 @@ openEuler 在 [syscall_64.tbl L379-390](file:///home/spharx/SpharxWorks/.enginee
 
 ### 3.2 Airymax 的隐式保留槽模式
 
-Airymax 在 [syscalls.h L27-29](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h#L27) 定义了保留槽范围：
+Airymax 在 [syscalls.h L27-29](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h#L27) 定义了保留槽范围：
 
 ```c
 #define AIRY_SYS_RESERVED_BASE  552
@@ -86,7 +86,7 @@ Airymax 在 [syscalls.h L27-29](file:///home/spharx/SpharxWorks/airymaxhub/agent
 #define AIRY_SYS_SLOTS_MAX     24
 ```
 
-但当前 [syscall_64.tbl](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中 552-571 编号**未显式登记为 `sys_ni_syscall`**，仅以注释 `# Do not add new syscalls to this range` 进行软约束。这是与 openEuler KABI 机制最显著的差距。
+但当前 [syscall_64.tbl](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中 552-571 编号**未显式登记为 `sys_ni_syscall`**，仅以注释 `# Do not add new syscalls to this range` 进行软约束。这是与 openEuler KABI 机制最显著的差距。
 
 ### 3.3 风险分析
 
@@ -107,7 +107,7 @@ xsched 采用 `sched_attr` 结构化参数扩展，复用现有调度属性框�
 
 ### 4.2 Airymax airy_sys_sched_ctl：cap dispatch 模式
 
-Airymax 在 [airy_syscalls.c L164-176](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L164) 实现 `airy_sys_sched_ctl`：
+Airymax 在 [airy_syscalls.c L164-176](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L164) 实现 `airy_sys_sched_ctl`：
 
 ```c
 SYSCALL_DEFINE3(airy_sys_sched_ctl, __u32, op,
@@ -137,14 +137,14 @@ openEuler 在 [syscalls.h L214-261](file:///home/spharx/SpharxWorks/.engineer-re
 
 ### 5.2 Airymax 合规性
 
-Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 4 个核心 syscall 均使用 SYSCALL_DEFINE 宏，符合 openEuler 规范：
+Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 4 个核心 syscall 均使用 SYSCALL_DEFINE 宏，符合 openEuler 规范：
 
-- [L78](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L78): `SYSCALL_DEFINE2(airy_sys_call, cap_t, cap, const struct airy_ipc_msg_hdr __user *, msg)`
-- [L143](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L143): `SYSCALL_DEFINE3(airy_sys_rovol_ctl, __u32, op, __u32, pid, __u64, arg)`
-- [L164](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L164): `SYSCALL_DEFINE3(airy_sys_sched_ctl, ...)`
-- [L189](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L189): `SYSCALL_DEFINE2(airy_sys_clt_notify, int, task_id, __u32, phase)`
+- [L78](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L78): `SYSCALL_DEFINE2(airy_sys_call, cap_t, cap, const struct airy_ipc_msg_hdr __user *, msg)`
+- [L143](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L143): `SYSCALL_DEFINE3(airy_sys_rovol_ctl, __u32, op, __u32, pid, __u64, arg)`
+- [L164](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L164): `SYSCALL_DEFINE3(airy_sys_sched_ctl, ...)`
+- [L189](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L189): `SYSCALL_DEFINE2(airy_sys_clt_notify, int, task_id, __u32, phase)`
 
-参数校验已部分落地：`airy_sys_call` 在 [L84](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L84) 做 null check，[L92](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L92) 做 cap==NULL check，[L96](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L96) 做 copy_from_user，[L100](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L100) 做 magic check。此合规性良好，无需改进。
+参数校验已部分落地：`airy_sys_call` 在 [L84](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L84) 做 null check，[L92](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L92) 做 cap==NULL check，[L96](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L96) 做 copy_from_user，[L100](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L100) 做 magic check。此合规性良好，无需改进。
 
 ## 6. codegen 工具链对比
 
@@ -154,23 +154,23 @@ seL4 在 [syscall_stub_gen.py](file:///home/spharx/SpharxWorks/.engineer-referen
 
 ### 6.2 Airymax syscall_gen.py：内核 UAPI + tbl 片段 + CI 校验
 
-Airymax 的 [syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py) 是更完整的 SSoT codegen 工具链：
+Airymax 的 [syscall_gen.py](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py) 是更完整的 SSoT codegen 工具链：
 
-- [L4-20](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L4): 注释明确 R-01 SSoT 契约源职责
-- [L28](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L28): `GENERATOR_VERSION = "1.0.1"` 版本锁定
-- [L34-35](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L34): DEFAULT_INPUT=syscall.xml / DEFAULT_OUTPUT=syscall.h
-- [L38-122](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L38): `parse_xml()` 解析 version/core_count/reserved_count/total_slots/linux_base
-- [L57](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L57): `linux_base` 默认 548
-- [L125-257](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L125): `render_c_header()` 生成 SPDX 头部、include guard、AIRY_SYS_IDX_* 内部索引、__NR_airy_sys_* 注册号、预留槽宏、函数原型
-- [L260-285](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L260): `render_syscall_tbl()` 生成 syscall_64.tbl Airymax 段
-- [L310-339](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L310): `check_mode()` 用 difflib 校验生成内容与已提交文件一致性
-- [L342-364](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L342): `check_tbl_mode()` 校验 syscall_64.tbl Airymax 段一致性
+- [L4-20](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L4): 注释明确 R-01 SSoT 契约源职责
+- [L28](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L28): `GENERATOR_VERSION = "1.0.1"` 版本锁定
+- [L34-35](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L34): DEFAULT_INPUT=syscall.xml / DEFAULT_OUTPUT=syscall.h
+- [L38-122](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L38): `parse_xml()` 解析 version/core_count/reserved_count/total_slots/linux_base
+- [L57](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L57): `linux_base` 默认 548
+- [L125-257](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L125): `render_c_header()` 生成 SPDX 头部、include guard、AIRY_SYS_IDX_* 内部索引、__NR_airy_sys_* 注册号、预留槽宏、函数原型
+- [L260-285](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L260): `render_syscall_tbl()` 生成 syscall_64.tbl Airymax 段
+- [L310-339](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L310): `check_mode()` 用 difflib 校验生成内容与已提交文件一致性
+- [L342-364](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L342): `check_tbl_mode()` 校验 syscall_64.tbl Airymax 段一致性
 
 关键优势：**CI 一致性校验**。`check_mode`/`check_tbl_mode` 确保已提交的 `syscalls.h` 与 `syscall_64.tbl` 始终与 `syscall.xml` 契约同步，防止手工篡改引入漂移。这是 seL4 与 openEuler 均缺失的能力——seL4 仅生成 stub 不校验内核侧，openEuler 完全手工无 SSoT。
 
 ### 6.3 DSL 降级机制
 
-Airymax 在 [syscalls.h L31-53](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h#L31) 提供 [DSL] 降级块：仅 4 core 可用，reserved 标记 -1。此机制支持精简部署场景，openEuler/seL4 无对应设计。
+Airymax 在 [syscalls.h L31-53](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h#L31) 提供 [DSL] 降级块：仅 4 core 可用，reserved 标记 -1。此机制支持精简部署场景，openEuler/seL4 无对应设计。
 
 ## 7. budget 入口检查对比
 
@@ -187,17 +187,17 @@ seL4 在 [syscall.h L19-30](file:///home/spharx/SpharxWorks/.engineer-reference/
 
 ### 7.2 Airymax 当前无 budget 检查
 
-Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 syscall 入口（L78/L143/L164/L189）**无 budget check**。当前 M1 阶段全部返回 `-ENOSYS`，无真实执行逻辑，因此无 budget 超支风险。但 M2 实现真实调度逻辑后，若 airy_sys_sched_ctl 等 syscall 涉及长时操作，需引入 budget 入口检查以符合 agentrt 实时性要求。
+Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c) 的 syscall 入口（L78/L143/L164/L189）**无 budget check**。当前 M1 阶段全部返回 `-ENOSYS`，无真实执行逻辑，因此无 budget 超支风险。但 M2 实现真实调度逻辑后，若 airy_sys_sched_ctl 等 syscall 涉及长时操作，需引入 budget 入口检查以符合 agentrt 实时性要求。
 
 ## 8. 改进建议
 
 ### [P0] 552-571 预留槽位显式登记为 sys_ni_syscall
 
-**现状**：[syscall_64.tbl L379-392](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中 552-571 编号未显式登记，仅注释 `# Do not add new syscalls to this range` 进行软约束。UAPI 头文件 [syscalls.h L27-28](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h#L27) 定义了 RESERVED_BASE/END 但 tbl 未落地。
+**现状**：[syscall_64.tbl L379-392](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl#L379) 中 552-571 编号未显式登记，仅注释 `# Do not add new syscalls to this range` 进行软约束。UAPI 头文件 [syscalls.h L27-28](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h#L27) 定义了 RESERVED_BASE/END 但 tbl 未落地。
 
 **参考**：openEuler [syscall_64.tbl L379-390](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/arch/x86/entry/syscalls/syscall_64.tbl#L379) 的 `kabi_reserved455` ~ `kabi_reserved466` 显式登记为 `sys_ni_syscall` 模式。
 
-**建议**：在 [syscall_gen.py L260-285](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L260) 的 `render_syscall_tbl()` 中，为 552-571 预留槽生成显式 tbl 条目：
+**建议**：在 [syscall_gen.py L260-285](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L260) 的 `render_syscall_tbl()` 中，为 552-571 预留槽生成显式 tbl 条目：
 
 ```
 552 common  airy_reserved_552  sys_ni_syscall
@@ -212,7 +212,7 @@ Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt
 
 ### [P1] syscall 入口增加 budget 检查
 
-**现状**：[airy_syscalls.c L78/L143/L164/L189](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L78) 的 4 个 syscall 入口无 budget check。M1 阶段全部返回 `-ENOSYS`，无超支风险。
+**现状**：[airy_syscalls.c L78/L143/L164/L189](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L78) 的 4 个 syscall 入口无 budget check。M1 阶段全部返回 `-ENOSYS`，无超支风险。
 
 **参考**：seL4 [syscall.h L19-30](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/api/syscall.h#L19) 的 `MCS_DO_IF_BUDGET` 宏，结合 [syscall.c L74-95](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/syscall.c#L74) 的 `handleInterruptEntry` 中断入口 checkBudget 模式。
 
@@ -222,7 +222,7 @@ Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt
 
 ### [P2] airy_sys_sched_ctl 引入结构化参数
 
-**现状**：[airy_syscalls.c L164-176](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c#L164) 使用 `op + cgroup_path + policy` 字符串参数，类型检查弱，扩展依赖 op 编号。
+**现状**：[airy_syscalls.c L164-176](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c#L164) 使用 `op + cgroup_path + policy` 字符串参数，类型检查弱，扩展依赖 op 编号。
 
 **参考**：openEuler [syscall_64.tbl L391-392](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/arch/x86/entry/syscalls/syscall_64.tbl#L391) 的 `xsched_setattr`/`xsched_getattr` 采用 `sched_attr` 结构化扩展，set/get 配对。
 
@@ -232,17 +232,17 @@ Airymax 在 [airy_syscalls.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt
 
 ### [P2] 文档化 R-01 SSoT 流程
 
-**现状**：[syscall_gen.py L4-20](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L4) 注释提及 R-01 SSoT，[L310-364](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/tools/codegen/syscall_gen.py#L310) 的 `check_mode`/`check_tbl_mode` CI 校验已落地，但流程未文档化。
+**现状**：[syscall_gen.py L4-20](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L4) 注释提及 R-01 SSoT，[L310-364](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/tools/codegen/syscall_gen.py#L310) 的 `check_mode`/`check_tbl_mode` CI 校验已落地，但流程未文档化。
 
 **参考**：seL4 [syscall_stub_gen.py](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/libsel4/tools/syscall_stub_gen.py) 虽无 CI 校验，但工具用法在 seL4 文档中有明确说明。
 
-**建议**：在 `docs-closed/agentrt-linux/` 下补充 R-01 SSoT 流程文档，明确：(1) syscall.xml 为唯一契约源；(2) 修改 syscall 必须先改 xml 再跑 `syscall_gen.py --generate`；(3) CI 通过 `--check`/`--check-tbl` 模式校验生成物一致性；(4) 禁止手工编辑生成的 syscalls.h 与 tbl Airymax 段。
+**建议**：在 `docs-closed/agent-linux/` 下补充 R-01 SSoT 流程文档，明确：(1) syscall.xml 为唯一契约源；(2) 修改 syscall 必须先改 xml 再跑 `syscall_gen.py --generate`；(3) CI 通过 `--check`/`--check-tbl` 模式校验生成物一致性；(4) 禁止手工编辑生成的 syscalls.h 与 tbl Airymax 段。
 
 **风险评估**：极低风险。纯文档变更，无代码影响。
 
 ## 9. 综合评估
 
-Airymax agentrt-linux v3.6 的 syscall 注册与 codegen 设计在 SSoT 与 CI 一致性校验方面**领先** openEuler 与 seL4：syscall.xml 契约源 + syscall_gen.py codegen + check_mode/check_tbl_mode CI 校验形成闭环，杜绝了手工维护的漂移风险。SYSCALL_DEFINE 规范全面合规。
+Airymax agent-linux v3.6 的 syscall 注册与 codegen 设计在 SSoT 与 CI 一致性校验方面**领先** openEuler 与 seL4：syscall.xml 契约源 + syscall_gen.py codegen + check_mode/check_tbl_mode CI 校验形成闭环，杜绝了手工维护的漂移风险。SYSCALL_DEFINE 规范全面合规。
 
 主要差距集中在两点：(1) **保留槽未显式登记**（P0），与 openEuler KABI 机制相比存在编号被误占用风险；(2) **入口无 budget 检查**（P1），与 seL4 MCS 相比缺少实时性保证，需在 M2 调度逻辑落地时补齐。
 

@@ -2,10 +2,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # AirymaxAgentOS 方案问题点再检查报告（v0.2.1）
 
-> **文档定位**: 基于 [01-source-code-engineering-study.md](01-source-code-engineering-study.md) 提取的 OLK-6.6 工程思想 13 项（ES-OLK-1~13）+ seL4 工程思想 10 项（ES-SEL4-1~10）+ 双源融合裁决 16 维度，对 `docs/AirymaxAgentOS/` 下 agentrt-linux 全部开源设计方案的"问题点"进行再检查，输出符合性结论与增强建议。
+> **文档定位**: 基于 [01-source-code-engineering-study.md](01-source-code-engineering-study.md) 提取的 OLK-6.6 工程思想 13 项（ES-OLK-1~13）+ seL4 工程思想 10 项（ES-SEL4-1~10）+ 双源融合裁决 16 维度，对 `docs/AirymaxAgentOS/` 下 agent-linux 全部开源设计方案的"问题点"进行再检查，输出符合性结论与增强建议。
 > **版本**: 0.2.1（再检查报告）
 > **最后更新**: 2026-07-09
-> **检查范围**: `50-engineering-standards/`（01-coding-standards.md 680 行 / 02-code-format.md 488 行 / 04-engineering-philosophy.md 588 行）+ `20-modules/README.md`（305 行）+ `70-build-system/`（01-kbuild-system.md / 02-kconfig-system.md）+ agentrt-linux 8 子仓 README
+> **检查范围**: `50-engineering-standards/`（01-coding-standards.md 680 行 / 02-code-format.md 488 行 / 04-engineering-philosophy.md 588 行）+ `20-modules/README.md`（305 行）+ `70-build-system/`（01-kbuild-system.md / 02-kconfig-system.md）+ agent-linux 8 子仓 README
 > **上游依据**: v0.2.0 二轮审查（100/100 A+ 无条件 Go）已确认 13/13 P0 + 14/14 P1 修复完成；本报告为 v0.2.0 之后的"源代码深度研究驱动的增量再检查"，不重复 v0.2.0 已确认项
 
 ---
@@ -25,7 +25,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 检查目标
 
-v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A，有条件 Go）提升至 100/100（A+，无条件 Go），13 项 P0 + 14 项 P1 全部修复完成。本轮再检查不重复 v0.2.0 已确认项，而是基于对 OLK-6.6 和 seL4 全部源代码的深度研究（见 [01-source-code-engineering-study.md](01-source-code-engineering-study.md)），从"源代码工程思想"视角对方案进行增量检查，识别 v0.2.0 未覆盖的工程思想层增强机会。
+v0.2.0 二轮审查将 agent-linux 文档体系综合成熟度从 93/100（A，有条件 Go）提升至 100/100（A+，无条件 Go），13 项 P0 + 14 项 P1 全部修复完成。本轮再检查不重复 v0.2.0 已确认项，而是基于对 OLK-6.6 和 seL4 全部源代码的深度研究（见 [01-source-code-engineering-study.md](01-source-code-engineering-study.md)），从"源代码工程思想"视角对方案进行增量检查，识别 v0.2.0 未覆盖的工程思想层增强机会。
 
 ### 1.2 检查维度（7 项）
 
@@ -36,7 +36,7 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 | D3 | seL4 架构层借鉴 | ES-SEL4-1~10 | 10-architecture / 20-modules / 30-interfaces |
 | D4 | 接口契约 XML 化建议 | ES-SEL4-6 | 30-interfaces / 50-engineering-standards/40-integration |
 | D5 | bitfield codegen 建议 | ES-SEL4-8 | [SC] 共享契约层 6 个头文件 |
-| D6 | MAINTAINERS 文件采纳建议 | ES-OLK-8 | agentrt-linux 8 子仓 |
+| D6 | MAINTAINERS 文件采纳建议 | ES-OLK-8 | agent-linux 8 子仓 |
 | D7 | 形式化验证框架建议 | ES-SEL4-5 | 20-modules/08-tests.md / 80-testing |
 
 ---
@@ -45,11 +45,11 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 
 ### 2.1 检查方法
 
-将融合裁决表 16 个维度逐一对照 `50-engineering-standards/01-coding-standards.md`（680 行）与 `02-code-format.md`（488 行）的规则条文，确认 agentrt-linux 工程标准是否与裁决一致。
+将融合裁决表 16 个维度逐一对照 `50-engineering-standards/01-coding-standards.md`（680 行）与 `02-code-format.md`（488 行）的规则条文，确认 agent-linux 工程标准是否与裁决一致。
 
 ### 2.2 检查结果（16/16 全部对齐）
 
-| # | 裁决维度 | agentrt-linux 规则编号 | 规则条文位置 | 符合性 |
+| # | 裁决维度 | agent-linux 规则编号 | 规则条文位置 | 符合性 |
 |---|---------|----------------------|-------------|--------|
 | 1 | 缩进 Tab 8 | OS-KER-005 | 02-code-format.md §1.1 | ✅ 完全对齐 |
 | 2 | 命名 snake_case | OS-STD-CODE-001 / OS-STD-002 | 01-coding-standards.md §2.1 | ✅ 完全对齐 |
@@ -68,7 +68,7 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 | 15 | strscpy 强制 | OS-BAN-006 | 01-coding-standards.md §2.7 | ✅ 完全对齐 |
 | 16 | EXPORT_SYMBOL 紧跟 | OS-STD-009 | 01-coding-standards.md §2.2 | ✅ 完全对齐 |
 
-**D1 结论**: agentrt-linux 编码风格与 OLK-6.6 + seL4 双源融合裁决 **16/16 全部对齐**，无遗漏、无冲突。现有 `01-coding-standards.md`（44 条规则）+ `02-code-format.md`（机械格式 + .clang-format 配置）已完整覆盖融合裁决的全部 16 维度。
+**D1 结论**: agent-linux 编码风格与 OLK-6.6 + seL4 双源融合裁决 **16/16 全部对齐**，无遗漏、无冲突。现有 `01-coding-standards.md`（44 条规则）+ `02-code-format.md`（机械格式 + .clang-format 配置）已完整覆盖融合裁决的全部 16 维度。
 
 ---
 
@@ -80,7 +80,7 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 
 ### 3.2 检查结果（13/13 全部覆盖）
 
-| ES 编号 | 工程思想 | agentrt-linux 方案覆盖位置 | 符合性 |
+| ES 编号 | 工程思想 | agent-linux 方案覆盖位置 | 符合性 |
 |---------|---------|---------------------------|--------|
 | ES-OLK-1 | 关注点分离 | 04-engineering-philosophy.md 第 1 章 + 20-modules/README.md §1（8 子仓矩阵） | ✅ 8 子仓划分即关注点分离 |
 | ES-OLK-2 | 架构正交 | 10-architecture + 20-modules/01-kernel.md（arch/x86、arch/arm64） | ✅ 待目录结构设计落地（见 design_0.2.1） |
@@ -108,7 +108,7 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 
 ### 4.2 检查结果
 
-| ES 编号 | seL4 工程思想 | agentrt-linux 借鉴位置 | 符合性 |
+| ES 编号 | seL4 工程思想 | agent-linux 借鉴位置 | 符合性 |
 |---------|--------------|----------------------|--------|
 | ES-SEL4-1 | Liedtke 极简原则 | 10-architecture/03-microkernel-strategy.md（机制最小化：IPC/内存/任务/时间 4 原子机制）+ kernel/README.md | ✅ 完全借鉴（airymaxos-kernel 复用 atoms/corekern MicroCoreRT 极简内核） |
 | ES-SEL4-2 | capability 单一权限模型 | 20-modules/03-security.md（capability 模块）+ IRON-9 v2 [SC] security_types.h（capability 38 ID 枚举 + mint/mintcopy/derive/revoke 派生模型） | ✅ 完全借鉴（capability 派生模型已设计） |
@@ -133,9 +133,9 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 
 **上游依据**: ES-SEL4-6（seL4 `tools/syscall.xml` + `tools/syscall_generator.py` 自动生成用户态 stub 与内核态 entry）
 
-**现状**: agentrt-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读的契约定义。IRON-9 v2 [SC] 共享契约层 6 个头文件是手写 C 头文件，无 codegen。
+**现状**: agent-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读的契约定义。IRON-9 v2 [SC] 共享契约层 6 个头文件是手写 C 头文件，无 codegen。
 
-**建议**: 在 `50-engineering-standards/40-integration/` 下新增 `syscall-contract.xml` 规范，定义 agentrt-linux 系统调用接口的 XML 契约格式（参考 seL4 syscall.xml 但不复制其内容），由 `scripts/syscall_gen.py` 自动生成:
+**建议**: 在 `50-engineering-standards/40-integration/` 下新增 `syscall-contract.xml` 规范，定义 agent-linux 系统调用接口的 XML 契约格式（参考 seL4 syscall.xml 但不复制其内容），由 `scripts/syscall_gen.py` 自动生成:
 - `include/uapi/airymax/syscall.h`（用户态 stub）
 - `kernel/entry/airymax_syscall_table.c`（内核态 entry 表）
 
@@ -159,7 +159,7 @@ v0.2.0 二轮审查将 agentrt-linux 文档体系综合成熟度从 93/100（A�
 
 **上游依据**: ES-OLK-8（OLK-6.6 根目录 MAINTAINERS 文件）
 
-**现状**: agentrt-linux 8 子仓当前仅有 README/LICENSE/NOTICE/.gitignore 占位文件，无 MAINTAINERS 文件。维护者制度已在 `120-development-process/` 设计，但未在子仓层落地。
+**现状**: agent-linux 8 子仓当前仅有 README/LICENSE/NOTICE/.gitignore 占位文件，无 MAINTAINERS 文件。维护者制度已在 `120-development-process/` 设计，但未在子仓层落地。
 
 **建议**: 为 8 子仓每个仓根目录新增 `MAINTAINERS` 文件，格式参考 OLK-6.6 但精简:
 ```
@@ -206,7 +206,7 @@ W:  https://atomgit.com/openairymax/kernel
 
 ### 6.2 结论
 
-基于对 OLK-6.6 和 seL4 全部源代码的深度研究，agentrt-linux 方案的再检查结论为:
+基于对 OLK-6.6 和 seL4 全部源代码的深度研究，agent-linux 方案的再检查结论为:
 
 1. **编码风格层（D1）**: 16/16 全部对齐双源融合裁决，无遗漏、无冲突。现有 `01-coding-standards.md`（44 条规则）+ `02-code-format.md`（机械格式 + .clang-format 配置）已完整覆盖。
 

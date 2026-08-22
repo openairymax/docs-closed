@@ -10,7 +10,7 @@
 
 IRON-9 v2 (06-iron9-shared-model.md) 定义了 6+2 共享头文件：
 
-| # | 文件名 | agentrt 端 (commons/include/airymax/) | agentrt-linux 端 (kernel/include/airymax/) | 状态 |
+| # | 文件名 | agentrt 端 (commons/include/airymax/) | agent-linux 端 (kernel/include/airymax/) | 状态 |
 |---|--------|--------------------------------------|------------------------------------------|------|
 | 1 | ipc.h | 存在 (82 行) | **不存在** | [SC] 仅一端 |
 | 2 | sched.h | 存在 (79 行) | **不存在** | [SC] 仅一端 |
@@ -22,7 +22,7 @@ IRON-9 v2 (06-iron9-shared-model.md) 定义了 6+2 共享头文件：
 | 8 | bpf_struct_ops.h | 存在 | **不存在** | [SC] 仅一端 |
 | +1 | log_types.h | **不存在** | **不存在** | **未列入 IRON-9 v2** |
 
-**结论**：8 个 [SC] 头文件中，仅 agentrt 端存在 7 个（不含 error.h）。agentrt-linux 端 0 个。error.h 和 log_types.h 两端都不存在——这些是 5 模块统一方案的核心文件。
+**结论**：8 个 [SC] 头文件中，仅 agentrt 端存在 7 个（不含 error.h）。agent-linux 端 0 个。error.h 和 log_types.h 两端都不存在——这些是 5 模块统一方案的核心文件。
 
 ---
 
@@ -63,7 +63,7 @@ typedef uint32_t __u32;   /* 非 Linux：自建 kernel-style 类型 */
 #endif
 ```
 
-**问题**：当 agentrt-linux 内核编译时，`__linux__` 为真但上下文是 `__KERNEL__`，内核态应该 `#include <linux/types.h>`（从内核源码树路径），而用户态应该从 `/usr/include/linux/types.h` 获取。`#ifdef __linux__` 无法区分这两种场景——在内核交叉编译环境中可能导致类型冲突。
+**问题**：当 agent-linux 内核编译时，`__linux__` 为真但上下文是 `__KERNEL__`，内核态应该 `#include <linux/types.h>`（从内核源码树路径），而用户态应该从 `/usr/include/linux/types.h` 获取。`#ifdef __linux__` 无法区分这两种场景——在内核交叉编译环境中可能导致类型冲突。
 
 正确的做法（参考 Linux UAPI 标准）：
 
@@ -79,7 +79,7 @@ typedef uint32_t __u32;   /* 非 Linux：自建 kernel-style 类型 */
 #endif
 ```
 
-**此问题未暴露**是因为 agentrt-linux 没有内核代码，从未触发 `__KERNEL__` 路径。
+**此问题未暴露**是因为 agent-linux 没有内核代码，从未触发 `__KERNEL__` 路径。
 
 ### 2.4 ipc.h 缺少 capability 相关字段
 
@@ -122,20 +122,20 @@ typedef uint32_t __u32;   /* 非 Linux：自建 kernel-style 类型 */
 
 ```yaml
 # 伪代码
-diff agentrt-linux/include/airymax/$file agentrt/commons/include/airymax/$file
+diff agent-linux/include/airymax/$file agentrt/commons/include/airymax/$file
 # 必须逐字节相同
 ```
 
 当前问题：
-1. agentrt-linux 端 0 个文件 → diff 失败（没有左侧文件）
+1. agent-linux 端 0 个文件 → diff 失败（没有左侧文件）
 2. error.h / log_types.h 两端都不存在 → 无法 diff
-3. 即使 CI 设定为 "agentrt 端为权威源，复制到 agentrt-linux"，也无法验证 agentrt-linux 端的内核代码是否正确使用了这些头文件
+3. 即使 CI 设定为 "agentrt 端为权威源，复制到 agent-linux"，也无法验证 agent-linux 端的内核代码是否正确使用了这些头文件
 
 ---
 
 ## 4. 建议
 
-1. **创建 `agentrt-linux/kernel/include/airymax/` 目录**，从 agentrt 端复制现有 7 个 [SC] 头文件
+1. **创建 `agent-linux/kernel/include/airymax/` 目录**，从 agentrt 端复制现有 7 个 [SC] 头文件
 2. **创建 error.h**：基于 5 模块统一方案设计，定义统一的 AIRY_E* 错误码
 3. **创建 log_types.h**：基于 Ring Buffer + Logger Daemon 方案设计
 4. **修复 uapi_compat.h**：增加 `#ifdef __KERNEL__` 路径

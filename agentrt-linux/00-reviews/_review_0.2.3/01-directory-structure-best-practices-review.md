@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # v0.2.3 目录结构设计基于 openEuler/seL4 最佳实践的审查报告
 
-> **文档定位**: 基于 OLK-6.6（openEuler 内核基线）与 seL4-master 实际源代码目录结构的直接测绘证据，对 [`01-designs/_design_0.2.3/01-agentrt-linux-directory-structure.md`](../../01-designs/_design_0.2.3/01-agentrt-linux-directory-structure.md)（1503 行）进行的目录结构最佳实践审查。
+> **文档定位**: 基于 OLK-6.6（openEuler 内核基线）与 seL4-master 实际源代码目录结构的直接测绘证据，对 [`01-designs/_design_0.2.3/01-agent-linux-directory-structure.md`](../../01-designs/_design_0.2.3/01-agent-linux-directory-structure.md)（1503 行）进行的目录结构最佳实践审查。
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.2.3-review-01
 > **最后更新**: 2026-07-09
@@ -427,9 +427,9 @@ patches/
 
 ### P2-DIR-04: 缺失顶层 tools/ 管理目录
 
-**发现**: OLK-6.6 有顶层 `tools/`（含 testing/scripts/build/perf 等），v0.2.3 管理仓 agentrt-linux/ 无顶层 tools/，测试在 tests-linux/，脚本在各子仓 scripts/。
+**发现**: OLK-6.6 有顶层 `tools/`（含 testing/scripts/build/perf 等），v0.2.3 管理仓 agent-linux/ 无顶层 tools/，测试在 tests-linux/，脚本在各子仓 scripts/。
 
-**建议**: 在管理仓 agentrt-linux/ 新增 `tools/` 软链接或声明，聚合跨子仓工具（如 `tools/checkpatch-airymax.sh` 引用各子仓 scripts/ 的检查脚本）。或在 §2 声明"tools/ 分散在各子仓 scripts/，不设顶层聚合"。
+**建议**: 在管理仓 agent-linux/ 新增 `tools/` 软链接或声明，聚合跨子仓工具（如 `tools/checkpatch-airymax.sh` 引用各子仓 scripts/ 的检查脚本）。或在 §2 声明"tools/ 分散在各子仓 scripts/，不设顶层聚合"。
 
 **优先级**: P2，声明即可，1.0.1 M0 决定。
 

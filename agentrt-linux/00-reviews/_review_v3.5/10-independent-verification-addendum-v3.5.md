@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）09 号终审报告关键结论独立验证补充报告 v3.5
+# agent-linux（AirymaxOS）09 号终审报告关键结论独立验证补充报告 v3.5
 
 > **报告编号**：10
 > **报告版本**：v3.5（独立验证补充稿）
 > **生成时间**：2026-07-25
-> **审查前提**：agentrt-linux 目前处于**方案设计阶段（M0/M1）**，仅内核改造框架骨架存在，其他开发未正式开始
+> **审查前提**：agent-linux 目前处于**方案设计阶段（M0/M1）**，仅内核改造框架骨架存在，其他开发未正式开始
 > **审查方法**：5 个并行子代理独立字节级复核 09 报告 7 项关键裁定（不依赖 09 报告描述，直接读取源码验证）
 > **审查范围**：09 报告 5 项 A 类真缺陷（P0-1 / P0-3 / P0-4 / P0-5 / AIRY_EIPC_FROZEN / uapi_compat.h 对立）+ 2 项 D 类误报（P0-2 / P0-18）
 > **上一版本**：09-final-deep-reverification-terminal-report-v3.5.md（2026-07-25）
@@ -445,7 +445,7 @@ struct airy_log_record {
 
 ### 10.3 最终裁定
 
-agentrt-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实。在 M0 设计阶段前提下，**整体就绪度 71/B-**，需修复 **130 项 A 类真缺陷**（主要集中在 SSoT 文档-代码不一致），通过 3 阶段修复可提升至 88%。
+agent-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实。在 M0 设计阶段前提下，**整体就绪度 71/B-**，需修复 **130 项 A 类真缺陷**（主要集中在 SSoT 文档-代码不一致），通过 3 阶段修复可提升至 88%。
 
 **用户声明"除了内核的改造框架，其他开发还没有正式开始"完全属实**——48 个骨架源文件全部属于 M0/M1 范围，0 个文件违反版本范围声明。
 

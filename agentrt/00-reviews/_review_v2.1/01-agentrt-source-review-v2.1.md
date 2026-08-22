@@ -60,15 +60,15 @@ v2.1 阶段 agentrt 源代码在 **[SC] 共享契约层**和 **banned_functions 
 | 影响 | 与 OLK-6.6 六大支柱第一条直接冲突，代码品味不达标 |
 | 建议 | **P0**：执行全量 `clang-format -i` 批量重格式化，配合问题 1 的 `.clang-format` 文件 |
 
-### 问题 3：`agentrt-linux` 仍为空仓库
+### 问题 3：`agent-linux` 仍为空仓库
 
 | 项目 | 内容 |
 |---|---|
 | 状态 | ⚠️ **部分修复** |
-| v1.0 描述 | agentrt-linux 仓库仅有 LICENSE/README，无源代码 |
-| 验证方法 | `find /home/spharx/SpharxWorks/OpenAirymax/agentrt-linux -type f` |
+| v1.0 描述 | agent-linux 仓库仅有 LICENSE/README，无源代码 |
+| 验证方法 | `find /home/spharx/SpharxWorks/OpenAirymax/agent-linux -type f` |
 | 证据 | 仓库现有 **55 个文件**，含 8 个子目录（kernel/memory/security/cognition/services/system/cloudnative/tests-linux），每个子目录有 README.md/README_zh.md/LICENSE/NOTICE。但 **`.c`/`.h` 源代码文件数为 0**，仅有文档脚手架 |
-| 影响 | agentrt-linux 8 子仓的目录骨架已建立，但实际内核加速路径代码完全缺失 |
+| 影响 | agent-linux 8 子仓的目录骨架已建立，但实际内核加速路径代码完全缺失 |
 | 建议 | **P1**：按 AirymaxOS 8 子仓设计在 M1 阶段填充 kernel 子仓的微内核核心代码，其余子仓可延后 |
 
 ### 问题 4：`fprintf` 直接使用违反 banned_functions
@@ -154,7 +154,7 @@ v2.1 阶段 agentrt 源代码在 **[SC] 共享契约层**和 **banned_functions 
 |---|---|---|---|
 | 1 | `.clang-format` 不存在 | ❌ 未修复 | P0 |
 | 2 | 4 空格缩进违规 | ❌ 未修复 | P0 |
-| 3 | agentrt-linux 空仓库 | ⚠️ 部分修复（脚手架已建，0 源码） | P1 |
+| 3 | agent-linux 空仓库 | ⚠️ 部分修复（脚手架已建，0 源码） | P1 |
 | 4 | fprintf 直接使用 | ❌ 未修复 | P0 |
 | 5 | Windows localtime 线程不安全 | ⚠️ 部分修复（POSIX 已修，Windows 未修） | P1 |
 | 6 | typedef struct _t 违规 | ❌ 未修复 | P1 |
@@ -420,7 +420,7 @@ v2.1 阶段 agentrt 源代码在 **[SC] 共享契约层**和 **banned_functions 
 | P1-5 | N8 | cupolas 错误码 4 变体统一为 `AIRY_ERR_*` | 8h |
 | P1-6 | 问题5 | Windows `localtime` 改用 `localtime_s` | 2h |
 | P1-7 | 问题6 | typedef struct _t 分批重构（优先公开 API 头文件） | 32h |
-| P1-8 | 问题3 | agentrt-linux kernel 子仓填充微内核核心代码 | 80h |
+| P1-8 | 问题3 | agent-linux kernel 子仓填充微内核核心代码 | 80h |
 
 **P1 合计：~151h**
 
@@ -495,7 +495,7 @@ v2.1 阶段 agentrt 源代码在 **[SC] 共享契约层**和 **banned_functions 
 | _Thread_local | `Grep "_Thread_local" --glob "*.{c,h}"` |
 | _Static_assert | `Grep "_Static_assert\|static_assert" --glob "*.{c,h}"` |
 | .bak 文件 | `find /home/spharx/SpharxWorks/OpenAirymax/agentrt -name "*.bak" -type f` |
-| agentrt-linux 源码 | `find /home/spharx/SpharxWorks/OpenAirymax/agentrt-linux -name "*.c" -o -name "*.h"` |
+| agent-linux 源码 | `find /home/spharx/SpharxWorks/OpenAirymax/agent-linux -name "*.c" -o -name "*.h"` |
 
 ### 8.2 参照文档
 

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v0.3.0 源码级证据与跨项目一致性分析
+# agent-linux v0.3.0 源码级证据与跨项目一致性分析
 
 > **文档定位**：本文件是 `00-reviews/_review_0.3.0/01-comprehensive-review-report.md` 的配套证据文档，提供 P0 问题的源码级证据、OLK-6.6 与 seL4 工程思想的完整源码位置索引、以及 AirymaxRT ↔ AirymaxOS 跨项目一致性分析。\
 > **报告版本**：v0.3.0\
@@ -59,7 +59,7 @@ $ grep -c "^#define CAP_" 01Reference/kernel-OLK-6.6/include/uapi/linux/capabili
 
 **AirymaxOS 文档错误描述**（`110-security/03-capability-model.md:276`）：
 
-> "对齐 `security_types.h`（[SC] 共享头文件）定义的 POSIX capability 38 ID 枚举。agentrt-linux 在 Linux 6.6 标准 40 个 POSIX capability 基础上，整合为 38 个有效枚举（排除 2 个已废弃）"
+> "对齐 `security_types.h`（[SC] 共享头文件）定义的 POSIX capability 38 ID 枚举。agent-linux 在 Linux 6.6 标准 40 个 POSIX capability 基础上，整合为 38 个有效枚举（排除 2 个已废弃）"
 
 **事实纠正**：
 1. Linux 6.6 有 **41 个** POSIX capability（0-40），**不是 40 个**
@@ -238,7 +238,7 @@ $ grep -n "__s128\|__u128" 01Reference/kernel-OLK-6.6/include/uapi/linux/types.h
 
 ### 4.3 [SS] 语义同源层 API 映射
 
-| agentrt API | agentrt-linux API | 同源类型 | 验证状态 |
+| agentrt API | agent-linux API | 同源类型 | 验证状态 |
 |-------------|------------------|---------|---------|
 | `agent_select_cpu` | BPF `select_cpu` 回调 | sched_ext 同源 | ✅ |
 | `agent_enqueue`/`agent_dequeue` | BPF `enqueue`/`dispatch` 回调 | sched_ext 同源 | ✅ |
@@ -272,9 +272,9 @@ IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）在 AirymaxOS 侧有完整定�
 
 **上游依据**：ES-OLK-14（`include/linux/kabi.h` + `lib/Kconfig.kabi`）
 
-**现状**：agentrt-linux 无二进制兼容演进机制。微内核化改造会频繁变更数据结构（如 TCB、capability 表），可能导致内核态 ABI 破坏。
+**现状**：agent-linux 无二进制兼容演进机制。微内核化改造会频繁变更数据结构（如 TCB、capability 表），可能导致内核态 ABI 破坏。
 
-**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agentrt-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
+**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agent-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
 
 **优先级**：P1（微内核化改造关键基础设施，1.0.1 M1 落地，~20h）
 
@@ -292,7 +292,7 @@ IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）在 AirymaxOS 侧有完整定�
 
 **上游依据**：ES-SEL4-6（`libsel4/include/api/syscall.xml` + `tools/syscall_header_gen.py`）
 
-**现状**：agentrt-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读契约。
+**现状**：agent-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读契约。
 
 **建议**：新增 `syscall-contract.xml`，由 `scripts/syscall_gen.py` 自动生成 `include/uapi/airymax/syscall.h` + `kernel/entry/airymax_syscall_table.c`。XML 格式借鉴 seL4（`<syscalls>`/`<syscall name="..."/>`/`<param>`/`<error>`）但不复制其内容。
 
@@ -312,7 +312,7 @@ IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）在 AirymaxOS 侧有完整定�
 
 **上游依据**：ES-OLK-8（`MAINTAINERS` 24218 行）
 
-**现状**：agentrt-linux 8 子仓无 MAINTAINERS 文件。
+**现状**：agent-linux 8 子仓无 MAINTAINERS 文件。
 
 **建议**：为 8 子仓每个仓根目录新增 `MAINTAINERS` 文件，格式精简（`M:`/`S:`/`F:`/`W:` 四字段），每个子系统有明确责任人。
 
@@ -322,7 +322,7 @@ IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）在 AirymaxOS 侧有完整定�
 
 **上游依据**：ES-SEL4-11（seL4 8 个 CI 工作流）+ ES-OLK-9（OLK sparse/W/checkpatch）
 
-**现状**：agentrt-linux 的 CI 矩阵未明确。
+**现状**：agent-linux 的 CI 矩阵未明确。
 
 **建议**：定义 CI 多工具矩阵——(1) 编译检查（多编译器/多架构）；(2) 静态分析（sparse/smatch/cppcheck/coccinelle）；(3) 单元测试（KUnit）；(4) 集成测试（kselftest）；(5) 文档生成（`make htmldocs`）；(6) 契约一致性检查（syscall.xml / bitfield.bf）；(7) checkpatch 规范检查；(8) 形式化验证（tests-linux 子仓）。
 
@@ -330,4 +330,4 @@ IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）在 AirymaxOS 侧有完整定�
 
 ---
 
-> **文档结束** | agentrt-linux v0.3.0 源码级证据与跨项目一致性分析 | 2026-07-10 | SPHARX Ltd
+> **文档结束** | agent-linux v0.3.0 源码级证据与跨项目一致性分析 | 2026-07-10 | SPHARX Ltd

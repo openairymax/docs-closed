@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v0.2.4 问题清单
+# agent-linux v0.2.4 问题清单
 
 > **来源**: `00-reviews/_review_0.2.4/01-comprehensive-review-v0.2.4.md`
 > **日期**: 2026-07-09
@@ -125,7 +125,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ## 修正统计
 
 > **修正状态**: ✅ 全部 8 项已修正（2026-07-09 完成）
-> **修正详情**: 见 `01-designs/_design_0.2.4/01-agentrt-linux-directory-structure.md` 附录 D.5 v0.2.4-review 二次审查修正
+> **修正详情**: 见 `01-designs/_design_0.2.4/01-agent-linux-directory-structure.md` 附录 D.5 v0.2.4-review 二次审查修正
 
 | 优先级 | 数量 | 状态 | 预估工时 | 实际状态 |
 |--------|------|------|---------|---------|

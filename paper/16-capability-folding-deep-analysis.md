@@ -82,7 +82,7 @@ Sender ──single message──▶ Kernel capability check ──▶ Receiver
 
 #### 2.2.4 跨端一致
 
-agentrt（用户态）的 Cupolas permission engine 和 agentrt-linux（内核态）的 agent_lsm 使用同一份 `security_types.h` [SC] 共享契约层——capability 枚举和策略裁决结果的 4 值枚举（ALLOW / DENY / AUDIT / DENY_AUDIT）在两端的含义完全一致。
+agentrt（用户态）的 Cupolas permission engine 和 agent-linux（内核态）的 agent_lsm 使用同一份 `security_types.h` [SC] 共享契约层——capability 枚举和策略裁决结果的 4 值枚举（ALLOW / DENY / AUDIT / DENY_AUDIT）在两端的含义完全一致。
 
 ---
 
@@ -263,7 +263,7 @@ airy_err_t airy_ipc_recv(airy_ipc_channel_t *channel,
 **ipc.h** - IPC 消息头共享定义：
 - `AIRY_IPC_MAGIC = 0x41524531`（'ARE1'）
 - `AIRY_IPC_HDR_SZ = 128`（固定 128 字节）
-- `struct airy_ipc_msg_hdr` 128 字节结构，逐字节与 agentrt-linux 共享
+- `struct airy_ipc_msg_hdr` 128 字节结构，逐字节与 agent-linux 共享
 
 **security_types.h** - 安全类型共享定义：
 - POSIX capability 41 ID 枚举 + 3 个 Airymax 专属（41-43）
@@ -275,7 +275,7 @@ airy_err_t airy_ipc_recv(airy_ipc_channel_t *channel,
 
 ## 5. 内核态设计分析
 
-### 5.1 agentrt-linux 内核态映射
+### 5.1 agent-linux 内核态映射
 
 | 用户态组件 | 内核态实现 | 说明 |
 |-----------|-----------|------|
@@ -437,7 +437,7 @@ Capability Folding 是 Airymax IPC 的核心创新，通过将 capability check 
 
 1. **性能提升**：安全关键路径延迟从 ~6μs（seL4 3 次往返）降至 ~2μs（单次往返）
 2. **安全性保证**：提供 seL4 级别的 capability 安全模型，支持不可伪造、最小权限、递归撤销
-3. **跨端一致性**：通过 [SC] 共享契约层保证 agentrt（用户态）和 agentrt-linux（内核态）的消息布局和语义完全一致
+3. **跨端一致性**：通过 [SC] 共享契约层保证 agentrt（用户态）和 agent-linux（内核态）的消息布局和语义完全一致
 4. **协议可插拔**：支持 JSON-RPC、MCP、A2A、OpenAI 等多种协议在同一 L1 通道上共存
 
 这项设计的更广泛意义是：AI Agent 操作系统需要的不仅是更快的 IPC——而是更安全的 IPC 语义。通过 Capability Folding，Airymax 在同等安全级别下实现了显著的性能改进，为大规模 Agent 协作场景奠定了基础。

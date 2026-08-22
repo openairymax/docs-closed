@@ -5,7 +5,7 @@
 > **报告日期**：2026-07-18
 > **报告性质**：闭源内部 A-IPC 第五轮审查 — Capability Folding 机制在论文 vs 工程设计中的存在性审计
 > **审查方法**：逐字段交叉对照 — 论文 128B 消息头 vs Layout C SSoT 消息头 + 全文搜索 Capability Folding 必要字段 + 审查 fastpath capability 检测实现
-> **前置报告**：[16](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md) / [19](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/19-aipc-flaw-review.md)
+> **前置报告**：[16](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md) / [19](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/19-aipc-flaw-review.md)
 
 ---
 

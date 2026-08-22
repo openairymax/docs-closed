@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 版本规划决策报告（1.x.x → Linux 6.6 / 2.x.x → Linux 7.1）
 
-> **文档定位**: agentrt-linux 版本规划战略决策的系统性分析与确认报告
+> **文档定位**: agent-linux 版本规划战略决策的系统性分析与确认报告
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0
 > **决策依据**: 用户指令 2.1 + ADR-013（双基线锁定策略）+ Linux 7.1 前瞻研究报告
@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 用户指令（2026-07-09）2.1 明确要求：
 
-> 基于相关文件确认 agentrt-linux 的版本规划：明确 1.x.x 版本阶段基于 Linux 6.6 内核开发，2.x.x 版本阶段将升级至 Linux 7.1 内核。此为重要战略决策，需在方案文档中明确记录，并制定详细的内核版本迁移路径规划，包括兼容性处理、功能验证、性能测试等关键环节。
+> 基于相关文件确认 agent-linux 的版本规划：明确 1.x.x 版本阶段基于 Linux 6.6 内核开发，2.x.x 版本阶段将升级至 Linux 7.1 内核。此为重要战略决策，需在方案文档中明确记录，并制定详细的内核版本迁移路径规划，包括兼容性处理、功能验证、性能测试等关键环节。
 
 ### 1.2 决策要素
 
@@ -67,11 +67,11 @@ ADR-013（双基线锁定策略）已在 `10-architecture/05-adrs.md` 中记录�
 
 ### 2.3 Linux 7.1 前瞻研究确认
 
-`docs-closed/agentrt-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`（336 行）已完成：
+`docs-closed/agent-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`（336 行）已完成：
 - Linux 7.1 发布状态确认（2026-06-14 发布，当前 7.1.3，非 LTS）
 - 7.x 系列关键特性详述（调度/内存/eBPF/io_uring/FS/安全/实时/AI/架构）
 - 6.6→7.1 迁移路径（breaking changes + 新 ABI）
-- 对 agentrt-linux 2.x.x 的 10 条前瞻性预留建议
+- 对 agent-linux 2.x.x 的 10 条前瞻性预留建议
 
 ---
 
@@ -137,7 +137,7 @@ ADR-013（双基线锁定策略）已在 `10-architecture/05-adrs.md` 中记录�
 - 2.x.x 初期以 7.1 为开发基线（利用 7.1 的 sched_ext cgroup 子调度器等能力）
 - 跟踪 7.x stable 更新（7.1.x → 7.2 → ... → 7.x LTS）
 - 7.x LTS 发布后（推测 7.4/7.5，2026 末确认）切换至 LTS
-- 在 LTS 发布前，通过 agentrt-linux 自维护补丁保证安全
+- 在 LTS 发布前，通过 agent-linux 自维护补丁保证安全
 
 ### 4.3 P3 修复：补充性能测试规划
 
@@ -347,7 +347,7 @@ grep -n "性能测试规划" docs/AirymaxOS/10-architecture/04-engineering-basel
 
 **决策 VP-3（2026-07-09 确认）**：
 
-> agentrt-linux 版本规划采用双基线锁定策略（ADR-013）：
+> agent-linux 版本规划采用双基线锁定策略（ADR-013）：
 > - 1.x.x 全系列以 Linux 6.6 LTS 为内核基线（维护至 2027-12）
 > - 2.x.x 全系列以 Linux 7.x 系列为内核基线（从 7.1 起步，跟踪至 7.x LTS）
 > - 迁移遵循 5 阶段路径：兼容性评估 → 兼容层先行 → 渐进式基线切换 → 功能验证 → 性能测试 → 旧基线 EOL
@@ -390,9 +390,9 @@ Linux 7.1 前瞻研究报告（`00-reviews/_research_0.2.5/02-linux-7.1-forward-
 
 - `docs/AirymaxOS/10-architecture/04-engineering-baseline.md`（工程基线，含版本规划）
 - `docs/AirymaxOS/10-architecture/05-adrs.md`（ADR-013 双基线锁定策略）
-- `docs-closed/agentrt-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`（Linux 7.1 前瞻研究）
+- `docs-closed/agent-linux/_research_0.2.5/02-linux-7.1-forward-looking.md`（Linux 7.1 前瞻研究）
 - `docs/AirymaxOS/130-roadmap/README.md`（路线图，版本协同时序）
-- `docs-closed/agentrt-linux/_analysis_0.3.0/01-lessons-learned.md`（经验总结，VP-1/2 版本规划共识）
+- `docs-closed/agent-linux/_analysis_0.3.0/01-lessons-learned.md`（经验总结，VP-1/2 版本规划共识）
 
 ---
 

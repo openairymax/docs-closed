@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux 全量审查误判纠错 + 第三方风险评估报告 v2.6
+# 00 — agent-linux 全量审查误判纠错 + 第三方风险评估报告 v2.6
 
 > **审查日期**：2026-07-22
 > **审查目标**：(1) 交叉验证 00-reviews 下全部 21 轮审查报告的误判；(2) 全面评估第三方提出的工程风险
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 核心发现
 
-本次审查覆盖了 `/home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews` 下的全部审查轮次（从 `_review_0.1.1` 到 `_review_v2.5` 共 21 轮 + 3 个 research/analysis 目录），核心发现：
+本次审查覆盖了 `/home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews` 下的全部审查轮次（从 `_review_0.1.1` 到 `_review_v2.5` 共 21 轮 + 3 个 research/analysis 目录），核心发现：
 
 **误判集中在 v2.3 和 v2.4（代码已存在的阶段），而非 v2.2 及之前（0 行代码阶段）。**
 
@@ -28,7 +28,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ### 1.2 误判模式分析
 
 v2.4 产生 6 项误判的根因模式：
-1. **路径检查错误**（1项）：检查了 `kernel/.github/` 而非管理仓 `agentrt-linux/.github/`
+1. **路径检查错误**（1项）：检查了 `kernel/.github/` 而非管理仓 `agent-linux/.github/`
 2. **设计文档阅读不充分**（3项）：decode/invoke、MCS、禁 union 已在设计文档中定义
 3. **代码实践未验证**（1项）：禁 union 只需简单 grep
 4. **过度依赖子代理摘要**（1项）：部分判定基于摘要而非直接验证
@@ -65,11 +65,11 @@ v2.4 产生 6 项误判的根因模式：
 
 **结论：v2.2 全部 39 份报告无误判。**
 
-v2.2（2026-07-16）的核心断言全部基于一个不可争议的事实：**agentrt-linux 当时有 0 行代码**。
+v2.2（2026-07-16）的核心断言全部基于一个不可争议的事实：**agent-linux 当时有 0 行代码**。
 
 | 报告 | 关键断言 | 当时状态 | 当前验证 |
 |------|---------|---------|---------|
-| 00-comprehensive-analysis | "agentrt-linux 不具备开发条件" | ✅ 正确（0 行代码） | 已由 v2.3 解决 |
+| 00-comprehensive-analysis | "agent-linux 不具备开发条件" | ✅ 正确（0 行代码） | 已由 v2.3 解决 |
 | 01-code-vacuum | VAC-001~006 代码真空 | ✅ 正确 | 已修复（39 .c + 16 .h） |
 | 02-sc-shared-headers | SC-001~006 头文件缺失 | ✅ 正确 | 已修复（10 [SC] 头文件） |
 | 03-five-unify-modules | 5 模块工程不可行 | ✅ 正确 | 已由 v2.3 实现 |
@@ -131,7 +131,7 @@ v2.0/v2.1 的实际贡献是为 Capability Folding 设计扫清了工程基础�
 
 **风险等级：⚠️ 部分真实**
 
-**评估**：io_uring 历史上确实有多个 CVE。agentrt-linux 的加固设计覆盖了已知攻击向量，但依赖 io_uring 作为安全边界增加了一层复杂性。关键防护机制：
+**评估**：io_uring 历史上确实有多个 CVE。agent-linux 的加固设计覆盖了已知攻击向量，但依赖 io_uring 作为安全边界增加了一层复杂性。关键防护机制：
 
 - `06-io-uring-hardening.md` 设计了 io_uring 加固层
 - `08-threat-model.md` 定义了威胁模型
@@ -345,7 +345,7 @@ v2.0/v2.1 的实际贡献是为 Capability Folding 设计扫清了工程基础�
 
 ### 5.3 整体判定
 
-**agentrt-linux 在架构层面设计完整且逻辑自洽。第三方风险大部分已在设计层面有应对，但工程实现细节和长期维护策略需要补充。**
+**agent-linux 在架构层面设计完整且逻辑自洽。第三方风险大部分已在设计层面有应对，但工程实现细节和长期维护策略需要补充。**
 
 M1 前置条件：
 1. 修复 5 项 P0 真实问题（§4.2）
@@ -388,6 +388,6 @@ M1 前置条件：
 
 ---
 
-> **文档结束** | agentrt-linux v2.6 全量误判纠错 + 风险评估报告
+> **文档结束** | agent-linux v2.6 全量误判纠错 + 风险评估报告
 > 核心原则：深度检查发现的所有问题是否真实存在，不能随意判定
 > 审查覆盖：21 轮审查报告 + 3 份分析报告 + 3 份研究报告 + 第三方 13 项风险评估

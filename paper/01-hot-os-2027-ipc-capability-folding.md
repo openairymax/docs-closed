@@ -19,8 +19,8 @@
 | 图表数量 | 3-4 张 |
 | 基准测试 | ~2 周（微基准 + 对比 seL4 / io_uring raw） |
 | 写作时间 | ~1 周 |
-| 系统 | Airymax AgentRT (agentrt) + AirymaxOS (agentrt-linux) |
-| 代码基础 | agentrt 177K LOC C, agentrt-linux 设计文档 (~110+ 文档) |
+| 系统 | Airymax AgentRT (agentrt) + AirymaxOS (agent-linux) |
+| 代码基础 | agentrt 177K LOC C, agent-linux 设计文档 (~110+ 文档) |
 
 ---
 
@@ -80,7 +80,7 @@ Paragraph 3: 本文的贡献
       IPC 消息头本身的字段验证中——每条消息头携带 source、target、cap_badge，路由时即完成 capability
       校验。不需要额外的 RPC 来回。
 
-  我们展示了 Airymax IPC 在 agentrt（用户态）和 agentrt-linux（内核态）的协同实现，并通过微基准
+  我们展示了 Airymax IPC 在 agentrt（用户态）和 agent-linux（内核态）的协同实现，并通过微基准
   对比 seL4 raw IPC 和 io_uring bare-metal 吞吐，证明这个设计在性能上不劣于现有方案，在安全性上
   优于纯数据面的方案。
 ```
@@ -95,7 +95,7 @@ Paragraph 3: 本文的贡献
 Paragraph 1: Airymax 的双端架构
 
   ┌─────────────────┐          ┌──────────────────────┐
-  │ agentrt (用户态)  │          │ agentrt-linux (内核态) │
+  │ agentrt (用户态)  │          │ agent-linux (内核态) │
   │ 12 daemons       │          │ Linux 6.6 + capability │
   │ CoreLoopThree    │          │ sched_ext + eBPF       │
   │ Cupolas (安全穹顶) │          │ io_uring + seL4 LSM    │
@@ -106,7 +106,7 @@ Paragraph 1: Airymax 的双端架构
 
   关键约束：
   ─ agentrt 是跨平台用户态 C 程序，使用 POSIX + shared memory + semaphore 实现 IPC
-  ─ agentrt-linux 是 Linux 内核模块，使用 io_uring + seL4 风格 capability
+  ─ agent-linux 是 Linux 内核模块，使用 io_uring + seL4 风格 capability
   ─ 两端必须共享同一 IPC 消息布局——否则翻译层会吃掉性能，也引入不一致性风险
 
 Paragraph 2: 为什么传统 IPC 设计不适合 Agent 场景
@@ -225,7 +225,7 @@ Paragraph 3: 两个必须同时解决的设计张力
 3. **与 seL4 capability invocation 的语义同形**：`mint / derive / revoke` 三种操作
    映射到 L2 消息头的 flags 位，不需要额外的 CTE lookup 往返。
 
-4. **跨端一致**：agentrt（用户态）的 Cupolas permission engine 和 agentrt-linux（内核态）
+4. **跨端一致**：agentrt（用户态）的 Cupolas permission engine 和 agent-linux（内核态）
    的 agent_lsm 使用同一份 `security_types.h` [SC] 共享契约层——capability 枚举和
    策略裁决结果的 4 值枚举（ALLOW / DENY / ASK / DEFER）在两端的含义完全一致。
 ```
@@ -263,7 +263,7 @@ Paragraph 1: agentrt 用户态实现（~500 LOC）
   - OOM 保护：32 个预分配 msg 节点的应急池（SEC-13 合规）
   - CRC32：编译时 256 条目查表，IEEE 802.3 多项式
 
-Paragraph 2: agentrt-linux 内核态设计（设计文档，代码在 M1 阶段实现）
+Paragraph 2: agent-linux 内核态设计（设计文档，代码在 M1 阶段实现）
 
   核心映射：
   - L1 binder → io_uring SQE/CQE 队列（内核态零拷贝数据面）
@@ -281,7 +281,7 @@ Paragraph 3: 共享契约层的落地
   ─ cognition_types.h（CoreLoopThree + Thinkdual + LLM 推理）
   ─ syscalls.h（12 核心 + 12 预留 syscall 编号）
 
-  物理宿主：agentrt-linux/kernel/include/airymax/
+  物理宿主：agent-linux/kernel/include/airymax/
   引用方式：agentrt 通过 -I 编译选项引用同一物理文件
   保证逐字节相同的机制：CI 校验两侧 grep magic 值是否一致
 ```
@@ -394,7 +394,7 @@ Paragraph 3: 共享契约层的落地
   capability 安全保证——这在同等安全级别下是显著的性能改进（3 个 seL4 往返 ~6μs vs.
   Airymax 单次 ~2μs）。
 
-  我们正在将 Airymax IPC 实现为 agentrt（用户态，C）和 agentrt-linux（内核态，Linux 6.6）
+  我们正在将 Airymax IPC 实现为 agentrt（用户态，C）和 agent-linux（内核态，Linux 6.6）
   的一部分，并通过 IRON-9 v2 [SC] 共享契约层保证跨端消息一致性。这项工作的更广泛意义是：
   AI Agent 操作系统需要的不仅是更快的 IPC——而是更安全的 IPC 语义。
 ```
@@ -432,7 +432,7 @@ Paragraph 3: 共享契约层的落地
 | 作者 | 机构 | 贡献 |
 |------|------|------|
 | [待定] | SPHARX Ltd. | IPC 系统架构设计 + 实现 |
-| [待定] | SPHARX Ltd. | agentrt-linux 内核态 capability 模型设计 |
+| [待定] | SPHARX Ltd. | agent-linux 内核态 capability 模型设计 |
 | [待定] | SPHARX Ltd. | 实验设计 + 基准测试 |
 
 注：HotOS 通常接受 3-6 名作者。
