@@ -219,6 +219,40 @@
   platform_process.c Windows timeout/cancel/envp 失效、SRWLOCK 私有
   布局依赖（见 2.13 遗留清单，均需目标机验证）。
 
+### 2.15 二进制包同步与 install.sh 加固（2026-08-22 补充）
+- 背景：airymax-binary 自 2026-08-21 23:35 组装后未再同步，落后
+  今日全部修复（nohup 生命周期、airy_cli 拆分、SSoT 收敛）。
+- 根因（"其他设备安装损坏、airymaxrt 拉不起系统"）：
+  ① 包内 scripts/airymaxrt 为旧版（md5 5b589aa4，0 处 nohup），daemon
+     拉起后随会话退出被杀（nohup 修复未进包）；
+  ② install.sh 启动器部署存在静默降级：airymaxrt 缺失时生成"兜底轻量
+     包装"（只 exec TUI、不拉起 daemon 群）→ 全新安装后输入 airymaxrt
+     能进 TUI 但系统无 daemon，表现为"拉不起系统"；
+  ③ 包内 airy_cli（md5 161dc3a2）为旧版（缺 cli_task_result_render 拆分）。
+- 修复与加固（install.sh 两处 fail-closed）：
+  ① 第 8 步启动器部署改为**缺失即失败退出**（删兜底轻量包装），杜绝
+     静默降级；
+  ② 第 4 步动态库部署加失败校验（rar/zip 解压丢文件时 daemon 缺库
+     启动即崩）。
+- 同步动作：x86_64 的 20 个可执行 + scripts/airymaxrt（7a29e97c，含
+  8 处 nohup）+ 加固 install.sh 全部同步；重新打 agentrt-0.1.2-x86_64/
+  arm64.tar.gz（内含新 airymaxrt/airy_cli，md5 复核一致）。
+- 隔离安装验证：`install.sh --prefix /tmp/pkgsmoke` 逐步骤通过
+  （RUN_RC=0、17 daemon 全就位）；隔离冒烟从零拉起：16 daemon 群就绪 +
+  gateway（8080/8081/8082 全监听）+ CLI 对话链路返回 LLM 回复（294B）+
+  EXIT trap 干净回收全部 PID。
+- 观察记录（非阻塞）：隔离环境 gateway 8080 health check 15s 窗口未
+  通过（正式环境 10/10 秒级就绪），自动降级 airy_cli 直连 daemon 群
+  对话成功；疑为全新安装首启时 8080 bind 晚于健康检查窗口，降级兜底
+  设计已覆盖，TUI 用户路径待 TTY 环境复验。
+- 遗留：arm64 二进制层未重建（无 aarch64 g++、无交叉构建流程，本次
+  改动主要为 macOS 编译修复 + airy_cli 重构，Linux arm64 功能等效但
+  待目标机重建验证）；airymax-binary-pack.rar 系统无 unrar/7z/bsdtar
+  无法更新内容（分发建议改用 tar.gz）。
+- 教训：**二进制发行包必须纳入同步闭环**——源码/部署产物 md5 与包内
+  逐项比对（airymaxrt/airy_cli/daemon），发版即同步并做隔离安装冒烟，
+  否则"源码修了、包没跟上"造成用户侧安装损坏。
+
 ### 2.10 蓝图 L2 语义缓存命中率审查（2026-08-22 补充）
 - 四项命中率缺口已修复：①默认 θ 700→550（语义命中仅作 L3 提示、安全，
   700 使 OSS bigram 路径几乎无法过阈）；②向量 top-K 低于 θ 时回退 bigram
@@ -285,6 +319,25 @@
 - [x] 2.14 遗留缺口收敛：compat2.c SSoT 删除（重复符号消除，净删
       238 行）+ sync.c 原子操作 Windows 位宽自适应（见 2.14）。
       2026-08-22 完成：全量重建 + 单测 13/13 + 冒烟 + nm 符号计数验证。
+- [x] 2.2.4 记忆跨进程"重启即失忆"根因修复：MemoryRovol L2 HNSW 索引纯
+      内存且 airy_mr_init 不重建 → 从 L1 raw 卷遍历重建内存索引（2026-08-22
+      完成：跨进程冒烟"我叫什么名字→你叫小明" + 172/172 全量回归）。
+- [x] 2.2.1/2.2.3 CLI/TUI 交互一致性：`?`/`？` 单独输入进帮助（不再发 LLM）、
+      纯空白输入三处静默过滤（主循环/-p stdin/轮询）、TUI resize 过小自动
+      退出回行渲染（2026-08-22 完成：script 冒烟验证）。
+- [x] 2.1.1 cmd_daemons 健康检查补 gateway：HTTP 网关无 Unix socket，改
+      TCP 端口探测补报（online x/17）（2026-08-22 完成，构建通过）。
+- [x] 2.4 main 圈复杂度拆分（298→决策点 193→139）：cli_setup_core_engines
+      （引擎装配）/ cli_runtime_ctx_t + cli_setup_runtime + cli_teardown_runtime
+      （运行时上下文对称装配/释放）/ cli_blueprint_fastpath（蓝图三层快速路由），
+      main 调用点与清理段 SSoT 收敛不再逐组件释放（2026-08-22 完成：构建 +
+      冒烟 + 172/172 回归，见 5.1 更新）。
+- [x] 2.3.2 monitor 后台常驻：`airymaxrt monitor --daemon/--stop`（PID 文件 +
+      nohup 递归真实路径），端侧/服务器无需保持终端即可监控外设增强自动恢复
+      （2026-08-22 完成：隔离生命周期验证 启动→停止→进程确认终止）。
+- [x] 2.3.3 端侧/服务器资源分级验证：1.5GiB 模拟→minimal（端侧可运行）、
+      12GB 实机→full（服务器/PC）；ARM64 交叉语法检查 7 文件全通过
+      （commons 平台层 4 + airy_cli 3）（2026-08-22 完成）。
 - [ ] Windows/macOS 平台兼容性实测（当前仅 CI 编译链路 + 模拟语法检查）。
 - [ ] ipc 模块 Windows 实现（CMake 层 if(NOT WIN32) 排除，AF_UNIX/
       MSG_WAITALL 无对应实现）+ ipc_message_t 端序 + platform_process.c
@@ -296,8 +349,11 @@
 
 | 函数 | 圈复杂度 | 说明 |
 |------|---------|------|
-| airy_cli main | 298 | CLI 主入口（初始化 DAG + 事件循环），需按阶段抽离 |
-| cli_tui_readline | 170 | 全屏 TUI 按键/输入核心，拆分风险高 |
+| airy_cli main | 298 → ~139 | 2026-08-22 拆分：初始化装配/运行时上下文/蓝图快速路由
+  抽离 4 函数（pmccabe 298 含 switch 逐分支；拆后 if/switch 计数 139，待 pmccabe 复核） |
+| cli_blueprint_fastpath | 新增 | 蓝图 L1/L2 三层快速路由（自 main 提取，含 cJSON/事件/渲染分支） |
+| cli_setup_runtime | 新增 | 运行时上下文装配（rsched/validator/reviewer/hall/governance/面板） |
+| cli_tui_readline | 170 | 全屏 TUI 按键/输入核心，拆分风险高（待续） |
 | cli_chat_reply | 88 | 对话回复管线 |
 | handle_agent_run | 80 | gateway agent 执行编排 |
 | airy_token_count | 78 | token 分类（switch 密集，逻辑可复核） |
