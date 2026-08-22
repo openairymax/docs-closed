@@ -173,6 +173,31 @@
   实际渲染文本（含 TUI 转义、内置横幅）逐字核对，否则脚本先于产品
   得出结论，验证失真。
 
+### 2.13 commons 跨平台/跨架构核查（2026-08-22 补充）
+- 全库静态审查：platform/（10 文件）与 sync_platform.c 所有函数均有
+  Windows/POSIX 双分支，无"仅 #ifdef __linux__ 而 #else 缺失"的漏分支；
+  atomic_compat.h 三路（stdatomic/Interlocked/__atomic）覆盖主流平台与
+  8/16/32/64 位宽度；字节序全部经 htonl/ntohl/htons/ntohs 标准函数。
+- 已修复编译级缺口（macOS 直接构建失败）：①platform.c POSIX 分支
+  `rand_r()`（macOS 无）→ 统一 `airy_random_bytes()`（/dev/urandom），
+  随机质量优于 rand_r+时间种子，urandom 不可用回退线程局部 xorshift；
+  ②sync_platform.c `sem_timedwait()`（macOS 无）→ sem_trywait 轮询+
+  2ms 短眠近似，返回语义与 Linux 一致。验证：Linux 全构建 + 
+  `-D__APPLE__` 模拟语法 PASS + commons 单测 13/13 + CLI 冒烟。
+- 遗留缺口（本轮不扩大，记录待后续轮次）：ipc 模块 CMake 层
+  `if(NOT WIN32)` 排除、Windows 无对应实现（AF_UNIX/MSG_WAITALL 仅
+  POSIX）；sync.c 原子操作 Windows 分支硬编码 64 位（32 位 Windows
+  越界）；compat.c/compat2.c Windows 下 gethostname/sysconf 重复符号；
+  ipc_message_t 仅 net_len 走网络字节序、其余字段主机序（异构端序
+  主机间不兼容）；platform_process.c Windows 分支 timeout/cancel/envp
+  失效；SRWLOCK 私有布局依赖。
+- 教训：**"POSIX 分支"不等于"跨平台分支"**——POSIX 平台族（Linux/
+  macOS/BSD）API 并不一致（rand_r、sem_timedwait、sem_init 均 macOS
+  缺/弃），跨平台审查必须逐 API 对照 Darwin 而非仅对照 Windows；
+  模拟宏语法检查（`-D__APPLE__`）是本地无目标机时的有效验证手段，
+  但需注意模拟环境（Linux 下 __linux__ 与 __APPLE__ 并存）会引入
+  平台探测宏重复定义的假象，须排除。
+
 ### 2.10 蓝图 L2 语义缓存命中率审查（2026-08-22 补充）
 - 四项命中率缺口已修复：①默认 θ 700→550（语义命中仅作 L3 提示、安全，
   700 使 OSS bigram 路径几乎无法过阈）；②向量 top-K 低于 θ 时回退 bigram
@@ -233,7 +258,13 @@
 - [x] 2.12 daemon 生命周期修复：五处拉起统一 nohup，会话异常退出不再
       残留 defunct 僵尸（2026-08-22 完成：SIGKILL 场景 PTY 验证 daemon
       全存活、零新增僵尸，见 2.12）。
-- [ ] Windows/macOS 平台兼容性实测（当前仅 CI 编译链路）。
+- [x] 2.13 commons 跨平台核查：全库静态审查 + macOS 编译级缺口修复
+      （rand_r→/dev/urandom、sem_timedwait→轮询，见 2.13）。2026-08-22
+      完成：Linux 构建 + -D__APPLE__ 模拟语法 PASS + 单测 13/13 + 冒烟。
+- [ ] Windows/macOS 平台兼容性实测（当前仅 CI 编译链路 + 模拟语法检查）。
+- [ ] ipc 模块 Windows 实现（CMake 层 if(NOT WIN32) 排除，AF_UNIX/
+      MSG_WAITALL 无对应实现）+ sync.c 原子操作 32 位 Windows 位宽修复
+      + compat.c/compat2.c Windows 重复符号收敛（见 2.13 遗留缺口）。
 - [ ] 高圈复杂度函数系统性拆分（基线见下，拆分需专门重构轮次并全量回归）。
 
 ### 5.1 圈复杂度基线（pmccabe，2026-08-21）
