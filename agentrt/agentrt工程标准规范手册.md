@@ -1624,17 +1624,13 @@ airymaxhub/                                  # 伞仓（1）
 │   url: git@atomgit.com:openairymax/airymaxhub.git
 │
 ├── .gitmodules                              # 伞仓 submodule 声明（7 条）
-├── cmake/                                   # 伞仓直属，非 submodule
-│   ├── compilerflags.cmake
-│   ├── sanitizers.cmake
-│   ├── dependencies.cmake
-│   ├── platform.cmake
-│   └── utils.cmake
 │
 ├── agentrt/                    # 管理仓库 submodule（继承原 AgentRT 历史）
 │   │   url: git@atomgit.com:openairymax/agentos.git  ← 继承，保留全部 git 历史
 │   │
 │   ├── .gitmodules                            # agentrt 管理仓 submodule 声明（7 条）
+│   ├── cmake/                    # 构建系统模块（v0.1.2 起自伞仓迁入，IRON-9 [IND] 独立层）
+│   ├── scripts/                  # 官方安装器 install.sh/install.ps1（v0.1.2 起自伞仓迁入）
 │   ├── atoms/                    # submodule  git@atomgit.com:openairymax/atoms.git
 │   ├── commons/                  # submodule  git@atomgit.com:openairymax/commons.git
 │   ├── cupolas/                  # submodule  git@atomgit.com:openairymax/cupolas.git
@@ -1734,7 +1730,7 @@ airymaxhub/                                  # 伞仓（1）
 | agentrt 管理仓 url | `git -C agentrt remote -v` | `git@atomgit.com:openairymax/agentos.git` |
 | 伞仓一次性拉取 | `git clone --recursive git@atomgit.com:openairymax/airymaxhub.git` | 无失败 submodule |
 | 5 管理仓 .gitmodules 条目数 | agentrt(7) + sdk(6) + ecosystem(5) + products(3) + agentrt-linux(8) | 29 |
-| cmake/ 伞仓直属 | `ls cmake/*.cmake | wc -l` | 5 |
+| cmake/ agentrt 管理仓直属 | `ls agentrt/cmake/*.cmake | wc -l` | 5 |
 | memoryrovol EULA | `git -C products/memoryrovol remote -v` + `head LICENSE` | spharx 组织 + EULA |
 | sdk-xx 命名 | `ls sdk/` | 全部 sdk-* 模式 |
 | 目录名小写 | `find . -type d -name '[A-Z]*'` | 空 |
@@ -3822,8 +3818,13 @@ airymaxhub（L0）
 
 **伞仓直属文件**（非 submodule，伞仓 git 直接管理）:
 - `.gitmodules`（伞仓 submodule 声明，7 条）
-- `cmake/`（5 个 CMake 模块：`compilerflags.cmake`、`sanitizers.cmake`、`dependencies.cmake`、`platform.cmake`、`utils.cmake`）
 - `README.md`、`LICENSE`（AGPL v3 + Apache 2.0 双许可证）、`NOTICE`
+
+> **v0.1.2 变更**：构建系统模块 `cmake/` 与官方安装器 `scripts/` 自伞仓直属迁入
+> agentrt 管理仓（`agentrt/cmake/`、`agentrt/scripts/`）。构建系统与安装器属
+> IRON-9 四层共享模型 [IND] 完全独立层，agentrt（用户态）与 agentrt-linux
+> （内核态）各自独立，不再共享伞仓直属基础设施（SPLIT-01 原"cmake/ 伞仓直属"
+> 设计被 v0.1.2 决策取代）。
 
 ### 36.3 SPLIT-02：仓库命名工程规范
 
