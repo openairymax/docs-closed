@@ -135,6 +135,44 @@
   （"运行这个脚本"）也可能是场景修饰（"在树莓派上运行"），全串 strstr
   必然误判；咨询词表要完整覆盖分析/比较/评估类。
 
+### 2.11 执行链路缺陷根因修复（2026-08-22 补充）
+- 修复 A（coreloopthree engine_phase0）：LLM 分解偶发返回空 content，
+  `decomp_output_len=0` 仍调 `airy_tc_step_complete` 报 NULL/invalid params。
+  修复：空串视为分解失败走 heuristic fallback + 调用处加 `len>0` 守卫。
+- 修复 B（cli_exec_review）：`cli_exec_t2_review`/`cli_exec_t1f_adjudicate`
+  的 `t2x/t1fx/t1px` 声明在 if 块内、指针逃逸出块，后台 wait 线程异步读
+  `cfg.model` 触发 ASan stack-use-after-scope。修复：提升到函数作用域。
+- 教训：**栈变量生命周期必须覆盖其指针逃逸的所有消费方**（含后台线程）；
+  ASan 实测复现是这类缺陷的可靠判据。两处修复均经重编部署 + e2e 验证。
+
+### 2.12 daemon 生命周期与会话退出（2026-08-22 补充）
+- 根因：airymaxrt 全部 daemon（_launch_daemon/_ensure_daemon/llm_d/
+  gateway_d）以裸 `&` 拉起，无 nohup。终端会话异常退出（SSH 断连/
+  终端关闭）时进程组收到 SIGHUP，daemon 与脚本同灭，父脚本先行死亡
+  使 daemon 变 `<defunct>` 僵尸（实测两代 llm_d/agent_d/gateway_d 全
+  残留），下次启动 _sock_alive 复用判定失效。
+- 修复：五处拉起统一加 `nohup`（$! 语义不变，cleanup 按 PID TERM
+  回收仍有效）。两条退出路径均干净：①EXIT trap 执行（正常退出/
+  SIGHUP/SIGTERM/INT）→ cleanup 主动回收；②EXIT trap 不执行
+  （SIGKILL）→ daemon 忽略 SIGHUP 存活续服务，reparent 后无僵尸。
+- 验证：SigIgn 实测 nohup 后 SIGHUP 置 IGN；PTY 驱动 airymaxrt cli，
+  SIGKILL 后 5 个核心 daemon 全存活、零新增 defunct。
+- 教训：**进程生命周期设计必须同时覆盖"正常回收"与"孤儿存活"两条
+  路径**——只保证 cleanup 会回收不够，cleanup 因 SIGKILL 等不执行时
+  的孤儿行为（僵尸 vs 存活）才是真实可用性的分水岭；bash 后台拉起
+  服务类进程默认应加 nohup，孤儿化（reparent 到 init）是"服务常驻"
+  的自然形态。
+
+### 3.9 PTY 端到端脚本的交互与状态标记陷阱（2026-08-22 补充）
+- 验证"任务执行期插入对话"需 PTY 驱动：脚本自身 stdin 会劫持 CLI 输入
+  （须 `< /dev/null` 或显式管道）；GCCP 逐问交互必须发送 Enter 跳过；
+  `b"completed"` 会误匹配"Parallel sub-agent review completed"（须用
+  running 之后的精确终态标记切片判定）；hero 横幅 `[Super Agent]` 是
+  内置文本（须 `running_idx` 切片排除）。
+- 教训：**端到端脚本的状态机标记必须精确到"阶段+终态"**，且需与产品
+  实际渲染文本（含 TUI 转义、内置横幅）逐字核对，否则脚本先于产品
+  得出结论，验证失真。
+
 ### 2.10 蓝图 L2 语义缓存命中率审查（2026-08-22 补充）
 - 四项命中率缺口已修复：①默认 θ 700→550（语义命中仅作 L3 提示、安全，
   700 使 OSS bigram 路径几乎无法过阈）；②向量 top-K 低于 θ 时回退 bigram
@@ -185,6 +223,16 @@
       Sched 测试全 PASS）。
 - [x] 0.1.2 发布：agentrt 打 v0.1.2 tag（2026-08-22，含本轮 CLI/L2 修复
       changelog）。
+- [x] 2.2.1 任务集模式中途插入对话：任务执行期 wait 放后台线程 + 主线程
+      poll stdin，非中断指令走 cli_chat_reply 插入对话，任务继续后台执行
+      （2026-08-22 完成：PTY e2e 实测插入对话回复 + 任务继续执行至终态）。
+- [x] 2.2.1 任务集模式插入对话收尾 + 执行链路缺陷根因修复（coreloopthree
+      空 content 守卫 + cli_exec_review 栈逃逸）+ GCCP 逐问交互优化 +
+      main 结果渲染拆分 cli_task_result_render（2026-08-22 完成：PTY e2e
+      全链路验证 + 冒烟 SMOKE_RC=0 + 部署 md5 一致）。
+- [x] 2.12 daemon 生命周期修复：五处拉起统一 nohup，会话异常退出不再
+      残留 defunct 僵尸（2026-08-22 完成：SIGKILL 场景 PTY 验证 daemon
+      全存活、零新增僵尸，见 2.12）。
 - [ ] Windows/macOS 平台兼容性实测（当前仅 CI 编译链路）。
 - [ ] 高圈复杂度函数系统性拆分（基线见下，拆分需专门重构轮次并全量回归）。
 
