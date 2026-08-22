@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 基于 Linux 微内核化改造技术决策论证报告
 
-> **文档定位**: agentrt-linux 微内核化改造技术路线（基于 Linux 改造而非从零开发微内核）的系统性技术决策论证报告，作为 ADR-012 + ADR-002 的决策支撑材料
+> **文档定位**: agent-linux 微内核化改造技术路线（基于 Linux 改造而非从零开发微内核）的系统性技术决策论证报告，作为 ADR-012 + ADR-002 的决策支撑材料
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0
 > **决策依据**: ADR-002（微内核化改造策略）+ ADR-012（技术路线确认）+ ADR-013（版本基线锁定）+ ADR-014（seL4 唯一来源）
@@ -28,7 +28,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 1. 摘要（TL;DR）
 
-本报告对 agentrt-linux「基于 Linux 内核微内核化改造，而非从零开发微内核」的核心技术决策（ADR-012 + ADR-002）进行系统性论证。
+本报告对 agent-linux「基于 Linux 内核微内核化改造，而非从零开发微内核」的核心技术决策（ADR-012 + ADR-002）进行系统性论证。
 
 **核心结论**（VP-5 决策确认）：
 
@@ -55,7 +55,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 用户指令 2.4（原文）：
 
-> "确认核心技术决策：明确agentrt-linux不采用从零开发微内核的模式，而是基于Linux内核进行微内核化改造。改造过程中主要吸收seL4的微内核思想，同时保留Linux内核的稳定性与硬件支持优势，形成技术决策文档并确保在方案中明确体现。"
+> "确认核心技术决策：明确agent-linux不采用从零开发微内核的模式，而是基于Linux内核进行微内核化改造。改造过程中主要吸收seL4的微内核思想，同时保留Linux内核的稳定性与硬件支持优势，形成技术决策文档并确保在方案中明确体现。"
 
 ### 2.2 分析目标
 
@@ -76,8 +76,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 微内核策略方案 | `docs/AirymaxOS/10-architecture/03-microkernel-strategy.md`（629 行） |
 | 工程基线 | `docs/AirymaxOS/10-architecture/04-engineering-baseline.md` |
 | IRON-9 v2 共享模型 | `docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md` |
-| C-2.2 微内核来源报告 | `docs-closed/agentrt-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md` |
-| C-2.3 架构模型论证 | `docs-closed/agentrt-linux/_analysis_0.3.0/03-architecture-model-analysis.md` |
+| C-2.2 微内核来源报告 | `docs-closed/agent-linux/_analysis_0.3.0/04-microkernel-source-sel4-only.md` |
+| C-2.3 架构模型论证 | `docs-closed/agent-linux/_analysis_0.3.0/03-architecture-model-analysis.md` |
 
 ### 2.4 分析方法
 
@@ -138,7 +138,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - **日期**: 2026-07-06
 - **决策者**: Airymax 架构委员会
 
-**决策内容**：agentrt-linux 采用微内核化改造策略，基于 Linux 6.6 内核基线，利用 sched_ext + eBPF kfunc + dynamic pointer + io_uring 实现微内核化改造。
+**决策内容**：agent-linux 采用微内核化改造策略，基于 Linux 6.6 内核基线，利用 sched_ext + eBPF kfunc + dynamic pointer + io_uring 实现微内核化改造。
 
 **ADR-002 vs ADR-012 关系**：
 
@@ -179,7 +179,7 @@ ADR-012 是 ADR-002 的扩展与确认，两者一致。
 | 2 | **生态成熟度** | 生态空白，需重建文件系统/网络栈/包管理/编译工具链 | 完整复用 RPM/dnf/systemd/SELinux/glibc/POSIX 应用生态 | **Linux 改造胜** |
 | 3 | **工程成本** | seL4 花费 20+ 人年仅完成 1.44 万行内核核心；生产级微内核需数万人年 | 聚焦微内核化改造，工程成本降低 10 倍以上 | **Linux 改造胜** |
 | 4 | **生产级稳定性** | 研究型项目，生产级稳定性未经验证（seL4 主要用于安全关键嵌入式） | Linux 30 年生产验证，全球数据中心/云/超算广泛部署 | **Linux 改造胜** |
-| 5 | **形式化验证** | 可完整形式化验证（seL4 优势） | 无法完整形式化验证，但可对关键路径部分验证 | **从零开发胜**（但 agentrt-linux 不追求全量验证） |
+| 5 | **形式化验证** | 可完整形式化验证（seL4 优势） | 无法完整形式化验证，但可对关键路径部分验证 | **从零开发胜**（但 agent-linux 不追求全量验证） |
 | 6 | **内核体积** | 极小（seL4 核心 1.44 万行） | 较大（Linux 6.6 约 3000 万行），但可通过裁剪控制 | **从零开发胜**（但非生产级必要条件） |
 | 7 | **微内核化程度** | 纯微内核，服务全部用户态化 | 渐进式微内核化，部分服务保留内核态 | **从零开发胜**（但违反生产级目标） |
 | 8 | **IPC 性能** | seL4 Fastpath 性能极高（< 100ns） | io_uring 零拷贝接近原生 syscall 性能 | **从零开发略胜**（但 io_uring 性能足够） |
@@ -197,7 +197,7 @@ ADR-012 是 ADR-002 的扩展与确认，两者一致。
 | 从零开发微内核 | 3（形式化验证、内核体积、微内核化程度） | 1（安全模型） | 8 | **劣势** |
 | 基于 Linux 改造 | 8 | 1（安全模型） | 3（但 3 项劣势均非生产级必要条件） | **优势** |
 
-**关键洞察**：从零开发微内核的 3 项优势（形式化验证、极小内核体积、纯微内核化）均为学术/研究型优势，与 agentrt-linux 的「生产级 Linux 发行版」定位不符。agentrt-linux 不追求：
+**关键洞察**：从零开发微内核的 3 项优势（形式化验证、极小内核体积、纯微内核化）均为学术/研究型优势，与 agent-linux 的「生产级 Linux 发行版」定位不符。agent-linux 不追求：
 
 1. 完整形式化验证（生产级不需要，且成本过高）
 2. 极小内核体积（生产级需要完整硬件支持，体积必然较大）
@@ -211,15 +211,15 @@ ADR-012 是 ADR-002 的扩展与确认，两者一致。
 
 ### 5.1 Linux 6.6 原生 5 大特性
 
-agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性。本节逐一说明每项特性如何支撑微内核化目标。
+agent-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性。本节逐一说明每项特性如何支撑微内核化目标。
 
 ### 5.2 特性 1：sched_ext（调度策略用户态化）
 
 | 维度 | 说明 |
 |------|------|
 | **微内核化目标** | 调度策略用户态化（ES-SEL4-04 机制与策略分离） |
-| **Linux 原生支持** | Linux 6.12+ 主线，agentrt-linux 1.x.x 通过内核增强引入 |
-| **agentrt-linux 落地** | airymaxos-kernel 实现 SCHED_AGENT 调度类（复用 SCHED_EXT=7） |
+| **Linux 原生支持** | Linux 6.12+ 主线，agent-linux 1.x.x 通过内核增强引入 |
+| **agent-linux 落地** | airymaxos-kernel 实现 SCHED_AGENT 调度类（复用 SCHED_EXT=7） |
 | **seL4 对应** | seL4 的 priority + round-robin + domain 调度原语（ES-SEL4-29） |
 | **改造方式** | 用户态 BPF 程序定义 SCHED_AGENT 调度策略，内核态仅提供调度框架 |
 | **代码预估** | ~4,000 行（airymaxos-kernel） |
@@ -244,7 +244,7 @@ agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性�
 |------|------|
 | **微内核化目标** | 消息传递 IPC（ES-SEL4-10~13） |
 | **Linux 原生支持** | Linux 6.6 原生（含 BPF + io_uring 集成） |
-| **agentrt-linux 落地** | airymaxos-kernel + airymaxos-services 实现 IPC 子系统 |
+| **agent-linux 落地** | airymaxos-kernel + airymaxos-services 实现 IPC 子系统 |
 | **seL4 对应** | seL4 的 Endpoint + Notification + Fastpath（ES-SEL4-10~15） |
 | **改造方式** | io_uring SQ/CQ ring 提供异步消息传递语义，MSG_RING 实现跨 ring 通信 |
 | **代码预估** | ~5,000 行（airymaxos-kernel） |
@@ -269,7 +269,7 @@ agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性�
 |------|------|
 | **微内核化目标** | capability 验证 + 安全观测（ES-SEL4-05~09） |
 | **Linux 原生支持** | Linux 6.6 原生（eBPF kfunc + dynamic pointer） |
-| **agentrt-linux 落地** | airymaxos-security 实现 capability 检查 + LSM 钩子 |
+| **agent-linux 落地** | airymaxos-security 实现 capability 检查 + LSM 钩子 |
 | **seL4 对应** | seL4 的 CTE + CNode + MDB 派生树（ES-SEL4-05~09） |
 | **改造方式** | eBPF kfunc 实现 capability 验证原语，dynamic pointer 实现安全数据结构 |
 | **代码预估** | ~3,000 行（airymaxos-security） |
@@ -289,7 +289,7 @@ agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性�
 |------|------|
 | **微内核化目标** | 内存管理用户态化（ES-SEL4-03） |
 | **Linux 原生支持** | Linux 6.6 原生 |
-| **agentrt-linux 落地** | airymaxos-memory 实现 MemoryRovol 内核态 + 用户态协同 |
+| **agent-linux 落地** | airymaxos-memory 实现 MemoryRovol 内核态 + 用户态协同 |
 | **seL4 对应** | seL4 的 VSpace + Page Table + Untyped-Retype（ES-SEL4-03） |
 | **改造方式** | userfaultfd 拦截缺页异常，用户态 memory server 决定页面分配策略 |
 
@@ -308,7 +308,7 @@ agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性�
 |------|------|
 | **微内核化目标** | 服务用户态化 + 故障隔离（ES-SEL4-29~31） |
 | **Linux 原生支持** | Linux 6.6 原生 |
-| **agentrt-linux 落地** | airymaxos-services 实现 12 daemons 沙箱隔离 |
+| **agent-linux 落地** | airymaxos-services 实现 12 daemons 沙箱隔离 |
 | **seL4 对应** | seL4 的 root task + 服务用户态化模型（ES-SEL4-29~31） |
 | **改造方式** | Landlock 为每个 daemon 提供文件系统/网络访问沙箱，服务崩溃不影响内核 |
 
@@ -330,7 +330,7 @@ agentrt-linux 的微内核化改造依赖 Linux 6.6 原生提供的 5 大特性�
 
 ### 6.1 10 项 ES-SEL4 工程思想
 
-本节逐一说明 seL4 的 10 项核心工程思想（ES-SEL4-01~10）如何通过 Linux 改造手段注入 agentrt-linux。
+本节逐一说明 seL4 的 10 项核心工程思想（ES-SEL4-01~10）如何通过 Linux 改造手段注入 agent-linux。
 
 ### 6.2 ES-SEL4 思想注入路径表
 
@@ -385,7 +385,7 @@ seL4 工程思想的吸收分为 3 个层次：
 | 完整形式化验证 | 基于 Linux 改造的复杂度不允许，仅对关键路径部分验证 |
 | Haskell 形式规范 | 不引入 Haskell，用 kernel-doc 等效 |
 | seL4 编码风格（4 空格/camelCase/重度 typedef） | 与 Linux 6.6 基线冲突，整体拒绝 |
-| libsel4 独立仓库 | agentrt-linux 用 [SC] 共享契约层等效 |
+| libsel4 独立仓库 | agent-linux 用 [SC] 共享契约层等效 |
 | seL4 bootinfo 机制 | 保留 Linux initramfs/systemd 启动模型 |
 
 **结论**：seL4 的 10 项核心工程思想均可通过 Linux 改造手段注入，无需从零实现任何 seL4 机制。吸收边界清晰，不与 Linux 6.6 基线冲突。
@@ -531,7 +531,7 @@ ADR-012 + ADR-002 的技术路线决策论证充分，本报告补充后达到�
 >
 > 5. **风险可控**：识别 6 项技术风险，每项均有具体缓解措施，关键风险 R-01 通过完整回归测试缓解
 >
-> 6. **与生产级定位一致**：技术路线符合 agentrt-linux「生产级 Linux 发行版」定位，不追求学术型优势（完整形式化验证 / 极小内核 / 纯微内核化）
+> 6. **与生产级定位一致**：技术路线符合 agent-linux「生产级 Linux 发行版」定位，不追求学术型优势（完整形式化验证 / 极小内核 / 纯微内核化）
 
 ### 10.2 决策一致性验证
 

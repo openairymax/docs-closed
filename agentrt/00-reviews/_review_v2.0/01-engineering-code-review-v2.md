@@ -41,9 +41,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | P0-7 | agent_registry 数据竞争 | 返回内部指针后解锁 | **确认存在** | `agent_registry_core.c:123-137` 未改 |
 | P0-8 | [SC] 头文件清单不一致 | bpf_struct_ops.h vs syscalls.h | **确认存在（恶化：bpf_struct_ops.h 升为 #1，syscalls.h 完全缺失）** | `06-iron9-shared-model.md:68` |
 | P0-9 | 文件路径引用错误 | 系统性 | **确认存在** | `00-basic-theories/` 仍引用于 8+ 文件 |
-| P0-10 | ES-SEL4-7 分类残留冲突 | agentrt-linux | **未复核（agentrt-linux 范围）** | 见 v1.0 agentrt-linux 报告 |
+| P0-10 | ES-SEL4-7 分类残留冲突 | agent-linux | **未复核（agent-linux 范围）** | 见 v1.0 agent-linux 报告 |
 
-**核心结论**：v1.0 识别的 10 项 P0 中，**8 项经源码级复核确认仍然存在**，**1 项（P0-3）应降级为 P1**（v1.0 对宏行为的判定有误），**1 项（P0-10）属 agentrt-linux 范围未在本轮复核**。其中 P0-1、P0-5、P0-8 三项不仅未修复，反而**比 v1.0 描述的更严重**。
+**核心结论**：v1.0 识别的 10 项 P0 中，**8 项经源码级复核确认仍然存在**，**1 项（P0-3）应降级为 P1**（v1.0 对宏行为的判定有误），**1 项（P0-10）属 agent-linux 范围未在本轮复核**。其中 P0-1、P0-5、P0-8 三项不仅未修复，反而**比 v1.0 描述的更严重**。
 
 ### 1.2 v2.0 新发现总览
 
@@ -82,7 +82,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 子目录可访问 | ✓ 通过 | `10-coding-style/`、`20-contracts/`、`30-runtime-interfaces/`、`40-integration/`、`50-project-erp/` 全部可读 |
 | SSoT 注册表存在 | ✓ 通过 | `09-ssot-registry.md` + `120-cross-project-code-sharing.md` 在符号链接下可访问 |
 
-**结论**：符号链接配置正确，agentrt 与 agentrt-linux（AirymaxOS）共用同一份 50-engineering-standards（23 文档），符合 IRON-9 v2 同源原则。
+**结论**：符号链接配置正确，agentrt 与 agent-linux（AirymaxOS）共用同一份 50-engineering-standards（23 文档），符合 IRON-9 v2 同源原则。
 
 ### 2.2 六大支柱遵循情况验证（agentrt 源码）
 
@@ -95,7 +95,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | kernel-doc | OS-STD-CODE-012 | ✓ `struct airy_ipc_msg_hdr` 含完整 `@magic/@opcode/@flags` | △ 部分公共 API 有 Doxygen，但 `gateway_*`/`jsonrpc_*`/`protocol_*` 普遍缺失 | **部分割裂** |
 | 80 列行宽 | OS-STD-FMT-002 | ✓ 头文件均 ≤80 列 | ✗ `loop.c` 255 处超 80 列（最多 117 列）；`are_ipc.c:45` 211 列 | **违规** |
 
-**结论**：50-engineering-standards 被 agentrt 与 agentrt-linux **声明层共用**（符号链接正确），但 agentrt 用户态源码**实现层系统性违反**六大支柱中的 4 项（Tab 8 / 最小 typedef / goto 集中出口 / 80 列）。仅 [SC] 6 个头文件作为合规标杆存在，与用户态形成"双轨制"割裂。**v1.0 P0-2 结论确认仍成立**。
+**结论**：50-engineering-standards 被 agentrt 与 agent-linux **声明层共用**（符号链接正确），但 agentrt 用户态源码**实现层系统性违反**六大支柱中的 4 项（Tab 8 / 最小 typedef / goto 集中出口 / 80 列）。仅 [SC] 6 个头文件作为合规标杆存在，与用户态形成"双轨制"割裂。**v1.0 P0-2 结论确认仍成立**。
 
 ### 2.3 唯一合规标杆：[SC] 6 头文件
 
@@ -164,7 +164,7 @@ v1.0 报告称"`agentrt_`（含注释/路径）4058 处"，但 v2.0 实测 `grep
 
 | 层次 | 前缀 | 用途 | SSoT 定义 | 源码使用 | 文档使用 | 评估 |
 |------|------|------|----------|---------|---------|------|
-| [SC] 共享契约层 | `airy_*` | agentrt 与 agentrt-linux 逐字节共享的 6 头文件 | `120-cross-project-code-sharing.md` | ✓ `airy_ipc_msg_hdr`/`airy_task_desc` 等 | ✓ | **清晰** |
+| [SC] 共享契约层 | `airy_*` | agentrt 与 agent-linux 逐字节共享的 6 头文件 | `120-cross-project-code-sharing.md` | ✓ `airy_ipc_msg_hdr`/`airy_task_desc` 等 | ✓ | **清晰** |
 | [SS] 语义同源层 | `airy_*` | agentrt 内部 API（微核心原语 + 应用语义层） | `06-iron9-shared-model.md` §2.2 | ✓ `airy_init`/`airy_loop_create` 等 | ✓ | **清晰** |
 | ARE 标准 ABI | `are_*` | 第三方可实现的公开标准接口（L1/L2/L3） | `30-interfaces/05-runtime-interfaces/` | ✓ `are_ipc_*`/`are_crc32_*` | ✓ | **清晰** |
 | agentrt 专属 API | `agentrt_*` | daemon 管理、配置、运行时控制 | **未定义** | **0 处使用** | **0 处定义** | ✗ **完全缺失** |
@@ -444,9 +444,9 @@ v1.0 报告称"`agentrt_`（含注释/路径）4058 处"，但 v2.0 实测 `grep
 
 ### 5.10 P0-10 验证：ES-SEL4-7 分类残留冲突
 
-**v1.0 判定**：agentrt-linux 闭源总纲中 ES-SEL4-7 分类残留冲突（5 vs 6 项）。
+**v1.0 判定**：agent-linux 闭源总纲中 ES-SEL4-7 分类残留冲突（5 vs 6 项）。
 
-**v2.0 复核范围**：本轮聚焦 agentrt 源码与 AirymaxRT 文档，agentrt-linux 闭源总纲不在复核范围。维持 v1.0 判定。
+**v2.0 复核范围**：本轮聚焦 agentrt 源码与 AirymaxRT 文档，agent-linux 闭源总纲不在复核范围。维持 v1.0 判定。
 
 ---
 
@@ -842,7 +842,7 @@ v2.0 新发现 8 项问题，其中 N1（DCLP 自旋无 yield/timeout）、N2（
 
 | 术语 | 定义 |
 |------|------|
-| OLK-6.6 | Linux 6.6 内核基线编码风格（agentrt-linux 工程标准基线） |
+| OLK-6.6 | Linux 6.6 内核基线编码风格（agent-linux 工程标准基线） |
 | IRON-9 v2 | agentrt 三层模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层） |
 | DCLP | Double-Checked Locking Pattern（双重检查锁定模式） |
 | BAN-333 | pregel_engine max_workers=1 强制串行降级规则 |

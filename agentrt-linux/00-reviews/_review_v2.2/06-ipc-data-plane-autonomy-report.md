@@ -102,7 +102,7 @@ static inline bool airy_cap_check_cached(
 
 ### 3.3 与 seL4 Endpoint 状态机的对照
 
-| seL4 Endpoint | agentrt-linux 数据面自治 |
+| seL4 Endpoint | agent-linux 数据面自治 |
 |--------------|----------------------|
 | Endpoint 创建后，Send/Recv 不需要内核再干预 | Ring 创建后，send/recv 不需要控制面再参与 |
 | Badge 在 Bind 时绑定，后续不可变 | Badge 在 ring 创建时由控制面绑定，数据面只读 |

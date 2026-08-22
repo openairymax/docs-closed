@@ -3,8 +3,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 19 — 工程思想论证总论：极境内核设计哲学 vs openEuler vs seL4（第三轮）
 
-> **文档定位**：agentrt-linux 内核设计深度对比研究 · 第三轮 · 总论
-> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agentrt-linux（极境内核）
+> **文档定位**：agent-linux 内核设计深度对比研究 · 第三轮 · 总论
+> **对比基准**：openEuler kernel-OLK-6.6 · seL4-master · Airymax agent-linux（极境内核）
 > **最后更新**：2026-08-01
 > **方法论**：逐字节阅读三项目源码与工程文档，所有引用标注文件路径+行号，严禁编造
 > **与前序关系**：第一轮（v3.6）核心机制对比、第二轮（v3.6b）基础设施对比，本轮（第三轮）聚焦**工程思想深层次论证**——极境内核设计哲学从何而来、论证是否自洽、与 openEuler/seL4 工程思想的对齐与偏差
@@ -13,7 +13,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 摘要
 
-极境内核（agentrt-linux）的设计定位是"对 Linux 6.6 进行 seL4 思想借鉴的微内核化改造"（[README](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/README.md) L32-36）。本轮从工程思想层面论证该定位：对比 Linux（openEuler 载体）的"社区驱动 + 双层稳定性"工程思想、seL4 的"为可验证性而设计"工程思想、极境内核的"双源融合"工程思想。核心论证结论：极境内核的工程思想体系（16 条 OS-IRON 铁律）在哲学层面与 Linux 传统对齐良好、在工程标准层面与 openEuler KABI/UAPI 实践一致，但在**可验证性预留**层面与 seL4 存在实质差距——验证注解、编译期契约、验证配置锁存三类机制缺失。本报告确立第三轮论证坐标系，后续报告 20-22 分别展开设计方案论证、openEuler 工程标准研究、seL4 工程思想研究。
+极境内核（agent-linux）的设计定位是"对 Linux 6.6 进行 seL4 思想借鉴的微内核化改造"（[README](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/README.md) L32-36）。本轮从工程思想层面论证该定位：对比 Linux（openEuler 载体）的"社区驱动 + 双层稳定性"工程思想、seL4 的"为可验证性而设计"工程思想、极境内核的"双源融合"工程思想。核心论证结论：极境内核的工程思想体系（16 条 OS-IRON 铁律）在哲学层面与 Linux 传统对齐良好、在工程标准层面与 openEuler KABI/UAPI 实践一致，但在**可验证性预留**层面与 seL4 存在实质差距——验证注解、编译期契约、验证配置锁存三类机制缺失。本报告确立第三轮论证坐标系，后续报告 20-22 分别展开设计方案论证、openEuler 工程标准研究、seL4 工程思想研究。
 
 ---
 
@@ -63,7 +63,7 @@ seL4 工程思想与 Linux 根本对立，体现在四个机制：
 - `configs/` 目录 40+ 个 `*_verified.cmake`：证明在什么配置下成立是一等公民。
 - [proof.yml](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/.github/workflows/proof.yml) L12-35：CRefine 证明进 CI，proof-test label 触发——证明与 PR 同步回归。
 
-### 1.3 极境内核（agentrt-linux）：双源融合
+### 1.3 极境内核（agent-linux）：双源融合
 
 极境内核工程思想体系的核心文档是 [04-engineering-philosophy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md)，其三大支柱（L73-83）：
 
@@ -93,19 +93,19 @@ seL4 工程思想与 Linux 根本对立，体现在四个机制：
 | L3 | 内核子系统接口（内核内部 API） | 可重构（you broke it, you fix it） |
 | L4 | 内部实现细节（私有函数、static） | 完全自由 |
 
-**论证结论**：自洽。L1 对应 Linux UAPI 稳定承诺，L3 对应 Linux 内部 API 不承诺，L2/L4 是极境内核针对 Agent 运行时的新增细分。UAPI 编译器无关原则（OS-IRON-016，[04-engineering-philosophy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md) L165-203）进一步强化了 L1——UAPI 头文件坚持 C11 标准、禁止编译器扩展（唯一例外 `AIRY_ALIGNED` 宏定义于 [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) L71-85）。此设计借鉴 seL4 的编译器无关理念（[assert.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/assert.h) L45-51 注释），但落地方式（三路类型桥 + AIRY_ALIGNED 宏）比 seL4 更实用。
+**论证结论**：自洽。L1 对应 Linux UAPI 稳定承诺，L3 对应 Linux 内部 API 不承诺，L2/L4 是极境内核针对 Agent 运行时的新增细分。UAPI 编译器无关原则（OS-IRON-016，[04-engineering-philosophy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md) L165-203）进一步强化了 L1——UAPI 头文件坚持 C11 标准、禁止编译器扩展（唯一例外 `AIRY_ALIGNED` 宏定义于 [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) L71-85）。此设计借鉴 seL4 的编译器无关理念（[assert.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/assert.h) L45-51 注释），但落地方式（三路类型桥 + AIRY_ALIGNED 宏）比 seL4 更实用。
 
 ### 2.2 检查 2：策略与机制分离——自洽但有边界模糊
 
 极境内核继承"机制留内核、策略外移"（OS-IRON-003，[04-engineering-philosophy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md) L208-252）。sched_tac 是其极端范式：整个 CPU 调度策略可在用户空间定义（L232-234）。
 
-**论证结论**：哲学自洽，但存在一个边界模糊点。极境内核的 [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L13-16 实际执行 `sched_setattr()` 将策略映射到 SCHED_DEADLINE/SCHED_FIFO/SCHED_NORMAL——这仍是**内核调度机制**，策略选择（DEADLINE vs EEVDF）发生在内核态函数内（L50-70 `stc_policy_to_linux`）。"用户态调度器"实际是用户态通过 `AIRY_SYS_SCHED_CTL`（syscall 550）间接影响内核态映射，并非完整的用户态调度器。这与 seL4 的"内核零策略"（所有调度决策在 user-level）仍有距离，需要文档明确"内核态策略映射函数是机制还是策略"。
+**论证结论**：哲学自洽，但存在一个边界模糊点。极境内核的 [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L13-16 实际执行 `sched_setattr()` 将策略映射到 SCHED_DEADLINE/SCHED_FIFO/SCHED_NORMAL——这仍是**内核调度机制**，策略选择（DEADLINE vs EEVDF）发生在内核态函数内（L50-70 `stc_policy_to_linux`）。"用户态调度器"实际是用户态通过 `AIRY_SYS_SCHED_CTL`（syscall 550）间接影响内核态映射，并非完整的用户态调度器。这与 seL4 的"内核零策略"（所有调度决策在 user-level）仍有距离，需要文档明确"内核态策略映射函数是机制还是策略"。
 
 ### 2.3 检查 3：Capability 单一模型 vs seL4——模型对齐但实现路径不同
 
-seL4 的核心设计决策是 capability 单一安全模型（[03-microkernel-strategy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) L65-66）。极境内核的落地是 [airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm.c) 的纯 C LSM + `agent_caps[]` 静态数组 + 64-bit Badge folding（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L51-64：Epoch<<48 | RandomTag<<16 | Perms）。
+seL4 的核心设计决策是 capability 单一安全模型（[03-microkernel-strategy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) L65-66）。极境内核的落地是 [airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm.c) 的纯 C LSM + `agent_caps[]` 静态数组 + 64-bit Badge folding（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) L51-64：Epoch<<48 | RandomTag<<16 | Perms）。
 
-**论证结论**：模型对齐（不可伪造、最小权限、递归撤销、IPC 传递、审计追踪），但实现路径不同——seL4 用 CNode 树形寻址 + MDB 派生树（[cspace.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/kernel/cspace.c) L126-192 `resolveAddressBits`），极境内核用固定 1024 槽数组 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L52-56）。固定数组在 1024 上限内更简单高效（fastpath badge 校验 ~10ns），但牺牲了 seL4 CNode 的无限扩展性与树形隔离。这是"在 Linux 6.6 内嵌 capability"约束下的合理权衡，但需在 known-caveats 中明确 1024 上限的扩展边界。
+**论证结论**：模型对齐（不可伪造、最小权限、递归撤销、IPC 传递、审计追踪），但实现路径不同——seL4 用 CNode 树形寻址 + MDB 派生树（[cspace.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/kernel/cspace.c) L126-192 `resolveAddressBits`），极境内核用固定 1024 槽数组 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L52-56）。固定数组在 1024 上限内更简单高效（fastpath badge 校验 ~10ns），但牺牲了 seL4 CNode 的无限扩展性与树形隔离。这是"在 Linux 6.6 内嵌 capability"约束下的合理权衡，但需在 known-caveats 中明确 1024 上限的扩展边界。
 
 ### 2.4 检查 4：Liedtke 极简原则的适用性——需要语境化
 
@@ -120,7 +120,7 @@ seL4 的核心设计决策是 capability 单一安全模型（[03-microkernel-st
 **论证结论**：**文档承诺与实现现状存在显著差距**：
 
 1. **验证注解未落地**：grep 全部 airy_*.c 与 corekern/*.c，无一处 `/** MODIFIES */`、`/** FNSPEC */` 等验证注解（seL4 在 [util.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/util.h) L93/L137-140/L189-196/L306 有完整实例）。文档宣称"1.0.1 阶段引入"（[03-microkernel-strategy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) L103-104），但源码零落地。
-2. **编译期契约缺失**：grep `BUILD_BUG_ON`/`static_assert`/`_Static_assert` 于全部 airy_*.c、corekern/*.c、log/*.c——**零命中**。seL4 用 compile_assert 在编译期钉死内核-用户态常量一致性（[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26），极境内核的 [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) 与 [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 声称"三方一致性（ABI 铁律）"，但一致性靠 CI 脚本而非编译期断言保障。seL4 模式的 `AIRY_COMPILE_ASSERT` 宏（在 [SC] 头文件里定义，UAPI 侧用 C11 `_Static_assert`、内核侧用 typedef 数组）应作为 P1 项落地。
+2. **编译期契约缺失**：grep `BUILD_BUG_ON`/`static_assert`/`_Static_assert` 于全部 airy_*.c、corekern/*.c、log/*.c——**零命中**。seL4 用 compile_assert 在编译期钉死内核-用户态常量一致性（[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26），极境内核的 [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) 与 [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 声称"三方一致性（ABI 铁律）"，但一致性靠 CI 脚本而非编译期断言保障。seL4 模式的 `AIRY_COMPILE_ASSERT` 宏（在 [SC] 头文件里定义，UAPI 侧用 C11 `_Static_assert`、内核侧用 typedef 数组）应作为 P1 项落地。
 3. **验证配置锁存缺失**：seL4 用 `configs/*_verified.cmake` 锁存"证明在什么配置下成立"。极境内核无等价物——即使未来实现验证，也无机制防止配置漂移使证明失效。
 
 ### 2.6 检查 6：诚实声明传统——已借鉴但可深化
@@ -131,7 +131,7 @@ seL4 的核心设计决策是 capability 单一安全模型（[03-microkernel-st
 
 ### 2.7 检查 7：UAPI 稳定性 vs KABI 预留——可借鉴 openEuler
 
-极境内核的 syscall 编号设计（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L20-29：4 核心 548-551 + 20 预留 552-571）体现了 openEuler KABI 预留思想（预留槽位 → 事后 KABI_USE 消费）。第一轮 P0-1 已指出 syscall_64.tbl 未显式登记 552-571 预留槽。
+极境内核的 syscall 编号设计（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L20-29：4 核心 548-551 + 20 预留 552-571）体现了 openEuler KABI 预留思想（预留槽位 → 事后 KABI_USE 消费）。第一轮 P0-1 已指出 syscall_64.tbl 未显式登记 552-571 预留槽。
 
 **论证结论**：预留思想正确，与 openEuler [kabi.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/include/linux/kabi.h) L439 `KABI_RESERVE`/L443 `KABI_USE` 同构。但 openEuler 的 KABI 体系有三层防护（宏双面展开 + genksyms 隐藏 + 编译期 size/align 断言，[kabi.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/include/linux/kabi.h) L380-390），极境内核的 24 槽 syscall 预留目前只有"编号规划"一层。建议在 syscall 层引入"登记 + 编译期断言 + CI 三方一致性"三层防护。
 
@@ -160,12 +160,12 @@ seL4 的核心设计决策是 capability 单一安全模型（[03-microkernel-st
 
 | 编号 | 标题 | 优先级 | 现状位置 | 参考 | 工作量 |
 |------|------|--------|----------|------|--------|
-| E1 | [SC] 头文件引入 AIRY_COMPILE_ASSERT 编译期契约宏（内核-用户态常量一致性编译期钉死） | P1 | [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h)、[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 | seL4 [assert.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/assert.h) L45-69、[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26 | 4h |
-| E2 | 验证注解机制落地：为 capability fastpath 与 IPC fastpath 添加 MODIFIES/FNSPEC 注释标注 | P2 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L75-90、[airy_ipc_fastpath.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_ipc_fastpath.c) | seL4 [util.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/util.h) L93/L189-196 | 8h |
+| E1 | [SC] 头文件引入 AIRY_COMPILE_ASSERT 编译期契约宏（内核-用户态常量一致性编译期钉死） | P1 | [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h)、[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 | seL4 [assert.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/assert.h) L45-69、[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26 | 4h |
+| E2 | 验证注解机制落地：为 capability fastpath 与 IPC fastpath 添加 MODIFIES/FNSPEC 注释标注 | P2 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L75-90、[airy_ipc_fastpath.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_ipc_fastpath.c) | seL4 [util.h](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/include/util.h) L93/L189-196 | 8h |
 | E3 | 验证配置锁存：新增 airymax_verified.cmake 风格配置声明（验证适用的平台/配置/特性组合） | P2 | 新增 [09-known-caveats.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/09-known-caveats.md) 附录 | seL4 `configs/*_verified.cmake`（40+ 文件） | 2h |
 | E4 | known-caveats 增加 SMP 验证覆盖标注（多核 lock-free ring、per-bucket 锁） | P1 | [09-known-caveats.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/09-known-caveats.md) L65-72 | seL4 [CAVEATS.md](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/CAVEATS.md) L127-155 | 1h(文档) |
 | E5 | Liedtke 论证义务落地：新增"新增内核子系统论证登记"规则（无法在用户态安全实现的论证 gate） | P2 | [09-ssot-registry.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md) | Linux 无等价物；seL4 极简天然满足 | 2h(文档) |
-| E6 | sched_tac 机制/策略边界文档化：明确 stc_policy_to_linux 映射是机制还是策略 | P1 | [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L50-70 | seL4 内核零策略 | 1h(文档) |
+| E6 | sched_tac 机制/策略边界文档化：明确 stc_policy_to_linux 映射是机制还是策略 | P1 | [stc_dispatch.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch.c) L50-70 | seL4 内核零策略 | 1h(文档) |
 
 ---
 

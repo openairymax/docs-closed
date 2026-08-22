@@ -2,7 +2,7 @@
 
 ## "以 Native Word（Badge + Epoch）为基石的 Unified Airymax IPC Fabric 系统性重设计"
 
-> **文档性质**：agentrt-linux A-IPC 模块的系统性重设计方案
+> **文档性质**：agent-linux A-IPC 模块的系统性重设计方案
 > **撰写日期**：2026-07-18
 > **方案来源**：基于 16~23 号共 8 份 IPC 审查报告的发现与推论
 > **审查范围**：Layout C 消息头 / fastpath 状态机 / 控制面与数据面关系 / daemon 通信拓扑 / 与 5 模块的交互
@@ -234,16 +234,16 @@ offset  62: __future[66]   (66B) 保留，填零
 
 ### 2.4 与 agentrt [SC] 共享契约层的兼容性
 
-agentrt（用户态跨三平台）与 agentrt-linux（Linux 内核）共享 `include/airymax/ipc.h`。
+agentrt（用户态跨三平台）与 agent-linux（Linux 内核）共享 `include/airymax/ipc.h`。
 
-| 字段 | agentrt 行为 | agentrt-linux 行为 |
+| 字段 | agentrt 行为 | agent-linux 行为 |
 |------|------------|-------------------|
 | `capability_badge` | 通过 Cupolas engine 编译 Badge，嵌入消息头 | 通过 sec_d 编译 Badge，嵌入消息头 |
 | `seq_num` | 发送方递增 | 发送方递增 |
 | `negotiated_ver` | 握手阶段填充 | 握手阶段填充 |
 | `crc32` | 发送方计算，接收方校验 | 发送方计算，接收方校验 |
 
-**agentrt 在 agentrt-linux 上运行时**：Badge 由 agentrt-linux 的 sec_d 编译，通过 [SC] syscall 返回给 agentrt，agentrt 嵌入消息头。agentrt 在 macOS/Windows 上独立运行时：Badge 由 Cupolas engine 自行编译。
+**agentrt 在 agent-linux 上运行时**：Badge 由 agent-linux 的 sec_d 编译，通过 [SC] syscall 返回给 agentrt，agentrt 嵌入消息头。agentrt 在 macOS/Windows 上独立运行时：Badge 由 Cupolas engine 自行编译。
 
 ---
 
@@ -439,9 +439,9 @@ static inline u32 airy_cap_badge_perms(airy_cap_badge_t badge) {
 }
 ```
 
-### 7.2 [SS] 语义同源层 — agentrt ↔ agentrt-linux 对齐
+### 7.2 [SS] 语义同源层 — agentrt ↔ agent-linux 对齐
 
-| 语义 | agentrt (用户态) | agentrt-linux (内核态) |
+| 语义 | agentrt (用户态) | agent-linux (内核态) |
 |------|----------------|----------------------|
 | Badge 编译 | Cupolas engine → `airy_cap_badge_compile()` | sec_d → `airy_cap_badge_compile()` |
 | Badge 校验 | `(badge >> 32) == current_epoch && (badge & required)` | 同 agentrt |

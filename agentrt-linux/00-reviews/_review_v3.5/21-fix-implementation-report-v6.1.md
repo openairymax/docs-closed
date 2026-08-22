@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v6.1 修复实施报告
+# agent-linux v6.1 修复实施报告
 > **文档定位**：v6.0 验证性审查发现的 20 类 A 类问题 + 5 类 B 类问题的逐一确认与修复实施\
 > **文档版本**：v6.1\
 > **最后更新**：2026-07-27\
@@ -68,7 +68,7 @@ EXIT=0
 
 **状态**：本轮修复
 
-**修复文件**：`agentrt-linux/.github/workflows/ci-kernel.yml`
+**修复文件**：`agent-linux/.github/workflows/ci-kernel.yml`
 
 **修复内容**：在 `kernel-verify` job 中添加两个 CI 步骤：
 ```yaml
@@ -86,7 +86,7 @@ EXIT=0
 
 **状态**：本轮修复
 
-**修复文件**：`agentrt-linux/.github/workflows/ci-kernel.yml`
+**修复文件**：`agent-linux/.github/workflows/ci-kernel.yml`
 
 **修复内容**：
 1. `scripts/checkpatch.pl` → `kernel/scripts/checkpatch.pl`（L85）
@@ -96,7 +96,7 @@ EXIT=0
    - Coccinelle 步骤（L94）
    - KUnit 步骤（L97）
    - kselftest 步骤（L104）
-3. 修复工具脚本路径：`agentrt-linux/tools/` → `tools/`（L102, L109）
+3. 修复工具脚本路径：`agent-linux/tools/` → `tools/`（L102, L109）
 4. 拆分 kselftest 步骤为编译（`working-directory: kernel`）和 TAP 解析（repo root）两步
 
 ---
@@ -188,15 +188,15 @@ EXIT=0
 **状态**：前序已修复，本轮验证通过
 
 **验证方法**：
-- `grep -rln "6+2 set" agentrt-linux/` → 0 匹配 ✅
-- `grep -rln "kernel/include/airymax/" agentrt-linux/` → 0 匹配 ✅
+- `grep -rln "6+2 set" agent-linux/` → 0 匹配 ✅
+- `grep -rln "kernel/include/airymax/" agent-linux/` → 0 匹配 ✅
 
 ### 3.9 #A-17/A18: README sched_ext 活动使用
 
 **状态**：前序已修复，本轮验证通过
 
 **验证结果**：
-- `agentrt-linux/README.md` 中 sched_ext 引用均为 "no sched_ext" 否定式表述 ✅
+- `agent-linux/README.md` 中 sched_ext 引用均为 "no sched_ext" 否定式表述 ✅
 - `cognition/README.md` 无 sched_ext 匹配 ✅
 - `services/README.md` 无 sched_ext 匹配 ✅
 
@@ -300,7 +300,7 @@ EXIT=0
 
 **状态**：本轮修复
 
-**修复文件**：`docs-closed/agentrt-linux/00-reviews/_review_v3.5/19-closure-report-v5.0.md`
+**修复文件**：`docs-closed/agent-linux/00-reviews/_review_v3.5/19-closure-report-v5.0.md`
 
 **修复内容**：L155 路径 `security/airy_lsm/airy_lsm.c` → `security/airy/airy_lsm.c`，并添加 v6.0 更正说明
 
@@ -326,8 +326,8 @@ EXIT=0
 | codegen --check-tbl | `python3 tools/codegen/syscall_gen.py --check-tbl` | ✅ EXIT=0 |
 | AIRY_CAP_INVOKE 残留 | `grep -c AIRY_CAP_INVOKE syscall.xml` | ✅ 0 匹配 |
 | 0.1.1 版本号残留 | `grep -rln "^> \*\*文档版本\*\*：0\.1\.1" docs/AirymaxOS/` | ✅ 0 匹配 |
-| 6+2 set 残留 | `grep -rln "6+2 set" agentrt-linux/` | ✅ 0 匹配 |
-| kernel/include/airymax/ 残留 | `grep -rln "kernel/include/airymax/" agentrt-linux/` | ✅ 0 匹配 |
+| 6+2 set 残留 | `grep -rln "6+2 set" agent-linux/` | ✅ 0 匹配 |
+| kernel/include/airymax/ 残留 | `grep -rln "kernel/include/airymax/" agent-linux/` | ✅ 0 匹配 |
 | v1.1 基线标注 | `grep "v1.1 唯一基线" syscalls.h` | ✅ L7 存在 |
 | CI abi_check 集成 | `grep abi_check ci-kernel.yml` | ✅ L78 存在 |
 | CI codegen --check 集成 | `grep "syscall_gen.py --check" ci-kernel.yml` | ✅ L80 存在 |
@@ -341,17 +341,17 @@ EXIT=0
 
 | # | 文件 | 修复类型 |
 |---|------|---------|
-| 1 | `agentrt-linux/.github/workflows/ci-kernel.yml` | P0-A8/A9/A10 + P2-A12 CI 集成 |
-| 2 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.xml` | P1-A11 移除 AIRY_CAP_INVOKE |
-| 3 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscall.h` | P1-A11 重新生成（移除 @capability） |
-| 4 | `agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h` | P2-A13 添加 v1.1 基线标注 |
-| 5 | `agentrt-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | P2-A12/B-4 tab 对齐修复 |
-| 6 | `agentrt-linux/tools/codegen/syscall_gen.py` | P2-A12 扩展 tbl 生成 + --check-tbl |
+| 1 | `agent-linux/.github/workflows/ci-kernel.yml` | P0-A8/A9/A10 + P2-A12 CI 集成 |
+| 2 | `agent-linux/kernel/include/uapi/linux/airymax/syscall.xml` | P1-A11 移除 AIRY_CAP_INVOKE |
+| 3 | `agent-linux/kernel/include/uapi/linux/airymax/syscall.h` | P1-A11 重新生成（移除 @capability） |
+| 4 | `agent-linux/kernel/include/uapi/linux/airymax/syscalls.h` | P2-A13 添加 v1.1 基线标注 |
+| 5 | `agent-linux/kernel/arch/x86/entry/syscalls/syscall_64.tbl` | P2-A12/B-4 tab 对齐修复 |
+| 6 | `agent-linux/tools/codegen/syscall_gen.py` | P2-A12 扩展 tbl 生成 + --check-tbl |
 | 7 | `devtools/tests/unit/commons/unit/test_error.c` | P1-A14 重写测试对齐 SSoT |
 | 8 | `agentrt/commons/include/airymax/syscalls.h` | P2-A13 commons 侧同步 v1.1 标注 |
 | 9 | `agentrt/commons/include/airymax/*.h`（10 文件） | P2-B1 添加末尾换行符 |
 | 10 | `docs/AirymaxOS/160-compatibility/04-ipc-versioning.md` | P2-B2 统一 "v2.0+ 预留" |
-| 11 | `agentrt-linux/kernel/kernel/corekern/{ipc,sched,bpf,taskflow,memory}/Kbuild` | P2-B3 转聚合模式 |
+| 11 | `agent-linux/kernel/kernel/corekern/{ipc,sched,bpf,taskflow,memory}/Kbuild` | P2-B3 转聚合模式 |
 | 12 | `docs-closed/.../19-closure-report-v5.0.md` | P2-B5 路径更正 |
 
 ---

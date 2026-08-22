@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.3 综合评估：方案一致性深度审查 + seL4/OLK-6.6 穷尽式研究
+# agent-linux v3.3 综合评估：方案一致性深度审查 + seL4/OLK-6.6 穷尽式研究
 
 > **报告版本**：v3.3\
 > **生成日期**：2026-07-23\
-> **评估范围**：docs/AirymaxOS 全量文档 + agentrt-linux/kernel 全部代码 + seL4-master + kernel-OLK-6.6 参考源码\
+> **评估范围**：docs/AirymaxOS 全量文档 + agent-linux/kernel 全部代码 + seL4-master + kernel-OLK-6.6 参考源码\
 > **评估方法**：穷尽式源码阅读 + SSoT 交叉验证 + 设计幻觉检测 + 参考项目对比分析
 
 ***
@@ -84,7 +84,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
   - `mdb.c` — **MISSING**
   - `cnode_ops.c` — **MISSING**
 
-- 实际 `security/airy/` 目录下不存在这 4 个文件。agentrt-linux 的 capability 模型采用 `agent_caps[1024]` 静态数组 + `airy_cap_array.c`/`airy_cap_check.c`/`airy_cap_derive.c`/`airy_cap_revoke.c`/`airy_cap_rotate.c` 实现，**不是** seL4 的 CNode/MDB 树状结构。
+- 实际 `security/airy/` 目录下不存在这 4 个文件。agent-linux 的 capability 模型采用 `agent_caps[1024]` 静态数组 + `airy_cap_array.c`/`airy_cap_check.c`/`airy_cap_derive.c`/`airy_cap_revoke.c`/`airy_cap_rotate.c` 实现，**不是** seL4 的 CNode/MDB 树状结构。
 
 **根因分析**：此问题在 v2.x 审查中已识别（memory 记录："01-kernel.md §3.4 存在 design hallucination"），但未修复。
 
@@ -189,7 +189,7 @@ file->f_op->uring_cmd(cmd, issue_flags)
 - `issue_flags`：`IO_URING_F_CANCEL` / `IO_URING_F_COMPLETE_DEFER` / `IO_URING_F_TASK_DEAD`
 - 可取消命令跟踪：`hlist_add_head(&req->hash_node, &ctx->cancelable_uring_cmd)`
 
-**agentrt-linux 借鉴点**：agentrt-linux 的 `airy_uring_cmd.c`（128 行）已实现 URING_CMD dispatch 骨架，但需补充 7 个 cmd_op 的完整实现。
+**agent-linux 借鉴点**：agent-linux 的 `airy_uring_cmd.c`（128 行）已实现 URING_CMD dispatch 骨架，但需补充 7 个 cmd_op 的完整实现。
 
 #### 2.2.2 Landlock 纯 C LSM 模式（security/landlock/setup.c）
 
@@ -215,7 +215,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 - `landlock_initialized` 全局标志，`bool __ro_after_init`
 - **零 BPF 依赖**：完全纯 C 实现
 
-**agentrt-linux 对比**：agentrt-linux 的 `airy_lsm.c`（155 行）采用相同模式：
+**agent-linux 对比**：agent-linux 的 `airy_lsm.c`（155 行）采用相同模式：
 - `DEFINE_LSM(airy)` + `LSM_ORDER_MUTABLE` + `airy_blob_sizes`（lbs_task）
 - 5 核心钩子（uring_cmd/task_alloc/task_free/task_kill/file_open）
 - 同样零 BPF 依赖 ✓
@@ -232,7 +232,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 - 准入控制：`__dl_check_congested()` 防止过度订阅
 - `dl_entity` 管理 deadline queue
 
-**agentrt-linux 借鉴点**：sched_tac 的 `AIRY_MCS_CHECK` 安全边界（budget ≤ deadline ≤ period）直接映射 SCHED_DEADLINE 语义。
+**agent-linux 借鉴点**：sched_tac 的 `AIRY_MCS_CHECK` 安全边界（budget ≤ deadline ≤ period）直接映射 SCHED_DEADLINE 语义。
 
 #### 2.2.4 EEVDF 调度器（kernel/sched/fair.c）
 
@@ -243,13 +243,13 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 #### 2.2.5 sched_ext 依赖确认（kernel/sched/ext.c）
 
-**已确认**：sched_ext 依赖 `BPF_SYSCALL && BPF_JIT && DEBUG_INFO_BTF`（`kernel/Kconfig.preempt:138`），与 H5 纯 C LSM 约束冲突。agentrt-linux 选择不使用 sched_ext 是正确的。
+**已确认**：sched_ext 依赖 `BPF_SYSCALL && BPF_JIT && DEBUG_INFO_BTF`（`kernel/Kconfig.preempt:138`），与 H5 纯 C LSM 约束冲突。agent-linux 选择不使用 sched_ext 是正确的。
 
 ### 2.3 可借鉴技术点系统化总结
 
 #### A. 从 seL4 借鉴的技术点
 
-| # | 技术点 | seL4 源码位置 | agentrt-linux 应用 | 借鉴状态 |
+| # | 技术点 | seL4 源码位置 | agent-linux 应用 | 借鉴状态 |
 |---|--------|-------------|-------------------|---------|
 | 1 | **Fastpath inline 优化** | `src/fastpath/fastpath.c` L19-233 | `airy_cap_badge_ok()` ~10ns inline | ✓ 已应用 |
 | 2 | **slowpath fallback 模式** | `fastpath_call()` 多处 `slowpath()` | `airy_cap_check.c` 5 阶段 slowpath | ✓ 已应用 |
@@ -264,7 +264,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 #### B. 从 OLK-6.6 借鉴的技术点
 
-| # | 技术点 | OLK-6.6 源码位置 | agentrt-linux 应用 | 借鉴状态 |
+| # | 技术点 | OLK-6.6 源码位置 | agent-linux 应用 | 借鉴状态 |
 |---|--------|-----------------|-------------------|---------|
 | 1 | **URING_CMD dispatch** | `io_uring/uring_cmd.c` `f_op->uring_cmd()` | `airy_uring_cmd.c` 7 cmd_op | ✓ 骨架已搭建 |
 | 2 | **registered buffer** | `io_uring/rsrc.c` | `airy_ipc_zero_copy.c` | ✓ 骨架已搭建 |
@@ -296,7 +296,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 ### 3.1 设计思想对齐度评估
 
-| 设计原则 | seL4 | OLK-6.6 | agentrt-linux | 对齐度 |
+| 设计原则 | seL4 | OLK-6.6 | agent-linux | 对齐度 |
 |---------|------|---------|--------------|--------|
 | **机制不是策略** | ✓ 内核仅提供机制 | ✓ 调度器可插拔 | ✓ 内核不思考，智能在用户态 | 95% |
 | **最小权限** | ✓ capability-based | ✓ POSIX cap + LSM | ✓ Badge 64-bit + 5 阶段 slowpath | 95% |
@@ -322,7 +322,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 #### vs seL4 的差距
 
-| 差距项 | seL4 | agentrt-linux | 影响 | 可行性 |
+| 差距项 | seL4 | agent-linux | 影响 | 可行性 |
 |--------|------|--------------|------|--------|
 | 形式化验证范围 | 全栈 Isabelle/HOL | 仅 fastpath CBMC | 验证覆盖率低 | 工业实践证明全栈 ROI 低，CBMC 务实 |
 | Capability 撤销 | O(n) CSpace 遍历 | O(1) Epoch | 性能更优 | ✓ 已超越 |
@@ -332,7 +332,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 #### vs OLK-6.6 的差距
 
-| 差距项 | OLK-6.6 | agentrt-linux | 影响 | 可行性 |
+| 差距项 | OLK-6.6 | agent-linux | 影响 | 可行性 |
 |--------|---------|--------------|------|--------|
 | io_uring 完整度 | 完整子系统 | 骨架（470 行） | 功能未完全实现 | M1 阶段填充 |
 | 调度器完整度 | 完整 SCHED_DEADLINE/EEVDF | 骨架（263 行） | 功能未完全实现 | M1 阶段填充 |
@@ -342,7 +342,7 @@ DEFINE_LSM(LANDLOCK_NAME) = {
 
 ### 3.4 工程设计结论
 
-agentrt-linux 的工程设计在以下方面**超越**了参考项目：
+agent-linux 的工程设计在以下方面**超越**了参考项目：
 1. **Capability 撤销效率**：O(1) Epoch > seL4 O(n) CSpace 遍历
 2. **IPC fastpath 性能**：~10ns Badge 内联校验 > seL4 ~100ns fastpath
 3. **数据面零 syscall**：io_uring IORING_OP_URING_CMD > seL4 同步 IPC
@@ -389,11 +389,11 @@ agentrt-linux 的工程设计在以下方面**超越**了参考项目：
 
 ### 4.4 最终结论
 
-**agentrt-linux 方案经 v3.3 深度审查后，发现 2 项 P0 级一致性问题（P0-029/P0-030），需在开始全面开发前修复。**
+**agent-linux 方案经 v3.3 深度审查后，发现 2 项 P0 级一致性问题（P0-029/P0-030），需在开始全面开发前修复。**
 
 修复后，方案可达到"按照方案开始全面开发"的状态。当前 88% 的框架完成度和 87% 的方案一致性已满足开发启动条件，但 P0-029（Agent 状态机 SSoT 违反）影响 25 个下游文档，必须优先修复以避免开发阶段的状态机混乱。
 
-**可借鉴技术点总结**：seL4 的 fastpath inline 优化、slowpath fallback 模式、Badge 传递机制已成功应用；OLK-6.6 的 Landlock 纯 C LSM 模式、SCHED_DEADLINE CBS、EEVDF eligibility 已成功应用。agentrt-linux 在 Capability 撤销效率（O(1) > O(n)）和 IPC fastpath 性能（~10ns > ~100ns）方面已**超越**参考项目。
+**可借鉴技术点总结**：seL4 的 fastpath inline 优化、slowpath fallback 模式、Badge 传递机制已成功应用；OLK-6.6 的 Landlock 纯 C LSM 模式、SCHED_DEADLINE CBS、EEVDF eligibility 已成功应用。agent-linux 在 Capability 撤销效率（O(1) > O(n)）和 IPC fastpath 性能（~10ns > ~100ns）方面已**超越**参考项目。
 
 ---
 

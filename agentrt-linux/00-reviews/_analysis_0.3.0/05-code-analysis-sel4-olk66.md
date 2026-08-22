@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # C-2.5 seL4 + OLK-6.6 源码深度代码分析报告
 
-> **文档定位**: 基于对 `01Reference/seL4-master`（seL4 微内核）与 `01Reference/kernel-OLK-6.6`（Linux 6.6 LTS / openEuler 参考实现）两个参考代码库的穷尽式深度源码阅读，为 agentrt-linux 微内核化改造提供"源码级"工程思想证据与融合裁决依据。本报告是 v0.2.1 研究报告（`00-reviews/_research_0.2.1/01` + `02`）的扩展与深化，不重复既有结论，而是为每一条工程思想补充具体源码位置引用与代码片段证据，并补充 v0.2.1 遗漏的工程机制。
+> **文档定位**: 基于对 `01Reference/seL4-master`（seL4 微内核）与 `01Reference/kernel-OLK-6.6`（Linux 6.6 LTS / openEuler 参考实现）两个参考代码库的穷尽式深度源码阅读，为 agent-linux 微内核化改造提供"源码级"工程思想证据与融合裁决依据。本报告是 v0.2.1 研究报告（`00-reviews/_research_0.2.1/01` + `02`）的扩展与深化，不重复既有结论，而是为每一条工程思想补充具体源码位置引用与代码片段证据，并补充 v0.2.1 遗漏的工程机制。
 > **报告版本**: 0.3.0（深度代码分析报告）
 > **最后更新**: 2026-07-09
 > **分析范围**: seL4-master 全量源码（src/ 13 子目录 + include/ 15 子目录 + libsel4/ + tools/ + manual/）+ OLK-6.6 全量源码（28 顶层目录 + scripts/ + Documentation/）
@@ -32,23 +32,23 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **关键发现**（详见第 2-5 章）：
 
-1. **EEVDF 调度器**（OLK-6.6 `kernel/sched/fair.c`）以 `avg_vruntime()`（fair.c:925）、`entity_eligible()`（fair.c:1057）、`pick_eevdf()`（fair.c:1252）三函数实现 O(log n) 增强红黑树选择，是 Linux 6.6 替代 CFS 的核心算法——agentrt-linux 调度子系统应完整保留并据此设计微内核化后的调度策略接口。
+1. **EEVDF 调度器**（OLK-6.6 `kernel/sched/fair.c`）以 `avg_vruntime()`（fair.c:925）、`entity_eligible()`（fair.c:1057）、`pick_eevdf()`（fair.c:1252）三函数实现 O(log n) 增强红黑树选择，是 Linux 6.6 替代 CFS 的核心算法——agent-linux 调度子系统应完整保留并据此设计微内核化后的调度策略接口。
 
-2. **seL4 fastpath**（`src/fastpath/fastpath.c:26`）通过 `fastpath_call()` 将最常见的 Call/ReplyRecv IPC 路径从通用 slowpath 中剥离，以 `unlikely()` 早期降级——这是 agentrt-linux io_uring 消息传递机制可借鉴的"热路径优化"范式。
+2. **seL4 fastpath**（`src/fastpath/fastpath.c:26`）通过 `fastpath_call()` 将最常见的 Call/ReplyRecv IPC 路径从通用 slowpath 中剥离，以 `unlikely()` 早期降级——这是 agent-linux io_uring 消息传递机制可借鉴的"热路径优化"范式。
 
-3. **seL4 capability 派生模型**（`src/object/cnode.c:80/126/146` 调用 `deriveCap()`、`src/object/cnode.c:528` `cteRevoke()`、`:552` `cteDelete()`）通过 Copy/Mint/Move/Mutate/Revoke/Delete 六操作构建权限派生树——agentrt-linux security 子仓的 capability 设计应以此为蓝本。
+3. **seL4 capability 派生模型**（`src/object/cnode.c:80/126/146` 调用 `deriveCap()`、`src/object/cnode.c:528` `cteRevoke()`、`:552` `cteDelete()`）通过 Copy/Mint/Move/Mutate/Revoke/Delete 六操作构建权限派生树——agent-linux security 子仓的 capability 设计应以此为蓝本。
 
-4. **OLK-6.6 KABI 宏机制**（`include/linux/kabi.h`、`lib/Kconfig.kabi`）通过 `KABI_EXTEND`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 在不破坏二进制兼容性的前提下演进内核数据结构——这是 v0.2.1 未充分展开的工程思想，对 agentrt-linux 的"内核态 ABI 演进"具有直接参考价值。
+4. **OLK-6.6 KABI 宏机制**（`include/linux/kabi.h`、`lib/Kconfig.kabi`）通过 `KABI_EXTEND`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 在不破坏二进制兼容性的前提下演进内核数据结构——这是 v0.2.1 未充分展开的工程思想，对 agent-linux 的"内核态 ABI 演进"具有直接参考价值。
 
-5. **seL4 bitfield codegen + Isabelle/HOL 证明**（`tools/bitfield_gen.py:14` 注释明确"generating bitfield structures with get/set/new methods including Isabelle/HOL specifications and correctness proofs"）——这是形式化验证驱动工程思想的代码级证据，agentrt-linux 的 [SC] 共享契约层位域定义可借鉴此 codegen 思路。
+5. **seL4 bitfield codegen + Isabelle/HOL 证明**（`tools/bitfield_gen.py:14` 注释明确"generating bitfield structures with get/set/new methods including Isabelle/HOL specifications and correctness proofs"）——这是形式化验证驱动工程思想的代码级证据，agent-linux 的 [SC] 共享契约层位域定义可借鉴此 codegen 思路。
 
-6. **OLK-6.6 sparse + W=1/2/3/e 分级警告**（`Makefile:111-119`、`scripts/Makefile.extrawarn`）+ **checkpatch.pl 72 条规则**——构成"规范可执行"的完整工具链，agentrt-linux 应完整继承。
+6. **OLK-6.6 sparse + W=1/2/3/e 分级警告**（`Makefile:111-119`、`scripts/Makefile.extrawarn`）+ **checkpatch.pl 72 条规则**——构成"规范可执行"的完整工具链，agent-linux 应完整继承。
 
-7. **设计哲学融合裁决**：Linux "演化式增量改进"（28 顶层目录 + Kconfig 可配置 + KABI 兼容）vs seL4 "形式化验证驱动极简"（8700 行核心 + capability 单一模型 + fastpath）——agentrt-linux 取"Linux 6.6 为基、seL4 为鉴"取向，编码风格层完全采纳 OLK-6.6，架构层选择性借鉴 seL4。
+7. **设计哲学融合裁决**：Linux "演化式增量改进"（28 顶层目录 + Kconfig 可配置 + KABI 兼容）vs seL4 "形式化验证驱动极简"（8700 行核心 + capability 单一模型 + fastpath）——agent-linux 取"Linux 6.6 为基、seL4 为鉴"取向，编码风格层完全采纳 OLK-6.6，架构层选择性借鉴 seL4。
 
 8. **新增 2 项工程思想**（v0.2.1 遗漏）：ES-OLK-14（KABI 二进制兼容演进机制）、ES-SEL4-11（CI 多工具矩阵验证），建议纳入工程标准。
 
-本报告为 agentrt-linux 的工程标准体系（`50-engineering-standards/`）提供了源码级证据基础，并提出 6 项可落地工程标准条目（详见第 6 章）。
+本报告为 agent-linux 的工程标准体系（`50-engineering-standards/`）提供了源码级证据基础，并提出 6 项可落地工程标准条目（详见第 6 章）。
 
 ---
 
@@ -72,7 +72,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 目录测绘 | src/{api,kernel,object,fastpath,arch,machine,plat,smp,model,benchmark,drivers} + include/ + libsel4/ + tools/ + manual/ | 28 顶层目录 + kernel/sched/（48 文件）+ mm/（含 gmem/etmem）+ security/{selinux,landlock,apparmor,...} + io_uring/（52 文件）+ scripts/ + Documentation/ |
 | 关键文件精读 | syscall.c（662 行）/ boot.c（41KB）/ tcb.c（69KB）/ cnode.c（27KB）/ endpoint.c（18KB）/ fastpath.c（31KB）/ bitfield_gen.py（123KB）/ syscall.xml | fair.c（EEVDF）/ fork.c / vmscan.c（MGLRU）/ commoncap.c / selinux/hooks.c（215 LSM hooks）/ io_uring.c（4752 行）/ checkpatch.pl / coding-style.rst / kabi.h |
 | 证据引用 | 每条 ES 补充 `文件:行号` + 代码片段 | 同左 |
-| 横向对比 | 7 个子系统三栏对照表（seL4 / OLK-6.6 / agentrt-linux） | 同左 |
+| 横向对比 | 7 个子系统三栏对照表（seL4 / OLK-6.6 / agent-linux） | 同左 |
 
 ### 1.3 与 v0.2.1 研究的关系（扩展而非重复）
 
@@ -82,14 +82,14 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 1. **证据强化**：为每一条 ES-* 思想补充**具体源码位置引用**（`文件:行号` 或 `文件:函数名`）与**代码片段摘要**，将 v0.2.1 的"模式归纳"升级为"源码级证据"。
 2. **遗漏补充**：补充 v0.2.1 未展开的工程机制——OLK-6.6 的 `sparse`/`smatch`/`W=1` 分级警告、`kernel-doc` 校验、KABI 宏机制；seL4 的 `cppcheck`、`proof/` 形式化证明工作流（bitfield_gen.py 生成 Isabelle/HOL 证明）、CI 多工具矩阵。
-3. **横向对比深化**：将 v0.2.1 的 11 维度对照扩展为 7 个子系统的三栏对照表（seL4 如何做 / OLK-6.6 如何做 / agentrt-linux 应当如何融合）。
+3. **横向对比深化**：将 v0.2.1 的 11 维度对照扩展为 7 个子系统的三栏对照表（seL4 如何做 / OLK-6.6 如何做 / agent-linux 应当如何融合）。
 4. **设计哲学层**：新增 Linux "演化式增量改进"哲学 vs seL4 "形式化验证驱动极简"哲学的对比与融合裁决。
 
 ---
 
 ## 2. OLK-6.6 工程思想深度提炼（ES-OLK-1~13 扩展）
 
-> 本章为 v0.2.1 提炼的 ES-OLK-1~13 补充源码级证据，每条包含：思想描述 / 源码证据（文件:行号 + 片段）/ 对 agentrt-linux 的落地建议 / 对应工程标准文件。
+> 本章为 v0.2.1 提炼的 ES-OLK-1~13 补充源码级证据，每条包含：思想描述 / 源码证据（文件:行号 + 片段）/ 对 agent-linux 的落地建议 / 对应工程标准文件。
 
 ### ES-OLK-1（关注点分离原则）
 
@@ -100,7 +100,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `Kconfig:11-33`——顶层配置以 `source "init/Kconfig"` / `source "mm/Kconfig"` / `source "security/Kconfig"` / `source "net/Kconfig"` 分source 各子系统配置，物理隔离。
 - `security/` 目录进一步细分：`security/selinux/`（SELinux）、`security/landlock/`（Landlock）、`security/apparmor/`、`security/smack/`、`security/tomoyo/`、`security/yama/`、`security/loadpin/`、`security/safesetid/`、`security/lockdown/`、`security/bpf/`、`security/integrity/`、`security/keys/`——每个安全策略一个子目录。
 
-**对 agentrt-linux 的落地建议**：8 子仓划分即关注点分离的体现。`airymaxos-kernel` / `airymaxos-security` / `airymaxos-services` / `airymaxos-tests-linux` 等子仓的边界应与 OLK-6.6 的目录边界对齐。
+**对 agent-linux 的落地建议**：8 子仓划分即关注点分离的体现。`airymaxos-kernel` / `airymaxos-security` / `airymaxos-services` / `airymaxos-tests-linux` 等子仓的边界应与 OLK-6.6 的目录边界对齐。
 
 **对应工程标准文件**：`50-engineering-standards/04-engineering-philosophy.md` §1。
 
@@ -113,7 +113,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `include/asm-generic/` 提供架构无关的默认实现，各架构通过 `arch/<arch>/include/asm/` 覆盖。
 - `Kbuild:15`——`arch/$(SRCARCH)/kernel/asm-offsets.s` 生成架构相关的 asm-offsets，但通过 `include/generated/asm-offsets.h` 暴露给架构无关代码。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-kernel` 应保留 `arch/x86`、`arch/arm64` 目录结构，架构相关代码物理隔离。
+**对 agent-linux 的落地建议**：`airymaxos-kernel` 应保留 `arch/x86`、`arch/arm64` 目录结构，架构相关代码物理隔离。
 
 **对应工程标准文件**：`20-modules/01-kernel.md`。
 
@@ -127,7 +127,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `include/uapi/linux/capability.h:17-33`——`_LINUX_CAPABILITY_VERSION_3`（`0x20080522`）、`__u32 version`——使用 `__u32`（UAPI 类型）而非 `u32`（内核内部类型）。
 - 对比 `include/linux/capability.h`（内核内部）使用 `u32` 类型。
 
-**对 agentrt-linux 的落地建议**：`include/uapi/airymax/` 物理隔离 UAPI，使用 `__u32`/`__u64` 类型；内核内部使用 `u32`/`u64`。
+**对 agent-linux 的落地建议**：`include/uapi/airymax/` 物理隔离 UAPI，使用 `__u32`/`__u64` 类型；内核内部使用 `u32`/`u64`。
 
 **对应工程标准文件**：`30-interfaces/01-syscalls.md` + `50-engineering-standards/04-engineering-philosophy.md` §2.3（L1-L4 接口稳定性分级）。
 
@@ -142,7 +142,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `Kbuild:66`——`obj-$(CONFIG_RUST) += rust/`，Rust 支持可配置。
 - `kernel/sched/fair.c:1059-1064`——`#ifdef CONFIG_BPF_SCHED` 条件编译 BPF 调度钩子，`entity_eligible()` 中通过 `bpf_sched_enabled()` 运行时检查。
 
-**对 agentrt-linux 的落地建议**：每个微内核化特性（VFS 用户态化、capability、io_uring 消息传递）都应有独立 Kconfig 开关。
+**对 agent-linux 的落地建议**：每个微内核化特性（VFS 用户态化、capability、io_uring 消息传递）都应有独立 Kconfig 开关。
 
 **对应工程标准文件**：`70-build-system/02-kconfig-system.md`。
 
@@ -156,7 +156,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `src/api/syscall.c:80-96`（seL4 同样遵循此规范）——`#ifdef CONFIG_IRQ_REPORTING` / `#else` / `#define checkInterrupt(was_interrupt_entry) checkInterrupt()` / `#endif`。
 - `kernel/sched/fair.c:1058-1064`——`#ifdef CONFIG_BPF_SCHED` 包裹 BPF 钩子，主体逻辑通过 `IS_ENABLED` 风格的运行时检查 `bpf_sched_enabled()`。
 
-**对 agentrt-linux 的落地建议**：`01-coding-standards.md` OS-STD-024/025/026 已覆盖，应强化检查。
+**对 agent-linux 的落地建议**：`01-coding-standards.md` OS-STD-024/025/026 已覆盖，应强化检查。
 
 **对应工程标准文件**：`50-engineering-standards/01-coding-standards.md`（OS-STD-024/025/026）。
 
@@ -169,7 +169,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - 对比 `include/linux/capability.h`（内核内部）——SPDX 头 `GPL-2.-only`，无 syscall-note 例外。
 - `include/uapi/asm-generic/`——架构无关的 UAPI 默认实现。
 
-**对 agentrt-linux 的落地建议**：`include/uapi/airymax/` 物理隔离，SPDX 头使用 `AGPL-3.0-or-later OR Apache-2.0 WITH Airymax-syscall-note`。
+**对 agent-linux 的落地建议**：`include/uapi/airymax/` 物理隔离，SPDX 头使用 `AGPL-3.0-or-later OR Apache-2.0 WITH Airymax-syscall-note`。
 
 **对应工程标准文件**：`30-interfaces/01-syscalls.md` + 目录结构设计。
 
@@ -184,7 +184,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `Makefile:515`——`CHECK = sparse` 定义检查工具。
 - `Kbuild:23-46`——`bounds-file` / `timeconst-file` / `offsets-file` / `missing-syscalls` / `atomic-checks`（sha1 校验原子头文件未被手动修改）——声明式生成与校验。
 
-**对 agentrt-linux 的落地建议**：内核子仓用 Kconfig + Kbuild，非内核子仓用 CMake（借鉴 seL4 ES-SEL4-10）。
+**对 agent-linux 的落地建议**：内核子仓用 Kconfig + Kbuild，非内核子仓用 CMake（借鉴 seL4 ES-SEL4-10）。
 
 **对应工程标准文件**：`70-build-system/01-kbuild-system.md` + `02-kconfig-system.md`。
 
@@ -196,7 +196,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `MAINTAINERS`（24218 行）——文件头明确定义字段：`M:`（Mail patches to）/ `R:`（Designated Reviewer）/ `L:`（Mailing list）/ `S:`（Status: Supported/Maintained/Odd Fixes/Orphan/Obsolete）/ `W:`（Web-page）/ `Q:`（Patchwork）/ `B:`（Bugs）/ `C:`（Chat）/ `P:`（Subsystem Profile）/ `T:`（SCM tree）/ `F:`（Files）/ `X:`（Excluded files）。
 - 每个 subsystem 条目包含多个 `F:` 行，精确到文件/目录通配符。
 
-**对 agentrt-linux 的落地建议**：8 子仓每个仓根目录新增 `MAINTAINERS` 文件（R-03 建议）。
+**对 agent-linux 的落地建议**：8 子仓每个仓根目录新增 `MAINTAINERS` 文件（R-03 建议）。
 
 **对应工程标准文件**：`120-development-process`（治理）+ R-03 建议。
 
@@ -211,7 +211,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `scripts/Makefile.extrawarn:1-80`——W=1/2/3/e 四组警告的精确编译器 flag 定义（`-Wall` / `-Wundef` / `-Werror=implicit-function-declaration` / `-Wvla` 等）。
 - `Documentation/dev-tools/`——含 `checkpatch.rst` / `sparse.rst` / `coccinelle.rst` / `kasan.rst` / `kcov.rst` / `kcsan.rst` / `kfence.rst` / `kmemleak.rst` / `kmsan.rst` / `kselftest.rst` / `ubsan.rst` 等工具文档——完整的"规范可执行"工具链。
 
-**对 agentrt-linux 的落地建议**：`50-engineering-standards/08-compliance-checklist.md`（558 行，17 项检查 + 16 个检查脚本）已覆盖，应增补 R-04 四项 seL4 借鉴检查规则。
+**对 agent-linux 的落地建议**：`50-engineering-standards/08-compliance-checklist.md`（558 行，17 项检查 + 16 个检查脚本）已覆盖，应增补 R-04 四项 seL4 借鉴检查规则。
 
 **对应工程标准文件**：`50-engineering-standards/08-compliance-checklist.md`。
 
@@ -224,7 +224,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `Kbuild:38-46`——`missing-syscalls` 检查（`scripts/checksyscalls.sh`）确保系统调用完整性，防止回归。
 - `Kbuild:42-46`——`atomic-checks`（sha1 校验）防止原子操作头文件被手动修改导致回归。
 
-**对 agentrt-linux 的落地建议**：`04-engineering-philosophy.md` OS-IRON-003 已覆盖，应建立 regression 自动化检测。
+**对 agent-linux 的落地建议**：`04-engineering-philosophy.md` OS-IRON-003 已覆盖，应建立 regression 自动化检测。
 
 **对应工程标准文件**：`50-engineering-shandards/04-engineering-philosophy.md` §5（OS-IRON-003）。
 
@@ -236,7 +236,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `include/uapi/linux/capability.h:17-25`——`_LINUX_CAPABILITY_VERSION_1`（`0x19980330`）/ `_LINUX_CAPABILITY_VERSION_2`（`0x20071026`，deprecated）/ `_LINUX_CAPABILITY_VERSION_3`（`0x20080522`）——三版本共存，永久向后兼容。
 - `include/uapi/linux/capability.h:1`——`GPL-2.0 WITH Linux-syscall-note` 许可证例外，明确用户空间可自由包含。
 
-**对 agentrt-linux 的落地建议**：`04-engineering-philosophy.md` OS-IRON-001/005 已覆盖。
+**对 agent-linux 的落地建议**：`04-engineering-philosophy.md` OS-IRON-001/005 已覆盖。
 
 **对应工程标准文件**：`50-engineering-standards/04-engineering-philosophy.md` §2.1（OS-IRON-001）+ §9（OS-IRON-005）。
 
@@ -251,7 +251,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `kernel/fork.c:1488`——`EXPORT_SYMBOL_GPL(mmput);` 紧跟定义。
 - `Kbuild:66`——`obj-$(CONFIG_RUST) += rust/`，Rust 模块可加载。
 
-**对 agentrt-linux 的落地建议**：`60-driver-model` + `20-modules/01-kernel.md` 已覆盖，`EXPORT_SYMBOL` 紧跟规范应强化。
+**对 agent-linux 的落地建议**：`60-driver-model` + `20-modules/01-kernel.md` 已覆盖，`EXPORT_SYMBOL` 紧跟规范应强化。
 
 **对应工程标准文件**：`50-engineering-standards/01-coding-standards.md`（OS-STD-009）。
 
@@ -266,7 +266,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `MAINTAINERS`（24218 行）——维护者文档即代码。
 - `Kbuild:38-46`——`missing-syscalls` / `atomic-checks` 校验脚本即代码。
 
-**对 agentrt-linux 的落地建议**：`04-engineering-philosophy.md` OS-KER-050 已覆盖。
+**对 agent-linux 的落地建议**：`04-engineering-philosophy.md` OS-KER-050 已覆盖。
 
 **对应工程标准文件**：`50-engineering-standards/04-engineering-philosophy.md` §8（OS-KER-050）+ `01-coding-standards.md`（OS-STD-012 kernel-doc 强制）。
 
@@ -285,7 +285,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `lib/Kconfig.kabi:1-30`——`config KABI_COMPAT`（`bool "Enable kabi compatible fix"`，`depends on X86_64 || ARM64`）/ `config KABI_RESERVE`（`bool "Enable KABI PADDING RESERVE"`，`default y`）/ `config KABI_SIZE_ALIGN_CHECKS`（`bool "Enable more stringent kabi checks in the macros"`，`default y`）。
 - `kernel/sched/sched.h:722-733`——`KABI_REPLACE(s64 avg_vruntime, s64 sum_w_vruntime)` / `KABI_REPLACE(u64 min_vruntime, u64 zero_vruntime)` / `KABI_BROKEN_REMOVE(u64 min_vruntime_copy)`——EEVDF 引入时通过 KABI 宏保持二进制兼容。
 
-**对 agentrt-linux 的落地建议**：agentrt-linux 的内核态 ABI 演进应借鉴 KABI 宏机制——在数据结构变更时通过宏保持二进制兼容，而非直接修改结构体。建议在 `50-engineering-standards/` 新增 `09-kabi-evolution.md` 规范。
+**对 agent-linux 的落地建议**：agent-linux 的内核态 ABI 演进应借鉴 KABI 宏机制——在数据结构变更时通过宏保持二进制兼容，而非直接修改结构体。建议在 `50-engineering-standards/` 新增 `09-kabi-evolution.md` 规范。
 
 **对应工程标准文件**：建议新增 `50-engineering-standards/09-kabi-evolution.md`（P1 优先级）。
 
@@ -306,7 +306,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `src/fastpath/fastpath.c`（31KB）——独立的最优路径优化，证明"性能与极简可共存"。
 - `src/util.c`（452 行）/ `src/assert.c`（43 行）/ `src/string.c`（42 行）/ `src/inlines.c`（16 行）——工具库极简。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-kernel` 复用 atoms/corekern MicroCoreRT 极简内核，机制最小化（IPC/内存/任务/时间 4 原子机制）。
+**对 agent-linux 的落地建议**：`airymaxos-kernel` 复用 atoms/corekern MicroCoreRT 极简内核，机制最小化（IPC/内存/任务/时间 4 原子机制）。
 
 **对应工程标准文件**：`10-architecture/03-microkernel-strategy.md`。
 
@@ -323,7 +323,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `src/object/objecttype.c:62`——`deriveCap_ret_t deriveCap(cte_t *slot, cap_t cap)`——capability 派生核心函数，按 capType 分发。
 - `include/object/structures_64.bf:11-50`——bitfield DSL 定义 capability 布局：`block null_cap` / `block untyped_cap` / `block endpoint_cap(capEPBadge, capCanGrantReply, capCanGrant, capCanSend, capCanReceive, capEPPtr, capType)` / `block notification_cap` / `block reply_cap` / `block cnode_cap(capCNodeRadix, capCNodeGuardSize, capCNodeGuard, capCNodePtr, capType)`——每个 capability 类型有明确的权限位字段。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-security` 的 capability 模块应以 seL4 派生模型为蓝本（Copy/Mint/Move/Mutate/Revoke/Delete），IRON-9 v2 [SC] `security_types.h` 已设计 38 ID capability 枚举 + mint/mintcopy/derive/revoke 派生模型。
+**对 agent-linux 的落地建议**：`airymaxos-security` 的 capability 模块应以 seL4 派生模型为蓝本（Copy/Mint/Move/Mutate/Revoke/Delete），IRON-9 v2 [SC] `security_types.h` 已设计 38 ID capability 枚举 + mint/mintcopy/derive/revoke 派生模型。
 
 **对应工程标准文件**：`20-modules/03-security.md` + IRON-9 v2 [SC] `security_types.h`。
 
@@ -336,7 +336,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `libsel4/include/sel4/`（23 个头文件）——`assert.h` / `bootinfo.h` / `config.h` / `constants.h` / `errors.h` / `faults.h` / `functions.h` / `macros.h` / `objecttype.h` / `sel4.h` / `shared_types.h` / `simple_types.h` / `syscalls.h` / `types.h` 等——用户态通过 libsel4 与内核通信，不直接调用内核内部函数。
 - `src/kernel/faulthandler.c:21-44`——`handleFault()` 通过 capability（`TCB_PTR_CTE_PTR(tptr, tcbFaultHandler)->cap`）查找 fault handler endpoint，将 fault IPC 发送到用户态 fault handler——内核不处理 fault 恢复策略，由用户态决定。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-services` 的 VFS/网络/驱动用户态化（Phase 1 VFS + Phase 2 网络/驱动），`airymaxos-sdk`（4 语言 SDK）借鉴 libsel4 独立模型。
+**对 agent-linux 的落地建议**：`airymaxos-services` 的 VFS/网络/驱动用户态化（Phase 1 VFS + Phase 2 网络/驱动），`airymaxos-sdk`（4 语言 SDK）借鉴 libsel4 独立模型。
 
 **对应工程标准文件**：`20-modules/02-services.md` + `10-architecture/03-microkernel-strategy.md`。
 
@@ -350,7 +350,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `src/fastpath/fastpath.c:26-100`（`fastpath_call`）——fastpath 最优路径：`info = messageInfoFromWord_raw(msgInfo)` 解析消息 → `lookup_fp()` 查找 capability → `cap_capType_equals(ep_cap, cap_endpoint_cap)` 检查端点 → `endpoint_ptr_get_state(ep_ptr) != EPState_Recv` 检查接收方 → 任何检查失败则 `slowpath(SysCall)` 降级到通用路径。
 - `src/api/syscall.c:557-660`（`handleSyscall`）——syscall 分发：`case SysCall:` → `handleInvocation(true, true, true, false, ...)` / `case SysReplyRecv:` → `handleInvocation` + `handleRecv` / `case SysSend:` / `case SysNBSend:` / `case SysRecv:` / `case SysNBRecv:` / `case SysYield:` → `handleYield()`。
 
-**对 agentrt-linux 的落地建议**：`30-interfaces/02-ipc-protocol.md`（128B 定长消息头 + io_uring 消息传递）+ IRON-9 v2 [SC] `ipc.h`，借鉴 fastpath 优化思路。
+**对 agent-linux 的落地建议**：`30-interfaces/02-ipc-protocol.md`（128B 定长消息头 + io_uring 消息传递）+ IRON-9 v2 [SC] `ipc.h`，借鉴 fastpath 优化思路。
 
 **对应工程标准文件**：`30-interfaces/02-ipc-protocol.md` + IRON-9 v2 [SC] `ipc.h`。
 
@@ -366,7 +366,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `README.md`——CI badges 含 `[![Proof Sync](https://github.com/seL4/seL4/actions/workflows/preprocess-deploy.yml/badge.svg)]`——Proof Sync CI 工作流确保源码与形式化证明同步。
 - `src/api/faults.c:18-25`——`compile_assert(InvalidRoot, lookup_fault_invalid_root + 1 == seL4_InvalidRoot)` / `compile_assert(MissingCapability, ...)`——编译时断言确保内核常量与 libsel4 一致（形式化证明的前置条件）。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-tests-linux` 的 formal-verification 模块借鉴 seL4 风格形式化验证框架（思想借鉴，不引入 Isabelle/HOL 全套工具链）。
+**对 agent-linux 的落地建议**：`airymaxos-tests-linux` 的 formal-verification 模块借鉴 seL4 风格形式化验证框架（思想借鉴，不引入 Isabelle/HOL 全套工具链）。
 
 **对应工程标准文件**：`20-modules/08-tests.md` + `80-testing`。
 
@@ -384,7 +384,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `libsel4/tools/sel4_idl.xsd`——XML schema 定义接口契约格式。
 - `README.md`——`[![XML](https://github.com/seL4/seL4/actions/workflows/xml_lint.yml/badge.svg)]`——XML lint CI 工作流确保契约 XML 格式正确。
 
-**对 agentrt-linux 的落地建议**：在 `50-engineering-standards/40-integration/` 下新增 `syscall-contract.xml` 规范（R-01 建议，~16h），由 `scripts/syscall_gen.py` 自动生成 `include/uapi/airymax/syscall.h` + `kernel/entry/airymax_syscall_table.c`。
+**对 agent-linux 的落地建议**：在 `50-engineering-standards/40-integration/` 下新增 `syscall-contract.xml` 规范（R-01 建议，~16h），由 `scripts/syscall_gen.py` 自动生成 `include/uapi/airymax/syscall.h` + `kernel/entry/airymax_syscall_table.c`。
 
 **对应工程标准文件**：建议新增 `50-engineering-standards/40-integration/syscall-contract.xml`（P2）。
 
@@ -400,7 +400,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `include/` 与 `src/` 同构：`include/{api,kernel,object,arch,machine,plat,smp,benchmark,model,drivers,fastpath}` 与 `src/{api,kernel,object,arch,machine,plat,smp,benchmark,model,drivers,fastpath}` 一一对应。
 - `include/object/structures.h:9-12`——`#include <arch/object/structures_gen.h>` / `#include <mode/types.h>`——架构相关生成的头文件被架构无关核心引用。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-kernel` 的 `arch/machine/plat` 三层适配（待目录结构落地）。
+**对 agent-linux 的落地建议**：`airymaxos-kernel` 的 `arch/machine/plat` 三层适配（待目录结构落地）。
 
 **对应工程标准文件**：`10-architecture` + 目录结构设计。
 
@@ -418,7 +418,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `include/object/structures.h:8`——`#include <arch/object/structures_gen.h>`——引用生成的头文件。
 - `tools/bf.vim`——Vim 语法高亮文件，`.bf` DSL 有工具支持。
 
-**对 agentrt-linux 的落地建议**：为 IRON-9 v2 [SC] 共享契约层 6 个头文件引入 `structures.bf` 式 codegen（R-02 建议，~12h），由 `scripts/bitfield_gen.py` 自动生成 C 结构体与访问函数。
+**对 agent-linux 的落地建议**：为 IRON-9 v2 [SC] 共享契约层 6 个头文件引入 `structures.bf` 式 codegen（R-02 建议，~12h），由 `scripts/bitfield_gen.py` 自动生成 C 结构体与访问函数。
 
 **对应工程标准文件**：建议新增 `50-engineering-standards/40-integration/bitfield-contract.bf`（P2）。
 
@@ -432,7 +432,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `libsel4/include/sel4/sel4.h`——用户态总入口头文件。
 - `libsel4/src/sel4_bootinfo.c`——libsel4 唯一的 `.c` 实现文件（bootinfo 处理），其余均为生成代码。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-sdk`（4 语言 SDK）借鉴 libsel4 独立模型——独立版本、独立构建、独立测试。
+**对 agent-linux 的落地建议**：`airymaxos-sdk`（4 语言 SDK）借鉴 libsel4 独立模型——独立版本、独立构建、独立测试。
 
 **对应工程标准文件**：`airymaxos-cloudnative` 的 SDK + `airymaxos-sdk`。
 
@@ -449,7 +449,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `configs/`（目录）——预置配置。
 - `.cmake-format.yaml`——CMake 格式化配置。
 
-**对 agentrt-linux 的落地建议**：内核子仓用 Kbuild（与 Linux 6.6 一致），非内核子仓用 CMake（借鉴 seL4）。
+**对 agent-linux 的落地建议**：内核子仓用 Kbuild（与 Linux 6.6 一致），非内核子仓用 CMake（借鉴 seL4）。
 
 **对应工程标准文件**：`70-build-system`。
 
@@ -468,7 +468,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 - `tools/circular_includes.py`——循环 include 检测。
 - `.github/`——GitHub Actions 工作流目录。
 
-**对 agentrt-linux 的落地建议**：`airymaxos-tests-linux` 应建立 CI 多工具矩阵——编译检查 / 静态分析（sparse/smatch/cppcheck）/ 单元测试（KUnit）/ 集成测试（kselftest）/ 文档生成 / 契约一致性检查。
+**对 agent-linux 的落地建议**：`airymaxos-tests-linux` 应建立 CI 多工具矩阵——编译检查 / 静态分析（sparse/smatch/cppcheck）/ 单元测试（KUnit）/ 集成测试（kselftest）/ 文档生成 / 契约一致性检查。
 
 **对应工程标准文件**：`20-modules/08-tests.md` + `80-testing`。
 
@@ -478,16 +478,16 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 ### 4.1 调度子系统
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 调度算法 | 固定优先级多级队列（`src/object/tcb.c:30` `checkPrio` 基于 MCP；`:115` `tcbSchedEnqueue`；L1/L2 bitmap 加速） | EEVDF（`kernel/sched/fair.c:925` `avg_vruntime`；`:1057` `entity_eligible`；`:1252` `pick_eevdf` O(log n) 增强红黑树）+ RT/DL/EXT 多类 | 保留 OLK-6.6 EEVDF 为基线；微内核化后调度策略接口借鉴 seL4 MCP（最大优先级控制） |
 | 调度上下文 | MCS 模型（`src/object/notification.c:38` `maybeDonateSchedContext` 调度上下文捐赠） | `sched.h:722` `KABI_REPLACE` 保持 EEVDF 引入的二进制兼容 | io_uring 消息传递时借鉴 MCS 调度上下文捐赠思路 |
-| 可扩展调度 | 无（极简） | `kernel/sched/ext.c`（sched_ext BPF 可编程调度器）+ `bpf_sched.c`（BPF 调度钩子，`fair.c:1059` `bpf_sched_cfs_tag_entity_eligible`） | 借鉴 sched_ext 思路，agentrt-linux 安全策略可通过 BPF 钩子注入调度决策 |
+| 可扩展调度 | 无（极简） | `kernel/sched/ext.c`（sched_ext BPF 可编程调度器）+ `bpf_sched.c`（BPF 调度钩子，`fair.c:1059` `bpf_sched_cfs_tag_entity_eligible`） | 借鉴 sched_ext 思路，agent-linux 安全策略可通过 BPF 钩子注入调度决策 |
 | 调度策略可配置 | `#ifdef CONFIG_KERNEL_MCS`（`src/object/endpoint.c:21`） | `kernel/sched/Kconfig`（无独立文件，通过 `CONFIG_SCHED_DEBUG` 等） | Kconfig 开关控制调度策略 |
 
 ### 4.2 IPC 子系统
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | IPC 机制 | endpoint（同步，`src/object/endpoint.c`）+ notification（异步，`src/object/notification.c`）+ fastpath（`src/fastpath/fastpath.c:26` `fastpath_call`） | 系统调用（`sys_*`）+ pipe/socket/shared memory + io_uring（`io_uring/io_uring.c` 4752 行） | io_uring 消息传递机制 + 借鉴 seL4 fastpath 热路径优化（`unlikely()` 早期降级 slowpath） |
 | 消息格式 | 定长 MessageInfo（`seL4_MessageInfo_t`，length/badge/caps）+ IPC buffer | 变长 struct msghdr / iovec | 128B 定长消息头 + io_uring SQE/CQE |
@@ -496,16 +496,16 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 ### 4.3 内存管理子系统
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 分配模型 | 无动态分配（形式化约束）——untyped 内存预分配，Retype 创建对象（`libsel4/include/interfaces/object-api.xml` `UntypedRetype`） | kmalloc/kzalloc/vmalloc/kmem_cache + MGLRU（`mm/vmscan.c` LRU_GEN 多代 LRU） | OLK-6.6 kmalloc 模型（宏内核内存模型） |
 | 页面回收 | 无（用户态管理） | MGLRU 多代 LRU（`mm/vmscan.c`）+ damon（`mm/damon/`）+ compaction/oom | 保留 OLK-6.6 MGLRU |
-| openEuler 增量 | N/A | `mm/gmem.c`/`gmem_phys.c`（guest 内存）/ `mm/etmem.c`（etmem 内存增强）/ `mm/dynamic_pool.c`（动态内存池） | 评估 gmem/etmem 是否适用于 agentrt-linux 的用户态服务内存管理 |
+| openEuler 增量 | N/A | `mm/gmem.c`/`gmem_phys.c`（guest 内存）/ `mm/etmem.c`（etmem 内存增强）/ `mm/dynamic_pool.c`（动态内存池） | 评估 gmem/etmem 是否适用于 agent-linux 的用户态服务内存管理 |
 | 地址空间 | vspace capability（`include/object/structures_64.bf` `vspace_cap`） | 页表管理（`arch/x86/mm/` / `arch/arm64/mm/`） | OLK-6.6 页表模型 + seL4 capability 控制地址空间访问权限 |
 
 ### 4.4 安全/capability 子系统
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 权限模型 | capability 单一模型（`src/object/cnode.c` Copy/Mint/Move/Mutate/Revoke/Delete；`:528` `cteRevoke` 撤销派生树） | POSIX capabilities（`security/commoncap.c:66` `cap_capable`）+ LSM 钩子（`security/selinux/hooks.c` 215 个 `LSM_HOOK_INIT`）+ LSM stacking（`security/security.c:93` `ordered_lsm_init`） | 融合：security 子仓 capability（seL4 派生模型）+ LSM 钩子（OLK-6.6 可插拔策略） |
 | 权限派生 | `deriveCap()`（`src/object/objecttype.c:62`）+ mint/mintcopy/derive/revoke | 无派生（POSIX capabilities 是位掩码，无派生树） | 借鉴 seL4 派生树（IRON-9 v2 [SC] `security_types.h` 38 ID + mint/mintcopy/derive/revoke） |
@@ -514,7 +514,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 ### 4.5 构建系统（Kbuild vs seL4 build system）
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 构建系统 | CMake（`CMakeLists.txt` + `config.cmake` + `gcc.cmake` + `llvm.cmake`） | Kbuild + Kconfig + Makefile 三层（`Makefile` 68KB + `Kbuild` + `Kconfig`） | 内核子仓用 Kbuild（与 Linux 6.6 一致），非内核子仓用 CMake（借鉴 seL4） |
 | 配置 | `config.cmake`（`config_choice`/`config_option`/`config_string`） | Kconfig（`source`/`config`/`bool`/`depends on`/`select`/`default`/`help`） | 内核用 Kconfig，非内核用 CMake config |
@@ -523,7 +523,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 ### 4.6 文档系统（kernel-doc vs seL4 spec）
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 文档格式 | LaTeX（`manual/manual.tex` + `manual/parts/` + `manual/figures/`）+ Doxygen（`manual/Doxyfile`） | reStructuredText（`Documentation/` 80+ 子目录）+ kernel-doc 注释 + `make htmldocs` | OLK-6.6 kernel-doc + reST（与 Linux 一致） |
 | 接口文档 | XML 契约（`libsel4/include/api/syscall.xml` + `libsel4/include/interfaces/object-api.xml`）含 `<brief>`/`<description>`/`<param>`/`<error>` | UAPI 头文件 + `Documentation/ABI/` | OLK-6.6 UAPI + 借鉴 seL4 XML 契约（含参数/错误码描述） |
@@ -532,7 +532,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 ### 4.7 测试与验证（Linux KUnit/kselftest vs seL4 proof/）
 
-| 维度 | seL4 如何做 | OLK-6.6 如何做 | agentrt-linux 应当如何融合 |
+| 维度 | seL4 如何做 | OLK-6.6 如何做 | agent-linux 应当如何融合 |
 |------|------------|---------------|---------------------------|
 | 形式化验证 | Isabelle/HOL 证明（`tools/bitfield_gen.py` 生成 `_proofs.thy`；`CMakeLists.txt` `GenProofsBFTarget`；Proof Sync CI） | 无 | `airymaxos-tests-linux` formal-verification 模块借鉴 seL4 思想（不引入全套 Isabelle/HOL） |
 | 单元测试 | seL4Test（`README.md` `[![seL4Test]` CI） | KUnit（`lib/kunit/`）+ kselftest（`tools/testing/kselftest/`） | OLK-6.6 KUnit + kselftest |
@@ -573,9 +573,9 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 **优势**：可证明正确性、安全性高、设计一致性强。
 **代价**：功能受限、生态小、开发成本高。
 
-### 5.3 融合裁决：agentrt-linux 的"Linux 6.6 为基、seL4 为鉴"取向
+### 5.3 融合裁决：agent-linux 的"Linux 6.6 为基、seL4 为鉴"取向
 
-**裁决原则**：agentrt-linux 的工程取向是"**Linux 6.6 为基、seL4 为鉴**"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
+**裁决原则**：agent-linux 的工程取向是"**Linux 6.6 为基、seL4 为鉴**"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。
 
 **分层裁决**：
 
@@ -593,11 +593,11 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 | ABI 演进层 | **借鉴 OLK-6.6 KABI**——KABI 宏机制保持二进制兼容 | seL4 无此机制（极简内核无 ABI 演进问题） |
 
 **裁决理由**：
-1. **为何编码风格层完全采纳 OLK-6.6**：agentrt-linux 基于 Linux 6.6 内核基线，内核态代码必须与上游 Linux 一致，便于 backport 补丁。seL4 的 4 空格/camelCase/重度 typedef 源于其 Haskell 形式化传统，与 C/Unix 生态主流冲突，且 agentrt-linux 内核态代码无形式化约束。
-2. **为何架构层借鉴 seL4**：seL4 的 `arch/machine/plat` 三层适配比 OLK-6.6 的单一 `arch/` 更精细，核心逻辑可独立演进。agentrt-linux 可借鉴此分层。
-3. **为何安全层融合**：OLK-6.6 的 LSM 框架提供了策略可插拔性（SELinux/Landlock/AppArmor 共存），但 POSIX capabilities 是位掩码无派生树。seL4 的 capability 派生模型（Copy/Mint/Move/Mutate/Revoke/Delete）提供了更细粒度的权限控制。agentrt-linux 融合两者——LSM 框架保留 + capability 模块新增。
-4. **为何 IPC 层融合**：OLK-6.6 的 io_uring 是成熟的异步 I/O 框架，seL4 的 fastpath 是热路径优化范式。agentrt-linux 以 io_uring 为基，借鉴 fastpath 的"常见路径快速处理、复杂路径降级"思路。
-5. **为何接口契约层借鉴 seL4**：OLK-6.6 无统一的接口契约 XML 机制（UAPI 头文件是手写 C）。seL4 的 `syscall.xml` + `object-api.xml` + codegen 提供了"契约与实现分离"的范式，agentrt-linux 可借鉴此思路实现 SSoT。
+1. **为何编码风格层完全采纳 OLK-6.6**：agent-linux 基于 Linux 6.6 内核基线，内核态代码必须与上游 Linux 一致，便于 backport 补丁。seL4 的 4 空格/camelCase/重度 typedef 源于其 Haskell 形式化传统，与 C/Unix 生态主流冲突，且 agent-linux 内核态代码无形式化约束。
+2. **为何架构层借鉴 seL4**：seL4 的 `arch/machine/plat` 三层适配比 OLK-6.6 的单一 `arch/` 更精细，核心逻辑可独立演进。agent-linux 可借鉴此分层。
+3. **为何安全层融合**：OLK-6.6 的 LSM 框架提供了策略可插拔性（SELinux/Landlock/AppArmor 共存），但 POSIX capabilities 是位掩码无派生树。seL4 的 capability 派生模型（Copy/Mint/Move/Mutate/Revoke/Delete）提供了更细粒度的权限控制。agent-linux 融合两者——LSM 框架保留 + capability 模块新增。
+4. **为何 IPC 层融合**：OLK-6.6 的 io_uring 是成熟的异步 I/O 框架，seL4 的 fastpath 是热路径优化范式。agent-linux 以 io_uring 为基，借鉴 fastpath 的"常见路径快速处理、复杂路径降级"思路。
+5. **为何接口契约层借鉴 seL4**：OLK-6.6 无统一的接口契约 XML 机制（UAPI 头文件是手写 C）。seL4 的 `syscall.xml` + `object-api.xml` + codegen 提供了"契约与实现分离"的范式，agent-linux 可借鉴此思路实现 SSoT。
 
 ---
 
@@ -609,9 +609,9 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 **上游依据**：ES-OLK-14（`include/linux/kabi.h` + `lib/Kconfig.kabi`）
 
-**现状**：agentrt-linux 无二进制兼容演进机制。微内核化改造会频繁变更数据结构（如 TCB、capability 表），可能导致内核态 ABI 破坏。
+**现状**：agent-linux 无二进制兼容演进机制。微内核化改造会频繁变更数据结构（如 TCB、capability 表），可能导致内核态 ABI 破坏。
 
-**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agentrt-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
+**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agent-linux 的 KABI 宏机制（借鉴 OLK-6.6 `KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE` 但不复制其实现）。新增字段必须追加到结构体末尾，废弃字段保留 hole。
 
 **优先级**：P1（微内核化改造的关键基础设施，1.0.1 M1 落地）
 
@@ -633,7 +633,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 **上游依据**：ES-SEL4-6（`libsel4/include/api/syscall.xml` + `tools/syscall_header_gen.py`）
 
-**现状**：agentrt-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读契约。
+**现状**：agent-linux 的 `30-interfaces/01-syscalls.md` 以 Markdown 描述系统调用接口，无机器可读契约。
 
 **建议**：在 `50-engineering-standards/40-integration/` 新增 `syscall-contract.xml`，由 `scripts/syscall_gen.py` 自动生成 `include/uapi/airymax/syscall.h` + `kernel/entry/airymax_syscall_table.c`。XML 格式借鉴 seL4（`<syscalls>`/`<syscall name="..."/>`/`<param>`/`<error>`）但不复制其内容。
 
@@ -657,7 +657,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 **上游依据**：ES-OLK-8（`MAINTAINERS` 24218 行）
 
-**现状**：agentrt-linux 8 子仓无 MAINTAINERS 文件。
+**现状**：agent-linux 8 子仓无 MAINTAINERS 文件。
 
 **建议**：为 8 子仓每个仓根目录新增 `MAINTAINERS` 文件，格式精简（`M:`/`S:`/`F:`/`W:` 四字段），每个子系统有明确责任人。
 
@@ -669,7 +669,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 **上游依据**：ES-SEL4-11（seL4 8 个 CI 工作流）+ ES-OLK-9（OLK sparse/W/checkpatch）
 
-**现状**：agentrt-linux 的 CI 矩阵未明确。
+**现状**：agent-linux 的 CI 矩阵未明确。
 
 **建议**：在 `80-testing` 定义 CI 多工具矩阵——(1) 编译检查（多编译器/多架构）；(2) 静态分析（sparse/smatch/cppcheck/coccinelle）；(3) 单元测试（KUnit）；(4) 集成测试（kselftest）；(5) 文档生成（`make htmldocs`）；(6) 契约一致性检查（syscall.xml / bitfield.bf）；(7) checkpatch 规范检查；(8) 形式化验证（tests-linux 子仓）。
 
@@ -702,7 +702,7 @@ v0.2.1 研究报告（`00-reviews/_research_0.2.1/01-source-code-engineering-stu
 
 2. **新增 2 项工程思想**：ES-OLK-14（KABI 二进制兼容演进机制）、ES-SEL4-11（CI 多工具矩阵验证），均为 v0.2.1 遗漏的工程机制。
 
-3. **设计哲学裁决明确**：agentrt-linux 取"Linux 6.6 为基、seL4 为鉴"取向——编码风格层/构建系统层/并发模型层/内存模型层完全采纳 OLK-6.6，架构组织层/安全模型层/IPC 层融合两者，接口契约层/形式化验证层借鉴 seL4。
+3. **设计哲学裁决明确**：agent-linux 取"Linux 6.6 为基、seL4 为鉴"取向——编码风格层/构建系统层/并发模型层/内存模型层完全采纳 OLK-6.6，架构组织层/安全模型层/IPC 层融合两者，接口契约层/形式化验证层借鉴 seL4。
 
 4. **6 项可落地工程标准**：STD-KABI-01（KABI 机制，P1）/ STD-CODE-07（sparse+W 分级，P1）/ STD-DOC-18（syscall.xml 契约，P2）/ STD-CODE-08（bitfield codegen，P2）/ STD-IRON-18（MAINTAINERS，P2）/ STD-TEST-09（CI 矩阵，P2）。
 

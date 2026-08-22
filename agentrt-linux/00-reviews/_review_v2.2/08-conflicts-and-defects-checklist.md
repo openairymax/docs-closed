@@ -1,4 +1,4 @@
-# agentrt-linux 方案冲突点与问题清单
+# agent-linux 方案冲突点与问题清单
 
 > **审计日期**：2026-07-16
 > **审计方法**：Linux 6.6 + seL4 源码对照 + 128 文档交叉验证
@@ -11,8 +11,8 @@
 ### CONFLICT-01: sched_ext 版本基线冲突
 
 **涉及文档**：
-- [01-syscalls.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/01-syscalls.md) L542："通过 sched_ext（agentrt-linux 内核增强，主线 6.12+）"
-- [01-kernel.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/20-modules/01-kernel.md) L47："sched_ext（agentrt-linux 内核增强，主线 6.12+ 引入并持续演进）"
+- [01-syscalls.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/01-syscalls.md) L542："通过 sched_ext（agent-linux 内核增强，主线 6.12+）"
+- [01-kernel.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/20-modules/01-kernel.md) L47："sched_ext（agent-linux 内核增强，主线 6.12+ 引入并持续演进）"
 
 **冲突**：用户明确要求"以 Linux 6.6 内核为准"，但 sched_ext 在 Linux 6.6 中需要 backport（主线 6.12+ 才合入）。
 
@@ -64,7 +64,7 @@
 
 ### GAP-02: UEF [SC] error.h 未创建
 
-**现状**：error.h 在 agentrt 和 agentrt-linux 两端都不存在。
+**现状**：error.h 在 agentrt 和 agent-linux 两端都不存在。
 
 **建议**：创建 `include/uapi/airymax/error.h`，定义统一的 AIRY_E* 错误码。
 
@@ -200,7 +200,7 @@
 
 ### ENG-01: 0 行可编译内核源码
 
-**现状**：agentrt-linux 8 子仓全部为 README-only 空壳。
+**现状**：agent-linux 8 子仓全部为 README-only 空壳。
 
 **建议**：立即创建 kernel 子仓的第一个 .c 文件（空壳内核模块）。
 
@@ -216,9 +216,9 @@
 
 ### ENG-03: [SC] 双向 CI 无法运行
 
-**现状**：sc-dual-ci.yml 存在但 agentrt-linux 端无代码可对比。
+**现状**：sc-dual-ci.yml 存在但 agent-linux 端无代码可对比。
 
-**建议**：创建 agentrt-linux 端 [SC] 头文件后启用 CI。
+**建议**：创建 agent-linux 端 [SC] 头文件后启用 CI。
 
 ---
 
@@ -256,7 +256,7 @@ Airymax Unify Design 对以上冲突的解决能力：
 
 ## 6. 总结
 
-agentrt-linux 方案存在 **24 个问题点**：
+agent-linux 方案存在 **24 个问题点**：
 - 3 个方案级冲突（版本基线）
 - 6 个设计缺失（Airymax Unify Design 未文档化）
 - 10 个技术缺陷（IPC/日志/安全/生命周期）

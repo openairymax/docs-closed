@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）工程标准合并审查报告
+# agent-linux（AirymaxOS）工程标准合并审查报告
 
 > **报告编号**: C-2.6（工程标准合并审查）
 > **报告日期**: 2026-07-09
 > **报告版本**: v0.3.0（系统性分析与决策阶段）
-> **审查范围**: `docs/AirymaxOS/50-engineering-standards/` 全部 22 份 Markdown 文件 + 5 个子目录 + 闭源总纲 `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`（1444 行）+ OLK-6.6 参考基线 `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`
+> **审查范围**: `docs/AirymaxOS/50-engineering-standards/` 全部 22 份 Markdown 文件 + 5 个子目录 + 闭源总纲 `docs-closed/agent-linux/agent-linux基本工程标准规范.md`（1444 行）+ OLK-6.6 参考基线 `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`
 > **机密级别**: 闭源不公开（SPHARX Ltd 内部参考）
 > **核心结论**: 当前工程标准体系存在 **3 类结构性问题**——(1) 同一规则被分配 2-4 个不同编号（编号混乱）；(2) 同一编号在不同文件被赋予 2-3 个不同含义（语义冲突）；(3) 公开 OS-* 与闭源 OS-IRON/OS-BAN/OS-STD/OS-KER/OS-FMT 编号体系未对齐。本报告给出 9 项合并决策与 4 阶段执行计划。
 
@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 背景与问题触发
 
-agentrt-linux（AirymaxOS）的工程标准体系自 0.1.1 版本奠基以来，经历了三轮增量扩展：
+agent-linux（AirymaxOS）的工程标准体系自 0.1.1 版本奠基以来，经历了三轮增量扩展：
 
 1. **0.1.1 奠基期**：建立 7 主题文档（01-07）+ 1 合规检查（08）+ 1 许可证（09）+ 6 扩展专题（60/70/80/100/110/120）的初步架构。
 2. **0.2.x 演进期**：新增 `10-coding-style/` 子目录承载 C/Rust 多语言风格与安全编码规范，与 01-03 主题卷形成职责重叠。
@@ -68,7 +68,7 @@ docs/AirymaxOS/50-engineering-standards/
     └── Rust_secure_coding_standard.md      (19KB,  Rust 安全)
 ```
 
-**闭源参考（1 份）**：`docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`（80KB / 1444 行）。
+**闭源参考（1 份）**：`docs-closed/agent-linux/agent-linux基本工程标准规范.md`（80KB / 1444 行）。
 
 **OLK-6.6 基线（1 份）**：`01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst`（44KB）。
 
@@ -106,7 +106,7 @@ docs/AirymaxOS/50-engineering-standards/
 
 ### 2.2 闭源总纲职责
 
-`agentrt-linux基本工程标准规范.md`（1444 行）是**闭源工程标准的总纲**，与公开 22 份文档构成"闭源总纲 + 开源子文档"双层结构。其规则编号体系如下：
+`agent-linux基本工程标准规范.md`（1444 行）是**闭源工程标准的总纲**，与公开 22 份文档构成"闭源总纲 + 开源子文档"双层结构。其规则编号体系如下：
 
 | 前缀 | 含义 | 数量 | 与公开文档关系 |
 |------|------|------|---------------|
@@ -160,7 +160,7 @@ ColumnLimit: 80
 
 | 维度 | 02-code-format.md | 10-coding-style/C_coding_style_standard.md |
 |------|-------------------|-------------------------------------------|
-| 自我定位 | "agentrt-linux 代码格式规则唯一权威来源（SSoT）" | "C 语言编码风格规范（基于 Linux 6.6 内核 coding-style.rst）" |
+| 自我定位 | "agent-linux 代码格式规则唯一权威来源（SSoT）" | "C 语言编码风格规范（基于 Linux 6.6 内核 coding-style.rst）" |
 | 实际重叠 | §1 缩进 / §2 行宽 / §3 大括号 / §4 空格 / §5 switch-case | §2.1 缩进 / §2.2 行宽 / §2.3 大括号 / §2.4 空格（完全相同主题） |
 | 重叠内容 | Tab 8 字符 / 80 列 / K&R / 关键字后空格 / 指针 `*` 贴名字 | 同一组规则，但**编号完全不同** |
 | 重叠度 | **高（>80%）** | 高 |
@@ -604,7 +604,7 @@ OS-IRON-014  [SC] 共享契约层 6 头文件单一数据源（禁止物理副�
 | OS-STD-002 | OS-STD-CODE-002 | 局部变量短小切题 |
 | OS-STD-003 | OS-STD-CODE-003 | 宏与枚举命名 |
 | OS-STD-004 | OS-STD-CODE-004 | 函数返回值约定 |
-| OS-STD-005 | OS-STD-CODE-005 | agentrt-linux 专属前缀 |
+| OS-STD-005 | OS-STD-CODE-005 | agent-linux 专属前缀 |
 | OS-STD-006 | OS-STD-CODE-006 | 函数长度 |
 | OS-STD-007 | OS-STD-CODE-007 | 函数原型元素顺序 |
 | OS-STD-008 | OS-STD-CODE-008 | 原型必须含参数名 |
@@ -669,7 +669,7 @@ OS-IRON-014  [SC] 共享契约层 6 头文件单一数据源（禁止物理副�
 
 OLK-6.6 `Documentation/process/coding-style.rst` 是 Linux 6.6 内核编码风格权威来源，共 19 章。其核心规则如下：
 
-| 章节 | 主题 | agentrt-linux 对应规则 |
+| 章节 | 主题 | agent-linux 对应规则 |
 |------|------|----------------------|
 | 1 | Indentation（Tab 8 字符） | OS-KER-005 / OS-KER-011 / OS-FMT-001（**3 编号冲突**） |
 | 2 | Breaking long lines and strings | OS-KER-005（字符串）/ OS-KER-006（后继行） |
@@ -691,9 +691,9 @@ OLK-6.6 `Documentation/process/coding-style.rst` 是 Linux 6.6 内核编码风�
 | 18 | Breaking long lines and strings | （同 §2） |
 | 19 | I/O | （未覆盖） |
 
-### 7.2 OLK-6.6 与 agentrt-linux 差距
+### 7.2 OLK-6.6 与 agent-linux 差距
 
-| 差距项 | OLK-6.6 现状 | agentrt-linux 现状 | 建议修复 |
+| 差距项 | OLK-6.6 现状 | agent-linux 现状 | 建议修复 |
 |--------|------------|-------------------|---------|
 | 编号一致性 | OLK-6.6 无编号（章节即规则） | 同一规则 3-4 个编号 | 统一为 OS-FMT / OS-STD-CODE 4 段 |
 | 字符串拷贝 | strscpy 强制（kernel 内已强制） | 4 个不同编号 | 统一为 OS-STD-CODE-010 |
@@ -744,7 +744,7 @@ OLK-6.6 立场：**单语句可不加大括号，但多语句必须加**。
 
 ### 7.4 OLK-6.6 §19 I/O 缺失
 
-OLK-6.6 §19 涉及 I/O 操作规范（`ioremap` / `readl` / `writel` 等），agentrt-linux 当前未覆盖。**建议**：在 03-code-style.md 新增 §10 I/O 风格规范，或新建 90-driver-engineering.md。
+OLK-6.6 §19 涉及 I/O 操作规范（`ioremap` / `readl` / `writel` 等），agent-linux 当前未覆盖。**建议**：在 03-code-style.md 新增 §10 I/O 风格规范，或新建 90-driver-engineering.md。
 
 ---
 
@@ -814,7 +814,7 @@ OLK-6.6 §19 涉及 I/O 操作规范（`ioremap` / `readl` / `writel` 等），a
 # 1. 提取所有 OS-* 编号及其上下文
 grep -rnE '\*\*OS-[A-Z]+(-[A-Z]+)*-[0-9]+\*\*' \
     docs/AirymaxOS/50-engineering-standards/ \
-    docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md \
+    docs-closed/agent-linux/agent-linux基本工程标准规范.md \
     > /tmp/all-rules.txt
 
 # 2. 检查同编号双义
@@ -826,7 +826,7 @@ awk -F: '{print $3}' /tmp/all-rules.txt | sort | uniq -d
 
 # 4. 检查 IRON 铁律 14 条完整性
 IRON_COUNT=$(grep -cE 'OS-IRON-0[01][0-9]' \
-    docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md)
+    docs-closed/agent-linux/agent-linux基本工程标准规范.md)
 if [ "$IRON_COUNT" -lt 14 ]; then
     echo "ERROR: IRON 铁律不足 14 条（当前 $IRON_COUNT）"
     exit 1
@@ -852,9 +852,9 @@ fi
 |------|------|------|
 | 公开工程标准 README | `docs/AirymaxOS/50-engineering-standards/README.md` | 主索引 |
 | 公开 SSoT 手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` | SSoT 索引（需重写） |
-| 闭源工程标准总纲 | `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | 闭源 SSoT（附录 A 为权威） |
+| 闭源工程标准总纲 | `docs-closed/agent-linux/agent-linux基本工程标准规范.md` | 闭源 SSoT（附录 A 为权威） |
 | OLK-6.6 编码风格 | `01Reference/kernel-OLK-6.6/Documentation/process/coding-style.rst` | 参考基线 |
-| 经验总结报告 | `docs-closed/agentrt-linux/_analysis_0.3.0/01-lessons-learned.md` | 同期分析报告 |
+| 经验总结报告 | `docs-closed/agent-linux/_analysis_0.3.0/01-lessons-learned.md` | 同期分析报告 |
 
 ### 9.2 编号体系参考
 
@@ -927,11 +927,11 @@ fi
 | 术语 | 定义 |
 |------|------|
 | SSoT | Single Source of Truth，单一事实源 |
-| IRON-9 v2 | agentrt 与 agentrt-linux 的同源且部分代码共享模型 |
+| IRON-9 v2 | agentrt 与 agent-linux 的同源且部分代码共享模型 |
 | [SC] | Shared-Contract，共享契约层 |
 | [SS] | Shared-Semantics，语义同源层 |
 | [IND] | Independent，完全独立层 |
-| OLK-6.6 | OpenLinux Kernel 6.6，agentrt-linux 内核基线 |
+| OLK-6.6 | OpenLinux Kernel 6.6，agent-linux 内核基线 |
 | 双层稳定性 | 用户空间 ABI 永久稳定 + 内核内部 API 可变 |
 | 策略机制分离 | 机制留内核，策略外移至用户空间或可插拔模块 |
 

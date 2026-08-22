@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# P0-03 决策报告：agentrt ↔ agentrt-linux 系统调用 API 范式深度分析
+# P0-03 决策报告：agentrt ↔ agent-linux 系统调用 API 范式深度分析
 
 > **文档定位**: 基于用户要求"重新思考方案"的深度技术研究，量化分析"使用 Linux 编号会减少多少用户态易用性"，并从"行业底座"定位出发评估最佳方案
 > **版本**: v0.3.1
@@ -13,7 +13,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 问题重新定义
 
-原 P0-03 将问题定义为"agentrt 与 agentrt-linux 系统调用 API 签名根本性不一致"。但深度研究表明，**问题本身的前提就是错误的**——两者根本不是同一层级的接口：
+原 P0-03 将问题定义为"agentrt 与 agent-linux 系统调用 API 签名根本性不一致"。但深度研究表明，**问题本身的前提就是错误的**——两者根本不是同一层级的接口：
 
 | 接口 | `agentrt_syscall_invoke()` | 编号 syscall 512-631 |
 |------|---------------------------|---------------------|
@@ -27,11 +27,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > "MicroCoreRT 不运行在 Ring 0（内核态），而是运行在用户态（Ring 3），不直接管理硬件中断、设备驱动等，与传统微内核有本质区别，强调其并非操作系统内核"
 
 **来源证据**（`30-interfaces/01-syscalls.md:L25-L30`）：
-> "agentrt-linux 在 Linux 6.6 内核基线的标准系统调用之上，新增 Agent 感知专用系统调用"
+> "agent-linux 在 Linux 6.6 内核基线的标准系统调用之上，新增 Agent 感知专用系统调用"
 
 ### 1.2 AirymaxOS 已有的两层设计
 
-AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
+AirymaxOS（agent-linux）实际上**已经是两层 API 设计**：
 
 | 层级 | 接口 | 调用方式 | 面向用户 |
 |------|------|---------|---------|
@@ -47,7 +47,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 ┌─────────────────────────────────────────────────────────────┐
 │                     高层 API（应用→运行时）                    │
 │  ┌─────────────────────┐    ┌─────────────────────────┐    │
-│  │ agentrt             │    │ agentrt-linux            │    │
+│  │ agentrt             │    │ agent-linux            │    │
 │  │ agentrt_syscall_    │    │ AirymaxClient SDK       │    │
 │  │ invoke() JSON-RPC   │    │ (4 语言, socket/gRPC)   │    │
 │  └──────────┬──────────┘    └───────────┬─────────────┘    │
@@ -57,7 +57,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 │             ▼                           ▼                  │
 │                     低层 ABI（应用→内核）                    │
 │  ┌─────────────────────┐    ┌─────────────────────────┐    │
-│  │ agentrt             │    │ agentrt-linux            │    │
+│  │ agentrt             │    │ agent-linux            │    │
 │  │ 用户态实现           │    │ 编号 syscall 512-631     │    │
 │  │ (POSIX 回退)        │    │ (syscall_64.tbl)         │    │
 │  └─────────────────────┘    └─────────────────────────┘    │
@@ -101,7 +101,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 ### 2.3 关键洞察
 
 **性能差距可以通过分层设计弥补**：
-- agentrt 在 Linux 上内部调用 agentrt-linux 的编号 syscall（高性能路径）
+- agentrt 在 Linux 上内部调用 agent-linux 的编号 syscall（高性能路径）
 - agentrt 对外暴露 JSON-RPC（易用性）
 - 性能敏感场景可直接使用底层 SDK（绕过 JSON-RPC）
 - 这正是 **glibc ↔ Linux 内核** 的关系模型
@@ -116,7 +116,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 |------|------|---------|---------|------|
 | **JVM** | 语言运行时底座 | Java 方法调用（面向对象） | JNI（C FFI）→ OS syscall | 高层封装低层，不强制签名一致 |
 | **containerd** | 容器运行时底座 | gRPC API（Protobuf） | OCI runtime（runc/crun）→ Linux namespace/cgroup | 高层协议化，低层实现独立 |
-| **agentrt** | AI Agent 运行时底座 | `agentrt_syscall_invoke()` JSON-RPC | POSIX 用户态实现 / agentrt-linux 编号 syscall | 高层统一入口，低层平台独立 |
+| **agentrt** | AI Agent 运行时底座 | `agentrt_syscall_invoke()` JSON-RPC | POSIX 用户态实现 / agent-linux 编号 syscall | 高层统一入口，低层平台独立 |
 
 ### 3.2 "行业底座"的核心要求
 
@@ -143,7 +143,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 
 | 后果 | 严重性 | 说明 |
 |------|--------|------|
-| **agentrt-linux 丧失 Linux 传统** | ⚠️ 严重 | 编号 syscall 是 Linux 的核心 ABI 设计，放弃将影响与 Linux 生态的兼容性 |
+| **agent-linux 丧失 Linux 传统** | ⚠️ 严重 | 编号 syscall 是 Linux 的核心 ABI 设计，放弃将影响与 Linux 生态的兼容性 |
 | **性能热路径损失** | ⚠️ 中等 | IPC/内存迁移等高频路径的零拷贝优势丧失（JSON 序列化开销） |
 | **类型安全损失** | ⚠️ 中等 | 内核态接口失去编译时类型检查 |
 | **与 seL4 借鉴方向冲突** | ⚠️ 中等 | seL4 也使用编号 syscall（`include/api/syscall.xml`），放弃编号违背 seL4 借鉴设计 |
@@ -161,7 +161,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 └──────────────┬───────────────────────────────┬───────────────────┘
                │                               │
     ┌──────────▼──────────┐         ┌──────────▼──────────┐
-    │ agentrt 高层 API    │         │ agentrt-linux SDK   │
+    │ agentrt 高层 API    │         │ agent-linux SDK   │
     │ agentrt_syscall_    │ [SS]    │ AirymaxClient      │
     │ invoke() JSON-RPC   │←语义同源→│ (4 语言, socket)   │
     └──────────┬──────────┘         └──────────┬──────────┘
@@ -176,7 +176,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
     └──────────┬───────────────────────────────┬──────────┘
                │                               │
     ┌──────────▼──────────┐         ┌──────────▼──────────┐
-    │ agentrt 低层实现    │ [IND]    │ agentrt-linux 内核   │
+    │ agentrt 低层实现    │ [IND]    │ agent-linux 内核   │
     │ 用户态库/进程        │←完全独立→│ 编号 syscall 512-631 │
     │ (MicroCoreRT R3)   │         │ (syscall_64.tbl)     │
     └─────────────────────┘         └───────────────────────┘
@@ -195,11 +195,11 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 |------|-------------|----------------|
 | [SC] 共享契约层 | 6 头文件物理共享 | 6 头文件物理共享（不变 ✅） |
 | [SS] 语义同源层 | "API **签名**同源，实现独立" | "**高层 API 语义**同源（概念操作一致），签名因抽象层级不同而独立演进" |
-| [IND] 完全独立层 | 完全独立 | 低层 ABI 完全独立（agentrt 用户态实现 ↔ agentrt-linux 编号 syscall） |
+| [IND] 完全独立层 | 完全独立 | 低层 ABI 完全独立（agentrt 用户态实现 ↔ agent-linux 编号 syscall） |
 
 ### 4.3 方案 D 的对应关系表
 
-| 概念操作 | agentrt 高层 API | agentrt-linux 高层 SDK | agentrt-linux 低层 syscall | 同源类型 |
+| 概念操作 | agentrt 高层 API | agent-linux 高层 SDK | agent-linux 低层 syscall | 同源类型 |
 |---------|------------------|----------------------|---------------------------|---------|
 | 提交任务 | `agentrt_sys_task_submit(input, len, timeout, output)` | `AirymaxClient.task.submit(desc)` | `agentrt_sys_task_submit(task_desc, priority)` | [SS] 语义同源 |
 | IPC 发送 | `agentrt_sys_ipc_send(input, len)` | `AirymaxClient.ipc.send(hdr, payload)` | `agentrt_sys_ipc_send(hdr, payload)` | [SS] 语义同源 |
@@ -209,7 +209,7 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 
 ### 4.4 方案 D 的错误码统一
 
-| 层级 | agentrt（当前） | agentrt-linux（当前） | 方案 D 统一 |
+| 层级 | agentrt（当前） | agent-linux（当前） | 方案 D 统一 |
 |------|---------------|---------------------|------------|
 | 成功码 | `AGENTRT_OK` = 0 | `AGENTRT_EOK` = 0 | `AGENTRT_EOK` = 0（向 AirymaxOS 对齐） |
 | 错误码命名 | `AGENTRT_ERR_INVALID_PARAM` = -2 | `AGENTRT_EINVAL` = -1 | `AGENTRT_E*` 风格（向 AirymaxOS 对齐） |
@@ -239,10 +239,10 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 | **行业底座定位** | agentrt 保持 JSON-RPC 高层 API，对标 JVM/containerd ✅ |
 | **跨平台完整** | agentrt 跨 Linux/macOS/Windows，不依赖编号 syscall ✅ |
 | **跨语言完整** | JSON 天然跨语言，5 语言直接调用 ✅ |
-| **Linux 性能保留** | agentrt-linux 保持编号 syscall，零拷贝、类型安全 ✅ |
-| **seL4 借鉴保留** | agentrt-linux 编号 syscall 与 seL4 `syscall.xml` 同源 ✅ |
+| **Linux 性能保留** | agent-linux 保持编号 syscall，零拷贝、类型安全 ✅ |
+| **seL4 借鉴保留** | agent-linux 编号 syscall 与 seL4 `syscall.xml` 同源 ✅ |
 | **ABI 稳定** | 高层 API 签名稳定（字符串接口），低层编号在 MAJOR 版本内不可变 ✅ |
-| **现有设计不变** | agentrt 保持 JSON-RPC，agentrt-linux 保持编号 syscall，无需大规模重写 ✅ |
+| **现有设计不变** | agentrt 保持 JSON-RPC，agent-linux 保持编号 syscall，无需大规模重写 ✅ |
 | **[SS] 修正最小** | 仅修正 [SS] 表述为"语义同源"，不改变架构 ✅ |
 
 ---
@@ -253,8 +253,8 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 |------|----------------|-------------------|------------|----------------------|
 | agentrt 跨平台 | ✅ | ❌ 丢失 macOS/Windows | ✅ | ✅ |
 | agentrt 跨语言 | ✅ | ❌ 需 FFI | ✅ | ✅ |
-| agentrt-linux 性能 | ❌ JSON 开销 | ✅ 零拷贝 | ✅ | ✅ |
-| agentrt-linux seL4 借鉴 | ❌ 放弃编号 | ✅ 保持编号 | ✅ | ✅ |
+| agent-linux 性能 | ❌ JSON 开销 | ✅ 零拷贝 | ✅ | ✅ |
+| agent-linux seL4 借鉴 | ❌ 放弃编号 | ✅ 保持编号 | ✅ | ✅ |
 | 行业底座定位 | ⚠️ OS 丧失 Linux 传统 | ❌ 运行时丧失跨平台 | ✅ | ✅ |
 | ABI 稳定性 | ✅ | ⚠️ 结构体布局 | ✅ | ✅ |
 | 现有设计改动量 | 大（OS 重写 syscall） | 大（RT 重写 API） | 小（仅修表述） | 中（修表述+错误码统一） |
@@ -287,8 +287,8 @@ AirymaxOS（agentrt-linux）实际上**已经是两层 API 设计**：
 ```
 [SS] 语义同源层：高层 API 语义同源（概念操作一致），签名因抽象层级不同而独立演进
 - agentrt 高层 API: agentrt_syscall_invoke() JSON-RPC（应用→运行时，跨平台）
-- agentrt-linux 高层 API: AirymaxClient SDK（应用→OS 网关，4 语言）
-- 低层 ABI: [IND] 完全独立（agentrt 用户态实现 ↔ agentrt-linux 编号 syscall 512-631）
+- agent-linux 高层 API: AirymaxClient SDK（应用→OS 网关，4 语言）
+- 低层 ABI: [IND] 完全独立（agentrt 用户态实现 ↔ agent-linux 编号 syscall 512-631）
 ```
 
 ---
@@ -311,8 +311,8 @@ A: 整体易用性损失 **30-40%**，主要体现在：
 A: **方案 D（分层 API 设计）最优**。理由：
 1. JVM（语言运行时底座）和 containerd（容器运行时底座）都采用"高层 API + 底层独立"的分层设计
 2. agentrt 作为 AI Agent 运行时底座，应保持 JSON-RPC 高层 API（跨平台、跨语言、ABI 稳定）
-3. agentrt-linux 作为操作系统，应保持编号 syscall（Linux 传统、零拷贝性能、seL4 借鉴）
-4. 两者的正确对应关系是：agentrt `agentrt_syscall_invoke()` ↔ agentrt-linux `AirymaxClient` SDK（同为高层 API），而非 agentrt ↔ 编号 syscall
+3. agent-linux 作为操作系统，应保持编号 syscall（Linux 传统、零拷贝性能、seL4 借鉴）
+4. 两者的正确对应关系是：agentrt `agentrt_syscall_invoke()` ↔ agent-linux `AirymaxClient` SDK（同为高层 API），而非 agentrt ↔ 编号 syscall
 
 ### 7.2 最终建议
 

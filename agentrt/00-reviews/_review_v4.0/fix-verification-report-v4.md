@@ -9,7 +9,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v4.0 全面审查 + 系统性修正任务的阶段 4 验证报告。在主控 Agent 直接修复 + 3 域并行修正 Agent（源码 / 闭源文档 / 开源文档+SSoT）全部完成后，通过 21 项独立 Grep 机器检查验证修正持久性与正确性，给出最终评分和 1.0.1 M1 就绪判定。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：4.0（2026-07-14）。
-> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agentrt-linux`。
+> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agent-linux`。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
 
 ---
@@ -146,7 +146,7 @@ v4.0 系统性修正基于 v4.0 综合分析报告（32 项去重问题：5 P0 +
 |---|--------|------|------|------|
 | 19 | `cupolas_ERR_INVALID_PARAM = AIRY_ERR_INVALID_PARAM` in cupolas_error.h | 匹配 | L44 匹配 | ✅ PASS |
 | 20 | `compare_exchange_weak` in refcounted.h | 匹配 | L122 匹配 | ✅ PASS |
-| 21 | `不得用于 agentrt-linux 专属功能` in coding_conventions.md | 0（矛盾消除） | 0 matches | ✅ PASS |
+| 21 | `不得用于 agent-linux 专属功能` in coding_conventions.md | 0（矛盾消除） | 0 matches | ✅ PASS |
 
 ### 3.7 验证总结
 

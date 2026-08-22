@@ -3,7 +3,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 21 — openEuler 工程标准与工程思想研究（第三轮）
 
-> **文档定位**：agentrt-linux 内核设计深度对比研究 · 第三轮 · openEuler 工程标准研究
+> **文档定位**：agent-linux 内核设计深度对比研究 · 第三轮 · openEuler 工程标准研究
 > **研究主体**：openEuler kernel-OLK-6.6（`/home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6`）
 > **最后更新**：2026-08-01
 > **方法论**：逐字节阅读源码与工程文档，所有引用标注文件路径+行号，严禁编造
@@ -51,7 +51,7 @@ openEuler 从 RHEL 的 `rh_kabi.h` 移植并去品牌化（[kabi.h](file:///home
 
 **金句 1**：kABI 兼容不在事后修补，而在冻结期前预埋扩展点——`KABI_RESERVE`（[kabi.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/include/linux/kabi.h) L439）留 8 字节槽，事后用 `KABI_USE` 消费（L443）；不能预留的结构用 `KABI_AUX` 辅助结构 + 尺寸校验事后扩展（L459-507）。
 
-**与极境内核的对比**：极境内核的 syscall 24 槽预留（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L26-29：548-551 核心 + 552-571 预留）与 openEuler KABI_RESERVE 思想同构，但 openEuler 有"宏双面展开 + genksyms 隐藏 + 编译期 size/align 断言"三层防护，极境内核目前只有"编号规划"一层。**建议引入 KABI_USE 式"预留 → 消费"登记机制**：在 [SC] syscalls.h 中为 552-571 预留槽定义"消费即显式登记"的编译期宏（对应第三轮 E1 的 compile_assert 机制）。
+**与极境内核的对比**：极境内核的 syscall 24 槽预留（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L26-29：548-551 核心 + 552-571 预留）与 openEuler KABI_RESERVE 思想同构，但 openEuler 有"宏双面展开 + genksyms 隐藏 + 编译期 size/align 断言"三层防护，极境内核目前只有"编号规划"一层。**建议引入 KABI_USE 式"预留 → 消费"登记机制**：在 [SC] syscalls.h 中为 552-571 预留槽定义"消费即显式登记"的编译期宏（对应第三轮 E1 的 compile_assert 机制）。
 
 ---
 
@@ -143,7 +143,7 @@ openEuler 从 RHEL 的 `rh_kabi.h` 移植并去品牌化（[kabi.h](file:///home
 
 - [tools/testing/selftests/](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/tools/testing/selftests/)：`Makefile` 以 `TARGETS += alsa/bpf/cgroup/...` 注册（L2-40）；含 `kselftest_harness.h`、`lib.mk`、`run_kselftest.sh`。
 
-**与极境内核的对比**：极境内核已有 KUnit 先例——[airy_ipc_ring_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_ipc_ring_test.c)、[stc_dispatch_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/sched/stc_dispatch_test.c)、[airy_cap_derive_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_derive_test.c)、[airy_lsm_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm_test.c) 四个测试文件已存在，与 openEuler KUnit 模式一致。
+**与极境内核的对比**：极境内核已有 KUnit 先例——[airy_ipc_ring_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_ipc_ring_test.c)、[stc_dispatch_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/sched/stc_dispatch_test.c)、[airy_cap_derive_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_derive_test.c)、[airy_lsm_test.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm_test.c) 四个测试文件已存在，与 openEuler KUnit 模式一致。
 
 ---
 
@@ -176,7 +176,7 @@ openEuler 从 RHEL 的 `rh_kabi.h` 移植并去品牌化（[kabi.h](file:///home
 
 **工程思想金句 7**：并发正确性由三层保障——编译期（lockdep 静态注解）、运行时（lockdep 动态校验锁序 + KCSAN 数据竞争检测）、数学层（tools/memory-model 形式化模型）。barrier 宏内建 KCSAN 插桩（[barrier.h](file:///home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6/include/asm-generic/barrier.h) L29-51）。
 
-**与极境内核的对比**：极境内核第二轮 N10（[airy_locking.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/locking/airy_locking.c) 无 RCU wrapper）表明其 lockdep/KCSAN 依赖 Linux 内建（LOCKDEP 是 Kconfig 全局开关，不用 wrapper），但锁类注解（lockdep_set_class）在 airy 代码中零使用——建议对 per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L52-56）与全局锁添加 lockdep 注解，使锁序错误在开发期暴露。
+**与极境内核的对比**：极境内核第二轮 N10（[airy_locking.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/locking/airy_locking.c) 无 RCU wrapper）表明其 lockdep/KCSAN 依赖 Linux 内建（LOCKDEP 是 Kconfig 全局开关，不用 wrapper），但锁类注解（lockdep_set_class）在 airy 代码中零使用——建议对 per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L52-56）与全局锁添加 lockdep 注解，使锁序错误在开发期暴露。
 
 ---
 
@@ -226,9 +226,9 @@ openEuler 从 RHEL 的 `rh_kabi.h` 移植并去品牌化（[kabi.h](file:///home
 
 | 编号 | 借鉴点 | 极境内核落点 |
 |------|--------|-------------|
-| E14 | KABI_USE 式"预留→消费"登记机制 | [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L26-29 的 20 预留槽引入显式消费宏 + 编译期断言 |
-| E15 | KABI_RESERVE_BYTES 式 UAPI 结构体预留 | [SC] 头文件结构体（如 [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) 128B 消息头）末尾预留扩展字节 |
-| E16 | lockdep_set_class 锁类注解 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L52-56 per-bucket 锁 + [airy_object.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/object/airy_object.c) 全局锁添加锁类，使锁序错误开发期暴露 |
+| E14 | KABI_USE 式"预留→消费"登记机制 | [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L26-29 的 20 预留槽引入显式消费宏 + 编译期断言 |
+| E15 | KABI_RESERVE_BYTES 式 UAPI 结构体预留 | [SC] 头文件结构体（如 [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) 128B 消息头）末尾预留扩展字节 |
+| E16 | lockdep_set_class 锁类注解 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L52-56 per-bucket 锁 + [airy_object.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/object/airy_object.c) 全局锁添加锁类，使锁序错误开发期暴露 |
 | E17 | 构建期 KABI baseline diff 校验 | 极境内核 [SC] 头文件三方一致性（syscalls.h L8-12）引入"登记表 diff"脚本（当前靠 CI 手动比对） |
 
 ### 11.3 正面确认

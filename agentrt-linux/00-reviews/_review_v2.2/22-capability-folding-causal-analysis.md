@@ -5,7 +5,7 @@
 > **报告日期**：2026-07-18
 > **报告性质**：客观推论验证 — 不评价"是否应该做"，只验证"如果做了，因果链是什么"
 > **方法**：逐条推演 Capability Folding 融合前后的差异，量化影响范围
-> **前置报告**：[21-ipc-production-readiness.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/21-ipc-production-readiness.md)（生产就绪度六维度判定）
+> **前置报告**：[21-ipc-production-readiness.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/21-ipc-production-readiness.md)（生产就绪度六维度判定）
 
 ---
 

@@ -1,7 +1,7 @@
 # Airymax 创新点重审报告
 
 > **任务**：基于 airymaxhub 全仓源码（agentrt 177K LOC）和全部设计文档（AirymaxOS 130+ 文档 + AirymaxRT 80+ 文档 + OpenStandards 7 标准）的综合评估
-> **范围**：agentrt（用户态运行时）+ agentrt-linux（内核态 OS）的全量方案
+> **范围**：agentrt（用户态运行时）+ agent-linux（内核态 OS）的全量方案
 > **方法**：逐项部件来源追溯 + 组合创新判定 + 审稿人视角压力测试
 > **日期**：2026-07-11
 > **SPDX**: AGPL-3.0-or-later OR Apache-2.0
@@ -39,12 +39,12 @@ Linux UAPI:
   用户态: 被动同步 → 如果 API break 就报错
 
 Airymax [SC]:
-  agentrt 开发者: 改头文件 → CI 同时验证 agentrt + agentrt-linux 编译
-  agentrt-linux 开发者: 改头文件 → CI 同时验证 agentrt + agentrt-linux 编译
+  agentrt 开发者: 改头文件 → CI 同时验证 agentrt + agent-linux 编译
+  agent-linux 开发者: 改头文件 → CI 同时验证 agentrt + agent-linux 编译
   谁改都需要两端通过
 ```
 
-Linux UAPI 的单向性意味着用户态不能定义结构体让内核态读取。Airymax [SC] 的双向性意味着 agentrt（用户态）定义的 capability 派生模型可以直接被 agentrt-linux（内核态）的 LSM hook 使用——**不需要序列化、不需要翻译层、不需要 compat 适配器**。
+Linux UAPI 的单向性意味着用户态不能定义结构体让内核态读取。Airymax [SC] 的双向性意味着 agentrt（用户态）定义的 capability 派生模型可以直接被 agent-linux（内核态）的 LSM hook 使用——**不需要序列化、不需要翻译层、不需要 compat 适配器**。
 
 不过，[SC] 并不是完全的前无古人。Android Treble 的 HAL 接口定义在两端共享（虽然是通过 HIDL，不是物理头文件）。Fuchsia FIDL 的接口定义也同时生成用户态和内核态代码。
 
@@ -129,7 +129,7 @@ MCIS 目前是**设计哲学**而不是**科学理论**。文档里提到了"可
 
 但这不意味着 MCIS 没有价值——作为一篇系统论文的"设计理念"章节，它是好的素材。关键在于定位正确：它不是牛顿力学，而是"我们从 177K LOC C 代码中提炼出来的 24 条设计原则"。
 
-**重审判定**：**轻微新颖**——作为设计哲学是好的，作为科学理论尚未成立。最有价值的用途是作为系统论文中"设计原则"章节的内容，展示 agentrt-linux 和 agentrt 之间如何保持架构一致性。
+**重审判定**：**轻微新颖**——作为设计哲学是好的，作为科学理论尚未成立。最有价值的用途是作为系统论文中"设计原则"章节的内容，展示 agent-linux 和 agentrt 之间如何保持架构一致性。
 
 ---
 

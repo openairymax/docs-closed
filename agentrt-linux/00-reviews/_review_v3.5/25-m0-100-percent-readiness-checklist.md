@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux M0 阶段 100% 就绪最终确认清单
+# agent-linux M0 阶段 100% 就绪最终确认清单
 > **文档定位**：基于 v7.1 成熟度评分（90/A-）+ v7.2 系统性修复，对 M0 设计阶段 100% 就绪状态进行逐项最终确认\
 > **文档版本**：v7.2\
 > **最后更新**：2026-07-27\
@@ -177,8 +177,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | # | 检查项 | 物理路径 | 状态 | 验证结果 |
 |---|--------|---------|------|---------|
-| 1 | MAINTAINERS 完整性 | `agentrt-linux/MAINTAINERS` | ✅ | 141 行，覆盖 8 子仓 + [SC] 共享契约层 + umbrella，含 M/R/L/S/W/B/T/F/H/V 字段 |
-| 2 | MAINTAINERS sched_ext→sched_tac | `agentrt-linux/MAINTAINERS` L35 | ✅ | v7.2 修正：KERNEL SUBSYSTEM 描述从 sched_ext 改为 sched_tac，与项目决策一致 |
+| 1 | MAINTAINERS 完整性 | `agent-linux/MAINTAINERS` | ✅ | 141 行，覆盖 8 子仓 + [SC] 共享契约层 + umbrella，含 M/R/L/S/W/B/T/F/H/V 字段 |
+| 2 | MAINTAINERS sched_ext→sched_tac | `agent-linux/MAINTAINERS` L35 | ✅ | v7.2 修正：KERNEL SUBSYSTEM 描述从 sched_ext 改为 sched_tac，与项目决策一致 |
 | 3 | 分支保护规则文档 | `docs/AirymaxOS/50-engineering-standards/05-development-process.md` L1134 | ✅ | `main`/`develop`/`release/*` 必须启用 "Require status checks to pass before merging" |
 
 ---
@@ -244,7 +244,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 15. 最终判定
 
-**✅ agentrt-linux M0 设计阶段 100% 就绪。**
+**✅ agent-linux M0 设计阶段 100% 就绪。**
 
 - 全部 65 项检查通过，0 项阻断，0 项警告
 - 成熟度评分从 v7.1 的 90（A-）提升至 v7.2 的 92（A）

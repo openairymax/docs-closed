@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 参考发行版 Rust 内核模块支持技术规范
 
-> **文档定位**: 闭源内部参考，参考发行版（基于 Linux 6.6 内核基线）Rust 内核模块支持技术规范全面梳理，作为 agentrt-linux 内核 Rust 模块化设计的参考底座
+> **文档定位**: 闭源内部参考，参考发行版（基于 Linux 6.6 内核基线）Rust 内核模块支持技术规范全面梳理，作为 agent-linux 内核 Rust 模块化设计的参考底座
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-07
@@ -14,17 +14,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档系统性梳理参考发行版内核中 Rust 内核模块支持子系统的工程规范，作为 agentrt-linux 内核 Rust 模块化设计的参考基础。agentrt-linux 是一个基于微内核架构的 AI Agent 操作系统，构建于 Linux 6.6 之上。Linux 6.6 中 Rust 作为实验性支持语言持续演进，agentrt-linux 利用 Rust 实现内存安全的内核模块，特别是在 SCHED_AGENT 调度器、eBPF 程序和安全模块中。
+本文档系统性梳理参考发行版内核中 Rust 内核模块支持子系统的工程规范，作为 agent-linux 内核 Rust 模块化设计的参考基础。agent-linux 是一个基于微内核架构的 AI Agent 操作系统，构建于 Linux 6.6 之上。Linux 6.6 中 Rust 作为实验性支持语言持续演进，agent-linux 利用 Rust 实现内存安全的内核模块，特别是在 SCHED_AGENT 调度器、eBPF 程序和安全模块中。
 
 文档遵循 IRON-9 v2 三段式参考方法：
 
 1. **先参考 Euler 设计方案**——梳理参考发行版 Rust for Linux 子系统的设计哲学、关键抽象、构建系统、安全保证、FFI 边界、性能基准
 2. **再参考行业最新理论**——对比 Linux 主线 Rust for Linux 演进、学术研究、同类 OS 的 Rust 内核集成实践
-3. **最后形成 agentrt-linux 技术方案**——基于前两步形成 [SC]/[SS]/[IND] 三层共享模型的具体决策
+3. **最后形成 agent-linux 技术方案**——基于前两步形成 [SC]/[SS]/[IND] 三层共享模型的具体决策
 
-### 1.2 与 agentrt-linux 设计的差异化声明
+### 1.2 与 agent-linux 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
+本文档**仅作为内部参考**，不公开引用。agent-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用参考发行版工程规范。
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -64,7 +64,7 @@ Rust 进入 Linux 内核的历程是一个跨越多年的系统工程：
 | 2025 | Linux 6.18 | 网络驱动抽象（`net` crate）、`workqueue` 抽象稳定 |
 | 2026 | **Linux 6.6** | **Rust 内核模块实验性支持**——核心抽象逐步稳定、Kbuild 集成完成、`rustc` 最低版本锁定 |
 
-参考发行版在 Linux 6.6 基线上完整继承主线 Rust for Linux 子系统，并在此基础上增加了企业级增强。agentrt-linux 构建于 Linux 6.6，因此可以直接使用实验性的 Rust 内核模块基础设施。
+参考发行版在 Linux 6.6 基线上完整继承主线 Rust for Linux 子系统，并在此基础上增加了企业级增强。agent-linux 构建于 Linux 6.6，因此可以直接使用实验性的 Rust 内核模块基础设施。
 
 ### 2.2 设计哲学
 
@@ -83,7 +83,7 @@ Rust for Linux 的设计哲学基于六大支柱：
 
 参考发行版在主线 Rust for Linux 基础上增加了以下增强：
 
-| 增强项 | 说明 | agentrt-linux 采纳 |
+| 增强项 | 说明 | agent-linux 采纳 |
 |--------|------|-------------------|
 | 鲲鹏 920 ARM64 Rust 优化 | `target_feature` 针对鲲鹏定制 | [SS] 同源 |
 | 企业级 Rust 驱动模板 | `pci`/`platform`/`net` 驱动示例 | [SS] 参考 |
@@ -93,7 +93,7 @@ Rust for Linux 的设计哲学基于六大支柱：
 
 ### 2.4 五维原则视角：系统观
 
-从**五维原则之系统观**审视，Rust for Linux 并非简单的"在 C 内核中嵌入 Rust 编译器"，而是对整个内核构建体系、类型系统、内存模型的系统性重构。参考发行版在 Linux 6.6 基线上将 Rust 子系统逐步提升为"一等公民"——这意味着 Rust 内核模块不再是附加组件，而是与 C 内核模块享有同等的构建系统支持、Kconfig 配置能力和调试工具集成。agentrt-linux 在系统观层面必须将 Rust 模块视为内核架构的有机组成部分，而非外围工具。
+从**五维原则之系统观**审视，Rust for Linux 并非简单的"在 C 内核中嵌入 Rust 编译器"，而是对整个内核构建体系、类型系统、内存模型的系统性重构。参考发行版在 Linux 6.6 基线上将 Rust 子系统逐步提升为"一等公民"——这意味着 Rust 内核模块不再是附加组件，而是与 C 内核模块享有同等的构建系统支持、Kconfig 配置能力和调试工具集成。agent-linux 在系统观层面必须将 Rust 模块视为内核架构的有机组成部分，而非外围工具。
 
 ---
 
@@ -276,13 +276,13 @@ kernel crate 是 Rust 内核模块的核心抽象层，提供安全封装：
 
 ### 3.5 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| `rust/` 目录结构 | [SS] 语义同源，agentrt-linux 沿用在 `agentrt/kernel/rust/` |
-| bindgen 自动绑定 | [SS] 语义同源，agentrt-linux 锁定 bindgen 版本 |
-| kernel crate 抽象层 | [SS] 语义同源，agentrt-linux 扩展 `agentrt_kernel` crate |
-| alloc crate 分配器 | [SS] 语义同源，agentrt-linux 增加 MemoryRovol 感知分配器 |
-| macros crate 过程宏 | [SS] 语义同源，agentrt-linux 增加 `#[agent_module]` 宏 |
+| `rust/` 目录结构 | [SS] 语义同源，agent-linux 沿用在 `agentrt/kernel/rust/` |
+| bindgen 自动绑定 | [SS] 语义同源，agent-linux 锁定 bindgen 版本 |
+| kernel crate 抽象层 | [SS] 语义同源，agent-linux 扩展 `agentrt_kernel` crate |
+| alloc crate 分配器 | [SS] 语义同源，agent-linux 增加 MemoryRovol 感知分配器 |
+| macros crate 过程宏 | [SS] 语义同源，agent-linux 增加 `#[agent_module]` 宏 |
 
 ---
 
@@ -459,14 +459,14 @@ let driver = Box::pin_init(
 
 ### 4.7 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
 | Arc 引用计数 | [SC] 共享契约层——`airymax::sync::AAgentArc<T>` 增加 Agent 生命周期追踪 |
 | Box 堆分配 | [SS] 语义同源——增加 MemoryRovol L1 感知 GFP 标志 |
 | Vec 动态数组 | [SS] 语义同源——MemoryRovol L2 感知容量策略 |
 | Mutex 互斥锁 | [SS] 语义同源——增加死锁检测（Cupolas D2 审计） |
 | SpinLock 自旋锁 | [SS] 语义同源——增加持有时间统计 |
-| Pin-Init 框架 | [SC] 共享契约层——所有 agentrt-linux 内核模块强制使用 Pin-Init |
+| Pin-Init 框架 | [SC] 共享契约层——所有 agent-linux 内核模块强制使用 Pin-Init |
 
 ---
 
@@ -516,10 +516,10 @@ impl Drop for RustMinimal {
 
 ### 5.2 Rust 调度器模块（SCHED_AGENT）
 
-agentrt-linux 的 SCHED_AGENT 使用 Rust 实现基于 sched_ext 的 BPF 可插拔调度器：
+agent-linux 的 SCHED_AGENT 使用 Rust 实现基于 sched_ext 的 BPF 可插拔调度器：
 
 ```rust
-//! agentrt-linux SCHED_AGENT Rust 调度器模块
+//! agent-linux SCHED_AGENT Rust 调度器模块
 //! 通过 sched_ext struct_ops 注册
 
 use kernel::prelude::*;
@@ -529,7 +529,7 @@ module! {
     type: SchedAgent,
     name: "sched_agent",
     author: "SPHARX Ltd",
-    description: "agentrt-linux SCHED_AGENT BPF scheduler",
+    description: "agent-linux SCHED_AGENT BPF scheduler",
     license: "GPL",
 }
 
@@ -542,7 +542,7 @@ impl SchedExtOps for SchedAgent {
         prev_cpu: i32,
         wake_flags: u64,
     ) -> Result<i32> {
-        // agentrt-linux 认知调度决策
+        // agent-linux 认知调度决策
         let agent_affinity = task.agent_affinity()?;
         let target_cpu = self.cognition_engine.select_cpu(
             task.pid(), agent_affinity, prev_cpu
@@ -566,7 +566,7 @@ impl SchedExtOps for SchedAgent {
         cpu: i32,
         prev: &ScxTask,
     ) {
-        // agentrt-linux 认知调度分发
+        // agent-linux 认知调度分发
         self.cognition_engine.dispatch(cpu, prev);
     }
 
@@ -589,7 +589,7 @@ struct SchedAgent {
 
 impl kernel::Module for SchedAgent {
     fn init(module: &'static ThisModule) -> Result<Self> {
-        pr_info!("agentrt-linux SCHED_AGENT loading\n");
+        pr_info!("agent-linux SCHED_AGENT loading\n");
 
         let agent = SchedAgent {
             cognition_engine: CognitionEngine::new()?,
@@ -614,7 +614,7 @@ impl kernel::Module for SchedAgent {
 ### 5.3 Rust eBPF 辅助模块
 
 ```rust
-//! agentrt-linux Rust eBPF 辅助模块
+//! agent-linux Rust eBPF 辅助模块
 //! 提供 Rust 安全封装的自定义 kfunc
 
 use kernel::prelude::*;
@@ -624,7 +624,7 @@ module! {
     type: AgentBpfHelper,
     name: "agent_bpf_helper",
     author: "SPHARX Ltd",
-    description: "agentrt-linux eBPF helper kfuncs",
+    description: "agent-linux eBPF helper kfuncs",
     license: "GPL",
 }
 
@@ -632,7 +632,7 @@ struct AgentBpfHelper;
 
 impl kernel::Module for AgentBpfHelper {
     fn init(_module: &'static ThisModule) -> Result<Self> {
-        pr_info!("agentrt-linux eBPF helper loaded\n");
+        pr_info!("agent-linux eBPF helper loaded\n");
         Ok(AgentBpfHelper)
     }
 }
@@ -643,7 +643,7 @@ fn bpf_agent_decision_get(
     agent_id: u64,
     decision_type: u32,
 ) -> Result<*mut AgentDecision> {
-    // 从 agentrt-linux 认知引擎获取决策
+    // 从 agent-linux 认知引擎获取决策
     let decision = COGNITION_ENGINE.get_decision(agent_id, decision_type)?;
     Ok(Box::into_raw(Box::new(decision)))
 }
@@ -667,7 +667,7 @@ kernel::bpf::register_kfuncs! {
 ### 5.4 Rust 安全模块（LSM）
 
 ```rust
-//! agentrt-linux Rust LSM 安全模块
+//! agent-linux Rust LSM 安全模块
 //! 实现 Agent 权限裁决
 
 use kernel::prelude::*;
@@ -677,7 +677,7 @@ module! {
     type: AgentLsm,
     name: "agent_lsm",
     author: "SPHARX Ltd",
-    description: "agentrt-linux Agent LSM security module",
+    description: "agent-linux Agent LSM security module",
     license: "GPL",
 }
 
@@ -700,7 +700,7 @@ impl SecurityHook for AgentLsm {
         let agent_id = current_agent_id()?;
         let target_agent = task.agent_id()?;
 
-        // agentrt-linux Agent 间通信权限检查
+        // agent-linux Agent 间通信权限检查
         if !PERMISSION_ENGINE.check_agent_spawn(agent_id, target_agent)? {
             return Err(EPERM);
         }
@@ -727,7 +727,7 @@ struct AgentLsm {
 ### 5.5 Rust 驱动模块
 
 ```rust
-//! agentrt-linux Rust 平台驱动示例
+//! agent-linux Rust 平台驱动示例
 //! 基于 PCI 驱动抽象
 
 use kernel::prelude::*;
@@ -737,7 +737,7 @@ module! {
     type: AgentPciDriver,
     name: "agent_pci_driver",
     author: "SPHARX Ltd",
-    description: "agentrt-linux PCI device driver",
+    description: "agent-linux PCI device driver",
     license: "GPL",
 }
 
@@ -749,7 +749,7 @@ struct AgentPciDriver {
 
 impl kernel::Module for AgentPciDriver {
     fn init(module: &'static ThisModule) -> Result<Self> {
-        pr_info!("agentrt-linux PCI driver loading\n");
+        pr_info!("agent-linux PCI driver loading\n");
 
         let pdev = pci::Device::probe()?;
 
@@ -769,7 +769,7 @@ impl kernel::Module for AgentPciDriver {
 
 impl Drop for AgentPciDriver {
     fn drop(&mut self) {
-        pr_info!("agentrt-linux PCI driver unloading\n");
+        pr_info!("agent-linux PCI driver unloading\n");
         // bar0 自动释放（Drop trait）
         // pdev 自动释放
     }
@@ -785,13 +785,13 @@ kernel::pci::device_table! {
 
 ### 5.6 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| 最小 Rust 模块模板 | [SS] 语义同源——agentrt-linux 所有内核模块以此为基 |
+| 最小 Rust 模块模板 | [SS] 语义同源——agent-linux 所有内核模块以此为基 |
 | struct_ops 调度器模式 | [SS] 语义同源——SCHED_AGENT 通过 `#[vtable]` 注册 |
 | kfunc 注册模式 | [SS] 语义同源——`#[bpf_kfunc]` + `register_kfuncs!` |
 | LSM 钩子模式 | [SS] 语义同源——Cupolas D2 权限裁决 |
-| PCI 驱动模板 | [SS] 参考——agentrt-linux 外设驱动 |
+| PCI 驱动模板 | [SS] 参考——agent-linux 外设驱动 |
 
 ---
 
@@ -883,7 +883,7 @@ $(obj)/bindings/bindings_generated.rs: $(obj)/bindings/bindings_helper.h
 
 ```makefile
 # 外部 Rust 内核模块 Makefile 示例
-# agentrt-linux/sched_agent/Makefile
+# agent-linux/sched_agent/Makefile
 
 obj-m := sched_agent.o
 
@@ -929,13 +929,13 @@ flowchart TD
 
 ### 6.5 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| Kconfig `CONFIG_RUST` | [SS] 语义同源——agentrt-linux 默认开启 `CONFIG_RUST=y` |
-| rustc 1.71.0 最低版本 | [SS] 同源——agentrt-linux 锁定 rustc 1.71.0 |
-| bindgen 绑定生成 | [SS] 同源——agentrt-linux 锁定 bindgen 版本 |
-| 外部模块构建模板 | [SS] 同源——agentrt-linux 所有 Rust 模块遵循此模板 |
-| 模块签名 | [SS] 同源——agentrt-linux 强制 MODSIGN 签名 |
+| Kconfig `CONFIG_RUST` | [SS] 语义同源——agent-linux 默认开启 `CONFIG_RUST=y` |
+| rustc 1.71.0 最低版本 | [SS] 同源——agent-linux 锁定 rustc 1.71.0 |
+| bindgen 绑定生成 | [SS] 同源——agent-linux 锁定 bindgen 版本 |
+| 外部模块构建模板 | [SS] 同源——agent-linux 所有 Rust 模块遵循此模板 |
+| 模块签名 | [SS] 同源——agent-linux 强制 MODSIGN 签名 |
 
 ---
 
@@ -943,7 +943,7 @@ flowchart TD
 
 ### 7.1 所有权模型
 
-Rust 所有权模型是内核模块安全保证的基石。在 agentrt-linux 内核模块中，所有权模型通过以下方式保证安全：
+Rust 所有权模型是内核模块安全保证的基石。在 agent-linux 内核模块中，所有权模型通过以下方式保证安全：
 
 | 所有权规则 | 内核上下文 | 安全保证 |
 |-----------|-----------|---------|
@@ -952,7 +952,7 @@ Rust 所有权模型是内核模块安全保证的基石。在 agentrt-linux 内
 | 生命周期标注 | 内核对象引用有效性 | 消除悬垂指针 |
 | 移动语义 | 内核对象所有权转移 | 消除双重释放 |
 
-**从五维原则之内核观审视**：Rust 的所有权模型与 Linux 内核的引用计数模型（`refcount_t`、`kref`）在语义层面高度一致，但 Rust 将运行时检查提升为编译期检查。这意味着在 agentrt-linux 的 SCHED_AGENT 调度器中，调度队列的并发访问、DSQ 的任务分派、Agent 状态的读写都不会产生数据竞争——这些保证在编译期由类型系统强制执行，而非依赖运行时锁。
+**从五维原则之内核观审视**：Rust 的所有权模型与 Linux 内核的引用计数模型（`refcount_t`、`kref`）在语义层面高度一致，但 Rust 将运行时检查提升为编译期检查。这意味着在 agent-linux 的 SCHED_AGENT 调度器中，调度队列的并发访问、DSQ 的任务分派、Agent 状态的读写都不会产生数据竞争——这些保证在编译期由类型系统强制执行，而非依赖运行时锁。
 
 ### 7.2 unsafe 块审计
 
@@ -1001,12 +1001,12 @@ Rust 内核模块通过类型系统将内核不变量编码为类型：
 
 ### 7.5 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| 所有权模型 | [SC] 共享契约层——所有 agentrt-linux 内核模块遵守 |
-| unsafe 审计 | [SS] 同源——agentrt-linux CI 强制 `// SAFETY:` 注释 |
-| 类型安全编码 | [SS] 同源——agentrt-linux 扩展 `AgentOwned<T>` |
-| 并发安全保证 | [SS] 同源——agentrt-linux 增加 Agent 上下文 Send/Sync 验证 |
+| 所有权模型 | [SC] 共享契约层——所有 agent-linux 内核模块遵守 |
+| unsafe 审计 | [SS] 同源——agent-linux CI 强制 `// SAFETY:` 注释 |
+| 类型安全编码 | [SS] 同源——agent-linux 扩展 `AgentOwned<T>` |
+| 并发安全保证 | [SS] 同源——agent-linux 增加 Agent 上下文 Send/Sync 验证 |
 
 ---
 
@@ -1142,12 +1142,12 @@ graph TB
 
 ### 8.6 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| extern "C" 接口 | [SS] 语义同源——agentrt-linux 所有 FFI 边界遵循 |
-| Opaque 不透明类型 | [SS] 同源——agentrt-linux 增加 `AgentOpaque<T>` 审计标记 |
-| Error 错误码映射 | [SS] 同源——agentrt-linux 扩展 `AgentError` 包含 Agent 特有错误码 |
-| ForeignOwnable trait | [SS] 同源——agentrt-linux 增加 Agent 生命周期注解 |
+| extern "C" 接口 | [SS] 语义同源——agent-linux 所有 FFI 边界遵循 |
+| Opaque 不透明类型 | [SS] 同源——agent-linux 增加 `AgentOpaque<T>` 审计标记 |
+| Error 错误码映射 | [SS] 同源——agent-linux 扩展 `AgentError` 包含 Agent 特有错误码 |
+| ForeignOwnable trait | [SS] 同源——agent-linux 增加 Agent 生命周期注解 |
 
 ---
 
@@ -1194,42 +1194,42 @@ Rust 内核模块的"零成本抽象"承诺在多处得到验证：
 
 ### 9.4 五维原则视角：工程观
 
-从**五维原则之工程观**审视，Rust 内核模块的性能数据表明：在热路径上，Rust 与 C 的性能差异在测量误差范围内；在冷路径上，Rust 的初始化开销略高但可接受。真正决定 agentrt-linux 采用 Rust 的关键因素不是微基准性能，而是工程效率——内存安全 Bug 降低 90%、数据竞争 Bug 降为零、代码审查时间减少 80%，这些工程效率的提升远超微小的性能开销。
+从**五维原则之工程观**审视，Rust 内核模块的性能数据表明：在热路径上，Rust 与 C 的性能差异在测量误差范围内；在冷路径上，Rust 的初始化开销略高但可接受。真正决定 agent-linux 采用 Rust 的关键因素不是微基准性能，而是工程效率——内存安全 Bug 降低 90%、数据竞争 Bug 降为零、代码审查时间减少 80%，这些工程效率的提升远超微小的性能开销。
 
 ### 9.5 AirymaxOS 借鉴要点
 
-| 参考发行版规范 | agentrt-linux 落地 |
+| 参考发行版规范 | agent-linux 落地 |
 |---------------|-------------------|
-| 性能基准数据 | [SS] 参考——agentrt-linux 以鲲鹏 920 ARM64 为目标 |
-| 零成本抽象 | [SS] 同源——agentrt-linux 所有内核抽象遵循 |
-| 内存安全收益 | [SS] 同源——agentrt-linux 强制 Rust 用于安全关键模块 |
+| 性能基准数据 | [SS] 参考——agent-linux 以鲲鹏 920 ARM64 为目标 |
+| 零成本抽象 | [SS] 同源——agent-linux 所有内核抽象遵循 |
+| 内存安全收益 | [SS] 同源——agent-linux 强制 Rust 用于安全关键模块 |
 
 ---
 
-## 10. agentrt-linux 采用决策
+## 10. agent-linux 采用决策
 
 ### 10.1 完全采纳的规范（8 项）
 
 | # | 规范 | 采纳方式 | 说明 |
 |---|------|---------|------|
-| 1 | Rust 内核模块整体架构 | [SS] 语义同源 | agentrt-linux 在 `agentrt/kernel/rust/` 下构建 |
-| 2 | kernel crate 核心抽象（Arc/Box/Vec/Mutex/SpinLock） | [SS] 语义同源 | agentrt-linux 扩展 `agentrt_kernel` crate |
-| 3 | Pin-Init 就地初始化框架 | [SC] 共享契约层 | 所有 agentrt-linux 内核模块强制使用 |
-| 4 | bindgen 自动绑定生成 | [SS] 语义同源 | agentrt-linux 锁定 bindgen 版本 |
-| 5 | Kbuild + Rust 构建集成 | [SS] 同源 | agentrt-linux 沿用 Kbuild 规则 |
-| 6 | unsafe 块审计框架 | [SS] 同源 | agentrt-linux CI 强制 SAFETY 注释 |
-| 7 | C/Rust FFI 边界规范 | [SS] 同源 | agentrt-linux 所有 FFI 边界遵循 |
-| 8 | 错误码映射（Error/Result） | [SS] 同源 | agentrt-linux 扩展 AgentError |
+| 1 | Rust 内核模块整体架构 | [SS] 语义同源 | agent-linux 在 `agentrt/kernel/rust/` 下构建 |
+| 2 | kernel crate 核心抽象（Arc/Box/Vec/Mutex/SpinLock） | [SS] 语义同源 | agent-linux 扩展 `agentrt_kernel` crate |
+| 3 | Pin-Init 就地初始化框架 | [SC] 共享契约层 | 所有 agent-linux 内核模块强制使用 |
+| 4 | bindgen 自动绑定生成 | [SS] 语义同源 | agent-linux 锁定 bindgen 版本 |
+| 5 | Kbuild + Rust 构建集成 | [SS] 同源 | agent-linux 沿用 Kbuild 规则 |
+| 6 | unsafe 块审计框架 | [SS] 同源 | agent-linux CI 强制 SAFETY 注释 |
+| 7 | C/Rust FFI 边界规范 | [SS] 同源 | agent-linux 所有 FFI 边界遵循 |
+| 8 | 错误码映射（Error/Result） | [SS] 同源 | agent-linux 扩展 AgentError |
 
 ### 10.2 不采纳的规范（3 项）
 
-| # | 规范 | 不采纳原因 | agentrt-linux 替代方案 |
+| # | 规范 | 不采纳原因 | agent-linux 替代方案 |
 |---|------|-----------|----------------------|
-| 1 | kABI 兼容 Rust 抽象 | 参考发行版 kABI 预留机制与 IRON-1 唯一奠基版本策略冲突 | [IND] 不采用 kABI，agentrt-linux 采用语义版本控制 |
-| 2 | 参考发行版特有 Rust 宏 | 部分宏与参考发行版 kABI 机制耦合 | [IND] agentrt-linux 自行设计 `#[agent_module]` 宏 |
-| 3 | 参考发行版企业级驱动模板 | 模板与参考发行版外设框架耦合 | [IND] agentrt-linux 自行设计驱动模板 |
+| 1 | kABI 兼容 Rust 抽象 | 参考发行版 kABI 预留机制与 IRON-1 唯一奠基版本策略冲突 | [IND] 不采用 kABI，agent-linux 采用语义版本控制 |
+| 2 | 参考发行版特有 Rust 宏 | 部分宏与参考发行版 kABI 机制耦合 | [IND] agent-linux 自行设计 `#[agent_module]` 宏 |
+| 3 | 参考发行版企业级驱动模板 | 模板与参考发行版外设框架耦合 | [IND] agent-linux 自行设计驱动模板 |
 
-### 10.3 agentrt-linux 增强的规范（5 项）
+### 10.3 agent-linux 增强的规范（5 项）
 
 | # | 增强项 | 说明 |
 |---|--------|------|
@@ -1256,7 +1256,7 @@ Rust 内核模块的"零成本抽象"承诺在多处得到验证：
 
 ### 11.1 共享契约层 [SC]
 
-agentrt-linux 与 AirymaxOS 在以下 Rust 组件上共享代码：
+agent-linux 与 AirymaxOS 在以下 Rust 组件上共享代码：
 
 | 组件 | 位置 | 共享内容 |
 |------|------|---------|
@@ -1269,7 +1269,7 @@ agentrt-linux 与 AirymaxOS 在以下 Rust 组件上共享代码：
 
 API 签名同源，但实现独立：
 
-| 组件 | agentrt-linux 实现 | AirymaxOS 实现 |
+| 组件 | agent-linux 实现 | AirymaxOS 实现 |
 |------|-------------------|---------------|
 | `kernel::sync::Mutex<T>` | 封装内核 mutex | 封装用户态 parking_lot Mutex |
 | `kernel::alloc::Box<T>` | 调用 kmalloc | 调用 jemalloc |
@@ -1280,7 +1280,7 @@ API 签名同源，但实现独立：
 
 各自独立实现，不共享代码：
 
-| 组件 | agentrt-linux 实现 | AirymaxOS 实现 |
+| 组件 | agent-linux 实现 | AirymaxOS 实现 |
 |------|-------------------|---------------|
 | MemoryRovol 感知分配器 | 内核态 MemoryRovol L1/L2 | 用户态 MemoryRovol API |
 | Cupolas 安全注解宏 | 内核 LSM 钩子 | 用户态 WASM 沙箱 |
@@ -1292,23 +1292,23 @@ API 签名同源，但实现独立：
 
 ### 12.1 系统观
 
-Rust 内核模块支持不是孤立的技术选型，而是 agentrt-linux 整个系统架构的基石。从系统观审视，Rust 的引入影响 agentrt-linux 的构建系统（Kbuild + Rust）、类型系统（C/Rust 双类型系统桥接）、安全模型（编译器保证 + 运行时 LSM）、性能模型（零成本抽象 + LLVM 优化）四个维度。agentrt-linux 必须将 Rust 视为内核架构的一等公民，而非 C 的补充。
+Rust 内核模块支持不是孤立的技术选型，而是 agent-linux 整个系统架构的基石。从系统观审视，Rust 的引入影响 agent-linux 的构建系统（Kbuild + Rust）、类型系统（C/Rust 双类型系统桥接）、安全模型（编译器保证 + 运行时 LSM）、性能模型（零成本抽象 + LLVM 优化）四个维度。agent-linux 必须将 Rust 视为内核架构的一等公民，而非 C 的补充。
 
 ### 12.2 内核观
 
-Rust 的所有权模型、借用检查器、生命周期标注与 Linux 内核的引用计数模型在语义层面高度一致。从内核观审视，Rust 将内核开发者依赖纪律和代码审查保证的安全不变量编码为类型系统，在编译期强制执行。这意味着 agentrt-linux 的 SCHED_AGENT 调度器、eBPF 辅助模块、安全模块中的内存安全漏洞和数据竞争在编译期被消灭，而非依赖运行时检测或人工审查。
+Rust 的所有权模型、借用检查器、生命周期标注与 Linux 内核的引用计数模型在语义层面高度一致。从内核观审视，Rust 将内核开发者依赖纪律和代码审查保证的安全不变量编码为类型系统，在编译期强制执行。这意味着 agent-linux 的 SCHED_AGENT 调度器、eBPF 辅助模块、安全模块中的内存安全漏洞和数据竞争在编译期被消灭，而非依赖运行时检测或人工审查。
 
 ### 12.3 认知观
 
-agentrt-linux 的认知层（Cognition Layer）通过 SCHED_AGENT 调度器直接参与内核调度决策。从认知观审视，Rust 的类型系统确保认知引擎的输入（Agent 状态、Token 使用量、调度决策）在穿越用户态/内核态边界时不会被内存损坏污染。Cupolas D3 输入净化管道在 Rust 侧通过 `From`/`TryFrom` trait 实现类型安全的输入验证。
+agent-linux 的认知层（Cognition Layer）通过 SCHED_AGENT 调度器直接参与内核调度决策。从认知观审视，Rust 的类型系统确保认知引擎的输入（Agent 状态、Token 使用量、调度决策）在穿越用户态/内核态边界时不会被内存损坏污染。Cupolas D3 输入净化管道在 Rust 侧通过 `From`/`TryFrom` trait 实现类型安全的输入验证。
 
 ### 12.4 工程观
 
-Rust 内核模块的工程效率远超 C 内核模块。从工程观审视，Rust 带来的编译期安全保证将 agentrt-linux 内核模块的调试时间降低 80%、安全审查时间降低 80%、生产环境内存 Bug 率降低 90%。CI/CD 管道中集成的 `clippy`、`rust-analyzer`、`cargo audit` 等工具实现安全左移。
+Rust 内核模块的工程效率远超 C 内核模块。从工程观审视，Rust 带来的编译期安全保证将 agent-linux 内核模块的调试时间降低 80%、安全审查时间降低 80%、生产环境内存 Bug 率降低 90%。CI/CD 管道中集成的 `clippy`、`rust-analyzer`、`cargo audit` 等工具实现安全左移。
 
 ### 12.5 设计美学
 
-Rust 内核模块的设计遵循"零成本抽象"美学原则。从设计美学审视，agentrt-linux 的 Rust 内核模块应当像 Rust 类型系统本身一样——正确使用时无运行时开销，错误使用时编译期拒绝。`#[vtable]` 宏将函数指针表的安全约束编码为 Rust trait，`module!` 宏将内核模块的元数据与生命周期绑定，这些设计都体现了"安全即类型"的设计美学。
+Rust 内核模块的设计遵循"零成本抽象"美学原则。从设计美学审视，agent-linux 的 Rust 内核模块应当像 Rust 类型系统本身一样——正确使用时无运行时开销，错误使用时编译期拒绝。`#[vtable]` 宏将函数指针表的安全约束编码为 Rust trait，`module!` 宏将内核模块的元数据与生命周期绑定，这些设计都体现了"安全即类型"的设计美学。
 
 ---
 
@@ -1340,7 +1340,7 @@ Rust 内核模块的设计遵循"零成本抽象"美学原则。从设计美学�
 |------|------|----------|--------|
 | 0.1.1 | 2026-07-07 | 初始版本，全面梳理参考发行版 Rust 内核模块支持工程规范 | Airymax 架构委员会 |
 
-**维护责任**：文档负责人为 agentrt-linux 内核开发组；代码负责人为 agentrt-linux Rust 内核模块维护者；每个 LTS 小版本发布前重新核对参考发行版 Rust 规范变更与 agentrt-linux 差异化声明有效性。
+**维护责任**：文档负责人为 agent-linux 内核开发组；代码负责人为 agent-linux Rust 内核模块维护者；每个 LTS 小版本发布前重新核对参考发行版 Rust 规范变更与 agent-linux 差异化声明有效性。
 
 ---
 

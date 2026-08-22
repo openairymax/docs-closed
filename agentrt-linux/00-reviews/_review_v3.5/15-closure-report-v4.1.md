@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v4.1 闭环确认报告
+# agent-linux v4.1 闭环确认报告
 > **文档定位**：v4.0 系统性终极复核后 4 类关键未修复问题的修复闭环确认\
 > **文档版本**：v4.1\
 > **最后更新**：2026-07-26\
@@ -60,7 +60,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）识别的全部问题�
 | **修复策略** | 批量替换 `kernel/include/airymax/` → `kernel/include/uapi/linux/airymax/` |
 | **修复文件** | 9 个文件（README.md, MAINTAINERS, CODEOWNERS, SECURITY.md, CONTRIBUTING.md, ssot-registry.yaml, .github/README.md, .github/PULL_REQUEST_TEMPLATE.md, .github/workflows/ci-airy.yml） |
 | **修复点数** | 21 处 |
-| **验证命令** | `grep -rn "kernel/include/airymax/" agentrt-linux/` |
+| **验证命令** | `grep -rn "kernel/include/airymax/" agent-linux/` |
 | **验证结果** | ✅ **No matches found**（0 残留） |
 
 **关键修复证据**：
@@ -173,7 +173,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）识别的全部问题�
 
 ### 4.1 项目阶段声明
 
-**agentrt-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发，其他开发未正式开始。**
+**agent-linux 目前处于方案设计阶段（M0），仅内核改造框架已开发，其他开发未正式开始。**
 
 这一阶段定位在 v4.0/v4.1 复核中再次确认准确：
 - ✅ [SC] 头文件框架完整（10 核心 + 1 补充）
@@ -213,7 +213,7 @@ v3.5 审查报告（00-13）+ v4.0 系统性复核（14）识别的全部问题�
 
 | 验证项 | 验证命令 | 期望结果 | 实际结果 |
 |--------|---------|---------|---------|
-| P0-9 路径残留 | `grep "kernel/include/airymax/" agentrt-linux/` | No matches | ✅ No matches |
+| P0-9 路径残留 | `grep "kernel/include/airymax/" agent-linux/` | No matches | ✅ No matches |
 | cognition 错误命名 | `grep "PERCEPTION/THINKING/ACTION\|CLT_PHASE_PERCEPTION\|SYSTEM1_FAST\|..." docs/AirymaxOS/` | No matches | ✅ No matches |
 | codegen 正确命名 | `grep "AIRY_SYS_IDX_CALL" 06-codegen-pipeline.md` | 5 处匹配 | ✅ 5 处匹配 |
 | [SC] 核心数量 | `grep "10 个 \[SC\] 核心" 11-sc-header-type-bridging.md` | 4 处匹配 | ✅ 4 处匹配 |

@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档性质**：基于 34 号科学论证结论（6 条硬约束 H1-H6）的 A-IPC 完整重新设计
 > **设计层级**：内核级工程——AirymaxOS 的第一块基石
-> **前置约束**：[34-overall-perspective-scientific-judgment.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/34-overall-perspective-scientific-judgment.md) §6.3 6 条硬约束
+> **前置约束**：[34-overall-perspective-scientific-judgment.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/34-overall-perspective-scientific-judgment.md) §6.3 6 条硬约束
 > **设计哲学**：乔布斯/艾夫"简约就是美"——"产品中看不见的部分也应该像其外表一样精美"
 > **核心论断**：通信 = io_uring 数据面（唯一平面）；授权 = 1 个 Badge；撤销 = 1 条 atomic_inc；自举 = 1 个 CAP_REQUEST opcode；完整性 = 1 个 CRC32；管理器 = sec_d
 
@@ -20,7 +20,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 H1: Layout C v4 总长保持 128 字节，magic 保持 0x41524531 'ARE1'
 H2: capability_badge 字段进入 [SC] ipc.h，但校验机制属于 [SS] 层
 H3: agentrt 用户态 capability_badge 始终为 0，使用传统 cap_t 引用
-H4: agentrt-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
+H4: agent-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
 H5: 纯 C LSM 模块职责不变（策略/撤销/审计/执法），Badge 校验是其 fastpath 内联
 H6: [DSL] 降级模式下 capability_badge 字段存在但被忽略（值=0，跳过校验）
 ```
@@ -229,7 +229,7 @@ H6: [DSL] 降级模式下 capability_badge 字段存在但被忽略（值=0，�
 
 ```c
 /* kernel/include/airymax/ipc.h —— [SC] 共享契约层，物理宿主 */
-/* IRON-9 v3 [SC] 层：agentrt 与 agentrt-linux 共享数据结构定义 */
+/* IRON-9 v3 [SC] 层：agentrt 与 agent-linux 共享数据结构定义 */
 /* 校验机制属于 [SS] 语义同源层，不在本头文件中定义 */
 
 #ifndef AIRYMAX_IPC_H
@@ -258,7 +258,7 @@ extern "C" {
 
 /* flags 定义 */
 #define AIRY_IPC_F_ZEROCOPY     0x0001
-#define AIRY_IPC_F_CAP_CARRY    0x0002  /* 携带 Badge（agentrt-linux 内核必置） */
+#define AIRY_IPC_F_CAP_CARRY    0x0002  /* 携带 Badge（agent-linux 内核必置） */
 #define AIRY_IPC_F_ENCRYPT      0x0004  /* 保留，0.1.1 不启用 */
 #define AIRY_IPC_F_COMPRESS     0x0008  /* 保留，0.1.1 不启用 */
 #define AIRY_IPC_F_BATCH_TAIL   0x0010  /* SEND_BATCH 的最后一个 SQE */
@@ -274,7 +274,7 @@ struct airy_ipc_msg_hdr {
     __u64   src_task;           /* offset 24, 源 Agent/daemon task_id */
     __u64   dst_task;           /* offset 32, 目标 Agent/daemon task_id */
     __u32   payload_len;        /* offset 40, 负载长度（不含头部） */
-    __u64   capability_badge;   /* offset 44, [SS] 语义同源：agentrt-linux 用，agentrt=0 */
+    __u64   capability_badge;   /* offset 44, [SS] 语义同源：agent-linux 用，agentrt=0 */
     __u32   crc32;              /* offset 52, CRC32 覆盖 header[0:52) + payload */
     __u8    reserved[72];       /* offset 56, 保留，必须为零 */
 } __attribute__((packed));
@@ -284,7 +284,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == AIRY_IPC_HDR_SIZE,
 
 /* ===== Badge 位布局（仅 [SS] 语义同源，定义在内核实现侧）===== */
 /* agentrt 用户态：capability_badge 始终为 0（H3） */
-/* agentrt-linux 内核：capability_badge 由 sec_d 编译（H4） */
+/* agent-linux 内核：capability_badge 由 sec_d 编译（H4） */
 /* [DSL] 降级模式：capability_badge = 0，跳过 C-S9（H6） */
 
 #define AIRY_BADGE_EPOCH_SHIFT     48
@@ -335,7 +335,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == AIRY_IPC_HDR_SIZE,
 | 24 | src_task | 8B | 源 task_id，必须与 Badge 编译时绑定 | C-S9（与 agent_caps[] 对照） |
 | 32 | dst_task | 8B | 目标 task_id，决定 kfifo 路由 | C-S5/C-S6（路由） |
 | 40 | payload_len | 4B | 负载长度，不含头部 | C-S3/C-S4 |
-| 44 | capability_badge | 8B | [SS] 语义同源：agentrt-linux 用，agentrt=0 | C-S9（Badge 校验） |
+| 44 | capability_badge | 8B | [SS] 语义同源：agent-linux 用，agentrt=0 | C-S9（Badge 校验） |
 | 52 | crc32 | 4B | CRC32 覆盖 header[0:52) + payload | C-S12（投递前） |
 | 56 | reserved[72] | 72B | 保留，必须为零 | C-S4（reserved 检查） |
 
@@ -363,7 +363,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == AIRY_IPC_HDR_SIZE,
 [IND] 完全独立层:
   - agentrt 用户态: 不使用 capability_badge 字段（始终为 0）
   - agentrt 用户态: 使用传统 cap_t 引用 + airy_ipc_send() 库函数
-  - agentrt-linux 内核: 使用 capability_badge + C-S9 内联校验
+  - agent-linux 内核: 使用 capability_badge + C-S9 内联校验
 
 [DSL] 降级生存层:
   - capability_badge 字段存在但被忽略（值=0）
@@ -545,14 +545,14 @@ Epoch 类型: u16（16 位）
 flags 位定义（16 位）:
 
   bit 0: ZEROCOPY     — 启用零拷贝（registered buffer）
-  bit 1: CAP_CARRY    — 携带 Badge（agentrt-linux 内核必置）
+  bit 1: CAP_CARRY    — 携带 Badge（agent-linux 内核必置）
   bit 2: ENCRYPT      — 加密（保留，0.1.1 不启用）
   bit 3: COMPRESS     — 压缩（保留，0.1.1 不启用）
   bit 4: BATCH_TAIL   — SEND_BATCH 的最后一个 SQE
   bit 5-15: RESERVED  — 必须为零
 
 CAP_CARRY 标志的作用:
-  - agentrt-linux 内核: 始终置位（capability_badge 字段有效）
+  - agent-linux 内核: 始终置位（capability_badge 字段有效）
   - agentrt 用户态: 始终不置位（capability_badge = 0）
   - [DSL] 降级模式: 不置位（跳过 C-S9）
   - C-S10 检查: 如果 CAP_CARRY 置位但 capability_badge == 0 且 opcode != CAP_REQUEST → 拒绝
@@ -709,7 +709,7 @@ static int airy_ipc_validate(struct airy_ipc_cmd *cmd)
 
     /* C-S9: Capability Folding Badge 校验（关键步骤） */
     /* H2: 校验机制属于 [SS] 语义同源层 */
-    /* H4: agentrt-linux 内核 capability_badge 由 sec_d 编译 */
+    /* H4: agent-linux 内核 capability_badge 由 sec_d 编译 */
     /* H6: [DSL] 降级模式 capability_badge=0，跳过校验 */
     
     if (unlikely(hdr->opcode == AIRY_IPC_OP_CAP_REQUEST)) {
@@ -724,7 +724,7 @@ static int airy_ipc_validate(struct airy_ipc_cmd *cmd)
     /* [DSL] 降级模式：badge == 0 跳过校验（H6） */
     if (badge == 0) {
         if (hdr->flags & AIRY_IPC_F_CAP_CARRY) {
-            /* agentrt-linux 内核模式不应出现 badge=0 + CAP_CARRY */
+            /* agent-linux 内核模式不应出现 badge=0 + CAP_CARRY */
             return -AIRY_ECAP_BADGE;
         }
         /* agentrt 用户态或 [DSL] 模式：badge=0，跳过 */
@@ -1176,7 +1176,7 @@ static int airy_uring_cmd(struct io_uring_cmd *ioucmd, unsigned int issue_flags)
 
 ```c
 /* kernel/include/airymax/error.h —— [SC] 共享契约层 */
-/* IRON-9 v3 [SC] 层：agentrt 与 agentrt-linux 共享错误码定义 */
+/* IRON-9 v3 [SC] 层：agentrt 与 agent-linux 共享错误码定义 */
 
 #ifndef AIRYMAX_ERROR_H
 #define AIRYMAX_ERROR_H
@@ -1310,7 +1310,7 @@ static inline int airy_cap_badge_ok_dsl(u64 src_task, u64 badge, u16 opcode)
   - 安全性退化（无 Random Tag 防伪造）
 
 [DSL] 模式的触发条件:
-  - [SC] 共享契约层不可用（agentrt 与 agentrt-linux 版本不匹配）
+  - [SC] 共享契约层不可用（agentrt 与 agent-linux 版本不匹配）
   - 内核编译时定义 AIRY_SC_FALLBACK
   - 运行时检测到 [SC] 头文件版本不匹配
 
@@ -1479,7 +1479,7 @@ A-IPC 是本设计的核心，与自身的对接即完整性检查:
 
 [SS] 层的契约:
   - agentrt 用户态: 不使用 capability_badge（始终为 0）
-  - agentrt-linux 内核: 使用 capability_badge + C-S9 内联校验
+  - agent-linux 内核: 使用 capability_badge + C-S9 内联校验
   - 两者共享 [SC] 数据结构定义，但校验机制属于 [SS] 语义同源层
 
 关键论证（34 号 §2）:
@@ -1493,13 +1493,13 @@ A-IPC 是本设计的核心，与自身的对接即完整性检查:
 ```
 [IND] 层独立内容:
   ✓ agentrt 用户态: 传统 cap_t 引用 + airy_ipc_send() 库函数
-  ✓ agentrt-linux 内核: capability_badge + C-S9 内联校验
+  ✓ agent-linux 内核: capability_badge + C-S9 内联校验
   ✓ 两者在 [IND] 层完全独立，无相互依赖
 
 [IND] 层的契约:
   - agentrt 不感知 capability_badge 字段的存在
   - agentrt 不调用 sec_d 的 Badge 编译接口
-  - agentrt-linux 不依赖 agentrt 的 cap_t 引用机制
+  - agent-linux 不依赖 agentrt 的 cap_t 引用机制
   - 两者通过 [SC] 数据结构 + [SS] 语义同源保持契约一致
 ```
 
@@ -1699,7 +1699,7 @@ A-IPC 是本设计的核心，与自身的对接即完整性检查:
 | H1 | Layout C v4 总长 128 字节，magic 0x41524531 | §2.1 | ✓ |
 | H2 | capability_badge 进 [SC]，校验机制属 [SS] | §2.3, §11.2 | ✓ |
 | H3 | agentrt 用户态 capability_badge=0 | §2.3, §11.3 | ✓ |
-| H4 | agentrt-linux 内核 capability_badge 由 sec_d 编译 | §6.2, §11.2 | ✓ |
+| H4 | agent-linux 内核 capability_badge 由 sec_d 编译 | §6.2, §11.2 | ✓ |
 | H5 | 纯 C LSM 职责不变，Badge 校验是 fastpath 内联 | §5.2, §6.3 | ✓ |
 | H6 | [DSL] 降级模式 capability_badge=0，跳过 C-S9 | §9 | ✓ |
 

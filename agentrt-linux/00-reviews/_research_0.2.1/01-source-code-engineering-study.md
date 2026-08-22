@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # OLK-6.6 与 seL4 源代码工程思想研究报告
 
-> **文档定位**: 基于对 `01Reference/kernel-OLK-6.6`（Linux 6.6 内核基线）与 `01Reference/seL4-master`（seL4 微内核）全部源代码的深度研究，提取工程思想、编码风格、代码格式、代码规范、代码标准，作为 `docs/AirymaxAgentOS` agentrt-linux 方案再检查（见 [02-airymaxos-recheck-report.md](02-airymaxos-recheck-report.md)）与 8 子仓目录结构设计（见 `01-designs/_design_0.2.1/01-agentrt-linux-directory-structure.md`）的理论依据。
+> **文档定位**: 基于对 `01Reference/kernel-OLK-6.6`（Linux 6.6 内核基线）与 `01Reference/seL4-master`（seL4 微内核）全部源代码的深度研究，提取工程思想、编码风格、代码格式、代码规范、代码标准，作为 `docs/AirymaxAgentOS` agent-linux 方案再检查（见 [02-airymaxos-recheck-report.md](02-airymaxos-recheck-report.md)）与 8 子仓目录结构设计（见 `01-designs/_design_0.2.1/01-agent-linux-directory-structure.md`）的理论依据。
 > **版本**: 0.2.1（研究报告）
 > **最后更新**: 2026-07-09
 > **研究范围**: OLK-6.6 全量源码（28 顶层目录）+ seL4-master 全量源码（src/ + include/ + libsel4/ + tools/ + manual/）
@@ -26,11 +26,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 研究目标
 
-agentrt-linux 的三大设计支柱为：(1) 微内核设计原则（参考 seL4 / Zircon / Minix3）；(2) Euler 标准兼容；(3) Airymax 同源。其中第一支柱的技术参考来源是 seL4，而第二支柱的工程基线是 Linux 6.6（OLK-6.6）。这一"双源融合"特征决定了 agentrt-linux 必须同时吸收两类工程思想，但两者的工程取向差异巨大——Linux 是宏内核工程传统的巅峰，seL4 是形式化微内核的极致。本研究的目标是厘清：
+agent-linux 的三大设计支柱为：(1) 微内核设计原则（参考 seL4 / Zircon / Minix3）；(2) Euler 标准兼容；(3) Airymax 同源。其中第一支柱的技术参考来源是 seL4，而第二支柱的工程基线是 Linux 6.6（OLK-6.6）。这一"双源融合"特征决定了 agent-linux 必须同时吸收两类工程思想，但两者的工程取向差异巨大——Linux 是宏内核工程传统的巅峰，seL4 是形式化微内核的极致。本研究的目标是厘清：
 
-1. **OLK-6.6 提供了哪些可直接落地的工程思想、编码风格、代码格式、代码规范、代码标准？** —— 答案决定 agentrt-linux 的"工程基线层"。
-2. **seL4 提供了哪些可借鉴的工程思想？其编码风格为何不能整体照搬？** —— 答案决定 agentrt-linux 的"微内核思想层"与"编码风格层"的边界。
-3. **双源之间哪些维度互补、哪些维度冲突？冲突如何裁决？** —— 答案决定 agentrt-linux 工程标准的具体取舍。
+1. **OLK-6.6 提供了哪些可直接落地的工程思想、编码风格、代码格式、代码规范、代码标准？** —— 答案决定 agent-linux 的"工程基线层"。
+2. **seL4 提供了哪些可借鉴的工程思想？其编码风格为何不能整体照搬？** —— 答案决定 agent-linux 的"微内核思想层"与"编码风格层"的边界。
+3. **双源之间哪些维度互补、哪些维度冲突？冲突如何裁决？** —— 答案决定 agent-linux 工程标准的具体取舍。
 
 ### 1.2 研究方法
 
@@ -43,7 +43,7 @@ agentrt-linux 的三大设计支柱为：(1) 微内核设计原则（参考 seL4
 | 模式归纳 | 提取 10 项工程思想 + 8 类编码风格要素 | 提取 4 大微内核支柱 + 6 项工程思想 |
 | 双向对比 | 11 个维度逐项对照 | 同左 |
 
-**研究边界声明**: 本研究仅提取工程思想与编码约定，不涉及对任一项目代码的复制。OLK-6.6 与 seL4 的源码仅在本地参考路径（`01Reference/`）中作为研究对象；agentrt-linux 与两者的关系是"技术参考"而非"代码共享"，符合 IRON-9 v2 同源边界。
+**研究边界声明**: 本研究仅提取工程思想与编码约定，不涉及对任一项目代码的复制。OLK-6.6 与 seL4 的源码仅在本地参考路径（`01Reference/`）中作为研究对象；agent-linux 与两者的关系是"技术参考"而非"代码共享"，符合 IRON-9 v2 同源边界。
 
 ---
 
@@ -264,7 +264,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 缩进宽度 | 8 字符 | 4 空格 | 同上 |
 | 嵌套警告阈值 | 3 层 | 无显式阈值 | seL4 极简代码本身嵌套浅 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（Tab 8 字符）**。理由: (1) agentrt-linux 基于 Linux 6.6 内核基线，内核态代码必须与上游 Linux 一致，便于 backport；(2) 8 字符 Tab 的嵌套警告价值在内核工程中已被验证；(3) seL4 的 4 空格选择源于其形式化约束，agentrt-linux 内核态代码无形式化约束。
+**裁决**: agent-linux 选择 **OLK-6.6（Tab 8 字符）**。理由: (1) agent-linux 基于 Linux 6.6 内核基线，内核态代码必须与上游 Linux 一致，便于 backport；(2) 8 字符 Tab 的嵌套警告价值在内核工程中已被验证；(3) seL4 的 4 空格选择源于其形式化约束，agent-linux 内核态代码无形式化约束。
 
 ### 4.2 命名
 
@@ -275,7 +275,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 变量命名 | 局部短小（tmp/i），全局描述性 | `tcb->tcbSchedPrev`、`tcb->tcbMCP`（camelCase + 结构体前缀） | seL4 重度使用 typedef + 前缀 |
 | 类型前缀 | 无 Hungarian | 无 Hungarian，但 typedef 重度 | 两者均拒绝 Hungarian |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（snake_case）**。理由: (1) 与 Linux 6.6 上游一致，便于 backport；(2) snake_case 是 C/Unix 生态主流；(3) seL4 的 camelCase 源于其 Haskell 形式化传统，与 C 生态格格不入。
+**裁决**: agent-linux 选择 **OLK-6.6（snake_case）**。理由: (1) 与 Linux 6.6 上游一致，便于 backport；(2) snake_case 是 C/Unix 生态主流；(3) seL4 的 camelCase 源于其 Haskell 形式化传统，与 C 生态格格不入。
 
 ### 4.3 typedef 使用
 
@@ -285,7 +285,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 典型 typedef | `pid_t`、`gid_t`、`size_t`（标准） | `tcb_t`、`prio_t`、`word_t`、`exception_t`、`tcb_queue_t` | seL4 通过 typedef 实现类型抽象 |
 | 结构体标签 | `struct foo`（直接用标签） | `tcb_t`（typedef 后直接用） | 同上 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（最小 typedef）**。理由: (1) typedef 隐藏类型信息，增加阅读成本；(2) Linux 的 5 种例外（不透明对象/清晰整数/sparse/C99/UAPI）覆盖了所有合理用例；(3) seL4 的重度 typedef 源于其形式化证明工具的类型推导需求。
+**裁决**: agent-linux 选择 **OLK-6.6（最小 typedef）**。理由: (1) typedef 隐藏类型信息，增加阅读成本；(2) Linux 的 5 种例外（不透明对象/清晰整数/sparse/C99/UAPI）覆盖了所有合理用例；(3) seL4 的重度 typedef 源于其形式化证明工具的类型推导需求。
 
 ### 4.4 大括号放置（K&R）
 
@@ -295,7 +295,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 函数开括号 | 下一行行首 | 下一行行首 | 一致 |
 | if-else | else 紧跟闭括号 | else 紧跟闭括号 | 一致 |
 
-**裁决**: 两者一致，均采用 K&R 风格。agentrt-linux 直接采纳。
+**裁决**: 两者一致，均采用 K&R 风格。agent-linux 直接采纳。
 
 ### 4.5 宏使用
 
@@ -306,7 +306,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | unlikely/likely | 大量使用 | 大量使用 | 一致 |
 | assert | `BUG_ON()` / `WARN_ON()`（受限） | `assert()`（直接） | seL4 因形式化约束偏好 assert |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6**。理由: (1) `BUG_ON()` / `WARN_ON()` 是 Linux 内核工程的成熟模式；(2) seL4 的 `assert()` 在形式化证明外无特殊价值；(3) 与 Linux 上游一致。
+**裁决**: agent-linux 选择 **OLK-6.6**。理由: (1) `BUG_ON()` / `WARN_ON()` 是 Linux 内核工程的成熟模式；(2) seL4 的 `assert()` 在形式化证明外无特殊价值；(3) 与 Linux 上游一致。
 
 ### 4.6 错误处理
 
@@ -316,7 +316,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | goto 集中出口 | 大量使用（`goto out_free_buffer`） | 不使用（极简函数无需 goto） | 不同 |
 | 标签命名 | 描述行为（`out_free_buffer`） | N/A | OLK-6.6 独有 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（负 errno + goto 集中出口）**。理由: (1) 与 Linux 内核错误处理模式一致；(2) goto 集中出口是多出口函数的资源释放最佳模式；(3) seL4 的极简函数无需 goto，但 agentrt-linux 内核态函数复杂度高于 seL4。
+**裁决**: agent-linux 选择 **OLK-6.6（负 errno + goto 集中出口）**。理由: (1) 与 Linux 内核错误处理模式一致；(2) goto 集中出口是多出口函数的资源释放最佳模式；(3) seL4 的极简函数无需 goto，但 agent-linux 内核态函数复杂度高于 seL4。
 
 ### 4.7 注释
 
@@ -326,7 +326,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | kernel-doc | 强制（`/** ... */`） | 无 | OLK-6.6 独有 |
 | WHAT/WHY 不 HOW | 是 | 是 | 一致 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（kernel-doc 强制）**。理由: (1) kernel-doc 是 Linux 内核文档即代码的核心；(2) seL4 无此机制。
+**裁决**: agent-linux 选择 **OLK-6.6（kernel-doc 强制）**。理由: (1) kernel-doc 是 Linux 内核文档即代码的核心；(2) seL4 无此机制。
 
 ---
 
@@ -339,7 +339,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | C 首选行宽 | 80 列 | 无强制（通常 ~100） | 不同 |
 | 字符串断行 | 禁止（破坏 grep） | 允许 | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（80 列 + 字符串禁止断行）**。
+**裁决**: agent-linux 选择 **OLK-6.6（80 列 + 字符串禁止断行）**。
 
 ### 5.2 空格
 
@@ -351,7 +351,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 二元运算符 | 两侧空格 | 两侧空格 | 一致 |
 | 括号内空格 | 禁止 | 禁止 | 一致 |
 
-**裁决**: 两者一致，agentrt-linux 直接采纳。
+**裁决**: 两者一致，agent-linux 直接采纳。
 
 ### 5.3 switch/case
 
@@ -360,7 +360,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | case 与 switch 对齐 | 是（禁止双缩进） | 是 | 一致 |
 | fallthrough 标注 | `fallthrough;` | 无强制 | OLK-6.6 独有 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（fallthrough 显式标注）**。
+**裁决**: agent-linux 选择 **OLK-6.6（fallthrough 显式标注）**。
 
 ### 5.4 空行
 
@@ -370,7 +370,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 函数内空行 | 禁止（除声明区与执行区） | 允许 | 不同 |
 | 连续空行 | 最多 1 行 | 无限制 | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（禁止函数内多余空行 + MaxEmptyLinesToKeep:1）**。
+**裁决**: agent-linux 选择 **OLK-6.6（禁止函数内多余空行 + MaxEmptyLinesToKeep:1）**。
 
 ### 5.5 文件头
 
@@ -379,7 +379,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | SPDX 头 | `SPDX-License-Identifier: GPL-2.0-only` | `SPDX-License-Identifier: GPL-2.0-only` | 一致 |
 | copyright 注释 | 可选 | 可选 | 一致 |
 
-**裁决**: 两者一致，agentrt-linux 直接采纳（SPDX: `AGPL-3.0-or-later OR Apache-2.0`）。
+**裁决**: 两者一致，agent-linux 直接采纳（SPDX: `AGPL-3.0-or-later OR Apache-2.0`）。
 
 ---
 
@@ -394,7 +394,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 自动排序 | 禁止（破坏逻辑分组） | 禁止 | 一致 |
 | UAPI 物理隔离 | 是（`include/uapi/`） | 否（seL4 无 UAPI 概念，用户态用 libsel4） | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6**。理由: (1) agentrt-linux 基于 Linux 6.6，UAPI 概念必须保留；(2) seL4 的 libsel4 模型可借鉴用于 SDK 层（`airymaxos-sdk/`），但不替代 UAPI。
+**裁决**: agent-linux 选择 **OLK-6.6**。理由: (1) agent-linux 基于 Linux 6.6，UAPI 概念必须保留；(2) seL4 的 libsel4 模型可借鉴用于 SDK 层（`airymaxos-sdk/`），但不替代 UAPI。
 
 ### 6.2 函数设计
 
@@ -405,7 +405,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | 单一职责 | 是 | 是 | 一致 |
 | EXPORT_SYMBOL | 紧跟函数定义 | N/A（seL4 无模块机制） | OLK-6.6 独有 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（≤80×24 + ≤5-10 局部变量 + EXPORT_SYMBOL 紧跟）**。
+**裁决**: agent-linux 选择 **OLK-6.6（≤80×24 + ≤5-10 局部变量 + EXPORT_SYMBOL 紧跟）**。
 
 ### 6.3 类型系统
 
@@ -415,7 +415,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | UAPI 类型 | `__u8/__u16/__u32/__u64`（用户可见） | N/A | OLK-6.6 独有 |
 | 位域 | `bitfield/flags` | `structures.bf` codegen | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（u8/u32 内部 + __u32 UAPI）**，但借鉴 seL4 的 `structures.bf` codegen 思路用于 IRON-9 v2 [SC] 共享契约层的位域定义。
+**裁决**: agent-linux 选择 **OLK-6.6（u8/u32 内部 + __u32 UAPI）**，但借鉴 seL4 的 `structures.bf` codegen 思路用于 IRON-9 v2 [SC] 共享契约层的位域定义。
 
 ### 6.4 并发控制
 
@@ -425,7 +425,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | volatile | 仅 4 种例外 | 大量使用（硬件寄存器） | 不同 |
 | I/O accessor | `readl()` / `writel()` / `ioread32()` | 平台相关 | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（spinlock/rcu + volatile 4 例外 + I/O accessor）**。理由: (1) agentrt-linux 基于 Linux 6.6，并发模型必须与上游一致；(2) seL4 的"内核非抢占无并发"模型不适用于宏内核。
+**裁决**: agent-linux 选择 **OLK-6.6（spinlock/rcu + volatile 4 例外 + I/O accessor）**。理由: (1) agent-linux 基于 Linux 6.6，并发模型必须与上游一致；(2) seL4 的"内核非抢占无并发"模型不适用于宏内核。
 
 ### 6.5 内存管理
 
@@ -436,7 +436,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 | sizeof | `sizeof(*p)` / `kmalloc_array` / `struct_size` | `sizeof(struct foo)` | 不同 |
 | 字符串拷贝 | `strscpy`（强制） | `strncpy` | 不同 |
 
-**裁决**: agentrt-linux 选择 **OLK-6.6（kmalloc + sizeof(*p) + strscpy 强制）**。
+**裁决**: agent-linux 选择 **OLK-6.6（kmalloc + sizeof(*p) + strscpy 强制）**。
 
 ---
 
@@ -444,7 +444,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 
 ### 7.1 融合裁决总表
 
-| 维度 | OLK-6.6 | seL4 | agentrt-linux 裁决 | 裁决理由 |
+| 维度 | OLK-6.6 | seL4 | agent-linux 裁决 | 裁决理由 |
 |------|---------|------|-------------------|---------|
 | 缩进 | Tab 8 | 空格 4 | OLK-6.6 | 与 Linux 6.6 基线一致 |
 | 命名 | snake_case | camelCase | OLK-6.6 | C/Unix 生态主流 |
@@ -465,9 +465,9 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
 
 ### 7.2 核心结论
 
-1. **编码风格层**: agentrt-linux 完全采纳 OLK-6.6 的编码约定（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno + goto / kernel-doc）。seL4 的编码约定（4 空格 / camelCase / 重度 typedef）因与 Linux 6.6 基线冲突而被整体拒绝。**seL4 的影响不在编码层。**
+1. **编码风格层**: agent-linux 完全采纳 OLK-6.6 的编码约定（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno + goto / kernel-doc）。seL4 的编码约定（4 空格 / camelCase / 重度 typedef）因与 Linux 6.6 基线冲突而被整体拒绝。**seL4 的影响不在编码层。**
 
-2. **工程思想层**: agentrt-linux 采纳 OLK-6.6 的 13 项工程思想（ES-OLK-1~13），包括关注点分离、架构正交、UAPI 隔离、特性可配置、Kbuild/Kconfig、MAINTAINERS、checkpatch、渐进开发、回归零容忍、向后兼容、模块化、文档即代码。**seL4 的工程思想在架构层与安全层被选择性借鉴。**
+2. **工程思想层**: agent-linux 采纳 OLK-6.6 的 13 项工程思想（ES-OLK-1~13），包括关注点分离、架构正交、UAPI 隔离、特性可配置、Kbuild/Kconfig、MAINTAINERS、checkpatch、渐进开发、回归零容忍、向后兼容、模块化、文档即代码。**seL4 的工程思想在架构层与安全层被选择性借鉴。**
 
 3. **架构层借鉴 seL4**: 在 5 个维度借鉴 seL4 工程思想，而非编码风格:
    - **ES-SEL4-1 极简原则**: 影响空气内核（airymaxos-kernel）的"机制最小化"取向。
@@ -478,7 +478,7 @@ seL4 采用 CMake（`CMakeLists.txt`、`cmake/`、`config.cmake`、`gcc.cmake`�
    - **ES-SEL4-8 bitfield codegen**: 建议为 [SC] 头文件中的位域定义引入 structures.bf 式 codegen。
    - **ES-SEL4-5 形式化验证**: 影响 airymaxos-tests-linux 的形式化验证框架（seL4 风格）。
 
-4. **双源融合的边界**: agentrt-linux 的工程取向是"**Linux 6.6 为基、seL4 为鉴**"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。这一边界在 `docs/AirymaxAgentOS/50-engineering-standards/04-engineering-philosophy.md` 的三大支柱表述中已明确：**第一支柱（微内核设计原则）= seL4 思想借鉴；第二支柱（Euler 标准兼容）/ 第三支柱（Airymax 同源）= Linux 6.6 基线**。
+4. **双源融合的边界**: agent-linux 的工程取向是"**Linux 6.6 为基、seL4 为鉴**"——以 OLK-6.6 工程思想为不可动摇的基线（编码风格、构建系统、并发模型、内存模型），以 seL4 微内核思想为架构层的借鉴来源（capability、消息传递、服务用户态化、形式化验证）。这一边界在 `docs/AirymaxAgentOS/50-engineering-standards/04-engineering-philosophy.md` 的三大支柱表述中已明确：**第一支柱（微内核设计原则）= seL4 思想借鉴；第二支柱（Euler 标准兼容）/ 第三支柱（Airymax 同源）= Linux 6.6 基线**。
 
 ### 7.3 对 AirymaxAgentOS 方案的启示
 

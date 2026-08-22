@@ -233,7 +233,7 @@ v1.0 重建方案要求"发布独立、最小化、可编译的参考实现"。�
 
 | 维度 | 当前状态 | 证据 |
 |------|---------|------|
-| 独立参考实现仓库 | **不存在** | `docs/OpenStandards/` 下无 `reference-implementation/` 或 `examples/` 目录；agentrt / agentrt-linux 仓库未在 OpenStandards 中链接 |
+| 独立参考实现仓库 | **不存在** | `docs/OpenStandards/` 下无 `reference-implementation/` 或 `examples/` 目录；agentrt / agent-linux 仓库未在 OpenStandards 中链接 |
 | 最小化可编译样例 | **不存在** | 8 文件中的示例代码均为片段（如 01 RT 第 515 行 `hdr.magic = AIRY_IPC_MAGIC;`），无完整可编译 `.c` 文件 |
 | 标准条目 ↔ 实现代码映射 | **不存在** | 无 `@standard AOS-STD-RT-001` 等 Doxygen/kernel-doc 标签；07 SYS 第 559-565 行有 kernel-doc 注释但未映射到 AOS-STD-* 编号 |
 | 独立 conformance 测试套件 | **不存在** | 见本报告 3.3 节认证可操作性审查 |
@@ -399,7 +399,7 @@ v1.0 重建方案要求"治理流程多利益相关方参与"。验证如下：
 
 | 维度 | 当前状态 | 问题 |
 |------|---------|------|
-| 参考实现仓库 | 无独立参考实现仓库 | agentrt / agentrt-linux 尚处 0.1.1 奠基阶段，未对外公开 |
+| 参考实现仓库 | 无独立参考实现仓库 | agentrt / agent-linux 尚处 0.1.1 奠基阶段，未对外公开 |
 | 标准条目 ↔ 实现代码映射 | 无 | 无法验证某条 AOS-STD-* 在 agentrt 中的实现位置 |
 | 测试套件可执行性 | 不可执行 | 见 3.3.2 |
 | Doxygen / kernel-doc 覆盖 | 07 SYS 有 kernel-doc 注释 | 仅 07 SYS 有完整 kernel-doc，01-06 为普通注释 |
@@ -651,7 +651,7 @@ v1.0 重建方案要求"治理流程多利益相关方参与"。验证如下：
 | 4 | **CoreLoopThree 认知循环** | PERCEPTION/THINKING/ACTION 三阶段 + Thinkdual 双模式 | OpenAI Model-Native Harness、AG-UI RUN/STEP 事件 | **互补**：可与 AG-UI 事件流映射 | 未对外公开，生态无法验证 |
 | 5 | **MemoryRovol L1-L4** | 四级记忆卷载 + GFP 掩码 + PMEM 接口 | MCP Resources（数据层）、A2A Task State | **独特**：分级记忆管理是 Agent 长期记忆差异化 | 无参考实现，无记忆迁移性能数据 |
 | 6 | **sched_ext 调度** | SCHED_AGENT + vtime Q16.16 + 1024 并发 | OpenAI 无调度层、A2A 无调度层 | **独特**：Agent 专属调度类是 OS 级差异化 | 仅 Linux，依赖 sched_ext 主线支持 |
-| 7 | **同源三层模型** | IRON-9 v2 [SC]/[SS]/[IND] | 无对标（独有设计） | **独特**：agentrt ↔ agentrt-linux 同源共享 | 标注覆盖不足，01 RT 零标注 |
+| 7 | **同源三层模型** | IRON-9 v2 [SC]/[SS]/[IND] | 无对标（独有设计） | **独特**：agentrt ↔ agent-linux 同源共享 | 标注覆盖不足，01 RT 零标注 |
 
 ### 5.2 差异化定位 SWOT 分析
 
@@ -692,7 +692,7 @@ v1.0 重建方案要求"治理流程多利益相关方参与"。验证如下：
 
 #### 5.4.2 第三方独立实现可行性评估
 
-**评估方法**：假设一个 Python/Rust/Go/Java 实现者仅依据 8 份标准文档（不参考 agentrt / agentrt-linux 源码）独立实现，评估其能否成功。
+**评估方法**：假设一个 Python/Rust/Go/Java 实现者仅依据 8 份标准文档（不参考 agentrt / agent-linux 源码）独立实现，评估其能否成功。
 
 | 实现步骤 | 可行性 | 障碍 |
 |---------|-------|------|

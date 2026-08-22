@@ -80,7 +80,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | A-UEF [SC] 契约 | [08-sc-error-contract.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/08-sc-error-contract.md) | ✓ 已读 |
 | A-ULP [SC] 契约 | [09-sc-log-types-contract.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md) | ✓ 已读 |
 | [SC] 跨端共享规范 | [120-cross-project-code-sharing.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md) | ✓ 已读 |
-| A-IPC 最终设计 | [35-aipc-final-redesign.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/35-aipc-final-redesign.md) | ✓ 已读 |
+| A-IPC 最终设计 | [35-aipc-final-redesign.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/35-aipc-final-redesign.md) | ✓ 已读 |
 | IRON-9 v3 四层模型 | [06-iron9-shared-model.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/06-iron9-shared-model.md) | ✓ 已读 |
 | [DSL] 降级生存层 | [11-degraded-survival-layer.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/11-degraded-survival-layer.md) | ✓ 已读 |
 | syscall 接口 | [01-syscalls.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/30-interfaces/01-syscalls.md) | ✓ 已读 |
@@ -551,7 +551,7 @@ Badge: 64-bit Native Word（Epoch + Random Tag + Perms）
 [IND] 完全独立层完整性:
   ✓ agentrt 用户态: capability_badge=0
   ✓ agentrt 用户态: 传统 cap_t 引用
-  ✓ agentrt-linux 内核: capability_badge + C-S9
+  ✓ agent-linux 内核: capability_badge + C-S9
 
 [DSL] 降级生存层完整性:
   ✓ capability_badge=0
@@ -567,7 +567,7 @@ Badge: 64-bit Native Word（Epoch + Random Tag + Perms）
   ✓ H1: Layout C v4 总长 128 字节，magic 0x41524531
   ✓ H2: capability_badge 进 [SC]，校验机制属 [SS]
   ✓ H3: agentrt 用户态 capability_badge=0
-  ✓ H4: agentrt-linux 内核 capability_badge 由 sec_d 编译
+  ✓ H4: agent-linux 内核 capability_badge 由 sec_d 编译
   ✓ H5: 纯 C LSM 职责不变，Badge 校验是 fastpath 内联
   ✓ H6: [DSL] 降级模式 capability_badge=0，跳过 C-S9
 
@@ -780,7 +780,7 @@ A-ULS [SS] 层:
   ✓ sched_tac 调度策略
 
 [SS] 层契约:
-  ✓ agentrt 与 agentrt-linux 共享 [SC] 数据结构定义
+  ✓ agentrt 与 agent-linux 共享 [SC] 数据结构定义
   ✓ 校验机制/实现逻辑属于 [SS] 语义同源层
   ✓ 34 号 §2 核心论证: [SC] 共享数据结构定义，不是实现语义
 ```
@@ -795,13 +795,13 @@ agentrt 用户态:
   ✓ 不使用 capability_badge 字段（始终为 0）
   ✓ 不调用 sec_d 的 Badge 编译接口
 
-agentrt-linux 内核:
+agent-linux 内核:
   ✓ capability_badge + C-S9 内联校验
   ✓ 不依赖 agentrt 的 cap_t 引用机制
 
 [IND] 层契约:
   ✓ agentrt 不感知 capability_badge 字段的存在
-  ✓ agentrt-linux 不依赖 agentrt 的 cap_t 引用机制
+  ✓ agent-linux 不依赖 agentrt 的 cap_t 引用机制
   ✓ 两者通过 [SC] 数据结构 + [SS] 语义同源保持契约一致
 ```
 
@@ -866,7 +866,7 @@ H3: agentrt 用户态 capability_badge 始终为 0
   跨模块: 无（仅 agentrt 用户态）
   状态: ✓
 
-H4: agentrt-linux 内核 capability_badge 由 sec_d 编译
+H4: agent-linux 内核 capability_badge 由 sec_d 编译
   影响: A-IPC [SS] 层 + A-ULS（sec_d 是 A-ULS 的组件）
   跨模块: A-ULS 需明确 sec_d 的 Badge 编译职责
   状态: ⚠ 需同步 A-ULS 文档

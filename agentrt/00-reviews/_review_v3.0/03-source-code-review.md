@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：agentrt 源码 v3.0 复审收敛文档。在 v2.0 系统性修正（7 项源码修正：P0-6/P0-7/N1/N2/N3/N5/N6）完成后，对 `agentrt/` 源码进行独立持久性复核 + 延期项验证 + 新发现问题扫描 + P0-2 分批方案评估，作为 1.0.1 M1 阶段源码工程治理的判定基线。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：3.0（2026-07-14）。
-> **审查范围**：仅 `agentrt/` 源码（atoms 237 + daemons 243 + cupolas 95 + gateway 33 + commons 184 + protocols 41 = 833 源文件）。不审查 `agentrt-linux/`、`docs/`、`docs-closed/`。
+> **审查范围**：仅 `agentrt/` 源码（atoms 237 + daemons 243 + cupolas 95 + gateway 33 + commons 184 + protocols 41 = 833 源文件）。不审查 `agent-linux/`、`docs/`、`docs-closed/`。
 > **审查方法**：v1.0/v2.0 历史报告深读 → Grep 机器检查独立复核 7 项源码修正持久性 → 6 项延期项逐项验证 → v3.0 新发现问题系统性扫描（并发/资源/错误/ABI/跨平台/工程标准/副作用/安全）→ P0-2 分批方案评估。
 > **证据要求**：所有结论附 `文件路径:L行号` 或 Grep 命令与匹配数，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -726,7 +726,7 @@ grep -n "int airy_mtx_init" agentrt/commons/platform/platform.c  # = L194（返�
 | 术语 | 定义 |
 |------|------|
 | DCLP | Double-Checked Locking Pattern（双重检查锁定模式） |
-| OLK-6.6 | Linux 6.6 内核基线编码风格（agentrt-linux 工程标准基线） |
+| OLK-6.6 | Linux 6.6 内核基线编码风格（agent-linux 工程标准基线） |
 | [SC] | Shared Contract（共享契约层） |
 | SSoT | Single Source of Truth（单一真值源） |
 | BAN-70 | fprintf 禁用规则（允许 EXEMPT 标注豁免） |

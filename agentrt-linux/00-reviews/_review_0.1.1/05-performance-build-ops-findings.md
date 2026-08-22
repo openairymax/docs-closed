@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）性能/测试/构建/运维补充发现报告
+# agent-linux（AirymaxOS）性能/测试/构建/运维补充发现报告
 
 > **审查日期**: 2026-07-09
 > **文档定位**: [03-technical-standards-and-specifications-review.md](./03-technical-standards-and-specifications-review.md) 的第二份补充。主报告 + 工程标准补充已识别 45 项问题，本文档整合性能/测试/构建/运维 Agent（514c635a）的 62 项初步发现，经**源码级二次验证**后去重、纠错、补充。
@@ -50,7 +50,7 @@ typedef __signed__ __int128 __s128 __attribute__((aligned(16)));
 typedef __s128 s128;
 ```
 
-**结论**：OLK-6.6（openEuler 内核）**确实定义了 `__s128`** 类型，这是 openEuler 对 mainline Linux 的扩展。由于 agentrt-linux 基于 OLK-6.6 基线，`__s128` 可用。此项**降级为 P2**（可移植性提示：若未来需要向 mainline Linux 移植，需改用 `__int128` GCC 扩展或 `mul_u64_u64_shr()`）。
+**结论**：OLK-6.6（openEuler 内核）**确实定义了 `__s128`** 类型，这是 openEuler 对 mainline Linux 的扩展。由于 agent-linux 基于 OLK-6.6 基线，`__s128` 可用。此项**降级为 P2**（可移植性提示：若未来需要向 mainline Linux 移植，需改用 `__int128` GCC 扩展或 `mul_u64_u64_shr()`）。
 
 **涉及文件**：
 - [170-performance/01-scheduling-performance.md:137/189/190/228/229](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxAgentOS/170-performance/01-scheduling-performance.md)
@@ -619,7 +619,7 @@ Go 条件（M0 第 1-2 周完成）：
 
 ---
 
-> **文档结束** | agentrt-linux（AirymaxOS）性能/测试/构建/运维补充发现报告 | v1.0 | 2026-07-09
+> **文档结束** | agent-linux（AirymaxOS）性能/测试/构建/运维补充发现报告 | v1.0 | 2026-07-09
 >
 > **配套文档**：
 > - [03-technical-standards-and-specifications-review.md](./03-technical-standards-and-specifications-review.md)（主报告，39 项问题）

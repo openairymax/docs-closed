@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）整体方案架构与设计全面审查报告 v3.5
+# agent-linux（AirymaxOS）整体方案架构与设计全面审查报告 v3.5
 
 > **报告编号**：04
 > **报告版本**：v3.5（终稿）
 > **生成时间**：2026-07-25
 > **审查方法**：5 大维度并行深度审查（架构 / 内核代码 / 安全模型 / ABI·IPC·数据流 / [DSL]·CI·测试）+ 5 个独立子代理交叉验证 + 与 03 报告逐项复核
-> **审查范围**：agentrt-linux 整体方案（docs/AirymaxOS/ 文档体系 + agentrt-linux/ 代码实现 + .github/workflows/ CI + tests-linux/ 测试）
+> **审查范围**：agent-linux 整体方案（docs/AirymaxOS/ 文档体系 + agent-linux/ 代码实现 + .github/workflows/ CI + tests-linux/ 测试）
 > **上一版本**：03-byte-by-byte-full-results-v3.5.md（2026-07-25，代码-文档逐字节比对）
 > **SPDX-License-Identifier**：CC-BY-NC-4.0
 
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 执行摘要
 
-本报告作为 v3.5 审查系列的**架构层面总结**，在 03 报告（代码-文档逐字节比对，130 P0）基础上，对 agentrt-linux 整体方案进行**架构层面**深度复核。通过 5 个并行子代理分别审查微内核设计思想、内核代码实现完整性、安全模型、ABI/IPC/数据流一致性、[DSL]/CI/测试覆盖 5 大维度。
+本报告作为 v3.5 审查系列的**架构层面总结**，在 03 报告（代码-文档逐字节比对，130 P0）基础上，对 agent-linux 整体方案进行**架构层面**深度复核。通过 5 个并行子代理分别审查微内核设计思想、内核代码实现完整性、安全模型、ABI/IPC/数据流一致性、[DSL]/CI/测试覆盖 5 大维度。
 
 ### 0.1 关键数据
 
@@ -105,9 +105,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 #### **P0-1. [SC] 双端 SSoT 不一致：`AIRY_VERDICT_COMPLAIN` vs `AIRY_VERDICT_ASK`**
 - **维度**：安全模型
 - **证据**：
-  - agentrt-linux `kernel/include/uapi/linux/airymax/security_types.h:79`：`AIRY_VERDICT_COMPLAIN = 3`
+  - agent-linux `kernel/include/uapi/linux/airymax/security_types.h:79`：`AIRY_VERDICT_COMPLAIN = 3`
   - agentrt commons `agentrt/commons/include/airymax/security_types.h:36`：`AIRY_VERDICT_ASK = 3`
-  - agentrt commons 测试 `agentrt/commons/tests/test_sc_headers.c:56`：`assert(AIRY_VERDICT_ASK != 3)` 与 agentrt-linux 的 COMPLAIN 冲突
+  - agentrt commons 测试 `agentrt/commons/tests/test_sc_headers.c:56`：`assert(AIRY_VERDICT_ASK != 3)` 与 agent-linux 的 COMPLAIN 冲突
 - **影响**：[SC] 共享契约层"双端逐字节相同"的 SSoT 根基破裂；CI `sc-dual-ci.yml` 声明的双端一致性校验完全失效。
 - **与 03 报告重复**：否（新发现）
 - **修复建议**：统一 verdict 值 3 的命名（推荐 `AIRY_VERDICT_COMPLAIN`，与 AppArmor 语义对齐）；将 agentrt commons 重命名为 `COMPLAIN`；强化 `sc-dual-ci.yml` 的 `diff -q` 校验。
@@ -179,8 +179,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 #### **P0-9. `sc-dual-ci.yml` 与 `mgmt-orchestrator.yml` 路径全部错误**
 - **维度**：[DSL]/CI/测试
 - **证据**：
-  - `agentrt-linux/.github/workflows/sc-dual-ci.yml:12-20` 检查 `kernel/include/airymax/airy_agent.h` 等不存在的路径
-  - `agentrt-linux/.github/workflows/mgmt-orchestrator.yml:55-61` 同样错误
+  - `agent-linux/.github/workflows/sc-dual-ci.yml:12-20` 检查 `kernel/include/airymax/airy_agent.h` 等不存在的路径
+  - `agent-linux/.github/workflows/mgmt-orchestrator.yml:55-61` 同样错误
   - 实际 [SC] 头文件宿主：`kernel/include/uapi/linux/airymax/`，文件名 `ipc.h`/`sched.h`/`memory_types.h` 等（无 `airy_` 前缀，无 `airy_agent.h`/`airy_mem.h`/`airy_version.h`）
 - **影响**：CI 触发条件全部失败，[SC] 双端一致性校验完全失效。
 - **与 03 报告重复**：是（03 报告已识别，本次确认根因与影响范围）
@@ -217,14 +217,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - **证据**：`sc-dual-ci.yml` 的 `sc-validate` job 仅 `test -f` 检查文件存在（路径还错误），未做 `diff -q`；`sc-trigger-and-await` job 通过 git format-patch 创建镜像 PR，未做逐字节比对。
 - **影响**：P0-1（SSoT 双端不一致）正是此 CI 缺失导致的问题。
 - **与 03 报告重复**：否
-- **修复建议**：在 `sc-dual-ci.yml` 中添加 `diff -q agentrt/.../airymax/$h agentrt-linux/.../airymax/$h` 强制校验。
+- **修复建议**：在 `sc-dual-ci.yml` 中添加 `diff -q agentrt/.../airymax/$h agent-linux/.../airymax/$h` 强制校验。
 
 ### 2.4 P0 第四优先级：测试覆盖（2 项）
 
 #### **P0-14. Airymax 专属 KUnit 测试全部缺失**
 - **维度**：[DSL]/CI/测试
-- **证据**：`find agentrt-linux/kernel/ -name "*airy*test*"` 与 `*test*airy*` 全部零结果。文档 `80-testing/01-kunit-framework.md` 声明存在 `airy_kunit_tests`/`airy_ipc_kunit_tests`/`microcorert_kunit_tests` 均不存在；`lib/airymax/test_airy_*.c` 5 个文件全部不存在。
-- **影响**：文档 OS-TEST-001 要求"所有 agentrt-linux 内核模块必须提供至少一个 KUnit 测试套件；无 KUnit 测试的模块禁止合入 `kernel` 主分支"——**所有模块违反此要求**。
+- **证据**：`find agent-linux/kernel/ -name "*airy*test*"` 与 `*test*airy*` 全部零结果。文档 `80-testing/01-kunit-framework.md` 声明存在 `airy_kunit_tests`/`airy_ipc_kunit_tests`/`microcorert_kunit_tests` 均不存在；`lib/airymax/test_airy_*.c` 5 个文件全部不存在。
+- **影响**：文档 OS-TEST-001 要求"所有 agent-linux 内核模块必须提供至少一个 KUnit 测试套件；无 KUnit 测试的模块禁止合入 `kernel` 主分支"——**所有模块违反此要求**。
 - **与 03 报告重复**：否
 - **修复建议**：实现 Airymax 专属 KUnit 测试，至少覆盖 syscall ABI、IPC 128B header、Badge 64-bit、44 个 cap ID、8 个 agent_state、[DSL] _Static_assert。
 
@@ -526,31 +526,31 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ## 附录 B: 关键证据文件路径清单
 
 ### B.1 P0 安全根基相关文件
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h`（P0-1: `AIRY_VERDICT_COMPLAIN=3`）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h`（P0-1: `AIRY_VERDICT_COMPLAIN=3`）
 - `/home/spharx/SpharxWorks/airymaxhub/agentrt/commons/include/airymax/security_types.h`（P0-1/P0-2: `AIRY_VERDICT_ASK=3` + `AIRY_CAP_GPU_SCHED42` 拼写错误）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm.c`（P0-3: DEFINE_LSM(airy) + blob 机制）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/security/airy_lsm/airy_lsm.c`（P0-3: DEFINE_LSM(airy_ind) + 直接 task->security 赋值）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/bpf/airy_struct_ops.c`（P0-4: 3 态重定义）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/bpf_struct_ops.h`（P0-4: SSoT 4 态定义）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm.c`（P0-3: DEFINE_LSM(airy) + blob 机制）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/security/airy_lsm/airy_lsm.c`（P0-3: DEFINE_LSM(airy_ind) + 直接 task->security 赋值）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/bpf/airy_struct_ops.c`（P0-4: 3 态重定义）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/bpf_struct_ops.h`（P0-4: SSoT 4 态定义）
 
 ### B.2 P0 CI 相关文件
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/.github/workflows/sc-dual-ci.yml`（P0-9/P0-13: 路径错误 + 无 diff 校验）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/.github/workflows/mgmt-orchestrator.yml`（P0-9: 路径错误）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/.github/workflows/ci-kernel.yml`（P0-10: 引用不存在 action）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/.github/workflows/nightly.yml`（P0-11: 引用不存在脚本）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/.github/workflows/sc-dual-ci.yml`（P0-9/P0-13: 路径错误 + 无 diff 校验）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/.github/workflows/mgmt-orchestrator.yml`（P0-9: 路径错误）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/.github/workflows/ci-kernel.yml`（P0-10: 引用不存在 action）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/.github/workflows/nightly.yml`（P0-11: 引用不存在脚本）
 
 ### B.3 P0 桩函数相关文件
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/syscalls/airy_syscalls.c`（P0-17: 4 syscall 全 -ENOSYS）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_uring_cmd.c`（P0-17: 6/7 opcode -ENOSYS）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_ipc_freeze.c`（P0-18: 隐藏桩 ring_for_task）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/syscalls/airy_syscalls.c`（P0-17: 4 syscall 全 -ENOSYS）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_uring_cmd.c`（P0-17: 6/7 opcode -ENOSYS）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_ipc_freeze.c`（P0-18: 隐藏桩 ring_for_task）
 
 ### B.4 P0 架构相关文件
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/config/Kconfig.alk`（P0-5: 454-457 错误）
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/config/Kconfig.alk`（P0-5: 454-457 错误）
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/160-compatibility/01-abi-stability.md`（P0-6/P0-7/P0-8: 虚构 syscall + 版本号残留）
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md`（P0-16: sched_ext 残留）
 
 ### B.5 关键 SSoT 头文件（12 个，非文档声明的 10 个）
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/{error,log_types,ipc,sched,memory_types,security_types,cognition_types,syscalls,uapi_compat,lsm_types,bpf_struct_ops,syscall}.h`
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/{error,log_types,ipc,sched,memory_types,security_types,cognition_types,syscalls,uapi_compat,lsm_types,bpf_struct_ops,syscall}.h`
 
 ---
 
@@ -589,4 +589,4 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
-© 2025-2026 SPHARX Ltd. All Rights Reserved. | agentrt-linux（AirymaxOS）整体方案架构与设计全面审查报告 v3.5 | 2026-07-25
+© 2025-2026 SPHARX Ltd. All Rights Reserved. | agent-linux（AirymaxOS）整体方案架构与设计全面审查报告 v3.5 | 2026-07-25

@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档性质**：基于 16~28 号共 13 份审查报告的最终工程方案
 > **撰写日期**：2026-07-18
-> **设计层级**：agentrt-linux 内核级工程
+> **设计层级**：agent-linux 内核级工程
 > **设计基准**：Airymax Unify Design 总纲（[10-unify-design.md](../../../docs/AirymaxOS/10-architecture/10-unify-design.md) v1.0）
 > **前置基础**：184 份 AirymaxOS 文档完整阅读 + 13 份 IPC 审查报告
 > **设计哲学**：乔布斯/艾夫"简约就是美"——"对复杂事物的精髓进行深度挖掘和精准提炼"
@@ -102,7 +102,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ### 1.2 单平面架构
 
 ```
-重构前（当前 agentrt-linux 方案）:
+重构前（当前 agent-linux 方案）:
   ┌─────────────────────────┐    ┌──────────────────────────┐
   │ 控制面（seL4 风格）       │    │ 数据面（io_uring）         │
   │ 12 syscall, 同步阻塞     │    │ SQE/CQE + kfifo, 异步     │
@@ -583,12 +583,12 @@ A-ULS 的 Macro-Supervisor 通过 A-IPC 通信:
 ```
 物理宿主: kernel/include/airymax/ipc.h（唯一）
 消费方:
-  - agentrt-linux: kernel/, services/ 通过 -I../kernel/include 引用
+  - agent-linux: kernel/, services/ 通过 -I../kernel/include 引用
   - agentrt: 通过 git submodule 或 -I 引用
 
 CI 校验: sc-dual-ci.yml
   - 提取 agentrt 的 ipc.h 哈希
-  - 提取 agentrt-linux 的 ipc.h 哈希
+  - 提取 agent-linux 的 ipc.h 哈希
   - 两者必须逐字节一致
   - 不一致则 CI 失败
 ```
@@ -655,7 +655,7 @@ struct airy_ipc_msg_hdr {
 _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
                "airy_ipc_msg_hdr must be exactly 128 bytes");
 
-/* §7 io_uring cmd_op 编码（agentrt-linux 专用，agentrt 不使用） */
+/* §7 io_uring cmd_op 编码（agent-linux 专用，agentrt 不使用） */
 #define AIRY_URING_CMD_IPC_SEND        0x0001
 #define AIRY_URING_CMD_IPC_RECV        0x0002
 #define AIRY_URING_CMD_IPC_SEND_BATCH  0x0003
@@ -674,17 +674,17 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 #endif /* _AIRY_IPC_H */
 ```
 
-### 5.3 agentrt 与 agentrt-linux 的使用差异
+### 5.3 agentrt 与 agent-linux 的使用差异
 
-| 维度 | agentrt（用户态） | agentrt-linux（内核态） |
+| 维度 | agentrt（用户态） | agent-linux（内核态） |
 |------|------------------|----------------------|
 | 传输层 | POSIX MQ + mmap 共享内存 | IORING_OP_URING_CMD + registered buffer |
 | 同步原语 | 信号量 | eventfd |
 | Badge 校验 | 用户态 airy_cap_badge_verify() | 内核态 fastpath C-S9 |
-| Epoch 管理 | 不管理（读取 agentrt-linux 的 Epoch） | 唯一管理者（atomic_t） |
+| Epoch 管理 | 不管理（读取 agent-linux 的 Epoch） | 唯一管理者（atomic_t） |
 | 消息头 | 同一份 ipc.h（[SC] 共享） | 同一份 ipc.h（[SC] 共享） |
 
-agentrt 在普通 Linux/macOS/Windows 上运行时，不使用 Badge 机制——使用用户态 Cupolas 权限引擎。仅在 agentrt-linux 上运行时，agentrt 通过 airy_sys_call 获取 Badge，嵌入 IPC 消息头。
+agentrt 在普通 Linux/macOS/Windows 上运行时，不使用 Badge 机制——使用用户态 Cupolas 权限引擎。仅在 agent-linux 上运行时，agentrt 通过 airy_sys_call 获取 Badge，嵌入 IPC 消息头。
 
 ---
 
@@ -867,7 +867,7 @@ sec_d 不需要 IPC_SEND——它是能力管理的服务端，通过 CAP_REQUES
 
 ---
 
-## §9 对 agentrt-linux 整体方案的影响
+## §9 对 agent-linux 整体方案的影响
 
 ### 9.1 影响的文档清单
 
@@ -907,7 +907,7 @@ sec_d 不需要 IPC_SEND——它是能力管理的服务端，通过 CAP_REQUES
 
 ### 9.3 对 agentrt（用户态运行时）的影响
 
-agentrt 在 agentrt-linux 上运行时：
+agentrt 在 agent-linux 上运行时：
 - 通过 `airy_sys_call(CAP_REQUEST)` 获取 Badge（新增 API）
 - 将 Badge 嵌入 IPC 消息头（新增字段）
 - 其他行为不变

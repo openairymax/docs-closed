@@ -306,7 +306,7 @@ seL4 的形式化验证覆盖了：
 - 能力传递的安全性（authority confinement）
 - 约 200 人年的验证工作量
 
-Airymax 基于 Linux 6.6（约 3000 万行），完整的形式化验证在工程上不可行。可验证的范围是 Airymax 在 Linux 之上的增量代码（agentrt-linux 的微内核化补丁 + A-IPC 模块），约 1-5 万行。
+Airymax 基于 Linux 6.6（约 3000 万行），完整的形式化验证在工程上不可行。可验证的范围是 Airymax 在 Linux 之上的增量代码（agent-linux 的微内核化补丁 + A-IPC 模块），约 1-5 万行。
 
 重构后的 A-IPC 核心模块（Epoch + Badge + fastpath C-S9）约 200-500 行 C。这个范围内的形式化验证（如 CBMC 有界验证或 Isabelle/HOL 对特定属性的证明）**在工程上可行**，但如果要求"seL4 级别的完整功能正确性证明"，则在 0.1.1 奠基版本的工期约束下不可行。
 

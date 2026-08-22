@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. ES-OLK 工程思想追溯
 
-本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agent-linux基本工程标准规范.md` ES-OLK-1~13 表）：
 
 | ES-OLK 编号 | 工程思想 | 本文档对应章节 |
 |------------|---------|--------------|

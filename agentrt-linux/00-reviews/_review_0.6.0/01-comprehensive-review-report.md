@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）v0.6.0 综合方案审查报告
+# agent-linux（AirymaxOS）v0.6.0 综合方案审查报告
 
 > **审查版本**: v0.6.0
 > **审查日期**: 2026-07-11
-> **审查范围**: agentrt-linux 整体方案（含 docs/AirymaxOS/ 142 份 .md 文件、docs-closed/agentrt-linux/ 闭源文档、01Reference/kernel-OLK-6.6 全量源码、01Reference/seL4-master 全量源码）
+> **审查范围**: agent-linux 整体方案（含 docs/AirymaxOS/ 142 份 .md 文件、docs-closed/agent-linux/ 闭源文档、01Reference/kernel-OLK-6.6 全量源码、01Reference/seL4-master 全量源码）
 > **审查方法论**: 4 并行 Agent 深度阅读 + 源码级交叉验证 + 18 维度逐一评分 + 三向一致性检查（OLK-6.6 源码 → 工程规范 → AirymaxOS 方案文档）
 > **前序版本**: v0.1.0 (71/100,B) → v0.1.1 (93/100,A) → v0.2.0 (100/100,A+) → v0.2.1 (100/100,A+) → v0.3.0 (82/100,B+) → v0.4.0 (78/100,B+) → v0.5.0 (76/100,B+)
 
@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 执行摘要
 
-本轮 v0.6.0 审查是 agentrt-linux 方案审查历史上最深入的一次——基于对 OLK-6.6（coding-style.rst 全 22 章、submitting-patches.rst、MAINTAINERS、checkpatch.pl、stable-api-nonsense.rst、management-style.rst）和 seL4-master（syscall.xml、errors.h、endpoint.c、cnode.c、thread.c、fastpath.c、types.h、structures.bf、ipc.tex、CMakeLists.txt）全量源码的逐行深度研读，结合 agentrt-linux 全量文档（19 模块 \~142 个 .md 文件 + 闭源文档）的交叉验证，形成了 18 维度评估体系。
+本轮 v0.6.0 审查是 agent-linux 方案审查历史上最深入的一次——基于对 OLK-6.6（coding-style.rst 全 22 章、submitting-patches.rst、MAINTAINERS、checkpatch.pl、stable-api-nonsense.rst、management-style.rst）和 seL4-master（syscall.xml、errors.h、endpoint.c、cnode.c、thread.c、fastpath.c、types.h、structures.bf、ipc.tex、CMakeLists.txt）全量源码的逐行深度研读，结合 agent-linux 全量文档（19 模块 \~142 个 .md 文件 + 闭源文档）的交叉验证，形成了 18 维度评估体系。
 
 **关键发现**：
 
@@ -87,7 +87,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | D5        | \[SC] 共享契约层完整性 | 7%     | 6 个头文件的定义、引用、一致性                            |
 | D6        | 接口一致性          | 7%     | IPC 消息头、错误码、API 签名的跨文档一致性                   |
 | D7        | 数值准确性          | 7%     | 所有数值声明与 OLK-6.6/seL4 源码的一致性                 |
-| D8        | 跨端共享完整性        | 6%     | agentrt ↔ agentrt-linux 的 \[SC]/\[SS] 共享完整度 |
+| D8        | 跨端共享完整性        | 6%     | agentrt ↔ agent-linux 的 \[SC]/\[SS] 共享完整度 |
 | D9        | 代码可编译性         | 5%     | 代码示例是否可编译通过                                 |
 | D10       | 工程标准 SSoT      | 6%     | 规则编号体系的唯一性与一致性                              |
 | D11       | 架构一致性          | 5%     | 7 层架构模型与实际文档的一致性                            |
@@ -107,7 +107,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.1 已对齐项（✅ 通过，16/16）
 
-| #  | 规范项     | OLK-6.6 要求                            | 出处                         | agentrt-linux 状态      |
+| #  | 规范项     | OLK-6.6 要求                            | 出处                         | agent-linux 状态      |
 | -- | ------- | ------------------------------------- | -------------------------- | --------------------- |
 | 1  | 缩进      | Tab 8 字符                              | coding-style.rst §1        | ✅ OS-FMT-001 已对齐      |
 | 2  | 大括号     | K\&R 风格（块同行，函数新行）                     | coding-style.rst §3        | ✅ OS-FMT-002/003 已对齐  |
@@ -128,7 +128,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.2 有差异但已合理说明的项（⚠️ 已记录，6/6）
 
-| # | 差异项                 | OLK-6.6               | agentrt-linux          | 评估                | 风险 |
+| # | 差异项                 | OLK-6.6               | agent-linux          | 评估                | 风险 |
 | - | ------------------- | --------------------- | ---------------------- | ----------------- | -- |
 | 1 | 代码审查流程              | 邮件列表 `git send-email` | GitHub PR + CODEOWNERS | 合理：团队规模差异         | 低  |
 | 2 | 测试覆盖率               | 无统一要求                 | 80%（关键路径 90%）          | 合理：更高品质要求         | 低  |
@@ -169,7 +169,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | #           | seL4 特性                   | 源码证据                                                                                                                                                                                  | 当前状态                                | 建议                                         |
 | ----------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------ |
-| **SEL4-01** | seL4 错误码仅 10 种（极简）        | `errors.h` `seL4_Error` 枚举：NoError/InvalidArgument/InvalidCapability/IllegalOperation/RangeError/AlignmentError/FailedLookup/TruncatedMessage/DeleteFirst/RevokeFirst/NotEnoughMemory | agentrt-linux 存在 4 套不兼容错误码系统（P0-02） | 统一为极简错误码体系，借鉴 seL4 的 `seL4_NumErrors` 哨兵模式 |
+| **SEL4-01** | seL4 错误码仅 10 种（极简）        | `errors.h` `seL4_Error` 枚举：NoError/InvalidArgument/InvalidCapability/IllegalOperation/RangeError/AlignmentError/FailedLookup/TruncatedMessage/DeleteFirst/RevokeFirst/NotEnoughMemory | agent-linux 存在 4 套不兼容错误码系统（P0-02） | 统一为极简错误码体系，借鉴 seL4 的 `seL4_NumErrors` 哨兵模式 |
 | **SEL4-02** | seL4 syscall 仅 8-11 个     | `syscall.xml` `<api-master>` 8 个 + `<debug>` 条件编译                                                                                                                                     | 分配 120 个槽位，已定义 20 个 syscall（P1-32）  | 收紧 syscall 预算，≤20 目标需与 120 槽位矛盾解决          |
 | **SEL4-03** | seL4 端点仅 3 状态             | `endpoint.c` `EPState_Idle`/`EPState_Send`/`EPState_Recv`                                                                                                                             | 文档中 IPC 状态机描述不一致                    | 统一为 3 状态模型，各文档引用一致                         |
 | **SEL4-04** | seL4 单编译单元                | `CMakeLists.txt` 全部 C 源码拼接为 `kernel_all.c`，启用全程序优化                                                                                                                                    | 未提及                                 | 评估是否借鉴单编译单元优化（P2 增强）                       |
@@ -208,7 +208,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **P1-39** | payload\_len 在示例代码中错误设置为 header size：`h->payload_len = AGENTRT_IPC_HDR_SIZE`（128），应表示实际 payload body 长度                                                                           | A6       | 170-performance/03-ipc-performance.md L293                                                             |
 | **P1-40** | IPC payload 协议数量不一致：5 种（REQUEST/RESPONSE/EVENT/STREAM/CONTROL，03-ipc-flow\.md L21）vs 6 种（CTRL/AGENT/MEMORY/EVENT/TOKEN/HEARTBEAT，03-ipc-performance.md L69-76），协议名称无法映射           | A6       | 40-dataflows/03-ipc-flow\.md L21, 170-performance/03-ipc-performance.md L69-76                         |
 | **P1-41** | 文档版本不一致：工程标准规范 v0.2.4（2026-07-09 更新）vs 架构文档 v0.1.1（2026-07-06 更新），v0.2.4 修正（28→24 目录、Model A 决策）未传播到架构文档                                                                          | A2       | 10-architecture/ 全部 6 文件                                                                               |
-| **P1-42** | 架构图中"双内核"歧义：01-system-architecture.md 同时显示"agentrt-linux 微内核核心 (airymaxos-kernel)"和"Linux 内核 (Linux 6.6 内核基线)"为独立层，但 Model A 设计是集成 fork（修改直接写入 upstream 目录），非独立两层                 | A2       | 10-architecture/01-system-architecture.md L95-107                                                      |
+| **P1-42** | 架构图中"双内核"歧义：01-system-architecture.md 同时显示"agent-linux 微内核核心 (airymaxos-kernel)"和"Linux 内核 (Linux 6.6 内核基线)"为独立层，但 Model A 设计是集成 fork（修改直接写入 upstream 目录），非独立两层                 | A2       | 10-architecture/01-system-architecture.md L95-107                                                      |
 | **P1-43** | 7 层模型编号不一致：架构文档 L1=硬件（01-system-architecture.md L111-112），工程标准手册 L2=内核（无 L1 硬件层，00-handbook.md L1062-1074）。编号偏移 1                                                                 | A2       | 10-architecture/01-system-architecture.md L111-112, 50-engineering-standards/00-handbook.md L1062-1074 |
 | **P1-44** | ADR 缺失：Model A（全量 Linux 6.6 fork，非 patches 隔离层）决策无对应 ADR。ADR-003（8 子仓）2026-07-06 接受，但 Model A 决策 2026-07-09 做出，ADR 未更新                                                            | A2       | 10-architecture/05-adrs.md                                                                             |
 | **P1-45** | 架构文档与闭源工程标准之间缺乏双向追溯：架构文档引用"工程标准规范手册"但不指定具体文件路径，闭源标准引用架构文档但架构文档不回引                                                                                                                 | A2       | 多处                                                                                                     |
@@ -220,13 +220,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **P2-27** | MemoryRovol weight 字段描述为 float 范围 0.0-1.0（02-memory-flow\.md L394），但内核禁止浮点（-mno-80387），应为 Q16.16 定点数                                                      | A6       | 40-dataflows/02-memory-flow\.md L394                                             |
 | **P2-28** | K8s CRD Agent 状态计数矛盾：声称 9 状态（L45），enum 仅列 8 个值（L197-198）                                                                                                  | A6       | 150-cloudnative/01-k8s-crd-design.md L45 vs L197-198                             |
 | **P2-29** | llm\_d 所有权歧义：02-services.md L153 归属 services daemon #2，03-sdk-api.md L70 映射到 cognition/llm\_d                                                             | A3       | 20-modules/02-services.md L153, 30-interfaces/03-sdk-api.md L70                  |
-| **P2-30** | Capability 操作命名不一致：agentrt 侧小写（mint/mintcopy/derive/revoke），agentrt-linux 侧 PascalCase（Mint/Copy/Derive/Revoke），且 `mintcopy` vs `Copy` 语义名称不匹配            | A3       | 20-modules/01-kernel.md L1014                                                    |
+| **P2-30** | Capability 操作命名不一致：agentrt 侧小写（mint/mintcopy/derive/revoke），agent-linux 侧 PascalCase（Mint/Copy/Derive/Revoke），且 `mintcopy` vs `Copy` 语义名称不匹配            | A3       | 20-modules/01-kernel.md L1014                                                    |
 | **P2-31** | Capability 系统 \[SC]/\[SS] 标签不一致：security 模块标 \[SC]（03-security.md L94），kernel 模块标 \[SS]（01-kernel.md L209）。capability 头文件是 \[SC] 但 patches 是 \[SS]，需精确区分  | A3       | 20-modules/03-security.md L94, 20-modules/01-kernel.md L209                      |
 | **P2-32** | seL4 代码行数对比不对称：声称 \~14,400 行（03-microkernel-strategy.md L43），但排除 \~87,000 行支撑代码（arch/plat/drivers/headers/userlib）。AirymaxOS 50K-100K 行预算可能包含对应支撑代码，对比不公平 | A2       | 10-architecture/03-microkernel-strategy.md L43-59                                |
 | **P2-33** | Linux 7.1 LTS 状态矛盾：04-engineering-baseline.md L340 声明"非 LTS"，ADR-013 L996 称为"LTS 候选"                                                                      | A2       | 10-architecture/04-engineering-baseline.md L340, 10-architecture/05-adrs.md L996 |
-| **P2-34** | "微核心"（MicroCoreRT，agentrt 用户态）vs "微内核"（microkernel，agentrt-linux OS 级）术语区分未在所有文档中一致应用                                                                     | A2       | 多处                                                                               |
+| **P2-34** | "微核心"（MicroCoreRT，agentrt 用户态）vs "微内核"（microkernel，agent-linux OS 级）术语区分未在所有文档中一致应用                                                                     | A2       | 多处                                                                               |
 | **P2-35** | IPC 吞吐量数字不一致：250K msg/s 实测（03-ipc-flow\.md L31）vs 2M ops/s 优化目标（03-ipc-performance.md L21），差距近 10 倍，需澄清是否测量同一指标                                           | A6       | 40-dataflows/03-ipc-flow\.md L31, 170-performance/03-ipc-performance.md L21      |
-| **P2-36** | OLK-6.6 `management-style.rst` 治理哲学（"避免决策"、"承认无能"、"承担责任"、"别太刻薄"）未在 agentrt-linux 治理文档中体现                                                                  | A1       | 缺失                                                                               |
+| **P2-36** | OLK-6.6 `management-style.rst` 治理哲学（"避免决策"、"承认无能"、"承担责任"、"别太刻薄"）未在 agent-linux 治理文档中体现                                                                  | A1       | 缺失                                                                               |
 | **P2-37** | OLK-6.6 `stable-api-nonsense.rst` 深层理由（API 不稳定是刻意设计选择，使持续改进/安全修复/死代码清理成为可能）未充分阐述，仅声明"不稳定"而缺乏理由                                                            | A1       | 缺失                                                                               |
 | **P2-38** | 文件路径引用错误：150-cloudnative/01-kubernetes-crd.md 不存在，实际文件为 01-k8s-crd-design.md                                                                              | A6       | 交叉引用                                                                             |
 
@@ -356,7 +356,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [ ] 错误码体系统一为单一 SSoT
 - [ ] AirymaxRT 文档中 IRON-9 v2 覆盖率 ≥80%
 - [ ] 规则编号体系全局唯一（零重复）
-- [ ] API 签名在 agentrt 与 agentrt-linux 间一致
+- [ ] API 签名在 agentrt 与 agent-linux 间一致
 - [ ] 文档版本统一（架构文档同步至 v0.2.4+）
 - [ ] 综合评分恢复至 ≥85/100（B+ 级）
 
@@ -373,7 +373,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 以下 4 项决策对后续修复方向有重大影响，需用户明确指示：
 
-1. **API 范式决策**（P0-10）：agentrt 使用 JSON-RPC 统一入口 `agentrt_syscall_invoke()`，agentrt-linux 使用编号 syscall 512-631。推荐方案 D（分层 API 设计）：用户态 SDK 层保持 JSON-RPC，内核 syscall 层使用编号 syscall，中间加一层映射。是否同意？
+1. **API 范式决策**（P0-10）：agentrt 使用 JSON-RPC 统一入口 `agentrt_syscall_invoke()`，agent-linux 使用编号 syscall 512-631。推荐方案 D（分层 API 设计）：用户态 SDK 层保持 JSON-RPC，内核 syscall 层使用编号 syscall，中间加一层映射。是否同意？
 2. **Syscall 预算收紧**（P1-32）：当前目标 ≤20 但分配 120 槽位。建议：严格遵循 ≤20 目标，槽位缩减至 32 个（与 seL4 的 8-11 个精神一致但留扩展空间），或接受 120 槽位但将目标改为"核心 syscall ≤20，扩展 syscall 不限"。
 3. **错误码体系**（P0-02）：当前 4 套不兼容系统。建议：借鉴 seL4 的 10 种极简错误码模式，统一为 `include/airymax/error.h` 定义的单一体系，使用 `seL4_NumErrors` 哨兵模式。
 4. **文档版本同步策略**（P1-41）：架构文档（v0.1.1）与工程标准（v0.2.4）版本分裂。建议：架构文档升级至 v0.2.4+，或保留 v0.1.1 作为基线但在 README 中明确标注与 v0.2.4 标准的关系。
@@ -451,13 +451,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 中文        | 英文               | 代码前缀            | 说明                            |
 | --------- | ---------------- | --------------- | ----------------------------- |
-| 极境智能体操作系统 | AirymaxAgentOS   | airymaxos\_     | agentrt-linux 正式名称            |
+| 极境智能体操作系统 | AirymaxAgentOS   | airymaxos\_     | agent-linux 正式名称            |
 | 极境智能体运行底座 | AirymaxAgentRT   | agentrt\_       | agentrt 正式名称                  |
 | 共享契约层     | Shared Contract  | \[SC]           | 6 个头文件，agentrt 与 AirymaxOS 共享 |
 | 语义同源层     | Shared Semantics | \[SS]           | API 语义一致，实现独立                 |
 | 完全独立层     | Independent      | \[IND]          | 两端完全独立                        |
 | 微核心       | MicroCoreRT      | corekern\_      | agentrt 用户态核心，非微内核            |
-| 微内核       | Microkernel      | -               | agentrt-linux 操作系统级设计思想       |
+| 微内核       | Microkernel      | -               | agent-linux 操作系统级设计思想       |
 | 安全穹顶      | Cupolas          | cupolas\_       | LSM 安全框架                      |
 | 记忆卷载      | MemoryRovol      | memoryrovol\_   | 智能体记忆管理系统                     |
 | 三层认知循环    | CoreLoopThree    | coreloopthree\_ | 感知/思考/行动认知循环                  |

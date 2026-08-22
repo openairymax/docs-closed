@@ -5,7 +5,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v2.1 文档侧复审收敛报告，覆盖 `docs/`（开源）与 `docs-closed/`（闭源）两个仓库的文档规范与质量控制，作为 1.0.1 M1 启动前文档侧阻断项的判定基线之一。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：2.1（2026-07-13）。
-> **审查范围**：开源 `docs/AirymaxOS/`（123 .md）+ `docs/AirymaxRT/`（88 .md + 3 .drawio）+ `docs/OpenStandards/`（8 主标准 + 3 _research 目录）+ `docs/Publications/` + 闭源 `docs-closed/agentrt/` + `docs-closed/agentrt-linux/`，共 5 个文档子仓库；228 个开源 .md + 225 个闭源 .md。
+> **审查范围**：开源 `docs/AirymaxOS/`（123 .md）+ `docs/AirymaxRT/`（88 .md + 3 .drawio）+ `docs/OpenStandards/`（8 主标准 + 3 _research 目录）+ `docs/Publications/` + 闭源 `docs-closed/agentrt/` + `docs-closed/agent-linux/`，共 5 个文档子仓库；228 个开源 .md + 225 个闭源 .md。
 > **审查方法**：13 关键词 Grep 机器检查 + URL 格式 Grep 验证 + 路径有效性实测（`ls`/`find`）+ 内部引用解析性抽样（20 文件）+ 跨仓库前缀迁移统计 + 上下游关系交叉对照 + 与 v1.0 综合分析（`docs-closed/agentrt/00-reviews/_review_v1.0/00-comprehensive-analysis.md`）和 v2.0 文档质量控制（`docs-closed/_review_v2.0/01-document-quality-control.md`）结论对照。
 > **证据要求**：所有结论附文件路径与行号（格式：`文件路径:L行号`），可通过 Grep/Read 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -42,8 +42,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 开源/闭源边界 | 65/C+（边界基本清晰） | **55/C**（**倒退**） | ↓ -10 | 4 处开源文档跨引用闭源 `../../../DocsClosed/0.1.1详细任务清单.md`；3 个 _research 内部审查目录误入开源 |
 | 断裂引用修复 | 35/D-（5 仓库全部存在引用错误） | **30/D-**（**倒退**） | ↓ -5 | v1.0 标记的 `docs/AirymaxOS/TERMINOLOGY.md` 断裂引用**未修复**；新增 8+ 处 `08-compliance-checklist.md` 断裂、25 处 `00-basic-theories/` 断裂、23 处 `30-coding-standard/` 断裂、4 处 `PROTOCOL_GUIDE.md` 断裂 |
 | 反抄袭合规 | 80/B+ | **85/B+** | ↑ +5 | seL4/Linux/openEuler/OCI/CNCF 引用全部附 URL；"参考声明"明确"借鉴非移植"；未发现直接复制 |
-| 闭源文档准确性 | 70/B-（agentos_* 前缀背离） | **65/C+**（**倒退**） | ↓ -5 | 子系统规范层 `airy_*` 已对齐；但工程标准手册 `agentrt_*` 仍 22 处（agentrt-linux）+ 218 处（agentrt）残留；版本号 v0.2.5（闭源）vs v0.1.1（开源）差距 4 个小版本 |
-| 上下游关系描述 | 65/C+ | **78/B+** | ↑ +13 | agentrt（微核心）↔ agentrt-linux（微内核）5 维同源映射准确；OpenStandards 公开标准 vs 工程标准内部规范的边界清晰；2 个符号链接全部正确 |
+| 闭源文档准确性 | 70/B-（agentos_* 前缀背离） | **65/C+**（**倒退**） | ↓ -5 | 子系统规范层 `airy_*` 已对齐；但工程标准手册 `agentrt_*` 仍 22 处（agent-linux）+ 218 处（agentrt）残留；版本号 v0.2.5（闭源）vs v0.1.1（开源）差距 4 个小版本 |
+| 上下游关系描述 | 65/C+ | **78/B+** | ↑ +13 | agentrt（微核心）↔ agent-linux（微内核）5 维同源映射准确；OpenStandards 公开标准 vs 工程标准内部规范的边界清晰；2 个符号链接全部正确 |
 | 模板与占位符 | —（v1.0 未覆盖） | **80/B**（新增） | — | 未发现 `@spharx.ai` 虚构邮箱；TBD 仅用于 1.0.1 未启动版本日期（合理）；`your-team@spharx.cn` 1 处占位需替换；4 个邮箱域名（.cn/.com/.io/.dev）未统一 |
 | **总评** | **58/D+** | **68/C+** | **↑ +10** | URL 与上下游关系显著改善；但断裂引用系统性扩散（v1.0 标记项未修复 + 新增 60+ 处）、开源/闭源边界出现新违规、闭源前缀迁移停滞 |
 
@@ -187,7 +187,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 检查项 | 结果 | 评估 |
 |--------|------|------|
 | `docs-closed/agentrt/agentrt工程标准规范手册.md` 头部 | `保密级别: SPHARX Ltd 内部参考，闭源不公开` | ✅ 闭源标记正确 |
-| `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` 头部 | `保密级别: SPHARX Ltd 内部参考，闭源不公开` | ✅ 闭源标记正确 |
+| `docs-closed/agent-linux/agent-linux基本工程标准规范.md` 头部 | `保密级别: SPHARX Ltd 内部参考，闭源不公开` | ✅ 闭源标记正确 |
 | 闭源文档是否包含内部决策记录 | 是（如 Wave 2 v2 Phase A-F 审查结论、P0-CRITICAL 修复状态等） | ✅ 符合闭源定位 |
 
 ### 4.3 边界违规问题
@@ -220,7 +220,7 @@ Grep 搜索 `DocsClosed/` 在 `docs/` 下的匹配，发现 **4 处开源文档�
 
 ### 4.4 开源 `docs/` 内部参考文献的合法性
 
-`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:696` 包含 `### 12.3 agentrt-linux 内部参考文献` 章节，列出：
+`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:696` 包含 `### 12.3 agent-linux 内部参考文献` 章节，列出：
 
 - `50-engineering-standards/README.md`（存在）
 - `include/airymax/{sched,ipc,bpf_struct_ops,memory_types,security_types,cognition_types}.h`（[SC] 共享契约层头文件清单）
@@ -241,7 +241,7 @@ v1.0 报告标记的 1 处断裂引用：
 **v2.1 实测**（`docs/OpenStandards/README.md:231`）：
 
 ```
-- agentrt-linux（AirymaxOS）统一术语表：`docs/AirymaxOS/TERMINOLOGY.md`
+- agent-linux（AirymaxOS）统一术语表：`docs/AirymaxOS/TERMINOLOGY.md`
 ```
 
 **实测 `docs/AirymaxOS/TERMINOLOGY.md` 存在性**：
@@ -253,7 +253,7 @@ ls: cannot access '.../docs/AirymaxOS/TERMINOLOGY.md': No such file or directory
 
 **结论**：**v1.0 标记的断裂引用在 v2.1 中仍未修复**。该文件已于 2026-07-12 从 `docs/AirymaxOS/TERMINOLOGY.md` 移至 `docs/AirymaxOS/50-engineering-standards/90-terminology.md`（见 `docs/AirymaxOS/50-engineering-standards/README.md:456` 的迁移说明），但 `docs/OpenStandards/README.md:231` 的引用未同步更新。
 
-**正确修复路径**：`docs/AirymaxOS/TERMINOLOGY.md` → `docs/AirymaxOS/50-engineering-standards/90-terminology.md`（而非 v1.0 任务描述中建议的 `docs/AirymaxRT/TERMINOLOGY.md`，因为引用上下文明确为"agentrt-linux（AirymaxOS）统一术语表"，应指向 OS 侧而非 RT 侧）。
+**正确修复路径**：`docs/AirymaxOS/TERMINOLOGY.md` → `docs/AirymaxOS/50-engineering-standards/90-terminology.md`（而非 v1.0 任务描述中建议的 `docs/AirymaxRT/TERMINOLOGY.md`，因为引用上下文明确为"agent-linux（AirymaxOS）统一术语表"，应指向 OS 侧而非 RT 侧）。
 
 ### 5.2 新发现：`docs/AirymaxOS/TERMINOLOGY.md` 断裂引用扩散至 3 处
 
@@ -400,7 +400,7 @@ Grep 搜索 `seL4` 在 `docs/` 下的匹配，30+ 处，全部规范引用：
 |---------|------|------|
 | URL 附源 | `seL4 capability 安全模型：https://sel4.systems/`（`docs/OpenStandards/03-airy-security-model-standard.md:615`） | ✅ 规范 |
 | URL 附源 | `seL4 Licensing: https://www.sel4.org/Legal/license.html`（`docs/OpenStandards/_research_v2.1/01-open-standards-review-v2.1.md:1089`） | ✅ 规范 |
-| 借鉴声明 | `agentrt-linux 的微内核设计思想**唯一来源为 seL4**（参考 01Reference/seL4-master）`（`docs/AirymaxOS/README.md:163`） | ✅ 规范（明确"借鉴非移植"） |
+| 借鉴声明 | `agent-linux 的微内核设计思想**唯一来源为 seL4**（参考 01Reference/seL4-master）`（`docs/AirymaxOS/README.md:163`） | ✅ 规范（明确"借鉴非移植"） |
 | 借鉴声明 | `微内核思想来源：seL4（唯一来源，ADR-014）| 技术路线：基于 Linux 改造（ADR-012）`（`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:705`） | ✅ 规范 |
 
 ### 6.2 Linux 6.6 / kernel.org 引用规范性
@@ -423,9 +423,9 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 |---------|------|------|
 | URL 附源 | `openEuler 贡献攻略：https://www.openeuler.org/zh/community/contribution/detail.html`（`docs/OpenStandards/_research_v1.0/01-open-standards-rebuild-proposal.md:495`） | ✅ 规范 |
 | URL 附源 | `openEuler 社区组织：https://www.openeuler.org/zh/community/organization/`（同上:496） | ✅ 规范 |
-| 不共享代码声明 | `agentrt-linux 不移植 openEuler 特有特性，与 openEuler 的关系仅限于技术参考，不共享代码`（`docs/AirymaxOS/README.md:163`） | ✅ 规范（明确"参考非移植"） |
+| 不共享代码声明 | `agent-linux 不移植 openEuler 特有特性，与 openEuler 的关系仅限于技术参考，不共享代码`（`docs/AirymaxOS/README.md:163`） | ✅ 规范（明确"参考非移植"） |
 
-**注意**：v2.0 报告 §2.1.1 指出开源 `docs/AirymaxOS/` 中 openEuler 提及与闭源 `docs-closed/agentrt-linux/README.md` BAN-INTERNAL-002 规则冲突。本次实测确认 openEuler 在开源文档中的提及仍然存在（`docs/AirymaxOS/README.md:30, 163`、`docs/AirymaxOS/10-architecture/06-directory-structure.md:32, 118, 222` 等），但 BAN-INTERNAL-002 规则本身位于闭源文档，开源文档不受其约束。从反抄袭角度，openEuler 引用全部附 URL 且明确"不共享代码"，**未构成抄袭**。
+**注意**：v2.0 报告 §2.1.1 指出开源 `docs/AirymaxOS/` 中 openEuler 提及与闭源 `docs-closed/agent-linux/README.md` BAN-INTERNAL-002 规则冲突。本次实测确认 openEuler 在开源文档中的提及仍然存在（`docs/AirymaxOS/README.md:30, 163`、`docs/AirymaxOS/10-architecture/06-directory-structure.md:32, 118, 222` 等），但 BAN-INTERNAL-002 规则本身位于闭源文档，开源文档不受其约束。从反抄袭角度，openEuler 引用全部附 URL 且明确"不共享代码"，**未构成抄袭**。
 
 ### 6.4 OCI / CNCF / openEuler 治理模式引用
 
@@ -511,11 +511,11 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 
 **结论**：子系统规范层已完全迁移，工程标准手册层 12% 残留且自相矛盾，设计文档与归档未迁移。
 
-### 7.2 `docs-closed/agentrt-linux/` 工程准确性与实施指导性
+### 7.2 `docs-closed/agent-linux/` 工程准确性与实施指导性
 
-#### 7.2.1 工程标准手册层（agentrt-linux基本工程标准规范.md）— 前缀迁移严重滞后
+#### 7.2.1 工程标准手册层（agent-linux基本工程标准规范.md）— 前缀迁移严重滞后
 
-`docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` 前缀统计：
+`docs-closed/agent-linux/agent-linux基本工程标准规范.md` 前缀统计：
 
 | 维度 | 数量 | 评估 |
 |------|------|------|
@@ -541,21 +541,21 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 
 3. 手册行 815 提到 `agentrt_ipc_msg_hdr_t`（IPC 消息头类型），但开源 `docs/AirymaxOS/50-engineering-standards/20-contracts/` 与实际源码已统一使用 `airy_ipc_msg_hdr_t`。
 
-#### 7.2.2 `docs-closed/agentrt-linux/` 全量前缀统计
+#### 7.2.2 `docs-closed/agent-linux/` 全量前缀统计
 
 | 目录 | `agentrt_[a-z]` 匹配数 | 文件数 | 评估 |
 |------|----------------------|------|------|
-| `docs-closed/agentrt-linux/`（全量） | 388 处 | 34 文件 | ❌ 前缀迁移严重滞后 |
-| `docs-closed/agentrt-linux/02-olk66-source-mapping/05-security-mapping.md` | 62 处 | 1 文件 | ❌ 安全映射未迁移 |
-| `docs-closed/agentrt-linux/02-olk66-source-mapping/04-mm-mapping.md` | 41 处 | 1 文件 | ❌ 内存映射未迁移 |
-| `docs-closed/agentrt-linux/02-olk66-source-mapping/02-io-uring-mapping.md` | 32 处 | 1 文件 | ❌ io_uring 映射未迁移 |
-| `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | 22 处 | 1 文件 | ❌ 工程标准手册未迁移 |
-| `docs-closed/agentrt-linux/_review_0.7.0/01-syscall-minimization-and-ssot-conflict-analysis.md` | 34 处 | 1 文件 | ⚠️ 审查报告（可不迁移） |
-| `docs-closed/agentrt-linux/_research_0.3.1/01-comprehensive-issue-list.md` | 17 处 | 1 文件 | ⚠️ 研究报告（可不迁移） |
+| `docs-closed/agent-linux/`（全量） | 388 处 | 34 文件 | ❌ 前缀迁移严重滞后 |
+| `docs-closed/agent-linux/02-olk66-source-mapping/05-security-mapping.md` | 62 处 | 1 文件 | ❌ 安全映射未迁移 |
+| `docs-closed/agent-linux/02-olk66-source-mapping/04-mm-mapping.md` | 41 处 | 1 文件 | ❌ 内存映射未迁移 |
+| `docs-closed/agent-linux/02-olk66-source-mapping/02-io-uring-mapping.md` | 32 处 | 1 文件 | ❌ io_uring 映射未迁移 |
+| `docs-closed/agent-linux/agent-linux基本工程标准规范.md` | 22 处 | 1 文件 | ❌ 工程标准手册未迁移 |
+| `docs-closed/agent-linux/_review_0.7.0/01-syscall-minimization-and-ssot-conflict-analysis.md` | 34 处 | 1 文件 | ⚠️ 审查报告（可不迁移） |
+| `docs-closed/agent-linux/_research_0.3.1/01-comprehensive-issue-list.md` | 17 处 | 1 文件 | ⚠️ 研究报告（可不迁移） |
 
 #### 7.2.3 闭源文档内部审查描述残留（合法）
 
-闭源 `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` 头部（行 7-16）包含：
+闭源 `docs-closed/agent-linux/agent-linux基本工程标准规范.md` 头部（行 7-16）包含：
 
 - `Wave 2 v2 源码级深读审查结论`
 - `Wave 2 v2 源码级深读审查完成（Phase A/B/C/D/E/F，2026-07-13）`
@@ -569,7 +569,7 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 |------|---------|---------|---------|
 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` | v0.1.1（行 6） | — | — |
 | `docs/AirymaxOS/README.md` | v0.1.1（行 8） | — | — |
-| `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | — | v0.2.5（行 7，"同步开源手册 v0.1.1 全部变更"） | ⚠️ 版本号差距 4 个小版本 |
+| `docs-closed/agent-linux/agent-linux基本工程标准规范.md` | — | v0.2.5（行 7，"同步开源手册 v0.1.1 全部变更"） | ⚠️ 版本号差距 4 个小版本 |
 | `docs-closed/agentrt/agentrt工程标准规范手册.md` | — | v28.0（v2.0 报告标记，本次未实测） | ⚠️ 版本号差距更大 |
 
 **问题分析**：
@@ -585,7 +585,7 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 **评分：65/C+**（v1.0: 70/B-，下降 -5）。
 
 - 子系统规范层（`07-subsystem-specs/`）工程准确性良好，已完整迁移至 `airy_*` 前缀；
-- 工程标准手册层（`agentrt工程标准规范手册.md`、`agentrt-linux基本工程标准规范.md`）前缀迁移严重滞后，22 + 22 = 44 处 `agentrt_*` 残留，且 agentrt-linux 手册**完全未迁移**（`airy_*` 0 处）；
+- 工程标准手册层（`agentrt工程标准规范手册.md`、`agent-linux基本工程标准规范.md`）前缀迁移严重滞后，22 + 22 = 44 处 `agentrt_*` 残留，且 agent-linux 手册**完全未迁移**（`airy_*` 0 处）；
 - 工程标准手册内容自相矛盾（标注 `agentrt_*` 为"已废弃"但自身代码示例仍使用 `agentrt_*`）；
 - 版本同步为单向（闭源 ← 开源），闭源侧内部修复未回流开源。
 
@@ -593,23 +593,23 @@ Grep 搜索 `openEuler` 在 `docs/` 下的匹配，30+ 处，全部规范引用�
 
 ## 8. 上下游关系描述准确性
 
-### 8.1 agentrt（用户态运行时）vs agentrt-linux（智能体操作系统）的关系
+### 8.1 agentrt（用户态运行时）vs agent-linux（智能体操作系统）的关系
 
-`docs/AirymaxOS/README.md:165-179` 明确描述 agentrt 与 agentrt-linux 的关系：
+`docs/AirymaxOS/README.md:165-179` 明确描述 agentrt 与 agent-linux 的关系：
 
 ```
 agentrt（AirymaxAgentRT，跨平台用户态运行时）
    │
-   └── 运行在 agentrt-linux 上: 天然更稳健和适配（同源）
+   └── 运行在 agent-linux 上: 天然更稳健和适配（同源）
        │
-       ├── agentrt 的 MicroCoreRT 调度 ←→ agentrt-linux 的 Agent 调度策略（语义同源）
-       ├── agentrt 的 AgentsIPC 协议 ←→ agentrt-linux 的 IPC 子系统（128B 消息头同源）
-       ├── agentrt 的 Cupolas 安全 ←→ agentrt-linux 的 capability + LSM（模型同源）
-       ├── agentrt 的 MemoryRovol ←→ agentrt-linux 的 记忆子系统（记忆模型同源）
-       └── agentrt 的 CoreLoopThree ←→ agentrt-linux 的 认知 kthread（循环模型同源）
+       ├── agentrt 的 MicroCoreRT 调度 ←→ agent-linux 的 Agent 调度策略（语义同源）
+       ├── agentrt 的 AgentsIPC 协议 ←→ agent-linux 的 IPC 子系统（128B 消息头同源）
+       ├── agentrt 的 Cupolas 安全 ←→ agent-linux 的 capability + LSM（模型同源）
+       ├── agentrt 的 MemoryRovol ←→ agent-linux 的 记忆子系统（记忆模型同源）
+       └── agentrt 的 CoreLoopThree ←→ agent-linux 的 认知 kthread（循环模型同源）
 ```
 
-**评估**：✅ 准确。5 维同源映射（调度、IPC、安全、记忆、认知）与 IRON-9 v2 三层共享模型一致，"同源红利"声明（"agentrt 在 agentrt-linux 上运行无适配层"）与微核心/微内核分工一致。
+**评估**：✅ 准确。5 维同源映射（调度、IPC、安全、记忆、认知）与 IRON-9 v2 三层共享模型一致，"同源红利"声明（"agentrt 在 agent-linux 上运行无适配层"）与微核心/微内核分工一致。
 
 ### 8.2 微核心（MicroCore）vs 微内核（Microkernel）术语区分
 
@@ -618,11 +618,11 @@ agentrt（AirymaxAgentRT，跨平台用户态运行时）
 | 术语 | 定位 | 说明 |
 |------|------|------|
 | **agentrt** | AirymaxAgentRT 极境智能体运行底座平台工程 | 用户态 AI Agent 运行时平台工程，定位为**微核心**（micro-core） |
-| **agentrt-linux** | agentrt-linux（AirymaxOS）极境智能体操作系统 | 智能体操作系统发行版，定位为**微内核**（micro-kernel） |
+| **agent-linux** | agent-linux（AirymaxOS）极境智能体操作系统 | 智能体操作系统发行版，定位为**微内核**（micro-kernel） |
 
 明确约束：
 - **agentrt = 微核心**：agentrt 的 MicroCoreRT 是用户态微核心运行时，**不得**用"微内核"描述 agentrt。
-- **agentrt-linux = 微内核**：agentrt-linux 基于 Linux 6.6 内核基线进行微内核化改造（sched_ext + eBPF + io_uring），将 VFS、网络栈、部分驱动移到用户态。
+- **agent-linux = 微内核**：agent-linux 基于 Linux 6.6 内核基线进行微内核化改造（sched_ext + eBPF + io_uring），将 VFS、网络栈、部分驱动移到用户态。
 
 **评估**：✅ 准确。微核心（用户态运行时）与微内核（OS 发行版）的术语区分清晰，与 ADR-014（seL4 唯一来源）、ADR-012（基于 Linux 改造）一致。
 
@@ -631,11 +631,11 @@ agentrt（AirymaxAgentRT，跨平台用户态运行时）
 | 开源目录 | 闭源对应 | 用途 |
 |---------|---------|------|
 | `docs/AirymaxRT/` | `docs-closed/agentrt/` | agentrt（用户态运行时）设计文档 / 内部工程实现指南 |
-| `docs/AirymaxOS/` | `docs-closed/agentrt-linux/` | agentrt-linux（智能体操作系统）设计文档 / 内部工程实现指南 |
+| `docs/AirymaxOS/` | `docs-closed/agent-linux/` | agent-linux（智能体操作系统）设计文档 / 内部工程实现指南 |
 | `docs/OpenStandards/` | （无闭源对应） | Airymax 开放标准体系（公开标准） |
 | `docs/Publications/` | （无闭源对应） | 学术论文与报告（公开） |
 
-**评估**：✅ 准确。开源 `docs/AirymaxRT/` 对应闭源 `docs-closed/agentrt/`，开源 `docs/AirymaxOS/` 对应闭源 `docs-closed/agentrt-linux/`，命名映射清晰（RT = Runtime = agentrt，OS = Operating System = agentrt-linux）。
+**评估**：✅ 准确。开源 `docs/AirymaxRT/` 对应闭源 `docs-closed/agentrt/`，开源 `docs/AirymaxOS/` 对应闭源 `docs-closed/agent-linux/`，命名映射清晰（RT = Runtime = agentrt，OS = Operating System = agent-linux）。
 
 ### 8.4 OpenStandards 与内部设计文档的关系
 
@@ -667,12 +667,12 @@ agentrt（AirymaxAgentRT，跨平台用户态运行时）
 
 **评分：78/B+**（v1.0: 65/C+，提升 +13）。
 
-- agentrt ↔ agentrt-linux 5 维同源映射准确；
+- agentrt ↔ agent-linux 5 维同源映射准确；
 - 微核心/微内核术语区分清晰；
 - 开源/闭源目录结构对应关系明确；
 - OpenStandards 与内部工程标准的"接口 vs 实现"分层清晰；
 - 2 个符号链接全部正确；
-- 唯一扣分点：`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:696` 的"agentrt-linux 内部参考文献"章节标题命名不当（应改为"参考文献"），且其中 `08-compliance-checklist.md` 引用断裂（详见 §5.3）。
+- 唯一扣分点：`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:696` 的"agent-linux 内部参考文献"章节标题命名不当（应改为"参考文献"），且其中 `08-compliance-checklist.md` 引用断裂（详见 §5.3）。
 
 ---
 
@@ -808,7 +808,7 @@ Grep 搜索 `\bXXX\b` 在 `docs/` 下的匹配，15 处：
 |--------|----------|----------|---------|
 | 断裂引用数量 | 5 仓库全部存在（约 10 处） | 67+ 处跨 34 文件 | **6.7 倍** |
 | 开源/闭源边界违规 | 边界基本清晰 | 3 个内部审查目录越界 + 4 处跨边界引用 | 新增违规 |
-| 闭源前缀迁移 | agentos_* 背离 | agentrt_* 606 处残留（agentrt 218 + agentrt-linux 388） | 停滞 |
+| 闭源前缀迁移 | agentos_* 背离 | agentrt_* 606 处残留（agentrt 218 + agent-linux 388） | 停滞 |
 | 闭源版本同步 | v0.2.5 vs v0.1.1 | 同 | 持平（未改善） |
 
 ### 10.4 P0 级阻断问题（必须修复后方可进入 1.0.1 M1）
@@ -854,13 +854,13 @@ Grep 搜索 `\bXXX\b` 在 `docs/` 下的匹配，15 处：
 
 #### P1-1：闭源 `agentrt_` → `airy_` 前缀迁移停滞（606 处）
 
-**问题描述**：闭源 `docs-closed/agentrt/` 218 处 + `docs-closed/agentrt-linux/` 388 处 = 606 处 `agentrt_*` 前缀残留，其中 `agentrt-linux基本工程标准规范.md` 完全未迁移（`airy_*` 0 处）。
+**问题描述**：闭源 `docs-closed/agentrt/` 218 处 + `docs-closed/agent-linux/` 388 处 = 606 处 `agentrt_*` 前缀残留，其中 `agent-linux基本工程标准规范.md` 完全未迁移（`airy_*` 0 处）。
 
 **影响**：闭源工程标准手册与实际源码（已迁移至 `airy_*`）严重背离，误导开发者使用错误前缀；工程标准手册内容自相矛盾（标注 `agentrt_*` 为"已废弃"但自身代码示例仍使用 `agentrt_*`）。
 
 **修复方案**：
 
-1. 工程标准手册层（`agentrt工程标准规范手册.md`、`agentrt-linux基本工程标准规范.md`）：批量替换代码示例中的 `agentrt_*` → `airy_*`，保留迁移说明表格中的旧前缀作为"已废弃"对照；
+1. 工程标准手册层（`agentrt工程标准规范手册.md`、`agent-linux基本工程标准规范.md`）：批量替换代码示例中的 `agentrt_*` → `airy_*`，保留迁移说明表格中的旧前缀作为"已废弃"对照；
 2. 设计文档层（`_design_0.1.1/`）：评估是否需要迁移（历史设计文档可保留旧前缀，但需在文档头部声明"前缀已废弃，仅作历史参考"）；
 3. 审查报告与归档（`_review_*`、`_archive_*`）：可不迁移，但需在目录 README 中声明"历史文档，前缀未迁移"。
 

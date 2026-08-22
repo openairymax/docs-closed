@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）v0.3.0 综合方案审查报告
+# agent-linux（AirymaxOS）v0.3.0 综合方案审查报告
 
-> **文档定位**：基于对 AirymaxOS（137 文档）+ AirymaxRT（112 文档）+ OLK-6.6 内核源码 + seL4 微内核源码的全面深度阅读，对 agentrt-linux 整体方案进行系统性审查，发现并记录所有技术标准与规范问题点。本报告是对 v0.1.1 上一轮审查（`00-reviews/_review_0.1.1/`）的修正与补充。\
+> **文档定位**：基于对 AirymaxOS（137 文档）+ AirymaxRT（112 文档）+ OLK-6.6 内核源码 + seL4 微内核源码的全面深度阅读，对 agent-linux 整体方案进行系统性审查，发现并记录所有技术标准与规范问题点。本报告是对 v0.1.1 上一轮审查（`00-reviews/_review_0.1.1/`）的修正与补充。\
 > **报告版本**：v0.3.0\
 > **审查日期**：2026-07-10\
 > **审查方法**：5 个并行后台 Agent 深度阅读（OLK-6.6 源码 + seL4 源码 + AirymaxOS 方案 + AirymaxRT 标准 + 闭源文档/历史决策）+ 源码级独立验证\
@@ -31,7 +31,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 审查结论
 
-本次审查基于对 OLK-6.6 内核源码（28 顶层目录 + coding-style.rst 19 章 1271 行）和 seL4 微内核源码（src/ 13 子目录 + libsel4/ + tools/）的穷尽式深度阅读，以及对 AirymaxOS（137 文档）和 AirymaxRT（112 文档）的全面审查，发现 agentrt-linux 整体方案在架构设计层面已建立坚实的工程基础（ES-OLK-1~14 + ES-SEL4-1~11 全部验证通过），但在**接口一致性**和**数值准确性**两个维度存在严重的系统性缺陷。
+本次审查基于对 OLK-6.6 内核源码（28 顶层目录 + coding-style.rst 19 章 1271 行）和 seL4 微内核源码（src/ 13 子目录 + libsel4/ + tools/）的穷尽式深度阅读，以及对 AirymaxOS（137 文档）和 AirymaxRT（112 文档）的全面审查，发现 agent-linux 整体方案在架构设计层面已建立坚实的工程基础（ES-OLK-1~14 + ES-SEL4-1~11 全部验证通过），但在**接口一致性**和**数值准确性**两个维度存在严重的系统性缺陷。
 
 **综合成熟度**：**82/100（B+，有条件 Go）**
 
@@ -58,7 +58,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.4 核心判断
 
-agentrt-linux 的方案设计在**工程思想层面**已达到高水准——"Linux 6.6 为基、seL4 为鉴"的融合取向合理，ES-OLK-1~14 和 ES-SEL4-1~11 工程思想全部源码级验证通过。但在**工程落地层面**存在严重的"多源定义"问题——同一数据结构（IPC 消息头）、同一概念（错误码）、同一数值（capability/LSM 钩子数量）在多个文档中给出互不兼容的定义，违反了 SSoT（Single Source of Truth）原则。这些问题如果不修复，将导致 1.0.1 开发阶段编译失败、运行时行为不可预测、跨端通信断裂。
+agent-linux 的方案设计在**工程思想层面**已达到高水准——"Linux 6.6 为基、seL4 为鉴"的融合取向合理，ES-OLK-1~14 和 ES-SEL4-1~11 工程思想全部源码级验证通过。但在**工程落地层面**存在严重的"多源定义"问题——同一数据结构（IPC 消息头）、同一概念（错误码）、同一数值（capability/LSM 钩子数量）在多个文档中给出互不兼容的定义，违反了 SSoT（Single Source of Truth）原则。这些问题如果不修复，将导致 1.0.1 开发阶段编译失败、运行时行为不可预测、跨端通信断裂。
 
 ---
 
@@ -97,7 +97,7 @@ agentrt-linux 的方案设计在**工程思想层面**已达到高水准——"L
 | AirymaxRT 标准文档 | `docs/AirymaxRT/` 全量 | 112 个 .md |
 | OLK-6.6 内核源码 | 28 顶层目录 + coding-style.rst + kernel/sched/ + security/ + mm/ + io_uring/ + bpf/ + include/uapi/ | ~30 关键文件 |
 | seL4 微内核源码 | src/{api,kernel,object,fastpath,arch,machine,plat} + libsel4/ + tools/ + include/ | ~25 关键文件 |
-| 闭源文档 | `docs-closed/agentrt-linux/` 全量 + `.trae/documents/` | 69 + 20 文件 |
+| 闭源文档 | `docs-closed/agent-linux/` 全量 + `.trae/documents/` | 69 + 20 文件 |
 | 历史审查报告 | `00-reviews/_review_0.1.1/` + `00-reviews/_review_0.2.0/` + `00-reviews/_analysis_0.3.0/` + `00-reviews/_research_0.3.1/` | 25 文件 |
 
 ---
@@ -132,7 +132,7 @@ agentrt-linux 的方案设计在**工程思想层面**已达到高水准——"L
 
 **状态**：🔴 未修复（P0 级阻断，SSoT 严重破坏）
 
-**问题描述**：AgentsIPC 128 字节统一消息头在 4 个文档中给出了**完全互不兼容**的结构体定义——字段名、类型、偏移、对齐属性、前缀全部不同。这直接违反 IRON-9 v2 [SC] 共享契约层"逐字节相同"的承诺，导致 agentrt 与 agentrt-linux 无法实现跨端 IPC 通信。
+**问题描述**：AgentsIPC 128 字节统一消息头在 4 个文档中给出了**完全互不兼容**的结构体定义——字段名、类型、偏移、对齐属性、前缀全部不同。这直接违反 IRON-9 v2 [SC] 共享契约层"逐字节相同"的承诺，导致 agentrt 与 agent-linux 无法实现跨端 IPC 通信。
 
 **4 种布局的源码级证据**：
 
@@ -289,7 +289,7 @@ struct agentrt_ipc_msg_hdr {
 **影响**：
 1. 编译时：不同翻译单元包含不同头文件将导致同一宏名展开为不同值
 2. 运行时：错误处理逻辑无法正确判断错误类型
-3. 跨端：agentrt（用户态）与 agentrt-linux（内核态）使用不同错误码值，IPC 错误响应无法正确传递
+3. 跨端：agentrt（用户态）与 agent-linux（内核态）使用不同错误码值，IPC 错误响应无法正确传递
 
 **修复方案**：统一为 Linux 风格负 errno（`AGENTRT_E*` 前缀 + POSIX errno 值的负数），SSoT 定义于 `include/airymax/error.h`。删除 `AGENTRT_ERR_*` 和 `EAGENTRT_*` 两种风格，全部替换为 `AGENTRT_E*`。`AGENTRT_EOK` 替代 `AGENTRT_OK`。
 
@@ -370,7 +370,7 @@ $ grep -c "LSM_HOOK(" 01Reference/kernel-OLK-6.6/include/linux/lsm_hook_defs.h
 
 **状态**：🔴 未修复（P0 级阻断，IRON-9 v2 共享模型一致性断裂根因）
 
-**问题描述**：IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）是 agentrt 与 agentrt-linux 之间的核心架构契约。该模型在 AirymaxOS（agentrt-linux 侧）137 文档中有充分体现（`50-engineering-standards/120-cross-project-code-sharing.md` 专门定义，多个文档有 IRON-9 v2 标注章节），但在 AirymaxRT（agentrt 侧）112 文档中**完全缺失**——零匹配 `IRON-9`、`[SC]`、`[SS]`、`[IND]`、`共享契约层`、`语义同源层` 等关键词。
+**问题描述**：IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）是 agentrt 与 agent-linux 之间的核心架构契约。该模型在 AirymaxOS（agent-linux 侧）137 文档中有充分体现（`50-engineering-standards/120-cross-project-code-sharing.md` 专门定义，多个文档有 IRON-9 v2 标注章节），但在 AirymaxRT（agentrt 侧）112 文档中**完全缺失**——零匹配 `IRON-9`、`[SC]`、`[SS]`、`[IND]`、`共享契约层`、`语义同源层` 等关键词。
 
 **验证方法**：
 
@@ -380,7 +380,7 @@ grep -rl "IRON-9\|\[SC\]\|\[SS\]\|\[IND\]\|共享契约层\|语义同源层" doc
 ```
 
 **影响**：
-1. agentrt 侧开发者无法感知与 agentrt-linux 的代码共享边界
+1. agentrt 侧开发者无法感知与 agent-linux 的代码共享边界
 2. [SC] 6 个头文件的"两端共同依赖、逐字节相同"承诺在 agentrt 侧无文档支撑
 3. 双向 CI 校验机制（`120-cross-project-code-sharing.md` §6）在 agentrt 侧无落地基础
 4. 这是 P0-03（IPC 头 4 种布局）、P0-04（错误码 4 套值）等一致性问题的**根因**——agentrt 侧不知道有 SSoT 约束，各自独立定义
@@ -405,7 +405,7 @@ grep -rl "0x41475453\|AGTS\|AIRYMAX_TASK_MAGIC" docs/AirymaxRT/
 → 0 个文件匹配
 ```
 
-**影响**：agentrt 侧的任务描述符实现无法与 agentrt-linux 侧对齐，跨端传递任务描述符时无法验证完整性。
+**影响**：agentrt 侧的任务描述符实现无法与 agent-linux 侧对齐，跨端传递任务描述符时无法验证完整性。
 
 **修复方案**：在 AirymaxRT 的调度相关文档中新增 `AIRYMAX_TASK_MAGIC` 定义和 magic 验证机制说明。
 
@@ -417,9 +417,9 @@ grep -rl "0x41475453\|AGTS\|AIRYMAX_TASK_MAGIC" docs/AirymaxRT/
 
 **问题描述**：AirymaxRT `01-l1-runtime-interface.md:13` 出现"微核心（microkernel）"表述，将 agentrt 的"微核心"（micro-core）错误标注为"microkernel"（微内核），违反 project_memory 中明确的术语约束：
 
-> **术语约束**：agentrt（用户态）= **微核心**（micro-core）；agentrt-linux（OS 发行版）= **微内核**（micro-kernel）。**禁止**用"微内核"描述 agentrt。
+> **术语约束**：agentrt（用户态）= **微核心**（micro-core）；agent-linux（OS 发行版）= **微内核**（micro-kernel）。**禁止**用"微内核"描述 agentrt。
 
-**影响**：术语混用导致架构定位模糊——agentrt 是用户态微核心运行时，不是微内核；agentrt-linux 才是基于微内核思想的 OS 发行版。
+**影响**：术语混用导致架构定位模糊——agentrt 是用户态微核心运行时，不是微内核；agent-linux 才是基于微内核思想的 OS 发行版。
 
 **修复方案**：将"微核心（microkernel）"修正为"微核心（micro-core）"。
 
@@ -466,20 +466,20 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 ---
 
-### P0-12: agentrt ↔ agentrt-linux 系统调用 API 签名根本性不一致 🔴 新发现
+### P0-12: agentrt ↔ agent-linux 系统调用 API 签名根本性不一致 🔴 新发现
 
 **状态**：🔴 未修复（P0 级阻断，待用户决策）
 
-**问题描述**：IRON-9 v2 [SS] 语义同源层声明"API 签名同源、实现独立"，但实际验证发现 agentrt（用户态）与 agentrt-linux（内核态）的系统调用 API 签名**根本不同**——二者处于不同的抽象层级，不是同一接口的两个实现。
+**问题描述**：IRON-9 v2 [SS] 语义同源层声明"API 签名同源、实现独立"，但实际验证发现 agentrt（用户态）与 agent-linux（内核态）的系统调用 API 签名**根本不同**——二者处于不同的抽象层级，不是同一接口的两个实现。
 
-| 对比项 | AirymaxRT（agentrt 用户态） | AirymaxOS（agentrt-linux 内核态） | 差异性质 |
+| 对比项 | AirymaxRT（agentrt 用户态） | AirymaxOS（agent-linux 内核态） | 差异性质 |
 |--------|---------------------------|--------------------------------|---------|
 | 参数类型 | JSON 字符串（`const char *input, size_t input_len`） | 类型化结构体（`const agentrt_task_desc_t *task_desc`） | 抽象层级不同 |
 | 返回类型 | JSON 字符串 + `agentrt_error_t` | `int`（负 errno） | 接口范式不同 |
 | 调用入口 | 统一入口 `agentrt_syscall_invoke()` | 编号 syscall（512-631） | 设计哲学不同 |
 | 错误码命名 | `AGENTRT_OK` / `AGENTRT_ERR_*` | `AGENTRT_EOK` / `AGENTRT_E*` | 命名体系不同 |
 
-**推荐方案**：方案 D（分层 API 设计）——agentrt 保持 JSON-RPC 高层 API（跨平台/跨语言），agentrt-linux 保持编号 syscall（Linux 传统/零拷贝/seL4 借鉴），[SS] 修正为"高层 API 语义同源"。
+**推荐方案**：方案 D（分层 API 设计）——agentrt 保持 JSON-RPC 高层 API（跨平台/跨语言），agent-linux 保持编号 syscall（Linux 传统/零拷贝/seL4 借鉴），[SS] 修正为"高层 API 语义同源"。
 
 > 详细决策分析见 `00-reviews/_research_0.3.1/02-p0-03-api-paradigm-decision.md`（329 行）。
 
@@ -513,7 +513,7 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 ### P1-03: OLK-6.6 coding-style.rst §19 I/O 未覆盖
 
-**问题描述**：OLK-6.6 `Documentation/process/coding-style.rst` 共 19 章，agentrt-linux 工程标准覆盖了 §1-§18，但 §19（I/O memory access，ioremap/readl/writel）未覆盖。
+**问题描述**：OLK-6.6 `Documentation/process/coding-style.rst` 共 19 章，agent-linux 工程标准覆盖了 §1-§18，但 §19（I/O memory access，ioremap/readl/writel）未覆盖。
 
 **修复方案**：在 `03-code-style.md` 新增 §10 或新建 `90-driver-engineering.md`，覆盖 I/O 内存访问规范。
 
@@ -523,7 +523,7 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 **问题描述**：AirymaxOS 文档中安全模型在 9 处文档中存在 ABAC（属性级访问控制）、RBAC（角色级访问控制）、capability-based（能力级访问控制）三种模型的描述不一致。
 
-**修复方案**：明确 agentrt-linux 安全模型为"capability-based（seL4 风格）+ LSM 钩子（OLK-6.6 可插拔策略）"混合模型，统一所有文档描述。
+**修复方案**：明确 agent-linux 安全模型为"capability-based（seL4 风格）+ LSM 钩子（OLK-6.6 可插拔策略）"混合模型，统一所有文档描述。
 
 ---
 
@@ -559,11 +559,11 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 ---
 
-### P1-09: agentrt-linux 专属扩展内容不充分
+### P1-09: agent-linux 专属扩展内容不充分
 
-**问题描述**：部分文档偏向纯 Linux 内核文档复制，缺少 agentrt-linux 专属扩展的深度论述（Agent 驱动模型、8 子仓构建依赖图、Agent 行为契约测试矩阵等）。
+**问题描述**：部分文档偏向纯 Linux 内核文档复制，缺少 agent-linux 专属扩展的深度论述（Agent 驱动模型、8 子仓构建依赖图、Agent 行为契约测试矩阵等）。
 
-**修复方案**：为每个文档增补"agentrt-linux 专属扩展深化"章节。
+**修复方案**：为每个文档增补"agent-linux 专属扩展深化"章节。
 
 ---
 
@@ -613,7 +613,7 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 **上游依据**：ES-OLK-14（`include/linux/kabi.h` + `lib/Kconfig.kabi`）
 
-**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agentrt-linux 的 KABI 宏机制。
+**建议**：在 `50-engineering-standards/` 新增 `09-kabi-evolution.md`，定义 agent-linux 的 KABI 宏机制。
 
 **优先级**：P1（微内核化改造关键基础设施，1.0.1 M1 落地，~20h）
 
@@ -734,7 +734,7 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 | P0-09 | "微核心（microkernel）" 违反 TERMINOLOGY | P0 |
 | P0-10 | `__GFP_PMEM` 不存在，应为 `__GFP_RELIABLE` | P0 |
 | P0-11 | `ring_fd.ring_fd` C 代码编译错误 | P0 |
-| P0-12 | agentrt ↔ agentrt-linux API 签名根本性不一致 | P0 |
+| P0-12 | agentrt ↔ agent-linux API 签名根本性不一致 | P0 |
 
 ---
 
@@ -811,7 +811,7 @@ io_uring_prep_rw(IORING_OP_AGENTRT_IPC_REGISTER_REGION, sqe,
 
 ### 8.3 设计哲学融合裁决
 
-agentrt-linux 的工程取向"**Linux 6.6 为基、seL4 为鉴**"经源码级验证确认合理：
+agent-linux 的工程取向"**Linux 6.6 为基、seL4 为鉴**"经源码级验证确认合理：
 
 | 层次 | 取向 | 依据 |
 |------|------|------|
@@ -925,4 +925,4 @@ agentrt-linux 的工程取向"**Linux 6.6 为基、seL4 为鉴**"经源码级验
 
 ---
 
-> **文档结束** | agentrt-linux v0.3.0 综合方案审查报告 | 2026-07-10 | SPHARX Ltd
+> **文档结束** | agent-linux v0.3.0 综合方案审查报告 | 2026-07-10 | SPHARX Ltd

@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux 全量文档审查报告 v2.8
+# 00 — agent-linux 全量文档审查报告 v2.8
 
 > **审查日期**：2026-07-22
 > **审查目标**：重新进行一次全量文档审查，查找是否还有误判，会影响到整体方案
@@ -103,9 +103,9 @@ __SYSCALL(__NR_airy_sys_clt_notify, sys_airy_sys_clt_notify)
 
 ### 2.3 P0-017 codegen缺失 — ✅ 确认真实
 
-**验证方法**：`find agentrt-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"`
+**验证方法**：`find agent-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"`
 
-**证据**：三个命令均无输出。`agentrt-linux/tools/` 目录下只有：
+**证据**：三个命令均无输出。`agent-linux/tools/` 目录下只有：
 - `README.md`
 - `validate-ssot.py`
 
@@ -220,7 +220,7 @@ DECLARE_TRACE(airy_ipc_fastpath_exit,
 | 编号范围 | 用途 | 管理方 |
 |---------|------|--------|
 | 0-511 | Linux 6.6 标准系统调用 | Linux 上游（不可修改） |
-| 512-631 | agentrt-linux 专用系统调用（6 类 × 20 编号） | 本注册表 |
+| 512-631 | agent-linux 专用系统调用（6 类 × 20 编号） | 本注册表 |
 | 632-1023 | 预留扩展空间 | 本注册表（需 ADR 审批） |
 | 1024+ | 未来 MAJOR 版本扩展 | 需新 ADR + ABI 审查 |
 
@@ -235,7 +235,7 @@ L49 明确说明 "1024+ 未来 MAJOR 版本扩展，需新 ADR + ABI 审查"。
 **证据**：§7.1 L1289-1300 明确定义了 CVE 全链路追踪：
 
 ```
-agentrt-linux SBOM 与 NVD（National Vulnerability Database）/ CVE 数据库进行每日匹配扫描，
+agent-linux SBOM 与 NVD（National Vulnerability Database）/ CVE 数据库进行每日匹配扫描，
 建立"组件 → CVE → 修复"全链路追踪：
 ```
 
@@ -470,7 +470,7 @@ v2.8 对以下关键设计文档进行了完整性抽检，未发现新的问题
 
 ### 8.1 总体判定
 
-经 v2.6 → v2.7 → v2.8 三轮递归验证，agentrt-linux 的真实问题已收敛到 **4 项 P0 + 1 项 GAP + 1 项部分 GAP**。
+经 v2.6 → v2.7 → v2.8 三轮递归验证，agent-linux 的真实问题已收敛到 **4 项 P0 + 1 项 GAP + 1 项部分 GAP**。
 
 **误判递归已终结**：v2.8 未产生新的误判，所有判定均通过亲自 Grep/Read/RunCommand 验证。
 
@@ -519,8 +519,8 @@ v2.8 的每一项判定均通过**亲自 Grep/Read/RunCommand** 验证：
 | P0-014 | `Read unistd.h L826-837` + `Read syscall_64.tbl L375-381` | 453-456 vs 454-457，x86 与其他架构不一致 |
 | P0-016 | `grep -rh "文档版本" docs/AirymaxOS/ \| sort \| uniq -c` | 4份v0.2.8 |
 | P0-016 | `grep -rln "文档版本.\{0,5\}0\.2\.8" docs/AirymaxOS/` | 4份文档清单 |
-| P0-017 | `find agentrt-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"` | 无输出 |
-| P0-017 | `ls agentrt-linux/tools/` | 只有 README.md + validate-ssot.py |
+| P0-017 | `find agent-linux -type d -name "codegen"` + `find -name "syscall_gen.py"` + `find -name "*.bf"` | 无输出 |
+| P0-017 | `ls agent-linux/tools/` | 只有 README.md + validate-ssot.py |
 | P0-018 | `find -name "*abi*whitelist*" -o -name "*check_abi*" -o -name "*kabi*"` | 无 Airymax 专用工具 |
 | P0-018 | `grep -l "abi\|kabi\|ABI" .github/workflows/*.yml` | 无输出 |
 | GAP-01 | `Read 03-upstream-tracking.md §6.1 L460-466` | 5类~260补丁 |
@@ -563,6 +563,6 @@ v2.8 (0误判) —— 纠正v2.7全部误判，亲自逐项验证 + 全量扫描
 
 ---
 
-> **文档结束** | agentrt-linux v2.8 全量文档审查报告
+> **文档结束** | agent-linux v2.8 全量文档审查报告
 > 核心原则：对所有的问题，都要慎重进行再次验证。历史教训。
 > 误判递归已终结——v2.8 未产生新的误判。

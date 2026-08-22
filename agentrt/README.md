@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 本目录存放 AgentRT（Airymax 运行时）的**内部技术文档**，这些文档：
 
 1. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
-2. **与 agentrt-linux 互补**：agentrt-linux 侧重 Linux 内核技术参考，本目录侧重 Airymax 运行时本身的设计与工程文档
+2. **与 agent-linux 互补**：agent-linux 侧重 Linux 内核技术参考，本目录侧重 Airymax 运行时本身的设计与工程文档
 
 ---
 
@@ -86,14 +86,14 @@ docs-closed/agentrt/
 
 ## 3. 命名约定
 
-遵循 `agentrt-linux/` 的命名规范：
+遵循 `agent-linux/` 的命名规范：
 
 - **内容目录**：`NN-kebab-case-topic/`（两位编号 + kebab-case 主题）
 - **版本化目录**：`_phase_version/`（下划线 + 阶段 + 版本号）
   - 阶段类型：`review`（审计/评审）、`design`（设计/方案）、`analysis`（分析）、`research`（研究）
 - **归档目录**：`_archive_xxx/`（下划线 + archive + 主题）
 - **文件命名**：`NN-kebab-case-name.md`（编号 + kebab-case 名称）
-- **顶级文档**：允许中文名（同 `agentrt-linux/` 模式）
+- **顶级文档**：允许中文名（同 `agent-linux/` 模式）
 
 ---
 

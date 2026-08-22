@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # IPC 子系统技术规范
 
-> **文档定位**: 闭源内部参考，Linux 内核 IPC 子系统技术规范全面梳理，涵盖 System V IPC、POSIX 消息队列、管道/信号、共享内存、io_uring 现代 IPC 传输、AgentsIPC 协议设计，作为 agentrt-linux IPC 通信子系统的设计参考
+> **文档定位**: 闭源内部参考，Linux 内核 IPC 子系统技术规范全面梳理，涵盖 System V IPC、POSIX 消息队列、管道/信号、共享内存、io_uring 现代 IPC 传输、AgentsIPC 协议设计，作为 agent-linux IPC 通信子系统的设计参考
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-07
@@ -14,15 +14,15 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档系统性梳理 Linux 内核 IPC 子系统的工程规范，作为 agentrt-linux 微内核 IPC 通信通道设计的参考基础。文档遵循 IRON-9 v2 三段式参考方法：
+本文档系统性梳理 Linux 内核 IPC 子系统的工程规范，作为 agent-linux 微内核 IPC 通信通道设计的参考基础。文档遵循 IRON-9 v2 三段式参考方法：
 
 1. **先参考 Euler 标准**——梳理参考发行版（OLK-6.6 基线）IPC 子系统的设计哲学、关键数据结构、关键 API、性能调优、安全规范
 2. **再参考行业最新理论**——io_uring 零拷贝 IPC、seL4 capability-based 端点消息传递、Google gRPC 双向流、Zircon Channel 设计
-3. **最后形成 agentrt-linux 技术方案**——基于前两步形成 [SC]/[SS]/[IND] 三层共享模型的具体决策
+3. **最后形成 agent-linux 技术方案**——基于前两步形成 [SC]/[SS]/[IND] 三层共享模型的具体决策
 
-### 1.2 与 agentrt-linux 设计的差异化声明
+### 1.2 与 agent-linux 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。agentrt-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agentrt-linux/` 内部资料，可全面引用参考发行版工程规范。
+本文档**仅作为内部参考**，不公开引用。agent-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用参考发行版工程规范。
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -34,7 +34,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.4 五维原则适用声明
 
-本文档的设计决策遵循 agentrt-linux 五维原则：
+本文档的设计决策遵循 agent-linux 五维原则：
 
 | 维度 | 核心约束 | IPC 子系统中的体现 |
 |------|---------|-------------------|
@@ -53,7 +53,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | SQE | Submission Queue Entry | io_uring 提交队列条目（64B / 128B） |
 | CQE | Completion Queue Entry | io_uring 完成队列条目（16B / 32B） |
 | MSG_RING | IORING_OP_MSG_RING | io_uring 跨环消息传递操作码 |
-| AgentsIPC | - | agentrt-linux 128B 消息头异步 IPC 协议 |
+| AgentsIPC | - | agent-linux 128B 消息头异步 IPC 协议 |
 | ZC | Zero-Copy | 零拷贝传输 |
 | seL4 | - | L4 微内核家族安全验证内核 |
 | IPC namespace | - | Linux IPC 命名空间隔离 |
@@ -73,7 +73,7 @@ Linux IPC 子系统的设计哲学基于四大支柱：
 
 ### 2.2 六种 IPC 机制对比
 
-| IPC 机制 | 接口 | 持久化 | 多路复用 | 零拷贝 | 安全性 | agentrt-linux 采纳 |
+| IPC 机制 | 接口 | 持久化 | 多路复用 | 零拷贝 | 安全性 | agent-linux 采纳 |
 |----------|------|--------|---------|--------|--------|-------------------|
 | System V 消息队列 | `msgget/msgsnd/msgrcv` | 内核存在 | 否 | 否 | 权限位 | [IND] 不采用 |
 | POSIX 消息队列 | `mq_open/mq_send/mq_receive` | 内核 + 文件系统 | 是（poll/epoll） | 否 | 权限位 | [IND] 不采用 |
@@ -103,7 +103,7 @@ flowchart TB
         REG_BUF[registered buffer<br/>io_uring/rsrc.c]
     end
 
-    subgraph "agentrt-linux IPC 协议"
+    subgraph "agent-linux IPC 协议"
         AGENTS_IPC[AgentsIPC 协议引擎<br/>128B 消息头 + 0x41524531]
         TRACE[全链路追踪<br/>trace_id + request_id]
         CAP_ENDPOINT[capability 基端点<br/>seL4 风格]
@@ -252,7 +252,7 @@ void free_msg(struct msg_msg *msg);
 
 #### 3.3.3 消息存储与拷贝
 
-System V 消息队列在 `msgsnd` 时从用户态拷贝消息到内核态 `msg_msg` 结构体，在 `msgrcv` 时从内核态拷贝回用户态——**每次通信涉及两次跨地址空间拷贝**。这是其性能瓶颈的根本原因，也是 agentrt-linux 选择 io_uring registered buffer 零拷贝方案的关键动机。
+System V 消息队列在 `msgsnd` 时从用户态拷贝消息到内核态 `msg_msg` 结构体，在 `msgrcv` 时从内核态拷贝回用户态——**每次通信涉及两次跨地址空间拷贝**。这是其性能瓶颈的根本原因，也是 agent-linux 选择 io_uring registered buffer 零拷贝方案的关键动机。
 
 ```
 用户态 buf → copy_from_user → msg_msg 内核态 → copy_to_user → 用户态 buf
@@ -269,7 +269,7 @@ System V 消息队列在 `msgsnd` 时从用户态拷贝消息到内核态 `msg_m
 | > 0 | 接收第一条 `m_type == msgtyp` 的消息 |
 | < 0 | 接收第一条 `m_type <= -msgtyp` 的消息（最低类型优先） |
 
-此机制为传统 IPC 提供了基本的消息路由能力，但类型空间仅为 `long`（64 位），无法表达 agentrt-linux 所需的丰富路由语义（trace_id、request_id、src_task/dst_task）。
+此机制为传统 IPC 提供了基本的消息路由能力，但类型空间仅为 `long`（64 位），无法表达 agent-linux 所需的丰富路由语义（trace_id、request_id、src_task/dst_task）。
 
 #### 3.3.5 资源限制与 sysctl
 
@@ -381,7 +381,7 @@ flowchart LR
     style ACCESS fill:#fde68a,stroke:#b45309
 ```
 
-**零拷贝特性**：共享内存是唯一零拷贝的 System V IPC 机制——附加后进程直接读写同一物理页，无内核中转。但同步需额外机制（信号量或 eventfd），这是其与 agentrt-linux AgentsIPC 集成时的关键考量。
+**零拷贝特性**：共享内存是唯一零拷贝的 System V IPC 机制——附加后进程直接读写同一物理页，无内核中转。但同步需额外机制（信号量或 eventfd），这是其与 agent-linux AgentsIPC 集成时的关键考量。
 
 #### 3.5.4 资源限制与 sysctl
 
@@ -478,9 +478,9 @@ rm /dev/mqueue/my_queue
 
 消息通过红黑树 `msg_tree` 按优先级组织——`msg_tree_rightmost` 始终指向最高优先级消息，`mq_timedreceive` 在 O(log n) 时间内取出最高优先级消息。
 
-### 4.6 与 agentrt-linux 的对比
+### 4.6 与 agent-linux 的对比
 
-| 特性 | POSIX mqueue | agentrt-linux AgentsIPC |
+| 特性 | POSIX mqueue | agent-linux AgentsIPC |
 |------|-------------|------------------------|
 | 寻址方式 | 字符串名称（`/my_queue`） | capability 端点 ID（64 位） |
 | 消息格式 | 原始字节 + 5 位优先级 | 128B 消息头 + 可变长 payload |
@@ -544,7 +544,7 @@ ssize_t splice(int fd_in, loff_t *off_in, int fd_out,
                loff_t *off_out, size_t len, unsigned int flags);
 ```
 
-`splice` 通过 `PIPE_BUF_FLAG_CAN_MERGE` 标志和页引用传递实现零拷贝——内核在管道和目标文件之间移动页引用，而非拷贝数据。这是 agentrt-linux 借鉴管道设计的关键点，但 agentrt-linux 使用 io_uring registered buffer 实现更通用的零拷贝。
+`splice` 通过 `PIPE_BUF_FLAG_CAN_MERGE` 标志和页引用传递实现零拷贝——内核在管道和目标文件之间移动页引用，而非拷贝数据。这是 agent-linux 借鉴管道设计的关键点，但 agent-linux 使用 io_uring registered buffer 实现更通用的零拷贝。
 
 ### 5.2 信号（signal）
 
@@ -568,11 +568,11 @@ union sigval {
 int sigqueue(pid_t pid, int sig, const union sigval value);
 ```
 
-#### 5.2.3 agentrt-linux 不采用信号的理由
+#### 5.2.3 agent-linux 不采用信号的理由
 
 1. **不可靠性**：标准信号（非实时信号）不排队，多次发送可能丢失
 2. **无 payload**：标准信号只能传递一个 int（信号编号），实时信号也仅能携带 4 或 8 字节附加数据
-3. **异步执行模型冲突**：信号处理函数在信号栈上执行，与 agentrt-linux 协程模型冲突
+3. **异步执行模型冲突**：信号处理函数在信号栈上执行，与 agent-linux 协程模型冲突
 4. **无流控**：信号无内置背压机制，高负载下可能碾压目标进程
 5. **五维原则违背**：信号缺乏**可观测**性（无 trace_id）、**安全**性（无 capability 校验）、**隔离**性（无 namespace 隔离）
 
@@ -613,7 +613,7 @@ int memfd_create(const char *name, unsigned int flags);
 #define F_SEAL_FUTURE_WRITE 0x0010 /* 禁止未来写入 */
 ```
 
-`memfd_create` 是 agentrt-linux 共享内存方案的核心 API——它创建的内存文件描述符可以通过 Unix Domain Socket 的 `SCM_RIGHTS` 在进程间传递，配合 `F_SEAL_WRITE` 实现只读共享。
+`memfd_create` 是 agent-linux 共享内存方案的核心 API——它创建的内存文件描述符可以通过 Unix Domain Socket 的 `SCM_RIGHTS` 在进程间传递，配合 `F_SEAL_WRITE` 实现只读共享。
 
 ### 6.3 eventfd 同步
 
@@ -630,7 +630,7 @@ write(efd, &val, sizeof(val));
 read(efd, &val, sizeof(val));
 ```
 
-**eventfd + shared memory 组合**是 agentrt-linux 高性能数据通道的参考模式：
+**eventfd + shared memory 组合**是 agent-linux 高性能数据通道的参考模式：
 - 共享内存承载数据 payload（零拷贝）
 - eventfd 承载同步信号（可 poll/epoll/io_uring 多路复用）
 - 避免 System V 信号量的复杂操作数组和 SEM_UNDO 开销
@@ -641,7 +641,7 @@ read(efd, &val, sizeof(val));
 
 ### 7.1 设计哲学
 
-io_uring 是 Linux 内核 5.1+ 引入的异步 I/O 框架，其核心设计哲学"共享内存 + 批量提交 + 零拷贝"天然适用于高性能 IPC 场景。agentrt-linux 将 io_uring 定位为 IPC 通信的**唯一内核传输层**——所有 Agent 间通信最终通过 io_uring ring 完成。
+io_uring 是 Linux 内核 5.1+ 引入的异步 I/O 框架，其核心设计哲学"共享内存 + 批量提交 + 零拷贝"天然适用于高性能 IPC 场景。agent-linux 将 io_uring 定位为 IPC 通信的**唯一内核传输层**——所有 Agent 间通信最终通过 io_uring ring 完成。
 
 ### 7.2 IORING_OP_MSG_RING 规范
 
@@ -736,7 +736,7 @@ static int io_msg_ring(struct io_kiocb *req, unsigned int issue_flags)
 
 ### 7.3 Multi-Shot 模式
 
-`IORING_OP_MSG_RING` 支持 multi-shot 模式（通过 `IORING_MSG_RING_MULTI` 标志），允许单条 SQE 在目标 ring 生成多条 CQE，适用于 agentrt-linux 的广播/多播场景。
+`IORING_OP_MSG_RING` 支持 multi-shot 模式（通过 `IORING_MSG_RING_MULTI` 标志），允许单条 SQE 在目标 ring 生成多条 CQE，适用于 agent-linux 的广播/多播场景。
 
 ### 7.4 Registered Buffer 零拷贝
 
@@ -756,7 +756,7 @@ io_uring_prep_send_zc(sqe, sock_fd, NULL, 0, 0, IOSQE_FIXED_FILE);
 sqe->buf_index = 0;  /* 使用注册的缓冲区 */
 ```
 
-**agentrt-linux 零拷贝 IPC 路径**：
+**agent-linux 零拷贝 IPC 路径**：
 
 ```
 Agent A 写入 → 共享内存 (registered buffer) → 内核直接读取 → CQE 通知 Agent B
@@ -785,7 +785,7 @@ static int io_uring_enter_creds_check(struct io_ring_ctx *ctx)
 
 ### 8.1 设计哲学
 
-AgentsIPC 是 agentrt-linux 的**唯一 IPC 协议**——所有 Agent 间通信（Agent-to-Agent、Agent-to-System、Agent-to-Kernel）均通过 AgentsIPC 128B 消息头 + io_uring MSG_RING 传输。设计哲学：
+AgentsIPC 是 agent-linux 的**唯一 IPC 协议**——所有 Agent 间通信（Agent-to-Agent、Agent-to-System、Agent-to-Kernel）均通过 AgentsIPC 128B 消息头 + io_uring MSG_RING 传输。设计哲学：
 
 1. **固定头 + 可变体**：128B 固定消息头提供全链路追踪能力，可变长 payload 承载业务数据
 2. **magic 校验**：0x41524531 魔数防止消息伪造和协议版本错配
@@ -887,7 +887,7 @@ enum airy_ipc_payload_type {
 
 ### 8.5 Capability 基端点
 
-借鉴 seL4 capability 模型，agentrt-linux 的端点 ID 是**不可伪造的 capability 引用**：
+借鉴 seL4 capability 模型，agent-linux 的端点 ID 是**不可伪造的 capability 引用**：
 
 ```c
 /* include/airymax/capability.h — [SC] 共享 */
@@ -1041,9 +1041,9 @@ struct ipc_ids {
 
 **双索引查找**：`ipcs_idr` IDR 基数树支持 `semget(msgget/shmget, IPC_PRIVATE)` 快速分配新 ID，`key_ht` 可哈希表支持 `semget(key, 0)` 按 key 查找。两者互补——IDR 按位置索引，rhashtable 按 key 索引。
 
-### 9.4 agentrt-linux 中的 IPC namespace 应用
+### 9.4 agent-linux 中的 IPC namespace 应用
 
-agentrt-linux 为每个 Agent 创建独立的 IPC namespace，实现：
+agent-linux 为每个 Agent 创建独立的 IPC namespace，实现：
 
 | 隔离能力 | 实现方式 | 五维原则对应 |
 |---------|---------|-------------|
@@ -1085,7 +1085,7 @@ io_uring 的批量提交特性在 IPC 场景下优势显著：
 | 256 条消息 | 1 次 | 0.02 μs | 30× |
 | 1024 条消息 | 1 次 | 0.008 μs | 75× |
 
-**批量效应**：N 条消息仅需 1 次 `io_uring_enter` syscall，消息越大批量化收益越明显——这是 agentrt-linux 选择 io_uring 作为 IPC 传输层的核心性能依据。
+**批量效应**：N 条消息仅需 1 次 `io_uring_enter` syscall，消息越大批量化收益越明显——这是 agent-linux 选择 io_uring 作为 IPC 传输层的核心性能依据。
 
 ### 10.3 零拷贝 vs 有拷贝开销分解
 
@@ -1109,7 +1109,7 @@ io_uring 的批量提交特性在 IPC 场景下优势显著：
 | 共享内存（本地节点） | 0.4 μs | N/A | 0% |
 | 共享内存（跨 NUMA） | 0.4 μs | 0.9 μs | +125% |
 
-跨 NUMA 通信延迟主要来自缓存一致性协议开销。agentrt-linux 通过 SCHED_AGENT 策略优先将通信密集型 Agent 调度到同一 NUMA 节点，最小化跨 NUMA IPC 开销。
+跨 NUMA 通信延迟主要来自缓存一致性协议开销。agent-linux 通过 SCHED_AGENT 策略优先将通信密集型 Agent 调度到同一 NUMA 节点，最小化跨 NUMA IPC 开销。
 
 ---
 
@@ -1138,7 +1138,7 @@ int security_sem_semop(struct sem_array *sma, struct sembuf *sops,
 
 ### 11.3 Capability 基消息传递安全
 
-agentrt-linux 借鉴 seL4 capability 模型，实现能力基消息传递：
+agent-linux 借鉴 seL4 capability 模型，实现能力基消息传递：
 
 ```c
 /* [SC] 共享 — include/airymax/capability.h */
@@ -1190,9 +1190,9 @@ Agent B → 重新计算 HMAC，比对 → 通过/拒绝
 
 ### 11.5 seL4 参考安全属性
 
-agentrt-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属性：
+agent-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属性：
 
-| seL4 属性 | 含义 | agentrt-linux 对应 |
+| seL4 属性 | 含义 | agent-linux 对应 |
 |-----------|------|-------------------|
 | **Authority Confinement** | 能力传递不增加权限 | `mint` 仅能缩权 |
 | **No Authority Leakage** | 能力不可凭空创建 | capability ID 为随机值，不可猜解 |
@@ -1202,11 +1202,11 @@ agentrt-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属�
 
 ---
 
-## 12. agentrt-linux 采纳决策
+## 12. agent-linux 采纳决策
 
 ### 12.1 全面采纳的工程规范（7 项）
 
-| # | 规范 | 来源 | agentrt-linux 落地 |
+| # | 规范 | 来源 | agent-linux 落地 |
 |---|------|------|-------------------|
 | 1 | io_uring MSG_RING 跨环消息 | OLK-6.6 `io_uring/msg_ring.c` | **[SC] 核心采纳**——AgentsIPC 唯一内核传输层 |
 | 2 | io_uring registered buffer 零拷贝 | OLK-6.6 `io_uring/rsrc.c` | **[SC] 核心采纳**——payload 共享内存零拷贝 |
@@ -1218,7 +1218,7 @@ agentrt-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属�
 
 ### 12.2 不采纳的工程规范（4 项）
 
-| # | 规范 | 不采纳原因 | agentrt-linux 替代 |
+| # | 规范 | 不采纳原因 | agent-linux 替代 |
 |---|------|-----------|-------------------|
 | 1 | System V 消息队列 | 双拷贝开销、无多路复用、无类型路由 | AgentsIPC + io_uring MSG_RING |
 | 2 | POSIX 消息队列 | 同样双拷贝、优先级仅 5 位 | AgentsIPC 16 位优先级 + 8 位 QoS |
@@ -1237,7 +1237,7 @@ agentrt-linux 的 IPC 安全设计借鉴 seL4 形式化验证的以下安全属�
 
 ### 12.4 技术决策依据总结
 
-agentrt-linux 选择 io_uring + AgentsIPC 作为唯一 IPC 方案的核心依据：
+agent-linux 选择 io_uring + AgentsIPC 作为唯一 IPC 方案的核心依据：
 
 1. **性能**（五维原则）：零拷贝 + 批量提交，延迟降低 90%，吞吐量提升 5-10×
 2. **安全**（五维原则）：capability 基端点 + magic 校验 + HMAC 认证，不可伪造，不可越权
@@ -1348,11 +1348,11 @@ struct airy_ipc_otel_span {
 
 ---
 
-## 15. 与 agentrt-linux 设计的差异化声明
+## 15. 与 agent-linux 设计的差异化声明
 
 ### 15.1 采纳项（7 项）
 
-| # | 采纳特性 | 来源 | agentrt-linux 落地 |
+| # | 采纳特性 | 来源 | agent-linux 落地 |
 |---|---------|------|-------------------|
 | 1 | io_uring MSG_RING 跨环消息 | OLK-6.6 `io_uring/msg_ring.c` | [SC] 唯一 IPC 内核传输层 |
 | 2 | io_uring registered buffer 零拷贝 | OLK-6.6 `io_uring/rsrc.c` | [SC] payload 共享内存零拷贝 |
@@ -1364,7 +1364,7 @@ struct airy_ipc_otel_span {
 
 ### 15.2 不采纳项（4 项）
 
-| # | 不采纳特性 | 来源 | 不采纳原因 | agentrt-linux 替代 |
+| # | 不采纳特性 | 来源 | 不采纳原因 | agent-linux 替代 |
 |---|-----------|------|-----------|-------------------|
 | 1 | System V 消息队列 | OLK-6.6 `ipc/msg.c` | 双拷贝 + 无多路复用 | AgentsIPC + io_uring |
 | 2 | POSIX 消息队列 | OLK-6.6 `ipc/mqueue.c` | 双拷贝 + 优先级仅 5 位 | AgentsIPC 16 位优先级 |
@@ -1373,7 +1373,7 @@ struct airy_ipc_otel_span {
 
 ### 15.3 增强项（5 项）
 
-| # | 增强特性 | 来源 | agentrt-linux 增强 |
+| # | 增强特性 | 来源 | agent-linux 增强 |
 |---|---------|------|-------------------|
 | 1 | 128B 消息头协议 | 自研 | [SC] 共享 `airy_ipc_msg_hdr` |
 | 2 | seL4 风格 capability 端点 | seL4 形式化验证 | [SC] 共享 `agentrt_cap` |
@@ -1398,7 +1398,7 @@ struct airy_ipc_otel_span {
 
 | 版本 | 日期 | 变更内容 | 变更人 |
 |------|------|----------|--------|
-| 0.1.1 | 2026-07-07 | 初始版本，全面梳理 Linux IPC 工程规范 + AgentsIPC 协议设计 | agentrt-linux 架构委员会 |
+| 0.1.1 | 2026-07-07 | 初始版本，全面梳理 Linux IPC 工程规范 + AgentsIPC 协议设计 | agent-linux 架构委员会 |
 
 **变更历史**：
 

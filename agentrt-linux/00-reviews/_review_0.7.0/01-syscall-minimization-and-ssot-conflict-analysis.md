@@ -1,12 +1,12 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v0.7.0 深度综合审查报告
+# agent-linux v0.7.0 深度综合审查报告
 
 ## 三大核心议题：Syscall 极简研究 / 01-kernel.md vs SSoT 对比 / 系统性审查
 
 > **审查版本**: v0.7.0
 > **审查日期**: 2026-07-11
-> **审查范围**: 核心 Syscall 槽位缩减可行性研究 + 01-kernel.md 与 SSoT 根本性分歧对比分析 + agentrt-linux 方案更深层次系统性审查
+> **审查范围**: 核心 Syscall 槽位缩减可行性研究 + 01-kernel.md 与 SSoT 根本性分歧对比分析 + agent-linux 方案更深层次系统性审查
 > **前序版本**: v0.6.0 (58/100, C+)
 
 ---
@@ -24,7 +24,7 @@ seL4 是微内核 syscall 极简主义的标杆。其 `syscall.xml`（`libsel4/i
 
 **核心洞察**：seL4 的 8 个 syscall **全部是 IPC/调度原语**，没有"任务管理"、"内存管理"、"安全管理"等独立 syscall 类别。一切操作通过 **capability invocation**（即向 capability 发送 IPC 消息）完成。seL4 的错误码也仅 10 种（`libsel4/include/sel4/errors.h`），使用 `seL4_NumErrors` 哨兵模式。
 
-## 1.2 当前 agentrt-linux Syscall 清单分析
+## 1.2 当前 agent-linux Syscall 清单分析
 
 当前（01-syscalls.md）共 **20 个 syscall**，分配 **120 个槽位**（6 类 × 20），存在严重的 **槽位膨胀**：
 
@@ -53,7 +53,7 @@ seL4 是微内核 syscall 极简主义的标杆。其 `syscall.xml`（`libsel4/i
 
 ## 1.3 极简方案：核心 Syscall ≤ 12
 
-借鉴 seL4 的 capability invocation 模型，将 agentrt-linux syscall 缩减为两大层：
+借鉴 seL4 的 capability invocation 模型，将 agent-linux syscall 缩减为两大层：
 
 ### 第一层：IPC 原语层（7 个，借鉴 seL4）
 
@@ -67,7 +67,7 @@ seL4 是微内核 syscall 极简主义的标杆。其 `syscall.xml`（`libsel4/i
 | 6 | `agentrt_sys_nbrecv` | 非阻塞接收 |
 | 7 | `agentrt_sys_yield` | 让出 CPU |
 
-### 第二层：控制面原语层（5 个，agentrt-linux 专属）
+### 第二层：控制面原语层（5 个，agent-linux 专属）
 
 | # | Syscall | 用途 |
 |---|---------|------|
@@ -101,7 +101,7 @@ seL4 是微内核 syscall 极简主义的标杆。其 `syscall.xml`（`libsel4/i
 
 ### 1.6 结论
 
-**核心 syscall 完全可以 ≤ 12 个（< 20 目标）**。关键是将 seL4 的 capability invocation 模型落地：操作类型编码在 IPC 消息中而非 syscall 编号中，capability 决定权限边界。这与 agentrt-linux 已在设计的 seL4 风格 capability 系统（01-kernel.md §5）天然一致——当前 20 个 syscall 的设计与 capability 模型存在架构矛盾：如果已有 capability 系统，为什么还需要独立的 `capability_request` syscall？
+**核心 syscall 完全可以 ≤ 12 个（< 20 目标）**。关键是将 seL4 的 capability invocation 模型落地：操作类型编码在 IPC 消息中而非 syscall 编号中，capability 决定权限边界。这与 agent-linux 已在设计的 seL4 风格 capability 系统（01-kernel.md §5）天然一致——当前 20 个 syscall 的设计与 capability 模型存在架构矛盾：如果已有 capability 系统，为什么还需要独立的 `capability_request` syscall？
 
 ---
 
@@ -315,7 +315,7 @@ INIT=0/INUSE=1/TOBEFREE=2/READY=3
 
 **问题**：01-kernel.md §5 详细设计了 seL4 风格的 capability 系统（CTE/CNode/MDB/7 种 CNode 操作），但 01-syscalls.md 中仍保留了独立的 `capability_request`/`capability_revoke` syscall。
 
-**矛盾**：seL4 的 capability 模型核心思想是 **capability invocation = IPC**。在 seL4 中，没有"申请 capability"的 syscall——capability 通过 CNode 操作（Mint/Copy/Move）在进程间传递。如果 agentrt-linux 已经实现了完整的 CNode 7 操作，那么 `capability_request` syscall 就是多余的——它应该是一个 IPC 消息，发送到拥有该 capability 的 server。
+**矛盾**：seL4 的 capability 模型核心思想是 **capability invocation = IPC**。在 seL4 中，没有"申请 capability"的 syscall——capability 通过 CNode 操作（Mint/Copy/Move）在进程间传递。如果 agent-linux 已经实现了完整的 CNode 7 操作，那么 `capability_request` syscall 就是多余的——它应该是一个 IPC 消息，发送到拥有该 capability 的 server。
 
 **建议**：删除 `agentrt_sys_capability_request` 和 `agentrt_sys_capability_revoke`，改为通过 `agentrt_sys_call`（capability invocation）实现。
 
@@ -345,7 +345,7 @@ INIT=0/INUSE=1/TOBEFREE=2/READY=3
 
 ### 发现 6：01-kernel.md §2.1 维度对比表中 struct_ops 状态命名不一致
 
-L136: `airymax_struct_ops_state` vs `enum bpf_struct_ops_state`。同一行中 agentrt 侧和 agentrt-linux 侧使用了不同的类型名，但标注为 [SC] 共享——[SC] 共享意味着类型必须完全相同。
+L136: `airymax_struct_ops_state` vs `enum bpf_struct_ops_state`。同一行中 agentrt 侧和 agent-linux 侧使用了不同的类型名，但标注为 [SC] 共享——[SC] 共享意味着类型必须完全相同。
 
 ## 3.3 数值一致性新发现
 
@@ -412,4 +412,4 @@ SSoT sched.h 中没有定义 `AIRYMAX_WEIGHT_MIN/MAX`（1/10000），但 01-kern
 
 ---
 
-> **报告结束** | agentrt-linux v0.7.0 深度综合审查报告 | 2026-07-11
+> **报告结束** | agent-linux v0.7.0 深度综合审查报告 | 2026-07-11

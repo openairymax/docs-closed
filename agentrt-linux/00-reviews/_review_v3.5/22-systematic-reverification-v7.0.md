@@ -1,7 +1,7 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v7.0 系统性深层复核报告
-> **文档定位**：基于"agentrt-linux 仍处于方案设计阶段"前提，对整体方案进行系统性深层次检查，并逐一复核 _review_v3.5 全部 22 份报告中的数百个问题\
+# agent-linux v7.0 系统性深层复核报告
+> **文档定位**：基于"agent-linux 仍处于方案设计阶段"前提，对整体方案进行系统性深层次检查，并逐一复核 _review_v3.5 全部 22 份报告中的数百个问题\
 > **文档版本**：v7.0\
 > **最后更新**：2026-07-27\
 > **上级文档**：[21-fix-implementation-report-v6.1.md](21-fix-implementation-report-v6.1.md)\
@@ -13,11 +13,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 审查范围与前提
 
-**核心前提**（用户明确）：agentrt-linux 目前仍然是方案设计阶段，除了内核的改造框架，其他开发还没有正式开始。
+**核心前提**（用户明确）：agent-linux 目前仍然是方案设计阶段，除了内核的改造框架，其他开发还没有正式开始。
 
 本轮审查包含两大任务：
 1. **逐一复核**：对 _review_v3.5 目录下 22 份报告中的数百个问题进行逐一确认
-2. **深层检查**：从设计阶段视角对 agentrt-linux 整体方案进行新的系统性深层次检查
+2. **深层检查**：从设计阶段视角对 agent-linux 整体方案进行新的系统性深层次检查
 
 ### 1.2 审查方法
 
@@ -237,7 +237,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### B-2: sc-dual-ci.yml 未使用 diff -q 字节级比对
 
-**位置**：`agentrt-linux/.github/workflows/sc-dual-ci.yml`
+**位置**：`agent-linux/.github/workflows/sc-dual-ci.yml`
 
 **问题**：
 - 未使用 `diff -q` 进行 kernel 侧与 agentrt 侧头文件的字节级比对
@@ -250,7 +250,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### B-3: README badge 版本号与文档版本号体系不一致
 
-**位置**：`agentrt-linux/README.md` L8（version-0.1.1 badge）
+**位置**：`agent-linux/README.md` L8（version-0.1.1 badge）
 
 **问题**：README badge 显示 `version-0.1.1`，但 docs/AirymaxOS/ 下所有文档统一标注 `v1.0.1`。
 
@@ -523,7 +523,7 @@ v7.0 评分较 v6.1 下降 3 分，原因：
 
 ### 8.3 整体方案评估
 
-**✅ agentrt-linux 整体方案设计质量优秀**，体现：
+**✅ agent-linux 整体方案设计质量优秀**，体现：
 - 微内核设计思想（seL4/Zircon/Minix3 借鉴）
 - IRON 工程铁律执行（OS-IRON-001~008）
 - 内核不应该思考原则（sched_tac 优秀，CoreLoopThree 需明确边界）

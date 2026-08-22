@@ -251,7 +251,7 @@ static inline int airy_cap_badge_ok(u64 src_task, u64 badge, u16 opcode)
 阶段 4: 31 号架构耦合性审查
   ├─ 论证 seL4 架构级隔离 vs A-IPC 数据结构级隔离
   ├─ fastpath 100 行代码 CBMC 全函数验证可行
-  └─ trade-off 对 agentrt-linux 可接受
+  └─ trade-off 对 agent-linux 可接受
 
 阶段 5: 33 号三大物理鸿沟审查
   ├─ uring_lock 持有 wake_up → NONBLOCK + io-wq
@@ -362,7 +362,7 @@ A-IPC 是 AirymaxOS 的"第一块基石"，Capability Folding 赋予它基石的
 H1: Layout C v4 总长保持 128 字节，magic 保持 0x41524531 'ARE1'
 H2: capability_badge 字段进入 [SC] ipc.h，但校验机制属于 [SS] 层
 H3: agentrt 用户态 capability_badge 始终为 0，使用传统 cap_t 引用
-H4: agentrt-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
+H4: agent-linux 内核 capability_badge 由 sec_d 编译，fastpath C-S9 校验
 H5: 纯 C LSM 模块职责不变（策略/撤销/审计/执法），Badge 校验是其 fastpath 内联
 H6: [DSL] 降级模式下 capability_badge 字段存在但被忽略（值=0，跳过校验）
 ```
@@ -557,7 +557,7 @@ Phase 4: 集成与文档定稿
 
 **验收标准**：
 - `_Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128)` 通过
-- sc-dual-ci.yml 在 agentrt 和 agentrt-linux 双端校验通过
+- sc-dual-ci.yml 在 agentrt 和 agent-linux 双端校验通过
 - magic 值 `0x41524531` 冻结
 
 ### 8.4 Phase 2: fastpath 实现
@@ -632,7 +632,7 @@ Phase 4: 集成与文档定稿
 
 ### 8.6 Phase 4: 集成与文档定稿
 
-**目标**：集成到 agentrt-linux 完整系统，发布 v0.1.1。
+**目标**：集成到 agent-linux 完整系统，发布 v0.1.1。
 
 **任务清单**：
 
@@ -753,7 +753,7 @@ Step 2: 创建实施 TODO 清单
   └─ 2.3 创建验收检查清单
 
 Step 3: 建立实施基线
-  ├─ 3.1 确认 agentrt-linux 仓库结构
+  ├─ 3.1 确认 agent-linux 仓库结构
   ├─ 3.2 确认 kernel/include/airymax/ 目录
   └─ 3.3 确认 sc-dual-ci.yml 配置
 ```
@@ -926,9 +926,9 @@ Capability Folding 是乔布斯/艾夫设计哲学在内核工程上的落地:
 
 | # | 文档 | 性质 | 行数 |
 |---|------|------|------|
-| 34 | [34-overall-perspective-scientific-judgment.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/34-overall-perspective-scientific-judgment.md) | 科学论证 | 612 |
-| 35 | [35-aipc-final-redesign.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/35-aipc-final-redesign.md) | 最终设计 | 1806 |
-| 36 | [36-unify-design-comprehensive-check.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/36-unify-design-comprehensive-check.md) | 五模块检查 | 870 |
+| 34 | [34-overall-perspective-scientific-judgment.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/34-overall-perspective-scientific-judgment.md) | 科学论证 | 612 |
+| 35 | [35-aipc-final-redesign.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/35-aipc-final-redesign.md) | 最终设计 | 1806 |
+| 36 | [36-unify-design-comprehensive-check.md](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/36-unify-design-comprehensive-check.md) | 五模块检查 | 870 |
 | 37 | 本文 | 决策总纲 | - |
 
 ### 14.2 关键审查报告

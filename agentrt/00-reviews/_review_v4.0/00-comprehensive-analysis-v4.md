@@ -9,7 +9,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v4.0 全面审查 + 系统性修正任务的阶段 2 综合分析报告。整合 4 份并行 v4.0 审查报告（开源文档 / 闭源文档 / 源码 / 跨文档一致性），对 agentrt 项目进行去重归类、系统性修正路线图制定与 1.0.1 M1 就绪判定。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：4.0（2026-07-14）。
-> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agentrt-linux`。
+> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agent-linux`。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
 
 ---

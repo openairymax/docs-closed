@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 8 子仓完整项目目录结构设计（v0.2.1）
+# agent-linux 8 子仓完整项目目录结构设计（v0.2.1）
 
-> **文档定位**: 基于 [OLK-6.6 与 seL4 源代码工程思想研究报告](../../00-reviews/_research_0.2.1/01-source-code-engineering-study.md) 提取的目录组织模式（OLK-6.6: include/{uapi,linux,asm-generic} + kernel/{sched,...} + mm/ + security/ + io_uring/ + arch/ + scripts/ + Documentation/ + MAINTAINERS；seL4: src/{api,kernel,object,fastpath,arch,machine,plat} + include/ + libsel4/ + proof/ + spec/ + capDL/），为 `OpenAirymax/agentrt-linux/` 下 8 个子仓设计完整的内部项目目录结构，作为 1.0.1 开发阶段的目录骨架。
+> **文档定位**: 基于 [OLK-6.6 与 seL4 源代码工程思想研究报告](../../00-reviews/_research_0.2.1/01-source-code-engineering-study.md) 提取的目录组织模式（OLK-6.6: include/{uapi,linux,asm-generic} + kernel/{sched,...} + mm/ + security/ + io_uring/ + arch/ + scripts/ + Documentation/ + MAINTAINERS；seL4: src/{api,kernel,object,fastpath,arch,machine,plat} + include/ + libsel4/ + proof/ + spec/ + capDL/），为 `OpenAirymax/agent-linux/` 下 8 个子仓设计完整的内部项目目录结构，作为 1.0.1 开发阶段的目录骨架。
 > **版本**: 0.2.1（目录结构设计）
 > **最后更新**: 2026-07-09
 > **设计原则**: (1) Linux 6.6 内核基线对齐（ES-OLK-1~13）；(2) seL4 架构层借鉴（ES-SEL4-1~10）；(3) IRON-9 v2 [SC] 共享契约层 6 个头文件落地于 include/airymax/；(4) Airymax 同源（atoms/corekern 复用）；(5) 双许可证 AGPL-3.0+Apache-2.0；(6) 8 子仓依赖层次（L2-L7）
@@ -13,7 +13,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ## 目录
 
 - [第 1 章 设计总则](#第-1-章-设计总则)
-- [第 2 章 管理仓 agentrt-linux 目录结构](#第-2-章-管理仓-agentrt-linux-目录结构)
+- [第 2 章 管理仓 agent-linux 目录结构](#第-2-章-管理仓-agent-linux-目录结构)
 - [第 3 章 airymaxos-kernel（kernel/）](#第-3-章-airymaxos-kernelkernel)
 - [第 4 章 airymaxos-services（services/）](#第-4-章-airymaxos-servicesservices)
 - [第 5 章 airymaxos-security（security/）](#第-5-章-airymaxos-securitysecurity)
@@ -92,12 +92,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
-## 第 2 章 管理仓 agentrt-linux 目录结构
+## 第 2 章 管理仓 agent-linux 目录结构
 
 管理仓（非 leaf 仓）聚合 8 个子模块，自身不含实现代码，仅含治理与文档索引。
 
 ```
-agentrt-linux/                    # 管理仓（main 分支）
+agent-linux/                    # 管理仓（main 分支）
 ├── README.md                     # 英文 README（8 子仓矩阵 + 架构层次图）
 ├── README_zh.md                  # 中文 README
 ├── LICENSE                       # AGPL-3.0 + Apache-2.0 双许可证
@@ -119,7 +119,7 @@ agentrt-linux/                    # 管理仓（main 分支）
                                   # （设计文档维护在 umbrella 仓库，管理仓仅引用）
 ```
 
-**说明**: 管理仓的 `docs/` 是对 umbrella 仓库 `docs/AirymaxAgentOS/` 的引用（软链接或文档指针），避免设计文档与代码分离维护。agentrt-linux 管理仓本身不创建 feature 分支（`main` only），所有子仓开发在 `feature/official-hubs-01` 分支进行。
+**说明**: 管理仓的 `docs/` 是对 umbrella 仓库 `docs/AirymaxAgentOS/` 的引用（软链接或文档指针），避免设计文档与代码分离维护。agent-linux 管理仓本身不创建 feature 分支（`main` only），所有子仓开发在 `feature/official-hubs-01` 分支进行。
 
 ---
 
@@ -295,7 +295,7 @@ kernel/                           # airymaxos-kernel（feature/official-hubs-01 
 
 ### 3.3 关键设计说明
 
-1. **arch/ + machine/ + plat/ 三层架构适配**（ES-SEL4-7）: 借鉴 seL4 三层适配模型而非 OLK-6.6 单一 `arch/`，理由是 agentrt-linux 需要支持虚拟平台（QEMU）与真实硬件平台分离，`plat/` 隔离平台特定代码（如 QEMU virt vs 真实服务器主板）。
+1. **arch/ + machine/ + plat/ 三层架构适配**（ES-SEL4-7）: 借鉴 seL4 三层适配模型而非 OLK-6.6 单一 `arch/`，理由是 agent-linux 需要支持虚拟平台（QEMU）与真实硬件平台分离，`plat/` 隔离平台特定代码（如 QEMU virt vs 真实服务器主板）。
 
 2. **corekern/ 仅 4 原子机制**（ES-SEL4-1）: `corekern/{sched,ipc,taskflow,memory,time}` 对应 seL4 的"IPC/地址空间/线程/唯一性"极简原语，复用 atoms/corekern MicroCoreRT 设计。time 单列以对齐"北京时间 CLOCK_REALTIME"工程约定。
 
@@ -871,7 +871,7 @@ cloudnative/                     # airymaxos-cloudnative（feature/official-hubs
 
 ### 8.3 关键设计说明
 
-1. **sdk/ 借鉴 libsel4 模型**: 4 语言 SDK 独立于运行时，用户程序通过 SDK 与 agentrt-linux 通信，不直接调用内核/daemon 内部函数（ES-SEL4-9）。
+1. **sdk/ 借鉴 libsel4 模型**: 4 语言 SDK 独立于运行时，用户程序通过 SDK 与 agent-linux 通信，不直接调用内核/daemon 内部函数（ES-SEL4-9）。
 
 2. **Go 为主语言**: K8s 生态主流语言，CRD 控制器/containerd shim/agentctl 均为 Go。
 
@@ -1070,7 +1070,7 @@ tests-linux/                      # airymaxos-tests-linux（feature/official-hub
 
 ### 10.3 关键设计说明
 
-1. **formal-verification/ seL4 风格**: `spec/`（抽象规约）+ `proof/`（Isabelle/HOL 证明）+ `capdl/`（capability 分布）三段式严格借鉴 seL4（ES-SEL4-5），但不复制 seL4 证明，针对 agentrt-linux 的 capability/IPC/调度建立独立规约与证明。
+1. **formal-verification/ seL4 风格**: `spec/`（抽象规约）+ `proof/`（Isabelle/HOL 证明）+ `capdl/`（capability 分布）三段式严格借鉴 seL4（ES-SEL4-5），但不复制 seL4 证明，针对 agent-linux 的 capability/IPC/调度建立独立规约与证明。
 
 2. **integration/ 7 子仓两两集成**: 按 `20-modules/README.md` §2 的依赖图组织，每条依赖关系对应一个集成测试目录。
 
@@ -1138,7 +1138,7 @@ tests-linux/                      # airymaxos-tests-linux（feature/official-hub
 
 ## 附录 B：规则编号映射
 
-本设计涉及的 agentrt-linux 工程标准规则编号：
+本设计涉及的 agent-linux 工程标准规则编号：
 
 | 规则编号 | 含义 | 落地位置 |
 |---------|------|---------|

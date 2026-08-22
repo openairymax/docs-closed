@@ -2,7 +2,7 @@
 
 > **文档版本**: v29.0
 > **适用版本**: AgentRT v0.1.1（三大支柱：奠基 + 38 仓拆分 + 生产就绪）
-> **适用范围**: Airymax 全项目 38 个 git 仓库（伞仓 airymaxhub + 5 管理仓 agentrt/agentrt-linux/sdk/ecosystem/products + 29 叶子仓 + 3 顶层仓 devtools/docs/docs-closed）
+> **适用范围**: Airymax 全项目 38 个 git 仓库（伞仓 airymaxhub + 5 管理仓 agentrt/agent-linux/sdk/ecosystem/products + 29 叶子仓 + 3 顶层仓 devtools/docs/docs-closed）
 > **最后更新**: 2026-07-15
 > **前版**: v25.0 (2026-07-04, 唯一奠基版本工程规范)
 >
@@ -18,12 +18,12 @@
 
 ### v27.0 变动说明（AirymaxOS 前瞻，v4.1 对应）
 
-- **AirymaxOS（agentrt-linux）决策（用户决策 2026-07-06）**: agentrt-linux 正式全称 "AirymaxOS"（极境智能体操作系统），与 agentrt（AirymaxAgentRT / 极境智能体运行底座平台工程）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范，兼容 Euler 标准。agentrt 和 AirymaxOS **同源**（共享 Airymax 设计理念），agentrt 在 AirymaxOS 上运行**天然更稳健和适配**（架构同源，无适配层）。天然云原生亲和力（对标 Ubuntu/openEuler）。
+- **AirymaxOS（agent-linux）决策（用户决策 2026-07-06）**: agent-linux 正式全称 "AirymaxOS"（极境智能体操作系统），与 agentrt（AirymaxAgentRT / 极境智能体运行底座平台工程）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范，兼容 Euler 标准。agentrt 和 AirymaxOS **同源**（共享 Airymax 设计理念），agentrt 在 AirymaxOS 上运行**天然更稳健和适配**（架构同源，无适配层）。天然云原生亲和力（对标 Ubuntu/openEuler）。
 - **8 子仓设计（基于微内核设计思想 + openEuler 标准 + Airymax 同源）**: 每个子仓明确对应 agentrt 模块：(1) airymaxos-kernel 复用 atoms/corekern (2) airymaxos-services 复用 daemons (3) airymaxos-security 复用 cupolas (4) airymaxos-memory 复用 heapstore+memoryrovol (5) airymaxos-cognition 复用 coreloopthree+frameworks (6) airymaxos-cloudnative 复用 gateway+sdk (7) airymaxos-system 复用 commons (8) airymaxos-tests-linux 复用全模块测试。基于 2026-07-06 CS 最新理论。
 - **仓库总数变更**: 29 仓 → **38 仓**（+9）。1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓。
 - **OS 文档位置决策**: OS 设计文档全部在 `docs/AirymaxOS/` 模块内（含 12 个设计文档），RT 文档继续在 `docs-closed/`，物理分开。
-- **新增 IRON-9 v2 工程铁律**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净，AirymaxOS 是完整发行版。代码共享边界澄清：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准的发行版工具链。
-- **新增第三十八章：AirymaxOS（agentrt-linux）工程规范**。
+- **新增 IRON-9 v2 工程铁律**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净，AirymaxOS 是完整发行版。代码共享边界澄清：代码共享仅限于 agentrt 与 agent-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准的发行版工具链。
+- **新增第三十八章：AirymaxOS（agent-linux）工程规范**。
 - **新增 BAN-357~BAN-360（4 项）**: AirymaxOS 仓库占位/OS 文档分离/内核态污染/子仓命名。BAN 规则从 356 项扩展为 360 项。
 > **v25.0 变动说明**: v3.5 用户确立 **0.1.1 是唯一奠基版本**（无 0.1.2/0.2.0/0.3.0 计划，直接过渡到 1.0.1），所有架构、标准、许可证、质量和生态工作必须在 0.1.1 内完成。新增**第三十五章：奠基性版本工程规范（FOUND-01~FOUND-10）**，含 5 大核心决策的工程规范落实：(1) **CoreKern 精简方案 C**（FOUND-01/02）：从 7,522 行精简至 ~4,000 行的硬性行数约束 + 5 类移出范围清单 + ops 钩子保留原则；(2) **taskflow 双引擎协同方案**（FOUND-03/04）：A/B 类语义重新分类规范 + 6 类 BUG 修复规范 + 0.1.1 强制 max_workers=1 降级约束；(3) **SDK 双层 API 4 语言**（FOUND-05/06）：4×4 嵌套客户端矩阵规范 + L1 C ABI + L2 语言原生包装双层架构；(4) **AGPL v3 + Apache 2.0 双许可证**（FOUND-07）：SPDX 表达式 `AGPL-3.0-or-later OR Apache-2.0` 强制规范 + 版权人 SPHARX Ltd. 统一；(5) **静态分析基线**（FOUND-08/09）：lizard v1.23.0 CCN 阈值 + 重复检测器阈值 + 拆分操作规范；(6) **唯一奠基版本工程铁律**（FOUND-10）：禁止新特性、禁止桩函数、禁止绕开功能限制、禁止简化功能。新增 BAN-328~BAN-340 共 13 项 v3.5 BAN 规则。BAN 规则从 327 项扩展为 340 项（+13）。配套：详细任务清单 v1.7.0 + 技术改进方案 v3.5 + taskflow 对比报告 v1.0。
 > **v24.7 变动说明**: v3.4 用户 7 项关键决策落实。(1) **第三十三章 ARC-01~ARC-08 方案 A 修正**：原方案 B（物理迁移 coreloopthree/frameworks/taskflow 到 daemons 层）已否决，改为方案 A（接口反转）——引入 ops 抽象表（`airy_checkpoint_ops_t`/`airy_hook_ops_t`/`airy_orch_ops_t`），daemons init 时注入，atoms 文件物理位置不变，消除全部 17 处反向依赖。taskflow 保留在 atoms（是通用 Pregel/DAG 核心原语）。BAN-313/315 撤销，新增 BAN-319（ops 注入点为空时优雅降级）。(2) **新增第三十四章（开放标准规范 STD-01~STD-08）**：覆盖 SDK 双层 API、IPC 128 字节消息头、服务发现多后端适配器、JSON-RPC 命名空间、统一错误码、ARE Standards 三层标准、独立仓库可行性、开放标准 BAN 规则（BAN-320~BAN-327）。(3) **新增 LOG-26 全功能统一打印/日志系统定义**。BAN 规则从 318 项扩展为 327 项（+9）。
@@ -1729,7 +1729,7 @@ airymaxhub/                                  # 伞仓（1）
 | agentrt 管理仓历史保留 | `git -C agentrt log --oneline | wc -l` 与原 AgentRT 一致 | 一致 |
 | agentrt 管理仓 url | `git -C agentrt remote -v` | `git@atomgit.com:openairymax/agentos.git` |
 | 伞仓一次性拉取 | `git clone --recursive git@atomgit.com:openairymax/airymaxhub.git` | 无失败 submodule |
-| 5 管理仓 .gitmodules 条目数 | agentrt(7) + sdk(6) + ecosystem(5) + products(3) + agentrt-linux(8) | 29 |
+| 5 管理仓 .gitmodules 条目数 | agentrt(7) + sdk(6) + ecosystem(5) + products(3) + agent-linux(8) | 29 |
 | cmake/ agentrt 管理仓直属 | `ls agentrt/cmake/*.cmake | wc -l` | 5 |
 | memoryrovol EULA | `git -C products/memoryrovol remote -v` + `head LICENSE` | spharx 组织 + EULA |
 | sdk-xx 命名 | `ls sdk/` | 全部 sdk-* 模式 |
@@ -2241,7 +2241,7 @@ v4.0/v4.1/v4.2 新增的 BAN-341~BAN-361 共 21 项规则分散在 §11.6/§11.7
 | BAN-354 | 禁止安全审计降级 | §37.7 |
 | BAN-355 | 禁止 149 项验收有 1 项 FAIL | §37.7 |
 | BAN-356 | 禁止跳过 cosign 签名 | §37.7 |
-| BAN-357 | 禁止 0.1.1 中 agentrt-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | §38.9 |
+| BAN-357 | 禁止 0.1.1 中 agent-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | §38.9 |
 | BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxOS/） | §38.9 |
 | BAN-359 | 禁止 AirymaxOS 内核态代码污染 agentrt 用户态跨平台路径（IRON-9） | §38.9 |
 | BAN-360 | 禁止 AirymaxOS 子仓名不使用 airymaxos- 前缀 | §38.9 |
@@ -3340,13 +3340,13 @@ cmake --build build --target agentrt_atoms_standalone
 
 ### 34.2 IPC Bus 统一消息头规范（STD-02）
 
-> **SSoT 声明**：IPC 消息头结构体权威定义位于 `include/airymax/ipc.h`（[SC] 共享契约层，agentrt 与 agentrt-linux 共享同一物理头文件，逐字节相同）。本节代码必须与 `docs/AirymaxRT/30-interfaces/06-ipc/README.md` §2.1（`struct airy_ipc_msg_hdr`，128 字节，8 字段，`__attribute__((packed))`，`_Static_assert(sizeof(...) == 128)`）以及源码 `agentrt/commons/include/airymax/ipc.h` 逐字节一致。
+> **SSoT 声明**：IPC 消息头结构体权威定义位于 `include/airymax/ipc.h`（[SC] 共享契约层，agentrt 与 agent-linux 共享同一物理头文件，逐字节相同）。本节代码必须与 `docs/AirymaxRT/30-interfaces/06-ipc/README.md` §2.1（`struct airy_ipc_msg_hdr`，128 字节，8 字段，`__attribute__((packed))`，`_Static_assert(sizeof(...) == 128)`）以及源码 `agentrt/commons/include/airymax/ipc.h` 逐字节一致。
 
 **强制规则 STD-02**: 所有 IPC 消息必须使用 128 字节统一消息头 `struct airy_ipc_msg_hdr`。
 
 **消息头结构**（128 字节，[SC] 共享契约层）：
 ```c
-/* include/airymax/ipc.h —— [SC] 共享契约层，agentrt 与 agentrt-linux 逐字节共享 */
+/* include/airymax/ipc.h —— [SC] 共享契约层，agentrt 与 agent-linux 逐字节共享 */
 #include <airymax/uapi_compat.h>  /* __u32/__u16/__u64/__u8 跨平台 UAPI 类型 */
 
 #define AIRY_IPC_MAGIC    0x41524531u   /* 'ARE1' —— IPC 消息头 magic */
@@ -3365,7 +3365,7 @@ cmake --build build --target agentrt_atoms_standalone
  * @reserved: 84 bytes padding, must be zero.
  *
  * Fixed 128-byte header, layout never changes. Shared between
- * agentrt (user-space) and agentrt-linux (kernel) via [SC] contract layer.
+ * agentrt (user-space) and agent-linux (kernel) via [SC] contract layer.
  * Recipients MUST validate magic before processing.
  */
 struct airy_ipc_msg_hdr {
@@ -3730,7 +3730,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 | IRON-6 | **禁止跨层耦合残留**: 0.1.1 拆仓前必须完成 5 处跨层耦合解耦（SP02-SP06），任何残留即拆仓失败 | 38 仓独立构建硬约束 | §36.1 |
 | IRON-7 | **禁止版本过渡**: 0.1.1 之后直接 1.0.1，禁止 0.1.2/0.2.0/0.3.0/1.0.0 中间版本，禁止兼容别名头/兼容层/双轨制 | 用户硬约束（2026-07-05） | §36.1 |
 | IRON-8 | **禁止生产就绪降级**: SP32-SP37 生产就绪 6 项全部必须达标，未达标禁止发布 0.1.1 | 一切以生产就绪为目标 | §36.1 |
-| IRON-9 | **agentrt 和 AirymaxOS 同源且部分代码共享**（IRON-9 v2，2026-07-07 变更）: 三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版（基于 Linux 内核 + 微内核化改造）。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容） | AirymaxOS 与 AirymaxAgentRT 架构分离硬约束（2026-07-06，2026-07-07 IRON-9 v2 变更） | §38.1 |
+| IRON-9 | **agentrt 和 AirymaxOS 同源且部分代码共享**（IRON-9 v2，2026-07-07 变更）: 三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版（基于 Linux 内核 + 微内核化改造）。代码共享边界：代码共享仅限于 agentrt 与 agent-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容） | AirymaxOS 与 AirymaxAgentRT 架构分离硬约束（2026-07-06，2026-07-07 IRON-9 v2 变更） | §38.1 |
 | IRON-10 | **禁止引用 Linux 7.0 专属特性作为 6.6 原生能力**: AirymaxOS 基于 Linux 6.6（openEuler 24.03 LTS 内核版本），禁止引用 Linux 7.0 专属特性（PREEMPT_LAZY / Rust 正式转正 / MGLRU 2.0 / XFS 自修复 / eBPF 签名验证等）作为 Linux 6.6 原生能力。正确表述：EEVDF 调度器 / Rust 实验性支持 / MGLRU 多代 LRU / sched_ext（openEuler backport，主线 6.12+）/ eBPF kfunc + dynamic pointer / XFS 在线 fsck | Linux 6.6 内核版本兼容性硬约束（2026-07-06） | §38.10 |
 
 **例外审批流程**:
@@ -3793,9 +3793,9 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 | 类别 | 数量 | 仓库列表 |
 |------|:---:|---------|
 | 伞仓 | 1 | `airymaxhub` |
-| 管理仓 | 5 | `agentrt`、`agentrt-linux`（AirymaxOS 管理仓）、`sdk`、`ecosystem`、`products` |
+| 管理仓 | 5 | `agentrt`、`agent-linux`（AirymaxOS 管理仓）、`sdk`、`ecosystem`、`products` |
 | C 层叶子仓 | 7 | `atoms`、`commons`、`cupolas`、`heapstore`、`protocols`、`gateway`、`daemons`（agentrt 管理仓的子仓） |
-| AirymaxOS 叶子仓 | 8 | `airymaxos-kernel`、`airymaxos-services`、`airymaxos-security`、`airymaxos-memory`、`airymaxos-cognition`、`airymaxos-cloudnative`、`airymaxos-system`、`airymaxos-tests-linux`（agentrt-linux 管理仓的子仓） |
+| AirymaxOS 叶子仓 | 8 | `airymaxos-kernel`、`airymaxos-services`、`airymaxos-security`、`airymaxos-memory`、`airymaxos-cognition`、`airymaxos-cloudnative`、`airymaxos-system`、`airymaxos-tests-linux`（agent-linux 管理仓的子仓） |
 | SDK 叶子仓 | 6 | `sdk-python`、`sdk-go`、`sdk-rust`、`sdk-typescript`、`sdk-cli`、`sdk-tui` |
 | 生态叶子仓 | 5 | `manager`、`prompts`、`examples`、`openlab`、`skills` |
 | 产品叶子仓 | 3 | `desktop`、`docker`、`memoryrovol`（闭源 EULA） |
@@ -3807,7 +3807,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
 ```
 airymaxhub（L0）
 ├── agentrt（L1 管理仓）→ 7 个 L2 叶子仓
-├── agentrt-linux（L1 管理仓，1.0.1）→ 6 个 L2 叶子仓
+├── agent-linux（L1 管理仓，1.0.1）→ 6 个 L2 叶子仓
 ├── sdk（L1 管理仓）→ 6 个 L2 叶子仓
 ├── ecosystem（L1 管理仓）→ 5 个 L2 叶子仓
 ├── products（L1 管理仓）→ 3 个 L2 叶子仓
@@ -3822,7 +3822,7 @@ airymaxhub（L0）
 
 > **v0.1.2 变更**：构建系统模块 `cmake/` 与官方安装器 `scripts/` 自伞仓直属迁入
 > agentrt 管理仓（`agentrt/cmake/`、`agentrt/scripts/`）。构建系统与安装器属
-> IRON-9 四层共享模型 [IND] 完全独立层，agentrt（用户态）与 agentrt-linux
+> IRON-9 四层共享模型 [IND] 完全独立层，agentrt（用户态）与 agent-linux
 > （内核态）各自独立，不再共享伞仓直属基础设施（SPLIT-01 原"cmake/ 伞仓直属"
 > 设计被 v0.1.2 决策取代）。
 
@@ -4385,15 +4385,15 @@ gh release view v0.1.1
 
 ---
 
-## 第三十八章：AirymaxOS（agentrt-linux）工程规范（v27.0 v4.1 新增）
+## 第三十八章：AirymaxOS（agent-linux）工程规范（v27.0 v4.1 新增）
 
-> **章节定位**: 本章是 AirymaxOS（agentrt-linux）的工程规范。AirymaxOS 是与 agentrt（AirymaxAgentRT）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范。0.1.1 中仅创建仓库占位，实际开发在 1.0.1。OS 详细设计文档全部在 `docs/AirymaxOS/` 模块内。
+> **章节定位**: 本章是 AirymaxOS（agent-linux）的工程规范。AirymaxOS 是与 agentrt（AirymaxAgentRT）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范。0.1.1 中仅创建仓库占位，实际开发在 1.0.1。OS 详细设计文档全部在 `docs/AirymaxOS/` 模块内。
 
 ### 38.1 AirymaxOS 架构分离工程规范（IRON-9）
 
-**强制规则**: AirymaxOS（agentrt-linux）与 AirymaxAgentRT（agentrt）必须保持架构分离，但**同源**。
+**强制规则**: AirymaxOS（agent-linux）与 AirymaxAgentRT（agentrt）必须保持架构分离，但**同源**。
 
-| 维度 | AirymaxAgentRT（agentrt） | AirymaxOS（agentrt-linux） |
+| 维度 | AirymaxAgentRT（agentrt） | AirymaxOS（agent-linux） |
 |------|---------------------------|----------------------------|
 | 运行层级 | 用户态（跨 Linux/macOS/Windows） | 内核态 + 用户态（Linux 发行版） |
 | 跨平台 | ✅ 三平台 | ❌ Linux only |
@@ -4403,7 +4403,7 @@ gh release view v0.1.1
 | 版本 | 0.1.1 | 1.0.1 |
 | 文档位置 | docs-closed/ | docs/AirymaxOS/ |
 
-**IRON-9 v2 强制规则**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版。代码共享边界：代码共享仅限于 agentrt 与 agentrt-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准。
+**IRON-9 v2 强制规则**（2026-07-07 变更）: agentrt 和 AirymaxOS **同源且部分代码共享**。三层共享模型：[SC] 共享契约层（`include/airymax/` 6 个头文件完全共享：memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h；另含补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）+ [SS] 语义同源层（API 签名同源，实现独立）+ [IND] 完全独立层。agentrt 保持跨平台用户态纯净（不依赖任何特定 OS），AirymaxOS 是完整发行版。代码共享边界：代码共享仅限于 agentrt 与 agent-linux 之间，与 Euler 项目仅技术参考，不共享代码。AirymaxOS 工程思想与 Euler 保持一致性（协议层 + 接入层 + 模块化 + 工具链兼容），以便未来兼容 Euler 标准。
 
 ### 38.2 AirymaxOS 微内核设计思想工程规范
 
@@ -4487,7 +4487,7 @@ gh release view v0.1.1
 
 | 仓库 | URL |
 |------|-----|
-| 管理仓 | `git@atomgit.com:openairymax/agentrt-linux.git` |
+| 管理仓 | `git@atomgit.com:openairymax/agent-linux.git` |
 | 子仓 1 | `git@atomgit.com:openairymax/airymaxos-kernel.git` |
 | 子仓 2 | `git@atomgit.com:openairymax/airymaxos-services.git` |
 | 子仓 3 | `git@atomgit.com:openairymax/airymaxos-security.git` |
@@ -4501,7 +4501,7 @@ gh release view v0.1.1
 
 | 编号 | 规则 | 检测方式 |
 |------|------|---------|
-| BAN-357 | 禁止 0.1.1 中 agentrt-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | `[OS-SCAN]` |
+| BAN-357 | 禁止 0.1.1 中 agent-linux 仓库无 README.md 或 README 未声明 openEuler 参考规范 + 微内核设计思想 | `[OS-SCAN]` |
 | BAN-358 | 禁止 OS 设计文档放置在 docs-closed/（必须放置在 docs/AirymaxOS/） | `[OS-SCAN]` |
 | BAN-359 | 禁止 AirymaxOS 内核态代码污染 agentrt 用户态跨平台路径（IRON-9） | `[OS-SCAN]` + `[FOUND-SCAN]` |
 | BAN-360 | 禁止 AirymaxOS 子仓名不使用 airymaxos- 前缀 | `[OS-SCAN]` |
@@ -4566,7 +4566,7 @@ AirymaxOS 基于 Linux 6.6（openEuler 24.03 LTS 内核版本）。禁止在文�
 | **第三十五章：奠基性版本工程规范** | **10（FOUND-01~FOUND-10）+ 13 BAN（BAN-328~BAN-340）** | **v25.0 v3.5 唯一奠基版本** |
 | **第三十六章：38 仓 git 拆分工程规范（v4.0 新增）** | **8（SPLIT-01~SPLIT-08）+ 3 IRON（IRON-6~8）+ 6 BAN（BAN-345~BAN-350）** | **v26.0 v4.0 38 仓拆分** |
 | **第三十七章：生产就绪工程规范（v4.0 新增）** | **6（PROD-01~PROD-06）+ 6 BAN（BAN-351~BAN-356）** | **v26.0 v4.0 生产就绪** |
-| **第三十八章：AirymaxOS（agentrt-linux）工程规范（v4.1 新增，v4.2 扩展）** | **10（§38.1~§38.10 工程规范）+ 2 IRON（IRON-9/IRON-10）+ 5 BAN（BAN-357~BAN-361）+ 1 ACC（ACC-OS04）** | **v27.0 v4.1 AirymaxOS 工程规范 + v28.0 v4.2 Linux 6.6 兼容性** |
+| **第三十八章：AirymaxOS（agent-linux）工程规范（v4.1 新增，v4.2 扩展）** | **10（§38.1~§38.10 工程规范）+ 2 IRON（IRON-9/IRON-10）+ 5 BAN（BAN-357~BAN-361）+ 1 ACC（ACC-OS04）** | **v27.0 v4.1 AirymaxOS 工程规范 + v28.0 v4.2 Linux 6.6 兼容性** |
 | **§11.6：airy_→agentrt_ 改名规范（v4.0：airy_ 部分已废止，agentos_* 清零部分保留）** | **7 层面矩阵 + 4 BAN（BAN-341~BAN-344）** | **v26.0 v4.0 改名彻底** |
 | **§11.7：38 仓 git submodule 拆分规范（v4.0 新增）** | **6（SPLIT-01~SPLIT-06 简略版）+ 4 BAN（BAN-345~BAN-348）** | **v26.0 v4.0 38 仓拆分** |
 | **合计** | **189+ 项历史 + 35 项 v4.0 新增规则 = 224+ 项** | — |

@@ -8,7 +8,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：本报告是 `fix-verification-report-v4.md` 的补充。在 v4.0 验证报告声称"21 项检查全部通过"后，主控 Agent 对关键文件进行抽样复查时发现 **cupolas_error.h 枚举同步不完整**（2/9 值未迁移且注释虚假），随后展开全面复查，发现 v4.0 验证报告存在 **3 项虚假通过** 和 **1 项 P0 遗漏**。本报告记录追加发现、追加修正及最终复核结果。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
-> **审查范围**：仅 `agentrt` 模块；**不涉及** `agentrt-linux`。
+> **审查范围**：仅 `agentrt` 模块；**不涉及** `agent-linux`。
 
 ---
 

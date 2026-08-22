@@ -39,7 +39,7 @@ openEuler 在 `arch/{x86,arm64,sw_64}/configs/` 下维护 `openeuler_defconfig`�
 | 层次 | 文件 | 作用 | 来源 |
 |------|------|------|------|
 | 底座 | `arch/{x86,arm64,sw_64}/configs/openeuler_defconfig` | 硬件适配基线配置 | openEuler（LAYER 导入，详见 [10-olk66-vanilla-diff.md §3.3](10-olk66-vanilla-diff.md)） |
-| 叠加层 | `configs/defconfig-agent` | agentrt-linux 微内核化改造 CONFIG（sched_tac/airy_lsm/AgentsIPC/[SC] 等） | AirymaxOS 自有 |
+| 叠加层 | `configs/defconfig-agent` | agent-linux 微内核化改造 CONFIG（sched_tac/airy_lsm/AgentsIPC/[SC] 等） | AirymaxOS 自有 |
 | 叠加层 | `configs/defconfig-embedded` | 嵌入式裁剪 CONFIG（去除非必要驱动、调试项） | AirymaxOS 自有 |
 | 硬件碎片 | `configs/euler_hw_{x86,arm64,sw64}.config` | 从 openeuler_defconfig 提取的硬件相关 CONFIG 碎片 | AirymaxOS 提取（详见 [10-olk66-vanilla-diff.md §8.3](10-olk66-vanilla-diff.md)） |
 
@@ -80,7 +80,7 @@ openEuler 的 `kernel.spec` 是经过企业级生产验证的 RPM 打包模板�
 3. `Release:` 字段：自定义 AirymaxOS 发行号（如 `airy.1`）
 4. `%define build_flavor`：保留 openEuler 的 flavor 机制
 5. Source0：指向 AirymaxOS 内核源码 tarball
-6. 补丁应用区：`%patch` 宏应用 LAYER 驱动补丁 + agentrt-linux 微内核化改造补丁
+6. 补丁应用区：`%patch` 宏应用 LAYER 驱动补丁 + agent-linux 微内核化改造补丁
 7. `Provides:`/`Obsoletes:`：声明提供 `airy-kernel`，废弃旧包名
 
 **优势**：复用 openEuler 的 `%post`/`%preun` 脚本（initramfs 重建、grub 更新、模块签名等），无需重新实现。
@@ -197,7 +197,7 @@ AirymaxOS 自建 dnf 仓库，结构对齐 openEuler 仓库约定：
 
 1. **airy-kernel.\*** 系列：AirymaxOS 自编译（§1.2）
 2. **openEuler base 包**：从 openEuler 24.03 LTS 仓库同步（bash/glibc/systemd 等基础包，不修改）
-3. **AirymaxOS 专属包**：agentrt-linux 用户态工具、[SC] 工具链、airy_lsm 管理工具等
+3. **AirymaxOS 专属包**：agent-linux 用户态工具、[SC] 工具链、airy_lsm 管理工具等
 
 ### 3.2 OBS（Open Build Service）CI/CD
 
@@ -309,7 +309,7 @@ AirymaxOS 按部署形态与资源约束，采用**三层分流架构**选择图
 1. **openEuler 官方支持**：openEuler 24.03 LTS 仓库原生提供 `cockpit` 包，无需额外维护
 2. **零桌面依赖**：Cockpit 是 Web 服务（cockpit-ws + cockpit-bridge），不依赖 X/Wayland
 3. **内核管理能力**：Cockpit 原生支持内核模块加载、性能监控、KVM 虚拟化管理
-4. **AirymaxOS 适配**：开发 `cockpit-airymax` 插件面板，提供 agentrt-linux 微内核化改造状态、[SC] 契约视图、airy_lsm 策略管理
+4. **AirymaxOS 适配**：开发 `cockpit-airymax` 插件面板，提供 agent-linux 微内核化改造状态、[SC] 契约视图、airy_lsm 策略管理
 
 **安装形态**：
 
@@ -363,10 +363,10 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 ### 5.4 UI 层与内核解耦
 
-**关键设计原则**：UI 层与 agentrt-linux 微内核化改造完全解耦——
+**关键设计原则**：UI 层与 agent-linux 微内核化改造完全解耦——
 
 1. UI 层运行在用户态，通过标准 syscall 与内核交互
-2. agentrt-linux 的 4 核心 syscall（548-551）+ op-dispatch 不影响 UI 层兼容性
+2. agent-linux 的 4 核心 syscall（548-551）+ op-dispatch 不影响 UI 层兼容性
 3. [SC] 共享契约层（10 个 UAPI 头文件）为 UI 层提供稳定接口
 4. 三层 UI 方案可按部署形态自由组合，不影响内核编译
 
@@ -407,11 +407,11 @@ dnf install @ukui-desktop     # 麒麟桌面
 
 | # | 风险 | 等级 | 缓解措施 |
 |---|------|------|---------|
-| 1 | openEuler base 包升级引入与 agentrt-linux 不兼容的 syscall 行为变更 | 低 | AirymaxOS 仓库锁定 base 包版本，每次同步前跑 KUnit + kselftest + LTP |
+| 1 | openEuler base 包升级引入与 agent-linux 不兼容的 syscall 行为变更 | 低 | AirymaxOS 仓库锁定 base 包版本，每次同步前跑 KUnit + kselftest + LTP |
 | 2 | openeuler_defconfig 中的核心子系统 CONFIG 未被 fragment 覆盖 | 中 | CI 门禁：编译后 `diffconfig` 验证核心子系统 CONFIG 与 vanilla 一致 |
 | 3 | imageTailor/Yocto 工具链版本升级破坏 `custom/cfg_airymax/` 配置 | 低 | 跟随 openEuler LTS 节奏升级，每次升级跑全量镜像构建测试 |
 | 4 | openEuler 停止维护 OLK-6.6 / 24.03 LTS | 低 | 24.03 LTS 支持至 2029+，且有 atomgit/gitee 多镜像；7.1 迁移时 openEuler 会发布新基线（详见 [11-layer-feasibility-study.md §2.4](11-layer-feasibility-study.md)） |
-| 5 | DDE/UKUI 桌面与 agentrt-linux syscall 不兼容 | 低 | UI 层通过标准 syscall 交互，4 核心 syscall（548-551）不影响 POSIX 兼容性 |
+| 5 | DDE/UKUI 桌面与 agent-linux syscall 不兼容 | 低 | UI 层通过标准 syscall 交互，4 核心 syscall（548-551）不影响 POSIX 兼容性 |
 | 6 | OBS 多架构构建（sw_64）交叉编译链缺失 | 中 | 申威交叉编译链需独立配置；初期可仅构建 x86/arm64，sw_64 后续补齐 |
 
 ---
@@ -463,7 +463,7 @@ Task 2 当前仅落地直接导入轨（见 §11.1），quilt 补丁轨的 `driv
 | 8 | defconfig-agent IRON-7 增强 | `configs/defconfig-agent` | 54 行 | 追加 IRON-7 覆盖块 |
 | 9 | Kconfig 修复 | `Kconfig` | -1 行 | 移除 stale `source "config/Kconfig.alk"` |
 
-**P1 构建链（agentrt-linux 管理仓 build/ 目录）：**
+**P1 构建链（agent-linux 管理仓 build/ 目录）：**
 
 | # | 产物 | 路径 | 规模 |
 |---|------|------|------|
@@ -504,7 +504,7 @@ and LSM entry symmetry") 遗留的 stale `source "config/Kconfig.alk"` 引用
 ### 11.5 提交登记
 
 - **kernel 仓库**（ALK-6.6-dev）：`airy/arch: import sw_64 and add LAYER config fragments`（374 文件，+93636/-2）
-- **agentrt-linux 管理仓**（main）：`airy/build: add LAYER build artifacts for openEuler toolchain reuse`（11 文件，+418）
+- **agent-linux 管理仓**（main）：`airy/build: add LAYER build artifacts for openEuler toolchain reuse`（11 文件，+418）
 - **docs-closed 仓库**（main）：本文档实施进度章节
 
 ### 11.6 后续工作

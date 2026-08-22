@@ -7,27 +7,27 @@
 >
 > **v2.0 变动说明（v4.0 三大支柱完整方案）**:
 > - **0.1.1 目标重新定义（用户决策）**: 0.1.1 目标从"唯一奠基版本"扩展为**"奠基 + 38 仓拆分 + 生产就绪"三大支柱**。0.1.1 后直接过渡到 1.0.1（无 0.1.2/0.2.0/0.3.0/1.0.0 中间版本）。一切以**生产就绪**为最终目标。
-> - **38 仓 git 拆分方案（关键决策）**: 1 伞仓 + 5 管理仓（agentrt/sdk/ecosystem/products/agentrt-linux）+ 29 叶子仓 + 3 顶层仓（devtools/docs/docs-closed）。伞仓 `airymaxhub.git` 地址 `git@atomgit.com:openairymax/airymaxhub.git`；agentrt 管理仓继承原 AgentRT 仓库 `git@atomgit.com:openairymax/agentos.git` 保留全部 git 历史；agentrt-linux（AirymaxOS，极境智能体操作系统）为管理仓，内含 8 子仓（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux），全面参考 openEuler 的模块设计、技术规格、标准和规范；sdk 模块下子仓采用 `sdk-xx` 命名；全部目录名小写。配套 **第七部分：SP01-SP31 38 仓 git 拆分任务清单**（31 项工作，~572h），含每项工作的编号/工时/优先级/依赖/团队/验收标准/操作步骤。
+> - **38 仓 git 拆分方案（关键决策）**: 1 伞仓 + 5 管理仓（agentrt/sdk/ecosystem/products/agent-linux）+ 29 叶子仓 + 3 顶层仓（devtools/docs/docs-closed）。伞仓 `airymaxhub.git` 地址 `git@atomgit.com:openairymax/airymaxhub.git`；agentrt 管理仓继承原 AgentRT 仓库 `git@atomgit.com:openairymax/agentos.git` 保留全部 git 历史；agent-linux（AirymaxOS，极境智能体操作系统）为管理仓，内含 8 子仓（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux），全面参考 openEuler 的模块设计、技术规格、标准和规范；sdk 模块下子仓采用 `sdk-xx` 命名；全部目录名小写。配套 **第七部分：SP01-SP31 38 仓 git 拆分任务清单**（31 项工作，~572h），含每项工作的编号/工时/优先级/依赖/团队/验收标准/操作步骤。
 > - **agentos_ → agentrt_ 改名彻底（关键决策）**: 不留兼容别名头（不生成 `agentos_compat_aliases.h`），7 个层面全部直接改（源码目录 agentos/→agentrt/、CMake target agentos_*→agentrt_*、运行时路径 /etc/agentos→/etc/agentrt、安装路径 include/agentos/→include/agentrt/、C 公开 ABI agentos_*→agentrt_*、C 宏 AGENTOS_API→AGENTRT_API、SDK 包名 agentos→agentrt）。涉及 472 个 .c/.h 文件、13037 次 agentos_ 前缀。SP01 工时 70h。
 > - **daemon → daemons 改名（关键决策）**: 模块名、目录（agentos/daemon/→agentos/daemons/）、CMake target（agentrt_daemon→agentrt_daemons）、仓库名（daemon.git→daemons.git）统一改名；进程二进制名 `*_d`（gateway_d 等）保持不变。
 > - **生产就绪方案（关键决策）**: SP32-SP37 共 6 项工作（~240h），覆盖 CI/CD 全仓流水线 + SBOM 供应链安全 + 跨平台二进制打包 + 性能基线 + Soak Test + 安全审计 + 渗透测试 + 发布验收。配套 **第八部分：SP32-SP37 生产就绪任务清单**。
-> - **agentrt-linux（AirymaxOS）前瞻方案（关键决策）**: agentrt-linux（英文 "AirymaxOS"，中文 "极境智能体操作系统"）作为 1.0.1 版本前瞻，全面参考 openEuler 的模块设计、技术规格、标准和规范。agentrt-linux 为管理仓之一（伞仓直属），内含 8 子仓（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux）。仓库总数从 29 扩展为 38（+9）。0.1.1 中仅创建仓库占位（7 个 git 仓库，~3.5h），实际内核和 OS 开发在 1.0.1。配套 **第九部分：1.0.1 前瞻 — AirymaxOS**。
+> - **agent-linux（AirymaxOS）前瞻方案（关键决策）**: agent-linux（英文 "AirymaxOS"，中文 "极境智能体操作系统"）作为 1.0.1 版本前瞻，全面参考 openEuler 的模块设计、技术规格、标准和规范。agent-linux 为管理仓之一（伞仓直属），内含 8 子仓（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux）。仓库总数从 29 扩展为 38（+9）。0.1.1 中仅创建仓库占位（7 个 git 仓库，~3.5h），实际内核和 OS 开发在 1.0.1。配套 **第九部分：1.0.1 前瞻 — AirymaxOS**。
 > - **新增验收标准 ACC-SP01~SP12（12 项）**: 覆盖 agentos_ 零残留/daemons 零残留/5 处解耦/38 仓独立构建/agentrt 历史保留/伞仓拉取/5 管理仓 .gitmodules/cmake 直属/memoryrovol EULA/sdk-xx 命名/目录小写/SP01-SP31 完成。ACC 总数从 137 项扩展为 149 项（+12）。
 > - **新增风险条目 R47~R52（6 项）**: 改名编译失败/解耦失败/拆仓顺序错乱/git 历史丢失/跨平台编译失败/生产就绪验收未通过。
 > - **总工时调整**: 从 v1.7.0 的 ~2,584.5h 扩展为 **~3,396.5h**（+572h 拆分 +240h 生产就绪）。主任务 109 → 146 项（+37），ACC 137 → 149 项。路线图从 26 天扩展为 36 天（新增 Phase 6 38 仓拆分 + Phase 7 生产就绪）。
 >
 > **v2.2 变动说明（AirymaxOS 8 子仓修正 + Linux 6.6 同步，v4.2 对应）**:
-> - **AirymaxOS 子仓数量修正**: agentrt-linux 子仓从 6 个修正为 8 个（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux），基于微内核设计思想 + openEuler 标准 + Airymax 同源三大支柱重新设计。
+> - **AirymaxOS 子仓数量修正**: agent-linux 子仓从 6 个修正为 8 个（airymaxos-kernel/airymaxos-services/airymaxos-security/airymaxos-memory/airymaxos-cognition/airymaxos-cloudnative/airymaxos-system/airymaxos-tests-linux），基于微内核设计思想 + openEuler 标准 + Airymax 同源三大支柱重新设计。
 > - **总仓库数量修正**: 从 36 仓修正为 38 仓（1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓）。
 > - **Linux 内核版本同步**: AirymaxOS 基于 Linux 6.6（openEuler 24.03 LTS 内核版本），非 Linux 7.0。技术特性表述同步修正：EEVDF 调度器 / Rust 实验性支持 / MGLRU 多代 LRU / eBPF kfunc + dynamic pointer / sched_ext（openEuler backport，主线 6.12+）。
 > - 配套：技术改进方案 v4.2 + 工程标准规范手册 v28.0。
 >
 > **v2.1 变动说明（AirymaxOS 前瞻，v4.1 对应）**:
-> - **AirymaxOS（agentrt-linux）决策（用户决策 2026-07-06）**: agentrt-linux 正式全称 "AirymaxOS"（极境智能体操作系统），与 agentrt（AirymaxAgentRT / 极境智能体运行底座平台工程）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范，兼容 Euler 标准。agentrt 和 AirymaxOS **同源**（共享 Airymax 设计理念），agentrt 在 AirymaxOS 上运行**天然更稳健和适配**（架构同源，无适配层）。天然云原生亲和力（对标 Ubuntu/openEuler）。
+> - **AirymaxOS（agent-linux）决策（用户决策 2026-07-06）**: agent-linux 正式全称 "AirymaxOS"（极境智能体操作系统），与 agentrt（AirymaxAgentRT / 极境智能体运行底座平台工程）同级的**管理仓**，伞仓直属。基于 Linux 内核的发行版级别研究项目，全面采用**微内核设计思想**（参考 seL4 / Zircon / Minix3），全面参考 openEuler 模块设计、技术规格、标准和规范，兼容 Euler 标准。agentrt 和 AirymaxOS **同源**（共享 Airymax 设计理念），agentrt 在 AirymaxOS 上运行**天然更稳健和适配**（架构同源，无适配层）。天然云原生亲和力（对标 Ubuntu/openEuler）。
 > - **8 子仓设计（基于微内核设计思想 + openEuler 标准 + Airymax 同源）**: 每个子仓明确对应 agentrt 模块：(1) airymaxos-kernel 复用 atoms/corekern (2) airymaxos-services 复用 daemons (3) airymaxos-security 复用 cupolas (4) airymaxos-memory 复用 heapstore+memoryrovol (5) airymaxos-cognition 复用 coreloopthree+frameworks (6) airymaxos-cloudnative 复用 gateway+sdk (7) airymaxos-system 复用 commons (8) airymaxos-tests-linux 复用全模块测试。基于 2026-07-06 CS 最新理论（seL4 / Zircon / openEuler AI 原生 / Linux 6.6（openEuler 24.03 LTS）/ sched_ext / io_uring / eBPF kfunc / Wasm 3.0 / CXL / MGLRU 多代 LRU）。
-> - **仓库总数变更**: 29 仓 → **38 仓**（新增 agentrt-linux 管理仓 + 8 子仓 = 9 新增）。1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓。
+> - **仓库总数变更**: 29 仓 → **38 仓**（新增 agent-linux 管理仓 + 8 子仓 = 9 新增）。1 伞仓 + 5 管理仓 + 29 叶子仓 + 3 顶层仓。
 > - **OS 文档位置决策**: OS 设计文档全部在 `docs/AirymaxAgentOS/` 模块内（含 README + 00-architecture + 01~08 子仓设计 + 09-openeuler-reference + 10-microkernel-design 共 12 个文档），RT 文档继续在 `docs-closed/`，物理分开。
-> - **新增 SP38 任务项**: 0.1.1 中 agentrt-linux 仅创建仓库占位。SP38 共 4 个子任务，~18h。
+> - **新增 SP38 任务项**: 0.1.1 中 agent-linux 仅创建仓库占位。SP38 共 4 个子任务，~18h。
 > - **新增验收标准 ACC-OS01~OS03（3 项）**: ACC 总数从 149 项扩展为 152 项。
 > - **总工时调整**: 从 ~3,396.5h 扩展为 **~3,414.5h**（+18h SP38）。主任务 146 → 147 项。
 >
@@ -3172,7 +3172,7 @@ echo "[OK-NO-SCAN] PASS: No [OK]/[NO] literal concatenation"
 | ACC-SP04 | 38 个 git 仓库全部可独立 clone+构建 | 38 仓逐一 `git clone + cmake -B build + cmake --build build + ctest` |
 | ACC-SP05 | agentrt 管理仓保留原 AgentRT 全部 git 历史 | `git log --oneline \| wc -l` 与原 AgentRT 一致；`git remote -v` 显示 `git@atomgit.com:openairymax/agentos.git` |
 | ACC-SP06 | 伞仓 `git clone --recursive` 一次拉取全部 38 仓 | `git clone --recursive git@atomgit.com:openairymax/airymaxhub.git` 成功，无失败 submodule |
-| ACC-SP07 | 5 管理仓各自 .gitmodules 声明完整 | agentrt(7) + sdk(6) + ecosystem(5) + products(3) + agentrt-linux(8) = 29 条 submodule 声明 |
+| ACC-SP07 | 5 管理仓各自 .gitmodules 声明完整 | agentrt(7) + sdk(6) + ecosystem(5) + products(3) + agent-linux(8) = 29 条 submodule 声明 |
 | ACC-SP08 | cmake/ 5 个 CMake 模块伞仓直属 | `ls cmake/*.cmake \| wc -l` 期望 5；非 submodule |
 | ACC-SP09 | memoryrovol 仓库保持 spharx 组织 + 闭源 EULA | `git -C products/memoryrovol remote -v` 显示 `git@atomgit.com:spharx/memoryrovol.git`；LICENSE 文件为 EULA |
 | ACC-SP10 | SDK 子仓命名 sdk-xx 规范 | `ls sdk/` 全部为 sdk-* 模式；无裸名（python/go/rust 等） |
@@ -3183,9 +3183,9 @@ echo "[OK-NO-SCAN] PASS: No [OK]/[NO] literal concatenation"
 
 | 编号 | 验收标准 | 验证方法 |
 |------|---------|---------|
-| ACC-OS01 | agentrt-linux 管理仓 + 8 子仓在 atomgit.com 创建并可访问 | `git ls-remote` 9 个仓库（agentrt-linux + airymaxos-kernel/services/security/memory/cognition/cloudnative/system/tests）均可访问 |
+| ACC-OS01 | agent-linux 管理仓 + 8 子仓在 atomgit.com 创建并可访问 | `git ls-remote` 9 个仓库（agent-linux + airymaxos-kernel/services/security/memory/cognition/cloudnative/system/tests）均可访问 |
 | ACC-OS02 | `docs/AirymaxAgentOS/` 目录创建完整 | `ls docs/AirymaxAgentOS/` 显示 README.md + 00-architecture + 01~08 子仓设计 + 09-openeuler-reference + 10-microkernel-design 共 12 个文档均可读 |
-| ACC-OS03 | 伞仓 `.gitmodules` 包含 agentrt-linux submodule 声明 | `grep agentrt-linux airymaxhub/.gitmodules` 命中；`git -C airymaxhub submodule status` 显示 agentrt-linux |
+| ACC-OS03 | 伞仓 `.gitmodules` 包含 agent-linux submodule 声明 | `grep agent-linux airymaxhub/.gitmodules` 命中；`git -C airymaxhub submodule status` 显示 agent-linux |
 
 ---
 
@@ -3612,18 +3612,18 @@ echo "[OK-NO-SCAN] PASS: No [OK]/[NO] literal concatenation"
 
 ---
 
-## 第九部分：SP38 AirymaxOS（agentrt-linux）仓库占位（v2.1 新增）
+## 第九部分：SP38 AirymaxOS（agent-linux）仓库占位（v2.1 新增）
 
-> **目标**: 0.1.1 中 agentrt-linux（AirymaxOS）仅创建仓库占位，实际内核和 OS 开发在 1.0.1 版本。0.1.1 内创建 9 个仓库（1 管理仓 + 8 子仓）+ docs/AirymaxAgentOS/ 目录（12 个设计文档）+ 伞仓 .gitmodules 更新。
+> **目标**: 0.1.1 中 agent-linux（AirymaxOS）仅创建仓库占位，实际内核和 OS 开发在 1.0.1 版本。0.1.1 内创建 9 个仓库（1 管理仓 + 8 子仓）+ docs/AirymaxAgentOS/ 目录（12 个设计文档）+ 伞仓 .gitmodules 更新。
 
 ### SP38: AirymaxOS 仓库占位（18h，P1，团队 A）
 
 **编号**: SP38 | **工时**: 18h | **优先级**: P1 | **依赖**: SP31（伞仓组装完成）| **团队**: A
 
-#### SP38.1: 创建 agentrt-linux 管理仓 + 8 子仓（4h）
+#### SP38.1: 创建 agent-linux 管理仓 + 8 子仓（4h）
 
 - [ ] 在 atomgit.com `openairymax` 组织下创建 9 个仓库：
-  - [ ] `agentrt-linux`（管理仓）: `git@atomgit.com:openairymax/agentrt-linux.git`
+  - [ ] `agent-linux`（管理仓）: `git@atomgit.com:openairymax/agent-linux.git`
   - [ ] `airymaxos-kernel`（复用 atoms/corekern，极境内核）: `git@atomgit.com:openairymax/airymaxos-kernel.git`
   - [ ] `airymaxos-services`（复用 daemons，极境服务）: `git@atomgit.com:openairymax/airymaxos-services.git`
   - [ ] `airymaxos-security`（复用 cupolas，极境安全）: `git@atomgit.com:openairymax/airymaxos-security.git`
@@ -3636,7 +3636,7 @@ echo "[OK-NO-SCAN] PASS: No [OK]/[NO] literal concatenation"
 
 #### SP38.2: 各仓 README.md 创建（8h）
 
-- [ ] **agentrt-linux/README.md**（管理仓）:
+- [ ] **agent-linux/README.md**（管理仓）:
   - AirymaxOS 全称声明（英文 "AirymaxOS" / 中文 "极境智能体操作系统"）
   - 基于 Linux 内核的发行版级别研究项目声明
   - **微内核设计思想**声明（参考 seL4 / Zircon / Minix3）
@@ -3666,14 +3666,14 @@ echo "[OK-NO-SCAN] PASS: No [OK]/[NO] literal concatenation"
 
 #### SP38.4: 伞仓 .gitmodules 更新（2h）
 
-- [ ] 在伞仓 `airymaxhub/.gitmodules` 追加 agentrt-linux submodule 声明
-- [ ] 在 agentrt-linux 管理仓 `.gitmodules` 追加 8 子仓声明
+- [ ] 在伞仓 `airymaxhub/.gitmodules` 追加 agent-linux submodule 声明
+- [ ] 在 agent-linux 管理仓 `.gitmodules` 追加 8 子仓声明
 - [ ] 验证: `git submodule status` 显示 9 个新 submodule
 
 **验收标准**:
-- ACC-OS01: agentrt-linux 管理仓 + 8 子仓在 atomgit.com 创建并可访问
+- ACC-OS01: agent-linux 管理仓 + 8 子仓在 atomgit.com 创建并可访问
 - ACC-OS02: `docs/AirymaxAgentOS/` 目录创建 + README.md + 11 个设计文档 + openEuler 参考规范索引
-- ACC-OS03: 伞仓 `.gitmodules` 包含 agentrt-linux submodule 声明
+- ACC-OS03: 伞仓 `.gitmodules` 包含 agent-linux submodule 声明
 
 ---
 

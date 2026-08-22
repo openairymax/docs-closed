@@ -2,10 +2,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # Airymax 工程 v2.0 深化审查综合分析报告
 
-> **文档定位**：v2.0 审查收敛文档，整合 4 项 v2.0 任务报告（agentrt 工程规范与代码审查 / agentrt-linux 系统性复审 / OpenStandards 开放标准优化 / 文档规范与质量控制跨域审查），作为整个 v2.0 审查的最终判定基线，用于 1.0.1 M1 启动决策。
+> **文档定位**：v2.0 审查收敛文档，整合 4 项 v2.0 任务报告（agentrt 工程规范与代码审查 / agent-linux 系统性复审 / OpenStandards 开放标准优化 / 文档规范与质量控制跨域审查），作为整个 v2.0 审查的最终判定基线，用于 1.0.1 M1 启动决策。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：2.0（2026-07-13）。
-> **审查范围**：4 项 v2.0 任务 × 4 个 Agent，覆盖 agentrt 源码（833 文件）+ AirymaxRT 文档（88 .md）+ agentrt-linux 闭源总纲（v0.2.5）+ OpenStandards 开放标准（8 文件）+ 5 个文档子仓库跨域检查，总计 ~3567 行 v2.0 报告。
+> **审查范围**：4 项 v2.0 任务 × 4 个 Agent，覆盖 agentrt 源码（833 文件）+ AirymaxRT 文档（88 .md）+ agent-linux 闭源总纲（v0.2.5）+ OpenStandards 开放标准（8 文件）+ 5 个文档子仓库跨域检查，总计 ~3567 行 v2.0 报告。
 > **审查方法**：v1.0 报告深读 → 源码级重新验证（Read + Grep）→ 新发现扫描（DCLP / 资源泄漏 / ABI / 跨平台 / 文档质量 / 标准对齐）→ WebSearch 行业实践对比 → 跨仓库引用路径实测。
 > **证据要求**：所有结论附 `文件路径:L行号`，可通过 Read/Grep 工具复核。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
@@ -31,7 +31,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | Agent | 任务 | 报告路径 | 行数 | v2.0 综合评分 |
 |-------|------|---------|------|--------------|
 | Agent 1 | agentrt 工程规范与代码审查 v2.0 | `docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` | 910 | **63/C+** |
-| Agent 2 | agentrt-linux 系统性复审 v2.0 | `docs-closed/agentrt-linux/_review_v2.0/01-systematic-recheck-v2.md` | 793 | **76/B** |
+| Agent 2 | agent-linux 系统性复审 v2.0 | `docs-closed/agent-linux/_review_v2.0/01-systematic-recheck-v2.md` | 793 | **76/B** |
 | Agent 3 | OpenStandards 开放标准优化 v2.0 | `docs/OpenStandards/_research_v2.0/01-open-standards-optimization-v2.md` | 1088 | v1.0 对齐度 85%（修正后 ~22 周） |
 | Agent 4 | 文档规范与质量控制 v2.0 | `docs-closed/_review_v2.0/01-document-quality-control.md` | 776 | **58/D+**（新维度） |
 | **合计** | **4 项任务** | — | **3567 行** | — |
@@ -42,7 +42,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |---------|------|------|------|---------|
 | agentrt 源码工程 | 68/C+ | **66/C+** | -2 | P0-3 降级抵消部分扣分，但 N1/N2/N3/N5 新发现拉低 |
 | agentrt 方案设计 | 70/B- | **68/C+** | -2 | P0-1 恶化（6→7 套）/P0-5 恶化（15→51 处）/P0-8 恶化（#6→#1） |
-| agentrt-linux 方案 | 79/B+ | **76/B** | -3 | [SC] 头文件清单冲突 -2 + OS-FMT 未注册 -2 + ES-SEL4 扩展未注册 -1 + OS-STD-005 矛盾 -1 + 开发路线声明矛盾 -1 |
+| agent-linux 方案 | 79/B+ | **76/B** | -3 | [SC] 头文件清单冲突 -2 + OS-FMT 未注册 -2 + ES-SEL4 扩展未注册 -1 + OS-STD-005 矛盾 -1 + 开发路线声明矛盾 -1 |
 | OpenStandards | N/A | ~85% 对齐度 | — | v1.0 对齐度 85%，v2.0 校正 3 处偏差 + 补 2 项遗漏（OCI-AI v1.3 / T/CAMETA） |
 | 跨平台一致性 | 55/D+ | **54/D+** | -1 | 函数前缀缺失确认 + N6（sync_compat 丢错误码） |
 | 文档质量（新维度） | N/A | **58/D+** | — | v2.0 新增维度：路径体系系统性失效 + 闭源手册与源码前缀背离 |
@@ -98,7 +98,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **P0-8** | bpf_struct_ops.h 为第 6 个 | bpf_struct_ops.h 升为第 1 个，syscalls.h 完全缺失 | **严重低估** |
 | **v1.0-P2-01** | tests 简写 5 文件/10 处 | 15+ 文件/31+ 处（v1.0 的 3 倍） | **严重低估** |
 | **v1.0-P1-MAJOR-03** | OLK-6.6 术语"已修复" | 49 处残留，其中 ~19 处疑似概念引用 | **误判为"已修复"，实际为部分修复** |
-| **v1.0-P2-01（agentrt-linux）** | tests 简写开源文档已大幅减少至 5 文件/10 处 | 实际 15+ 文件/31+ 处 | **严重低估** |
+| **v1.0-P2-01（agent-linux）** | tests 简写开源文档已大幅减少至 5 文件/10 处 | 实际 15+ 文件/31+ 处 | **严重低估** |
 
 ---
 
@@ -133,7 +133,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 9 | P1-DQC-2 | OpenStandards README 内部版本矛盾（1.0 vs 1.1） | Agent 4 §2.4.1 | `docs/OpenStandards/README.md:6,118`（1.0）vs `:245`（1.1） | ~0.5h |
 | 10 | P1-DQC-3 | AirymaxRT README 无版本号 | Agent 4 §2.4.1 | `docs/AirymaxRT/README.md:8` | ~0.5h |
 | 11 | P1-DQC-4 | 闭源 agentrt 手册 29→38 仓变更说明残留 | Agent 4 §3.1.3 | `docs-closed/agentrt/agentrt工程标准规范手册.md:9,19` | ~1h |
-| 12 | P1-DQC-5 | 闭源 agentrt-linux 开发路线仍用 29 仓表述 | Agent 4 §3.3.2 | `docs-closed/agentrt-linux/agentrt-linux开发路线和进度.md:69` | ~1h |
+| 12 | P1-DQC-5 | 闭源 agent-linux 开发路线仍用 29 仓表述 | Agent 4 §3.3.2 | `docs-closed/agent-linux/agent-linux开发路线和进度.md:69` | ~1h |
 | 13 | P1-DQC-6 | 开源 AirymaxOS 含 openEuler 提及（与 BAN-INTERNAL-002 冲突） | Agent 4 §2.1.1 | 5 文件/32 处提及（9 处生产级违规） | ~2h |
 
 ### 3.3 v2.0 新发现 P2 级（11 项）
@@ -173,7 +173,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 来源 | P0 | P1 | P2 | 校正/遗漏/补充 | 小计 |
 |------|----|----|----|---------------|------|
 | Agent 1（agentrt 工程规范） | 0（N7 强化 P0-8） | 4（N1/N2/N3/N5） | 3（N4/N6/N8） | — | 7 |
-| Agent 2（agentrt-linux） | 0 | 3（OS-FMT/SC/ES-SEL4 扩展） | 3（声明矛盾/OS-STD-005/OLK-6.6） | — | 6 |
+| Agent 2（agent-linux） | 0 | 3（OS-FMT/SC/ES-SEL4 扩展） | 3（声明矛盾/OS-STD-005/OLK-6.6） | — | 6 |
 | Agent 3（OpenStandards） | 0 | 0 | 0 | 9（3 校正 + 2 遗漏 + 4 补充/观察） | 9 |
 | Agent 4（文档质量） | 5（含 3 项与 v1.0 重叠） | 9 | 5 | — | 19 |
 | **去重后** | **2（P0-DQC-1/2 真正新发现）** | **13** | **11** | **9** | **35** |
@@ -199,7 +199,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - 4 项新发现 P1 级并发安全问题（DCLP 自旋 / cupolas mutex 泄漏 / cupolas 非并发安全 / sched_d 重复清理）需在 M1 阶段优先修复。
 - [SC] 6 头文件全部通过 ABI 兼容性验证（ipc.h 是最严格实现：`_Static_assert(sizeof == 128)` + `__attribute__((packed))` + 完整 kernel-doc）。
 
-### 4.2 任务 2：agentrt-linux 系统性复审（Agent 2）
+### 4.2 任务 2：agent-linux 系统性复审（Agent 2）
 
 | 项目 | v1.0 | v2.0 | 变化 |
 |------|------|------|------|
@@ -257,7 +257,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **总评** | **58/D+** | 文档技术内核扎实，但引用路径体系系统性失效 + 版本号体系混乱 + 闭源手册与源码前缀背离 |
 
 **跨仓库一致性评估**：
-- "微核心 vs 微内核"概念定义跨仓库一致（agentrt=微核心 / agentrt-linux=微内核）。
+- "微核心 vs 微内核"概念定义跨仓库一致（agentrt=微核心 / agent-linux=微内核）。
 - IPC magic 0x41524531（'ARE1'）跨 7 处定义完全一致。
 - AGTS magic 0x41475453 跨 14 处定义完全一致。
 - SCHED_EXT=7 跨文档一致，但 SCHED_AGENT=8 边界争议存在。
@@ -273,7 +273,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | docs/AirymaxRT | C- | [SC] 头文件清单错误 + 错误码 6 套 + 5 类路径错误 |
 | docs/OpenStandards | B- | README 1.0 vs 1.1 矛盾 |
 | docs-closed/agentrt | C- | 手册 [SC] 4 头文件 + agentos_* 前缀全错 + 29→38 残留 |
-| docs-closed/agentrt-linux | B | 总纲 v0.2.5 指导性强；3 类路径错误 |
+| docs-closed/agent-linux | B | 总纲 v0.2.5 指导性强；3 类路径错误 |
 
 ---
 
@@ -285,7 +285,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |---------|------|------|------|------|
 | agentrt 源码工程 | 68/C+ | **66/C+** | -2 | P0-3 降级 +2，但 N1/N2/N3/N5 新发现 -4 |
 | agentrt 方案设计 | 70/B- | **68/C+** | -2 | P0-1（6→7 套）/P0-5（15→51 处）/P0-8（#6→#1）恶化 |
-| agentrt-linux 方案 | 79/B+ | **76/B** | -3 | OS-FMT 未注册 -2 + [SC] 头文件清单冲突 -2 + ES-SEL4 扩展未注册 -1 + OS-STD-005 矛盾 -1 + 开发路线声明矛盾 -1，部分抵消 |
+| agent-linux 方案 | 79/B+ | **76/B** | -3 | OS-FMT 未注册 -2 + [SC] 头文件清单冲突 -2 + ES-SEL4 扩展未注册 -1 + OS-STD-005 矛盾 -1 + 开发路线声明矛盾 -1，部分抵消 |
 | OpenStandards | N/A | ~85% 对齐度 | — | v1.0 对齐度 85%，v2.0 校正 3 处偏差 + 补 2 项遗漏，修正后路径 ~22 周 |
 | 跨平台一致性 | 55/D+ | **54/D+** | -1 | 函数前缀缺失确认 + N6（sync_compat 丢错误码） |
 | 文档质量（新维度） | N/A | **58/D+** | — | v2.0 新增维度：路径体系系统性失效 + 闭源手册前缀背离 |
@@ -336,7 +336,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | # | 编号 | 问题 | 来源 | 工作量 |
 |---|------|------|------|--------|
-| 1 | P0-10 | ES-SEL4-7 分类残留冲突（agentrt-linux 阻断） | v1.0 | ~2h |
+| 1 | P0-10 | ES-SEL4-7 分类残留冲突（agent-linux 阻断） | v1.0 | ~2h |
 | 2 | P0-1 | 错误码 7 套并行 | v1.0（恶化） | ~8h |
 | 3 | P0-5 | 操作系统定位冲突（51 处/18 文件） | v1.0（恶化） | ~4h |
 | 4 | P0-4 | IPC 头三重违规 | v1.0 | ~3h |
@@ -352,7 +352,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 14 | P0-DQC-5 | AirymaxRT 操作系统误称（与 P0-5 重叠） | v2.0 重申 | ~0h（已含） |
 | **合计** | — | — | — | **~78.5h**（含 P0-2 ~46h） |
 
-**v2.0 新增 3 项阻断性阻碍**（agentrt-linux 范围，~6h）：
+**v2.0 新增 3 项阻断性阻碍**（agent-linux 范围，~6h）：
 - OS-FMT 未在 SSoT 注册（~3h）
 - [SC] 6 头文件清单冲突（~1h，与 P0-8 重叠）
 - ES-SEL4 编号扩展未注册（~4h，非阻断但强烈建议）
@@ -366,7 +366,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
     ├── N4 删除 .bak 文件（~0.1h）
     └── N8 递归注释（~0.1h）
 
-[Phase 1] 1.0.1 M1 启动前（~25h，方案侧 P0 + 文档质量 P0 + agentrt-linux 阻断）
+[Phase 1] 1.0.1 M1 启动前（~25h，方案侧 P0 + 文档质量 P0 + agent-linux 阻断）
     ├── P0-10 ES-SEL4-7 分类残留冲突（~2h）
     ├── P0-1 错误码 7 套统一（~8h）
     ├── P0-5 操作系统定位冲突 51 处（~4h）
@@ -411,7 +411,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **总工作量**：
 - agentrt 工程体系：~115h（含 P0-2 系统性源码改造）或 ~69h（不含 P0-2）
-- agentrt-linux 阻断项：~6h
+- agent-linux 阻断项：~6h
 - 文档质量维度：~33.2h（P0 ~18h + P1 ~12h + P2 ~3.2h）
 - OpenStandards 优化：~22 周（独立轨道，与 1.0.1 M1 并行）
 
@@ -486,7 +486,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 7.4 最终结论
 
-Airymax 工程体系经过 v1.0 全面审查（833 源文件 + 88 方案文档 + agentrt-linux 方案）+ v2.0 深化审查（4 项任务 × 4 个 Agent，~3567 行报告），**架构设计层面质量较高且原创性强**（MicroCoreRT / CoreLoopThree / MemoryRovol / Thinkdual / Cupolas / 12 Daemons / MCIS 体系并行论 / 五维正交 24 原则），**15 项技术亮点突出**（C11 atomic / DCLP / _Thread_local / 编译时查表 / 适配器模式 / BAN-333 串行降级 / ASan 修复注释 等），**历史问题全部修复**（koa-connect / io_uring / MGLRU 2.0 / daemon→daemons）。
+Airymax 工程体系经过 v1.0 全面审查（833 源文件 + 88 方案文档 + agent-linux 方案）+ v2.0 深化审查（4 项任务 × 4 个 Agent，~3567 行报告），**架构设计层面质量较高且原创性强**（MicroCoreRT / CoreLoopThree / MemoryRovol / Thinkdual / Cupolas / 12 Daemons / MCIS 体系并行论 / 五维正交 24 原则），**15 项技术亮点突出**（C11 atomic / DCLP / _Thread_local / 编译时查表 / 适配器模式 / BAN-333 串行降级 / ASan 修复注释 等），**历史问题全部修复**（koa-connect / io_uring / MGLRU 2.0 / daemon→daemons）。
 
 但 v2.0 深化审查揭示：
 - **v1.0 识别的 10 项 P0 中 8 项仍然存在且未修复**，其中 P0-1/P0-5/P0-7/P0-8 四项**比 v1.0 描述的更严重**；
@@ -499,7 +499,7 @@ Airymax 工程体系经过 v1.0 全面审查（833 源文件 + 88 方案文档 +
 
 **建议**：
 1. **立即**（~3.6h）：修复 P0-6 WebSocket 类型错误 + P0-DQC-2 闭源手册前缀 + N4/N8 文档瑕疵。
-2. **1.0.1 M1 启动前**（~25h）：完成方案侧 P0（P0-1/4/5/8/9/10）+ 文档质量 P0（P0-DQC-1）+ agentrt-linux 阻断（OS-FMT / [SC] 头文件清单）。
+2. **1.0.1 M1 启动前**（~25h）：完成方案侧 P0（P0-1/4/5/8/9/10）+ 文档质量 P0（P0-DQC-1）+ agent-linux 阻断（OS-FMT / [SC] 头文件清单）。
 3. **1.0.1 M1 阶段**（~52.5h）：源码正确性 + 并发安全（P0-7 / N1/N2/N3/N5）+ P0-2 系统性改造。
 4. **1.0.1 M1 内**（~17h）：P1 命名/前缀/文档一致性收敛。
 5. **独立轨道**（~22 周）：OpenStandards v2.0 优化（OCI-AI v1.3 / T/CAMETA / OWFa 1.0）。
@@ -513,7 +513,7 @@ Airymax 工程体系经过 v1.0 全面审查（833 源文件 + 88 方案文档 +
 | 报告 | 路径 | 行数 | v2.0 综合评分 |
 |------|------|------|--------------|
 | Agent 1 agentrt 工程规范 v2.0 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v2.0/01-engineering-code-review-v2.md` | 910 | 63/C+ |
-| Agent 2 agentrt-linux 系统性复审 v2.0 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v2.0/01-systematic-recheck-v2.md` | 793 | 76/B |
+| Agent 2 agent-linux 系统性复审 v2.0 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_review_v2.0/01-systematic-recheck-v2.md` | 793 | 76/B |
 | Agent 3 OpenStandards 优化 v2.0 | `/home/spharx/SpharxWorks/OpenAirymax/docs/OpenStandards/_research_v2.0/01-open-standards-optimization-v2.md` | 1088 | ~85% 对齐度 |
 | Agent 4 文档规范与质量控制 v2.0 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/_review_v2.0/01-document-quality-control.md` | 776 | 58/D+ |
 | **合计** | — | **3567** | **总评 64/C+** |
@@ -526,13 +526,13 @@ Airymax 工程体系经过 v1.0 全面审查（833 源文件 + 88 方案文档 +
 | v1.0 atoms 源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/01-atoms-source-deep-review.md` | 840 | 架构 A / 技术 A- / 工程标准 C+ |
 | v1.0 daemons 等源码深读 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/02-daemons-others-source-deep-review.md` | 453 | 用户态工程标准系统性违规 |
 | v1.0 AirymaxRT 方案审查 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/_review_v1.0/03-airymaxrt-solution-review.md` | 887 | 62/C+ |
-| v1.0 agentrt-linux 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v1.0/01-systematic-recheck.md` | 773 | 79/B+ |
+| v1.0 agent-linux 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_review_v1.0/01-systematic-recheck.md` | 773 | 79/B+ |
 
 ## 附录 C：术语对照
 
 | 术语 | 定义 |
 |------|------|
-| OLK-6.6 | Linux 6.6 内核基线编码风格（agentrt-linux 工程标准基线） |
+| OLK-6.6 | Linux 6.6 内核基线编码风格（agent-linux 工程标准基线） |
 | IRON-9 v2 | agentrt 三层模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层） |
 | DCLP | Double-Checked Locking Pattern（双重检查锁定模式） |
 | BAN-333 | pregel_engine max_workers=1 强制串行降级规则 |

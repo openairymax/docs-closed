@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）系统性全面审查报告 v2.1
+# agent-linux（AirymaxOS）系统性全面审查报告 v2.1
 
-> **文档定位**： agentrt-linux（AirymaxOS，极境智能体操作系统）整体方案 v2.1 系统性复审——在 v1.0（综合评分 80/B）基础上的第三轮深化审查，聚焦"v1.0 问题修复验证 + 内部冲突 + 技术点唯一性 + openEuler 实践 + seL4 吸收 + 开发就绪度 + 细节完成度"七大维度。\
+> **文档定位**： agent-linux（AirymaxOS，极境智能体操作系统）整体方案 v2.1 系统性复审——在 v1.0（综合评分 80/B）基础上的第三轮深化审查，聚焦"v1.0 问题修复验证 + 内部冲突 + 技术点唯一性 + openEuler 实践 + seL4 吸收 + 开发就绪度 + 细节完成度"七大维度。\
 > **保密级别**： SPHARX Ltd 内部参考，**闭源不公开**\
 > **版本**： 2.1（2026-07-13）\
-> **审查范围**： `/docs/AirymaxOS/`（开源设计文档）+ `/docs-closed/agentrt-linux/`（闭源工程文档）\
+> **审查范围**： `/docs/AirymaxOS/`（开源设计文档）+ `/docs-closed/agent-linux/`（闭源工程文档）\
 > **审查方法**： 源文档逐行重读 + Grep 机器检查 + 闭源/开源交叉验证 + 字节级累加验证\
 > **证据要求**： 所有结论附 `文件路径:行号` 证据\
 > **SPDX-License-Identifier**： AGPL-3.0-or-later OR Apache-2.0
@@ -42,7 +42,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 核心结论
 
-agentrt-linux 整体方案经 v2.1 系统性复审，**综合评分从 80/B 降至 70/C+**。v1.0 识别的 **4 项 P0-CRITICAL 问题全部未修复**，**5 项 P1-MAJOR 问题全部未修复**，**5 项 P2-MINOR 问题中 3 项未修复、2 项部分修复**。方案在 IPC 协议契约、syscall 编号体系、子仓命名规范三大核心技术点存在系统性 SSoT 违反，**不具备直接启动全面开发的条件**。
+agent-linux 整体方案经 v2.1 系统性复审，**综合评分从 80/B 降至 70/C+**。v1.0 识别的 **4 项 P0-CRITICAL 问题全部未修复**，**5 项 P1-MAJOR 问题全部未修复**，**5 项 P2-MINOR 问题中 3 项未修复、2 项部分修复**。方案在 IPC 协议契约、syscall 编号体系、子仓命名规范三大核心技术点存在系统性 SSoT 违反，**不具备直接启动全面开发的条件**。
 
 **与 v1.0 的根本差异**：v1.0 评分为 80/B 时假定 v1.0 问题已被识别并待修复；v2.1 验证发现这些问题在 v1.0→v2.1 迭代中**未被处置**，因此实际就绪度显著低于 v1.0 评估。
 
@@ -107,7 +107,7 @@ struct airy_ipc_msg_hdr {
 
 **v2.1 验证**：
 
-- `20-modules/01-kernel.md:99`（§1.3）：`agentrt-linux 目标：12 核心 + 12 预留 = 24 槽位`
+- `20-modules/01-kernel.md:99`（§1.3）：`agent-linux 目标：12 核心 + 12 预留 = 24 槽位`
 - `20-modules/01-kernel.md:101-115`（§1.3）：列出编号 0-11 共 **12 个**核心 syscall
 - `20-modules/01-kernel.md:117`：`airy_sys_reply 完齐 seL4 master 模式 8 个 activity syscall`
 - `20-modules/01-kernel.md:463`（§5.5）：`将 syscall 数量从 12 缩减到 10` ← **矛盾点**
@@ -130,9 +130,9 @@ struct airy_ipc_msg_hdr {
 - `10-architecture/06-directory-structure.md:294`：`禁止前缀：airymaxos_*（已废弃，详见 project_memory）`
 
 **闭源文档**（仍大量使用前缀）：
-- Grep 统计：`docs-closed/agentrt-linux/` 下 `airymaxos-` 出现 **401 处**，分布在 37 个文件
-- `agentrt-linux基本工程标准规范.md`：37 处（主权威文档）
-- `agentrt-linux开发路线和进度.md`：4 处
+- Grep 统计：`docs-closed/agent-linux/` 下 `airymaxos-` 出现 **401 处**，分布在 37 个文件
+- `agent-linux基本工程标准规范.md`：37 处（主权威文档）
+- `agent-linux开发路线和进度.md`：4 处
 - `README.md`：1 处
 - 各参考/设计/审查目录：分布在 34 个历史文件中
 
@@ -341,8 +341,8 @@ magic(4) + version(2) + type(2) + payload_len(4) + flags(4)
 
 **v2.1 验证**：
 
-- 闭源总纲 `agentrt-linux基本工程标准规范.md:990-1008`（§12.4）：ES-OLK-1~13 表格列出工程思想、核心内涵、在规范中的体现，但**无内联代码示例**
-- `docs-closed/agentrt-linux/02-olk66-source-mapping/` 目录含 7 个映射文档：
+- 闭源总纲 `agent-linux基本工程标准规范.md:990-1008`（§12.4）：ES-OLK-1~13 表格列出工程思想、核心内涵、在规范中的体现，但**无内联代码示例**
+- `docs-closed/agent-linux/02-olk66-source-mapping/` 目录含 7 个映射文档：
   - `01-sched-ext-mapping.md`：含源码路径、Kconfig 配置示例、数据结构映射
   - `02-io-uring-mapping.md`、`03-bpf-mapping.md` 等：提供 OLK-6.6 源码到 AirymaxOS 设计的映射
 - 映射文档使用 IRON-9 v2 三层标注（[SC]/[SS]/[IND]），含源码行数和路径
@@ -360,7 +360,7 @@ magic(4) + version(2) + type(2) + payload_len(4) + flags(4)
 
 **v2.1 验证**：
 
-- `agentrt-linux基本工程标准规范.md:1024`（OS-IRON-012）：`seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5），不包括编码风格层（4 空格 / camelCase / 重度 typedef）和接口契约层`
+- `agent-linux基本工程标准规范.md:1024`（OS-IRON-012）：`seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5），不包括编码风格层（4 空格 / camelCase / 重度 typedef）和接口契约层`
 - contracts.md 已在 line 42 添加 SSoT 声明，将 IPC 消息头布局指向 SSoT Layout C，不再就地重定义
 - 但 contracts.md lines 49-57 的字段表仍使用旧布局（version/type/src_pid/dst_pid），这些字段命名借鉴了 seL4 的接口契约层概念（PID 模型），而非架构层的 task 模型
 
@@ -399,7 +399,7 @@ magic(4) + version(2) + type(2) + payload_len(4) + flags(4)
 
 **v2.1 验证**（Grep `40-dataflows/03-ipc-flow.md`）：
 
-- Line 185：`| src_pid / dst_pid | agentrt-linux 扩展（io_uring 无此字段） | [IND] 独立扩展 |`
+- Line 185：`| src_pid / dst_pid | agent-linux 扩展（io_uring 无此字段） | [IND] 独立扩展 |`
 - Line 570：`| 1 | 本地提交 | 超节点 1 | 写入 SQE（dst_pid 跨节点） | < 2μs |`
 - Line 571：`| 2 | 路由判断 | 内核 | 检查 dst_pid 所属节点 | < 1μs |`
 - Line 745：`"src_pid": 1234,`
@@ -466,7 +466,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 - 开源文档：裸名（kernel, services, ...）
 - 闭源文档：`airymaxos-` 前缀（401 处）
-- 函数前缀：开源使用 `airy_*`，闭源 OS-STD-005（`agentrt-linux基本工程标准规范.md:167`）仍声明 `airymaxos_*`
+- 函数前缀：开源使用 `airy_*`，闭源 OS-STD-005（`agent-linux基本工程标准规范.md:167`）仍声明 `airymaxos_*`
 
 ### 3.4 内部冲突检查小结
 
@@ -563,7 +563,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 ### 5.1 ES-OLK-1~13 工程思想映射
 
-**映射完整性**（`agentrt-linux基本工程标准规范.md:990-1008` §12.4）：
+**映射完整性**（`agent-linux基本工程标准规范.md:990-1008` §12.4）：
 
 | 编号 | 工程思想 | 落地规则 | 代码示例 |
 |------|---------|---------|---------|
@@ -581,7 +581,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 | ES-OLK-12 | 运行时可加载 | EXPORT_SYMBOL | ✓ |
 | ES-OLK-13 | 文档即代码 | Documentation/ | ✓ |
 
-**OLK-6.6 源码映射文档**（`docs-closed/agentrt-linux/02-olk66-source-mapping/`）：
+**OLK-6.6 源码映射文档**（`docs-closed/agent-linux/02-olk66-source-mapping/`）：
 - 7 个映射文档覆盖 sched_ext / io_uring / BPF / MM / security / cognition / engineering-toolchain
 - 含源码路径、行数、Kconfig 配置、数据结构映射
 - 使用 IRON-9 v2 三层标注
@@ -637,7 +637,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 - `30-interfaces/02-ipc-protocol.md:336`：`参考 seL4 Endpoint 状态机（ADR-014，源码证据 include/object/structures.h:36-41：EPState_Idle/EPState_Send/EPState_Recv）`
 - 命名严格对齐 seL4：状态名描述"端点所处的语义态"而非"线程等待态"，不带 Waiting 后缀
-- agentrt-linux IPC 端点 3 个状态由内核维护，用户态不可直接观测
+- agent-linux IPC 端点 3 个状态由内核维护，用户态不可直接观测
 
 **结论**：三态机对齐 seL4 ✓
 
@@ -645,9 +645,9 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 - `30-interfaces/02-ipc-protocol.md:354-388`（§4.8）：详述 Reply 原子性
 - Line 359：`seL4 master 模式：doReplyTransfer() 内部先 setThreadState(blocked, ts_idle) 再 sendIPC()`
-- Line 363-379：agentrt-linux 借鉴 doReplyTransfer 模式，通过自旋锁 + 临界区串行实现
+- Line 363-379：agent-linux 借鉴 doReplyTransfer 模式，通过自旋锁 + 临界区串行实现
 - Line 379：`串行两步：写入回复 + 恢复接收方上下文（对齐 doReplyTransfer 两步模式）`
-- Line 388：`seL4 Reply 原子性通过"TCB 内嵌 caller slot + doReplyTransfer 临界区串行 + 形式化验证"三重保证；agentrt-linux 通过"自旋锁 + 临界区串行"保证（非形式化验证）`
+- Line 388：`seL4 Reply 原子性通过"TCB 内嵌 caller slot + doReplyTransfer 临界区串行 + 形式化验证"三重保证；agent-linux 通过"自旋锁 + 临界区串行"保证（非形式化验证）`
 
 **结论**：doReplyTransfer 临界区串行模式已借鉴并文档化 ✓
 
@@ -666,7 +666,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 - `30-interfaces/01-syscalls.md:135-140`：
   - seL4 master 模式：8 个 API syscall（Call/ReplyRecv/Send/NBSend/Recv/NBRecv/Reply/Yield）
   - seL4 MCS 模式：11 个 API syscall
-  - `agentrt-linux 采用 master 模式 8 个 IPC 原语...不引入 MCS 模式（agent 场景不需要 MCS 的 reply_t 对象与 schedcontext 模型，由 airy_ep->lock 临界区串行执行保证原子性）`
+  - `agent-linux 采用 master 模式 8 个 IPC 原语...不引入 MCS 模式（agent 场景不需要 MCS 的 reply_t 对象与 schedcontext 模型，由 airy_ep->lock 临界区串行执行保证原子性）`
 - `01-kernel.md:117`：`airy_sys_reply 完齐 seL4 master 模式 8 个 activity syscall（不引入 MCS 模式）`
 
 **结论**：MCS 模式排除有明确的技术理由（agent 场景不需要 reply_t/schedcontext），通过临界区串行保证原子性 ✓
@@ -727,9 +727,9 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 ### 8.1 sched_ext 向前移植
 
 - `10-architecture/04-engineering-baseline.md:55`：`增强基线（1.x.x）| Linux 6.6 LTS + sched_ext forward-port（主线 6.12+）| AI 原生能力增强（sched_ext 向前移植）`
-- `04-engineering-baseline.md:71`：`sched_ext（SCHED_AGENT）| agentrt-linux 内核增强 | 主线 6.12+ | kernel 用户态调度`
-- `04-engineering-baseline.md:75`：`对于主线 6.12+ 才稳定但 agentrt-linux 1.0.1 必需的特性（如 sched_ext），采用 agentrt-linux 内核增强策略引入`
-- `30-interfaces/01-syscalls.md:385`：`sched_ext（agentrt-linux 内核增强，主线 6.12+）`
+- `04-engineering-baseline.md:71`：`sched_ext（SCHED_AGENT）| agent-linux 内核增强 | 主线 6.12+ | kernel 用户态调度`
+- `04-engineering-baseline.md:75`：`对于主线 6.12+ 才稳定但 agent-linux 1.0.1 必需的特性（如 sched_ext），采用 agent-linux 内核增强策略引入`
+- `30-interfaces/01-syscalls.md:385`：`sched_ext（agent-linux 内核增强，主线 6.12+）`
 
 **结论**：sched_ext 向前移植策略已明确文档化 ✓（Linux 6.6 基线 + sched_ext forward-port from 6.12+）
 
@@ -760,7 +760,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 ### 8.5 跨节点 IPC
 
-- `30-interfaces/02-ipc-protocol.md:121`：`agentrt-linux 部署形态为分布式 agent 集群，IPC 消息在多机间传递`
+- `30-interfaces/02-ipc-protocol.md:121`：`agent-linux 部署形态为分布式 agent 集群，IPC 消息在多机间传递`
 - `02-ipc-protocol.md:424`：`NFR-P-002c | 跨节点 IPC | > 1M msg/s（4 节点）| 超节点 OS 跨节点 IPC`
 - `02-ipc-protocol.md:432`：`CXL 跨节点共享: 跨节点 IPC 通过 CXL 3.0 内存池化共享 ring，减少网络往返`
 - `40-dataflows/03-ipc-flow.md:570-571`：跨节点 IPC 路由判断（检查 dst_pid 所属节点）
@@ -814,7 +814,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 | 1 | IPC 消息头布局冲突（112B vs 128B） | contracts.md 字段表（lines 49-57）和 mermaid 图（lines 72-106）全文替换为 SSoT Layout C 布局；删除 version/type/src_pid/dst_pid，改用 opcode/src_task/dst_task；reserved 从 72B 改为 84B | ~4h | §2.1 P0-1 |
 | 2 | IPC 操作码碎片化（4/5/11 套） | services.md line 317 改为 SSoT 4 操作码；ipc-versioning.md §8.1 全表重构为 SSoT 4 操作码 + 版本化扩展机制；删除不存在的 AIRY_IPC_OP_HANDSHAKE 等 | ~6h | §2.1 P0-4 |
 | 3 | syscall 数量矛盾（12 vs 10） | 01-kernel.md line 463 "从 12 缩减到 10" 修改为"保持 12 核心 syscall（capability invocation 统一入口消除独立 syscall 需求，但 airy_sys_call 本身为 12 核心之一）" | ~0.5h | §2.1 P0-2 |
-| 4 | 子仓命名矛盾（airymaxos- 401 处） | 闭源权威文档（agentrt-linux基本工程标准规范.md 37 处 + 开发路线 4 处 + README 1 处）全文替换 airymaxos- → 裸名 | ~6h | §2.1 P0-3 |
+| 4 | 子仓命名矛盾（airymaxos- 401 处） | 闭源权威文档（agent-linux基本工程标准规范.md 37 处 + 开发路线 4 处 + README 1 处）全文替换 airymaxos- → 裸名 | ~6h | §2.1 P0-3 |
 
 #### P1 级（1.0.1 M1 阶段修复）
 
@@ -862,7 +862,7 @@ SSoT Layout C 消息头定义 `src_task`/`dst_task`（`__u64`），无 `src_pid`
 
 ### 9.5 最终结论
 
-agentrt-linux（AirymaxOS）整体方案经 v2.1 系统性复审，**综合评分 70/C+**，较 v1.0 的 80/B 下降 10 分。核心原因是 v1.0 识别的 4 项 P0-CRITICAL 问题（IPC 消息头布局 / syscall 数量 / 子仓命名 / IPC 操作码）在 v1.0→v2.1 迭代中**全部未修复**，且 IPC 操作码碎片化比 v1.0 描述更为严重（3 套互不兼容的操作码定义，编号互相冲突）。
+agent-linux（AirymaxOS）整体方案经 v2.1 系统性复审，**综合评分 70/C+**，较 v1.0 的 80/B 下降 10 分。核心原因是 v1.0 识别的 4 项 P0-CRITICAL 问题（IPC 消息头布局 / syscall 数量 / 子仓命名 / IPC 操作码）在 v1.0→v2.1 迭代中**全部未修复**，且 IPC 操作码碎片化比 v1.0 描述更为严重（3 套互不兼容的操作码定义，编号互相冲突）。
 
 **核心优势**（维持）：
 - IRON-9 v2 三层共享模型定义清晰，6 个 [SC] 头文件单一数据源

@@ -64,14 +64,14 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 **三源证据**：
 - 源码 agent #1（P0-2/P0-4）：`find -name 'bpf_struct_ops.h'` 等均空；`include/airymax/` 不存在
-- 历史 agent #3（NF-01, f 项）：6 头文件均不存在，agentrt 与 agentrt-linux 两端都未创建
+- 历史 agent #3（NF-01, f 项）：6 头文件均不存在，agentrt 与 agent-linux 两端都未创建
 - 规范 agent #2（ARCH-SC01）：[06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) 声明 6 头文件逐字节共享
 
-**根因分析**：0.1.1 奠基阶段聚焦于各子仓功能实现，未将跨态契约层物理化。[SC] 头文件设计需同时满足 agentrt（用户态 C）与 agentrt-linux（内核态 C，1.0.1 阶段）双端约束，设计权衡未完成即进入实现。
+**根因分析**：0.1.1 奠基阶段聚焦于各子仓功能实现，未将跨态契约层物理化。[SC] 头文件设计需同时满足 agentrt（用户态 C）与 agent-linux（内核态 C，1.0.1 阶段）双端约束，设计权衡未完成即进入实现。
 
 **修复步骤**：
 
-1. **物理宿主决策**（详见 §5 专项设计）：物理宿主定在 `agentrt/commons/include/airymax/`（用户态先行落地，1.0.1 阶段 agentrt-linux 通过 `-I$(agentrt_src)/commons/include` 引用）
+1. **物理宿主决策**（详见 §5 专项设计）：物理宿主定在 `agentrt/commons/include/airymax/`（用户态先行落地，1.0.1 阶段 agent-linux 通过 `-I$(agentrt_src)/commons/include` 引用）
 2. **创建目录与 6 头文件**：
    - `agentrt/commons/include/airymax/bpf_struct_ops.h` — struct_ops 状态机 + common_value
    - `agentrt/commons/include/airymax/memory_types.h` — MemoryRovol L1-L4 数据结构 + GFP 掩码语义 + PMEM 持久化接口
@@ -105,7 +105,7 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 **依赖与协同**：
 - 阻塞 P0-02（任务 magic 依赖 sched.h）、P0-03（MAC_MAX_AGENTS SSoT 依赖 sched.h）、P0-05（IPC 头布局依赖 ipc.h）
-- 与 agentrt-linux 协同：1.0.1 阶段 agentrt-linux 通过 `-I` 引用 agentrt 的头文件，0.1.1 阶段无需 agentrt-linux 配合
+- 与 agent-linux 协同：1.0.1 阶段 agent-linux 通过 `-I` 引用 agentrt 的头文件，0.1.1 阶段无需 agent-linux 配合
 
 ---
 
@@ -301,7 +301,7 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
    _Static_assert(sizeof(airymax_ipc_msg_hdr_t) == 128, "IPC header must be 128 bytes");
    ```
    - 注意：SSoT 布局与当前 agentrt `are_ipc_message_header_t`（含 source[32]/target[32]/correlation_id 等）不同，需评估兼容性。若改布局会破坏现有 daemon 间通信，则**显式声明分层**：
-     - L1 corekern IPC 用 `airymax_ipc_msg_hdr_t`（SSoT，跨 agentrt↔agentrt-linux）
+     - L1 corekern IPC 用 `airymax_ipc_msg_hdr_t`（SSoT，跨 agentrt↔agent-linux）
      - L2 daemon-IPC 用 `are_ipc_message_header_t`（agentrt 独有 [IND] 层，magic 统一为 0x41524531 但布局不同）
      - 在 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) 明确此分层
 3. **命名对齐**：`are_ipc_message_header_t` 保留为 L2 别名，但 `airymax_ipc_msg_hdr_t` 为 SSoT 主名
@@ -415,7 +415,7 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 2. 全文 `AGENTOS_API` → `AGENTRT_API` 替换
 3. 全文 `agentos/atoms/corekern/` → `agentrt/atoms/corekern/` 替换
 4. "CoreKern 是 AgentRT 的微内核" → "CoreKern 是 AgentRT 的微核心（MicroCoreRT）"
-5. 验证：`grep -rn 'agentos_\|AGENTOS_API\|微内核' docs-closed/agentrt/07-subsystem-specs/02-corekern.md` = 0（注意"微内核"仅在该文档误用，agentrt-linux 的微内核表述是合法的，此处仅修 agentrt 文档）
+5. 验证：`grep -rn 'agentos_\|AGENTOS_API\|微内核' docs-closed/agentrt/07-subsystem-specs/02-corekern.md` = 0（注意"微内核"仅在该文档误用，agent-linux 的微内核表述是合法的，此处仅修 agentrt 文档）
 
 **涉及文件**：
 - 修改：`docs-closed/agentrt/07-subsystem-specs/02-corekern.md`
@@ -694,10 +694,10 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 **决策**：物理宿主定在 `agentrt/commons/include/airymax/`（用户态先行落地）。
 
 **理由**：
-1. 0.1.1 阶段 agentrt 已存在，agentrt-linux 尚未到 1.0.1
-2. agentrt 是用户态组件，头文件先在用户态落地不影响 agentrt-linux 1.0.1 阶段引用
-3. 1.0.1 阶段 agentrt-linux 通过 `-I$(agentrt_src)/commons/include` 引用，或迁移至 `agentrt-linux/kernel/include/airymax/`（届时再决策）
-4. 避免 0.1.1 阶段阻塞于 agentrt-linux 协同
+1. 0.1.1 阶段 agentrt 已存在，agent-linux 尚未到 1.0.1
+2. agentrt 是用户态组件，头文件先在用户态落地不影响 agent-linux 1.0.1 阶段引用
+3. 1.0.1 阶段 agent-linux 通过 `-I$(agentrt_src)/commons/include` 引用，或迁移至 `agent-linux/kernel/include/airymax/`（届时再决策）
+4. 避免 0.1.1 阶段阻塞于 agent-linux 协同
 
 **CMake 集成**：
 ```cmake
@@ -713,15 +713,15 @@ target_include_directories(agentrt_common PUBLIC
 #include <airymax/sched.h>
 ```
 
-### 5.2 与 agentrt-linux 协同方案
+### 5.2 与 agent-linux 协同方案
 
-| 阶段 | agentrt | agentrt-linux |
+| 阶段 | agentrt | agent-linux |
 |---|---|---|
 | 0.1.1 | 物理宿主，6 头文件落地 | 不涉及（1.0.1 才需要） |
-| 1.0.1 | 物理宿主不变 | 通过 `-I` 引用 agentrt 的 `commons/include/airymax/`，或迁移至 `agentrt-linux/kernel/include/airymax/`（届时决策） |
+| 1.0.1 | 物理宿主不变 | 通过 `-I` 引用 agentrt 的 `commons/include/airymax/`，或迁移至 `agent-linux/kernel/include/airymax/`（届时决策） |
 
 **协同约束**（0.1.1 阶段需在文档声明）：
-- 6 头文件内容修改需同时满足 agentrt（用户态 C）与 agentrt-linux（内核态 C）约束
+- 6 头文件内容修改需同时满足 agentrt（用户态 C）与 agent-linux（内核态 C）约束
 - [SC] 头文件禁止使用 float（IRON-9 §3，因内核态不支持浮点）
 - 类型前缀 `__u32`/`__u16`（内核风格，用户态通过 `<stdint.h>` 别名兼容）
 
@@ -742,8 +742,8 @@ target_include_directories(agentrt_common PUBLIC
 **问题**：[06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1 line 213 + 映射表 line 327 将 `error.h` 也标注为 [SC]，但"6 个"声明矛盾。
 
 **决策建议**：**error.h 不属于 [SC] 层**。理由：
-1. error.h 是 agentrt 用户态独有的错误码定义（AGENTRT_E*），agentrt-linux 内核态有独立的内核错误码体系（-EINVAL 等）
-2. 两端错误码不共享，agentrt-linux 通过 IPC 返回值映射
+1. error.h 是 agentrt 用户态独有的错误码定义（AGENTRT_E*），agent-linux 内核态有独立的内核错误码体系（-EINVAL 等）
+2. 两端错误码不共享，agent-linux 通过 IPC 返回值映射
 3. 修正 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1 + 映射表，移除 error.h 的 [SC] 标注，明确"6 个 [SC] 头文件"
 
 **备选**：若用户决策 error.h 属于 [SC]，则改为 7 头文件并更新所有引用文档（handbook/README/08-compliance-checklist/40-integration 等）。
@@ -838,7 +838,7 @@ target_include_directories(agentrt_common PUBLIC
 
 | 风险 | 概率 | 影响 | 缓解措施 |
 |---|---|---|---|
-| [SC] 头文件设计与 agentrt-linux 1.0.1 需求冲突 | 中 | 高 | 0.1.1 阶段先以 agentrt 用户态约束设计，1.0.1 阶段如有冲突再迭代（头文件版本化） |
+| [SC] 头文件设计与 agent-linux 1.0.1 需求冲突 | 中 | 高 | 0.1.1 阶段先以 agentrt 用户态约束设计，1.0.1 阶段如有冲突再迭代（头文件版本化） |
 | IPC 布局对齐破坏现有 daemon 间通信 | 中 | 高 | 采用分层策略（L1 SSoT + L2 [IND]），magic 统一但布局可不同，文档明确声明 |
 | Cupolas 错误码统一破坏向后兼容 | 低 | 中 | 保留兼容别名（`#define cupolas_OK AGENTRT_OK`），标记 deprecated |
 | CI 跨平台在 Windows 失败 | 高 | 中 | Week 2 预留 buffer，优先保证 atoms/commons 三平台通过，其他子仓可降级为 Linux-only 并加 TODO |

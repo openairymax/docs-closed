@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v0.3.0 审查修订变更日志
+# agent-linux v0.3.0 审查修订变更日志
 
 > **文档定位**：记录 v0.3.0 审查对 v0.1.1 上一轮审查（`00-reviews/_review_0.1.1/`）的所有修正与补充，确保审查发现的可追溯性。\
 > **报告版本**：v0.3.0\
@@ -205,7 +205,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|-----|
 | **来源** | OLK-6.6 源码深度分析 |
 | **源码证据** | `include/linux/kabi.h:1-80`（`KABI_EXTEND`/`KABI_DEPRECATE`/`KABI_BROKEN_INSERT_ENUM`/`KABI_USE`/`KABI_REPLACE`）+ `lib/Kconfig.kabi:1-30` + `include/linux/bpf.h:321,336-337,721` + `kernel/sched/sched.h:722-733` |
-| **对 agentrt-linux 的建议** | 新增 `50-engineering-standards/09-kabi-evolution.md`（STD-KABI-01，P1，~20h，M1 落地） |
+| **对 agent-linux 的建议** | 新增 `50-engineering-standards/09-kabi-evolution.md`（STD-KABI-01，P1，~20h，M1 落地） |
 
 ### 5.2 新增 ES-SEL4-11（CI 多工具矩阵验证）
 
@@ -213,7 +213,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|-----|
 | **来源** | seL4 源码深度分析 |
 | **源码证据** | `README.md` 8 个 CI badges（CII/CI/seL4Test/C Parser/Compile/Proof Sync/RefMan/XML）+ `tools/kernel_pylint.sh` / `tools/kernel_xmllint.sh` / `tools/circular_includes.py` |
-| **对 agentrt-linux 的建议** | 建立 CI 多工具矩阵（STD-TEST-09，P2，~16h，M3 落地） |
+| **对 agent-linux 的建议** | 建立 CI 多工具矩阵（STD-TEST-09，P2，~16h，M3 落地） |
 
 ### 5.3 6 项可落地工程标准
 
@@ -248,4 +248,4 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
-> **文档结束** | agentrt-linux v0.3.0 审查修订变更日志 | 2026-07-10 | SPHARX Ltd
+> **文档结束** | agent-linux v0.3.0 审查修订变更日志 | 2026-07-10 | SPHARX Ltd

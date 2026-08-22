@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# OLK-6.6 工程工具链源码映射 → agentrt-linux 工程标准
+# OLK-6.6 工程工具链源码映射 → agent-linux 工程标准
 
-> **文档定位**: 闭源内部参考，OLK-6.6 内核源码中工程工具链（编码规范、构建系统、编译器选项、测试验证、Rust 支持）→ agentrt-linux（AirymaxOS，极境智能体操作系统）工程标准与工具链复用策略映射
+> **文档定位**: 闭源内部参考，OLK-6.6 内核源码中工程工具链（编码规范、构建系统、编译器选项、测试验证、Rust 支持）→ agent-linux（AirymaxOS，极境智能体操作系统）工程标准与工具链复用策略映射
 > **版本**: 0.1.1（文档体系完成）/ 1.0.1（开发）
 > **最后更新**: 2026-07-09
 > **理论根基**: Linux 6.6 内核基线工程思想 + seL4 微内核设计思想 + Airymax 体系并行论
@@ -12,12 +12,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. ES-OLK 工程思想追溯
 
-本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agentrt-linux基本工程标准规范.md` ES-OLK-1~13 表）：
+本映射文档涉及以下 ES-OLK 工程思想（权威定义：闭源总纲 §12.4 / `agent-linux基本工程标准规范.md` ES-OLK-1~13 表）：
 
 | ES-OLK 编号 | 工程思想 | 本文档对应章节 |
 |------------|---------|--------------|
 | ES-OLK-7 | 声明式+命令式分离（Kconfig + Makefile） | §3 构建系统映射（§3.1 Makefile + §3.3 Kconfig + §3.4 Kbuild） |
-| ES-OLK-8 | 维护者制度文档化（MAINTAINERS） | §7 agentrt-linux 工程工具链复用策略总览（工程标准与维护责任）；§9 相关文档 |
+| ES-OLK-8 | 维护者制度文档化（MAINTAINERS） | §7 agent-linux 工程工具链复用策略总览（工程标准与维护责任）；§9 相关文档 |
 | ES-OLK-9 | 规范可执行（checkpatch.pl） | §2.2 scripts/checkpatch.pl（补丁风格检查器 7823 行）；§2.2.2 关键检查规则 |
 
 ---
@@ -26,13 +26,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档建立 OLK-6.6 内核源码中工程工具链（coding style / build / compiler / test / rust）到 agentrt-linux 工程标准的精确映射，回答三个问题：
+本文档建立 OLK-6.6 内核源码中工程工具链（coding style / build / compiler / test / rust）到 agent-linux 工程标准的精确映射，回答三个问题：
 
 1. **OLK-6.6 工具链是什么**：源码位置、关键规则、组织方式
-2. **agentrt-linux 对应什么**：agentrt-linux 工程标准中的对应规范、工具、配置
-3. **如何参考但 [IND] 独立实现**：agentrt-linux 在吸收工程思想基础上独立实现工具链，不照搬源码
+2. **agent-linux 对应什么**：agent-linux 工程标准中的对应规范、工具、配置
+3. **如何参考但 [IND] 独立实现**：agent-linux 在吸收工程思想基础上独立实现工具链，不照搬源码
 
-> **术语澄清**：agentrt（用户态运行时）= 微核心（micro-core），基于 seL4 微内核思想抽象；agentrt-linux（OS 发行版）= 微内核（micro-kernel），真正的微内核。本文档严禁使用"微内核原语"描述 agentrt，统一使用"微核心原语"。
+> **术语澄清**：agentrt（用户态运行时）= 微核心（micro-core），基于 seL4 微内核思想抽象；agent-linux（OS 发行版）= 微内核（micro-kernel），真正的微内核。本文档严禁使用"微内核原语"描述 agentrt，统一使用"微核心原语"。
 
 ### 1.2 源码定位
 
@@ -54,11 +54,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 标注 | 含义 | 本文档适用 |
 |------|------|------------|
-| **[SC]** | Shared Contract 共享契约层（agentrt ↔ agentrt-linux 共享 4 头文件） | 工具链 UAPI 不涉及 |
+| **[SC]** | Shared Contract 共享契约层（agentrt ↔ agent-linux 共享 4 头文件） | 工具链 UAPI 不涉及 |
 | **[SS]** | Semantic Same-origin 语义同源层（API 签名同源，实现独立） | 编码规范语义同源 |
-| **[IND]** | Independent 完全独立层（agentrt-linux 专属） | **工具链整体 [IND] 独立实现** |
+| **[IND]** | Independent 完全独立层（agent-linux 专属） | **工具链整体 [IND] 独立实现** |
 
-**关键声明**：agentrt-linux 工程工具链属于 **[IND] 完全独立层**。agentrt-linux 吸收 OLK-6.6 的工程思想（Tab 8、K&R、Kbuild 组织、禁浮点、双编译器、KUnit/kselftest 思路），但工具链脚本、构建规则、测试框架均由 agentrt-linux 自行实现，不复制 OLK-6.6 源码。agentrt-linux 的工程实现方式与主流 Linux 发行版保持一致性，以便未来兼容主流发行版标准工具链，但不直接采用其代码。
+**关键声明**：agent-linux 工程工具链属于 **[IND] 完全独立层**。agent-linux 吸收 OLK-6.6 的工程思想（Tab 8、K&R、Kbuild 组织、禁浮点、双编译器、KUnit/kselftest 思路），但工具链脚本、构建规则、测试框架均由 agent-linux 自行实现，不复制 OLK-6.6 源码。agent-linux 的工程实现方式与主流 Linux 发行版保持一致性，以便未来兼容主流发行版标准工具链，但不直接采用其代码。
 
 ---
 
@@ -70,7 +70,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### 2.1.1 关键规则摘录
 
-| 章节 | 规则 | 源码行号 | agentrt-linux 复用 |
+| 章节 | 规则 | 源码行号 | agent-linux 复用 |
 |------|------|----------|---------------------|
 | 1) Indentation | **Tab = 8 字符**，缩进 = 8 字符 | L18-39 | [SS] 完全采纳 |
 | 1) Indentation | 超过 3 层缩进即应重构 | L31-35 | [SS] 采纳 |
@@ -92,12 +92,12 @@ characters deep, and that is akin to trying to define the value of PI to be 3.
                                             — coding-style.rst:21-23
 ```
 
-#### 2.1.3 agentrt-linux 复用方式 [SS]
+#### 2.1.3 agent-linux 复用方式 [SS]
 
-agentrt-linux 工程标准规范（`docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md`）逐条采纳上述规则，并针对智能体操作系统场景加严：
+agent-linux 工程标准规范（`docs-closed/agent-linux/agent-linux基本工程标准规范.md`）逐条采纳上述规则，并针对智能体操作系统场景加严：
 
 ```c
-/* agentrt-linux 内核态函数示例：Tab 8 字符、K&R 风格、≤50 行 */
+/* agent-linux 内核态函数示例：Tab 8 字符、K&R 风格、≤50 行 */
 static int airymax_cognition_kthread_run(struct airymax_cog_ctx *ctx)
 {
         int ret;
@@ -135,7 +135,7 @@ static int airymax_cognition_kthread_run(struct airymax_cog_ctx *ctx)
 
 #### 2.2.2 关键检查规则（checkpatch 检查项摘录）
 
-| 检查类型 | 规则名 | 源码行号 | 说明 | agentrt-linux 复用 |
+| 检查类型 | 规则名 | 源码行号 | 说明 | agent-linux 复用 |
 |----------|--------|----------|------|---------------------|
 | 缩进 | `TABSTOP` | L3962-3967 | 检查缩进是否对齐 Tab 边界 | [SS] 采纳 |
 | 尾空白 | `trailing whitespace` | L3589-3600 | 禁止行尾空白 | [SS] 采纳 |
@@ -147,16 +147,16 @@ static int airymax_cognition_kthread_run(struct airymax_cog_ctx *ctx)
 | else 缩进 | `bare else` | L4188-4202 | else 对齐 | [SS] 采纳 |
 | 尾分号 | `trailing semicolon` | L4372 | 无语句却尾分号告警 | [SS] 采纳 |
 
-#### 2.2.3 agentrt-linux 复用方式 [IND]
+#### 2.2.3 agent-linux 复用方式 [IND]
 
-agentrt-linux 不直接复制 `checkpatch.pl`（239 KB Perl 脚本过重），而是独立实现轻量级 `airymax-checkpatch`：
+agent-linux 不直接复制 `checkpatch.pl`（239 KB Perl 脚本过重），而是独立实现轻量级 `airymax-checkpatch`：
 
 - **复用思想**：采纳 `$max_line_length=100`、`$tabsize=8`、K&R 大括号、尾空白检查等核心规则
-- **独立实现**：用 Python 重写，针对 agentrt-linux 代码树定制（含 `include/airymax/` 共享契约层头文件检查、Q16.16 定点数使用检查、kfifo 使用检查）
+- **独立实现**：用 Python 重写，针对 agent-linux 代码树定制（含 `include/airymax/` 共享契约层头文件检查、Q16.16 定点数使用检查、kfifo 使用检查）
 - **新增检查**：禁止内核态 `float`/`double`（必须用 `airymax_q16_t`）、禁止 kthread 间用 `io_uring`（必须用 `kfifo` + `wait_event_interruptible`）
 
 ```python
-# agentrt-linux 独立实现的 airymax-checkpatch 关键规则片段
+# agent-linux 独立实现的 airymax-checkpatch 关键规则片段
 TABSIZE = 8
 MAX_LINE_LENGTH = 100
 
@@ -190,9 +190,9 @@ def check_kthread_ipc(line, filename):
  */
 ```
 
-#### 2.3.1 agentrt-linux 复用方式 [IND]
+#### 2.3.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 `kernel-doc` 的注释格式约定（[SS] 语义同源），但文档生成工具独立实现：
+agent-linux 采纳 `kernel-doc` 的注释格式约定（[SS] 语义同源），但文档生成工具独立实现：
 
 - **[SS] 同源**：采纳 `/** ... */` + `@arg:` + `Return:` 注释格式
 - **[IND] 独立**：用 Sphinx + 自定义 `airymax-kdoc` 扩展替代 `kernel-doc`，输出 rST
@@ -251,15 +251,15 @@ git grep -h '^#define [^[:space:]]*for_each[^[:space:]]*(' include/ tools/ \
   - '__for_each_mem_range'
 ```
 
-#### 2.4.3 agentrt-linux 复用方式 [IND]
+#### 2.4.3 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 `.clang-format` 的核心配置（[SS] 语义同源），并定制自己的 `.clang-format`：
+agent-linux 采纳 `.clang-format` 的核心配置（[SS] 语义同源），并定制自己的 `.clang-format`：
 
 - **[SS] 同源**：`ColumnLimit`、`UseTab`、`IndentWidth=8`、`BreakBeforeBraces: Custom`（函数换行、控制语句不换行）
-- **[IND] 独立**：`ForEachMacros` 列表由 agentrt-linux 自有 `for_each` 宏生成（如 `airymax_for_each_agent`、`airymax_for_each_cog_loop`），不复制 560+ OLK-6.6 条目
+- **[IND] 独立**：`ForEachMacros` 列表由 agent-linux 自有 `for_each` 宏生成（如 `airymax_for_each_agent`、`airymax_for_each_cog_loop`），不复制 560+ OLK-6.6 条目
 
 ```yaml
-# agentrt-linux/.clang-format（独立实现，思想同源）
+# agent-linux/.clang-format（独立实现，思想同源）
 ---
 Language:        Cpp
 BasedOnStyle:    LLVM
@@ -349,14 +349,14 @@ _DISTRO_RELEASE = ""
 | `_DISTRO_MINOR` | 0 | 次版本 |
 | `_DISTRO_RELEASE` | "" | 发行标识空串 |
 
-> **术语规范**：`Makefile.oever` 中的变量为该主流发行版专属标识符，agentrt-linux 文档统一以 `_DISTRO_*` 占位表示，严禁出现原发行版字样。
+> **术语规范**：`Makefile.oever` 中的变量为该主流发行版专属标识符，agent-linux 文档统一以 `_DISTRO_*` 占位表示，严禁出现原发行版字样。
 
-#### 3.2.2 agentrt-linux 复用方式 [IND]
+#### 3.2.2 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳"发行版版本元数据独立文件"的工程思想（[SS] 语义同源），但版本字段独立设计，不使用上述发行版字段名：
+agent-linux 采纳"发行版版本元数据独立文件"的工程思想（[SS] 语义同源），但版本字段独立设计，不使用上述发行版字段名：
 
 ```makefile
-# agentrt-linux/Makefile.airymax — 发行版版本元数据（独立实现）
+# agent-linux/Makefile.airymax — 发行版版本元数据（独立实现）
 # SPDX-License-Identifier: GPL-2.0
 AIRYMAX_LTS          = 1
 AIRYMAX_MAJOR         = 1
@@ -367,7 +367,7 @@ AIRYMAX_KBASE         = 6.6      # Linux 6.6 内核基线
 AIRYMAX_SCHED_EXT     = 7        # SCHED_EXT=7（OLK-6.6 内置）
 ```
 
-> **术语规范**：agentrt-linux 基于 Linux 6.6 内核基线，参考主流 Linux 发行版的工程组织方式（独立版本元数据文件、Kbuild 递归下降），但版本字段独立命名，不与任何发行版字段重名。
+> **术语规范**：agent-linux 基于 Linux 6.6 内核基线，参考主流 Linux 发行版的工程组织方式（独立版本元数据文件、Kbuild 递归下降），但版本字段独立命名，不与任何发行版字段重名。
 
 ### 3.3 `Kconfig` —— 配置系统入口
 
@@ -393,13 +393,13 @@ source "lib/Kconfig.<distro>"          # 发行版专属配置（占位，原文
 source "Documentation/Kconfig"
 ```
 
-#### 3.3.1 agentrt-linux 复用方式 [IND]
+#### 3.3.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 Kconfig 配置系统思想（[SS] 语义同源），但配置树独立组织，新增 agentrt-linux 专属子系统配置：
+agent-linux 采纳 Kconfig 配置系统思想（[SS] 语义同源），但配置树独立组织，新增 agent-linux 专属子系统配置：
 
 ```
-# agentrt-linux/Kconfig — 配置系统入口（独立实现）
-mainmenu "agentrt-linux $(AIRYMAX_VERSION) Kernel Configuration"
+# agent-linux/Kconfig — 配置系统入口（独立实现）
+mainmenu "agent-linux $(AIRYMAX_VERSION) Kernel Configuration"
 source "scripts/Kconfig.include"
 source "init/Kconfig"
 source "kernel/Kconfig.freezer"
@@ -411,10 +411,10 @@ source "security/Kconfig"
 source "crypto/Kconfig"
 source "lib/Kconfig"
 source "lib/Kconfig.debug"
-source "kernel/airymax/Kconfig"          # agentrt-linux 专属：智能体调度
-source "ipc/airymax/Kconfig"             # agentrt-linux 专属：AgentsIPC
-source "security/airymax/Kconfig"        # agentrt-linux 专属：Cupolas capability
-source "lib/airymax/Kconfig"             # agentrt-linux 专属：Q16.16 定点库
+source "kernel/airymax/Kconfig"          # agent-linux 专属：智能体调度
+source "ipc/airymax/Kconfig"             # agent-linux 专属：AgentsIPC
+source "security/airymax/Kconfig"        # agent-linux 专属：Cupolas capability
+source "lib/airymax/Kconfig"             # agent-linux 专属：Q16.16 定点库
 source "Documentation/Kconfig"
 ```
 
@@ -436,10 +436,10 @@ source "Documentation/Kconfig"
 
 #### 3.4.1 关键工程思想：asm-offsets
 
-`asm-offsets` 是内核构建的关键工程：C 结构体字段偏移由编译器生成汇编，再提取为头文件，供汇编代码引用 C 结构体字段。agentrt-linux 完整采纳此机制（[SS] 同源）。
+`asm-offsets` 是内核构建的关键工程：C 结构体字段偏移由编译器生成汇编，再提取为头文件，供汇编代码引用 C 结构体字段。agent-linux 完整采纳此机制（[SS] 同源）。
 
 ```c
-/* agentrt-linux: kernel/airymax/offsets.c — 生成 asm-offsets（思想同源） */
+/* agent-linux: kernel/airymax/offsets.c — 生成 asm-offsets（思想同源） */
 #include <linux/kbuild.h>
 #include <airymax/cognition_types.h>
 #include <airymax/cupolas_types.h>
@@ -465,11 +465,11 @@ int main(void)
 
 **源码路径**: `OLK-6.6: arch/x86/Makefile:1-340`
 
-#### 4.1.1 禁浮点选项（agentrt-linux 核心约束来源）
+#### 4.1.1 禁浮点选项（agent-linux 核心约束来源）
 
-agentrt-linux 内核态禁用 `float`、用 Q16.16 定点数（`airymax_q16_t = int32_t`）的硬约束直接来源于 OLK-6.6 的 x86 编译选项：
+agent-linux 内核态禁用 `float`、用 Q16.16 定点数（`airymax_q16_t = int32_t`）的硬约束直接来源于 OLK-6.6 的 x86 编译选项：
 
-| 选项 | 作用 | 源码行号 | agentrt-linux 复用 |
+| 选项 | 作用 | 源码行号 | agent-linux 复用 |
 |------|------|----------|---------------------|
 | `-mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx` | 禁用所有 SIMD 浮点指令集 | L70 | [SS] 完全采纳 |
 | `-msoft-float` (32-bit) | 软浮点（禁硬件 FPU） | L96 | [SS] 完全采纳 |
@@ -499,12 +499,12 @@ OLK-6.6 对 Rust 编译也同步禁用浮点（`arch/x86/Makefile:71`）：
 KBUILD_RUSTFLAGS += -Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2
 ```
 
-agentrt-linux 完整采纳此约束：**内核态 C 代码与 Rust 代码均禁浮点**，所有浮点运算改用 `airymax_q16_t`（Q16.16 定点数）。
+agent-linux 完整采纳此约束：**内核态 C 代码与 Rust 代码均禁浮点**，所有浮点运算改用 `airymax_q16_t`（Q16.16 定点数）。
 
 #### 4.1.3 Q16.16 定点数实现示例
 
 ```c
-/* agentrt-linux: include/airymax/airymax_q16.h — Q16.16 定点数（禁浮点替代） */
+/* agent-linux: include/airymax/airymax_q16.h — Q16.16 定点数（禁浮点替代） */
 #ifndef _AIRYMAX_Q16_H
 #define _AIRYMAX_Q16_H
 
@@ -582,12 +582,12 @@ else ifneq ($(call cc-option, -mstack-alignment=16),)
 endif
 ```
 
-#### 4.2.2 agentrt-linux 复用方式 [IND]
+#### 4.2.2 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳双编译器支持思想（[SS] 同源），但构建规则独立实现：
+agent-linux 采纳双编译器支持思想（[SS] 同源），但构建规则独立实现：
 
 ```makefile
-# agentrt-linux: arch/x86/Makefile.airymax — 双编译器支持（独立实现）
+# agent-linux: arch/x86/Makefile.airymax — 双编译器支持（独立实现）
 ifdef CONFIG_CC_IS_GCC
 AIRYMAX_RETPOLINE_CFLAGS := $(call cc-option,-mindirect-branch=thunk-extern)
 AIRYMAX_CFLAGS_NOFLOAT   := -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -mno-80387
@@ -620,15 +620,15 @@ KUnit 是 Linux 内核内置的单元测试框架，无需用户态参与即可�
 | debugfs | `debugfs.c` | `/sys/kernel/debug/kunit/` |
 | 静态桩 | `static_stub.c` | 函数替换测试 |
 
-#### 5.1.1 agentrt-linux 复用方式 [IND]
+#### 5.1.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 KUnit 测试思想（[SS] 语义同源），针对智能体操作系统定制测试框架 `airymax-kunit`：
+agent-linux 采纳 KUnit 测试思想（[SS] 语义同源），针对智能体操作系统定制测试框架 `airymax-kunit`：
 
 - **[SS] 同源**：采纳 `KUNIT_EXPECT_*` 断言宏、测试套件组织、debugfs 输出机制
 - **[IND] 独立**：新增 Q16.16 定点数测试、kfifo IPC 测试、Cupolas capability 派生测试
 
 ```c
-/* agentrt-linux: lib/airymax/airymax_q16_test.c — KUnit 风格测试（独立实现） */
+/* agent-linux: lib/airymax/airymax_q16_test.c — KUnit 风格测试（独立实现） */
 #include <kunit/test.h>
 #include <airymax/airymax_q16.h>
 
@@ -681,15 +681,15 @@ kselftest 是用户态自测框架，覆盖 80+ 子系统（节选）：
 | `exec/` | exec 语义 |
 | `memfd/` | memfd_create |
 | `net/` | 网络栈 |
-| `sched_ext/` | sched_ext 调度器（agentrt-linux 核心） |
+| `sched_ext/` | sched_ext 调度器（agent-linux 核心） |
 | `seccomp/` | seccomp 沙箱 |
 
-#### 5.2.1 agentrt-linux 复用方式 [IND]
+#### 5.2.1 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳 kselftest 自测思想（[SS] 同源），新增智能体操作系统专属自测：
+agent-linux 采纳 kselftest 自测思想（[SS] 同源），新增智能体操作系统专属自测：
 
 ```bash
-# agentrt-linux: tools/testing/selftests/airymax/Makefile — 自测组织
+# agent-linux: tools/testing/selftests/airymax/Makefile — 自测组织
 CFLAGS += -Wall -O2 -g
 TEST_GEN_PROGS := \
         airymax_q16_test        \
@@ -709,7 +709,7 @@ include ../lib.mk
 | `ktest` | `tools/testing/ktest/` | 内核配置自动化测试 |
 | `fault-injection` | `tools/testing/fault-injection/` | 故障注入 |
 | `nvdimm` | `tools/testing/nvdimm/` | NVDIMM 模拟 |
-| `cxl` | `tools/testing/cxl/` | CXL 设备模拟（agentrt-linux MemoryRovol 参考用） |
+| `cxl` | `tools/testing/cxl/` | CXL 设备模拟（agent-linux MemoryRovol 参考用） |
 
 ### 5.4 静态分析工具链：sparse / Smatch / Coccinelle
 
@@ -746,15 +746,15 @@ Coccinelle 是模式驱动的代码变换工具，用语义补丁（SmPL）检�
 | `locks/` | 锁 |
 | `misc/` | 杂项 |
 
-#### 5.4.4 agentrt-linux 复用方式 [IND]
+#### 5.4.4 agent-linux 复用方式 [IND]
 
-agentrt-linux 采纳三类静态分析工具链思想（[SS] 同源），但工具链独立集成：
+agent-linux 采纳三类静态分析工具链思想（[SS] 同源），但工具链独立集成：
 
 - **[SS] 同源**：采纳 sparse 的 `__bitwise` 类型标注、Smatch 的空指针检查、Coccinelle 的语义补丁模式
-- **[IND] 独立**：新增 agentrt-linux 专属检查规则（禁浮点检查、kfifo IPC 检查、Cupolas capability 派生链检查）
+- **[IND] 独立**：新增 agent-linux 专属检查规则（禁浮点检查、kfifo IPC 检查、Cupolas capability 派生链检查）
 
 ```c
-/* agentrt-linux: include/airymax/airymax_sparse.h — sparse 类型标注（独立实现） */
+/* agent-linux: include/airymax/airymax_sparse.h — sparse 类型标注（独立实现） */
 #ifdef __CHECKER__
 #define airymax_q16_t __bitwise int32_t   /* 强类型：禁止与普通 int 混用 */
 #define __airymax_user   __user           /* 用户态指针 */
@@ -873,26 +873,26 @@ config SAMPLE_RUST_HOSTPROGS
 endif
 ```
 
-### 6.3 agentrt-linux 复用方式 [IND]
+### 6.3 agent-linux 复用方式 [IND]
 
-agentrt-linux 评估 Rust 支持现状（Linux 6.6 仍为实验性），采取保守策略：
+agent-linux 评估 Rust 支持现状（Linux 6.6 仍为实验性），采取保守策略：
 
-| 维度 | OLK-6.6 现状 | agentrt-linux 策略 | 边界 |
+| 维度 | OLK-6.6 现状 | agent-linux 策略 | 边界 |
 |------|--------------|---------------------|------|
 | Rust 内核模块 | 实验性支持（`CONFIG_RUST`） | 1.0.1 阶段不启用内核态 Rust | [IND] |
 | Rust 用户态 | 不涉及 | agentrt 微核心可用 Rust 编写用户态 daemon | [IND] |
 | Q16.16 替代 | Rust 同步禁浮点（`-Ctarget-feature=-sse...`） | Rust 代码同样禁浮点，用 `i32` 模拟 Q16.16 | [SS] |
-| `module!` 宏 | Rust 模块声明宏 | agentrt-linux 用户态 daemon 用 Rust 重写时参考 | [IND] |
+| `module!` 宏 | Rust 模块声明宏 | agent-linux 用户态 daemon 用 Rust 重写时参考 | [IND] |
 
-#### 6.3.1 agentrt-linux Rust 用户态 daemon 示例（独立实现）
+#### 6.3.1 agent-linux Rust 用户态 daemon 示例（独立实现）
 
-agentrt-linux 的 12 daemons 可用 Rust 编写用户态服务（[IND] 完全独立），参考 `rust_minimal.rs` 的 `module!` 宏思想：
+agent-linux 的 12 daemons 可用 Rust 编写用户态服务（[IND] 完全独立），参考 `rust_minimal.rs` 的 `module!` 宏思想：
 
 ```rust
-// agentrt-linux: agents/cognition-daemon/src/lib.rs — 用户态 daemon（独立实现）
+// agent-linux: agents/cognition-daemon/src/lib.rs — 用户态 daemon（独立实现）
 // SPDX-License-Identifier: GPL-2.0
 
-//! agentrt-linux 认知循环 daemon（用户态微核心服务）
+//! agent-linux 认知循环 daemon（用户态微核心服务）
 
 use airymax_prelude::*;
 
@@ -900,7 +900,7 @@ agent_daemon! {
     type: CognitionDaemon,
     name: "cognition-daemon",
     version: "1.0.1",
-    description: "agentrt-linux CoreLoopThree 认知循环用户态服务",
+    description: "agent-linux CoreLoopThree 认知循环用户态服务",
 }
 
 /// Q16.16 定点数（内核态禁浮点约束延伸到用户态 daemon）
@@ -926,17 +926,17 @@ impl AgentDaemon for CognitionDaemon {
 }
 ```
 
-> **术语规范**：上述 `agent_daemon!` 宏参考 Linux 6.6 `module!` 宏的组织思想（[SS] 语义同源），但完全独立实现，服务于 agentrt-linux 用户态 daemon 体系。
+> **术语规范**：上述 `agent_daemon!` 宏参考 Linux 6.6 `module!` 宏的组织思想（[SS] 语义同源），但完全独立实现，服务于 agent-linux 用户态 daemon 体系。
 
 ---
 
-## 7. agentrt-linux 工程工具链复用策略总览 [IND]
+## 7. agent-linux 工程工具链复用策略总览 [IND]
 
 ### 7.1 复用矩阵
 
-| 工具类别 | OLK-6.6 源 | agentrt-linux 对应 | 边界 | 复用深度 |
+| 工具类别 | OLK-6.6 源 | agent-linux 对应 | 边界 | 复用深度 |
 |----------|-----------|---------------------|------|----------|
-| 编码风格 | `coding-style.rst` | `agentrt-linux基本工程标准规范.md` | [SS] | 逐条采纳 |
+| 编码风格 | `coding-style.rst` | `agent-linux基本工程标准规范.md` | [SS] | 逐条采纳 |
 | 风格检查 | `checkpatch.pl` (Perl) | `airymax-checkpatch` (Python) | [IND] | 思想同源，独立重写 |
 | 文档提取 | `kernel-doc` (Perl) | `airymax-kdoc` (Sphinx 扩展) | [IND] | 思想同源，独立重写 |
 | 自动格式化 | `.clang-format` | `.clang-format`（定制） | [IND] | 核心配置同源，宏列表独立 |
@@ -954,9 +954,9 @@ impl AgentDaemon for CognitionDaemon {
 
 ### 7.2 工程标准加严项
 
-agentrt-linux 在 OLK-6.6 工程标准基础上，针对智能体操作系统场景加严：
+agent-linux 在 OLK-6.6 工程标准基础上，针对智能体操作系统场景加严：
 
-| 加严项 | OLK-6.6 | agentrt-linux | 理由 |
+| 加严项 | OLK-6.6 | agent-linux | 理由 |
 |--------|---------|----------------|------|
 | 内核态浮点 | 禁（x86） | 全架构禁 + 强制 Q16.16 | 智能体负载需确定性 |
 | kthread 间 IPC | 无约束 | 强制 kfifo + wait_event | 避免用户态 io_uring 滥用 |
@@ -966,7 +966,7 @@ agentrt-linux 在 OLK-6.6 工程标准基础上，针对智能体操作系统场
 
 ### 7.3 [IND] 独立性声明
 
-agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
+agent-linux 工程工具链整体属于 **[IND] 完全独立层**：
 
 1. **不复制 OLK-6.6 源码**：`checkpatch.pl`、`kernel-doc`、`.clang-format`、`Makefile`、`Kbuild` 等均不直接复制
 2. **采纳工程思想**：Tab 8、K&R、Kbuild 递归下降、禁浮点、双编译器、KUnit/kselftest 框架思想
@@ -979,7 +979,7 @@ agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
 ## 8. 与开源文档的关系
 
 - 本映射文档是**闭源参考**，不对外发布
-- 开源设计文档（`docs/AirymaxOS/`）引用本映射结论时，必须用 agentrt-linux 自身语言表述
+- 开源设计文档（`docs/AirymaxOS/`）引用本映射结论时，必须用 agent-linux 自身语言表述
 - 开源文档中**严禁**出现 OLK-6.6 源码路径、行号、函数名等直接引用
 - 开源文档中**严禁**出现任何主流 Linux 发行版的名称
 
@@ -993,7 +993,7 @@ agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
 | `02-olk66-source-mapping/02-io-uring-mapping.md` | io_uring 源码映射（AgentsIPC） |
 | `02-olk66-source-mapping/03-bpf-mapping.md` | eBPF 源码映射（Cupolas L1） |
 | `03-microkernel-design-ref/05-sel4-extension-plan.md` | seL4 微内核拓展型改造方案 |
-| `agentrt-linux基本工程标准规范.md` | agentrt-linux 工程标准规范（本文档映射目标） |
+| `agent-linux基本工程标准规范.md` | agent-linux 工程标准规范（本文档映射目标） |
 
 ---
 
@@ -1017,7 +1017,7 @@ agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
 | `lib/kunit/test.c` | — | KUnit 核心 |
 | `tools/testing/selftests/Makefile` | — | kselftest 组织 |
 
-### 10.2 agentrt-linux 工程工具链目标清单
+### 10.2 agent-linux 工程工具链目标清单
 
 | 文件 | 用途 | 状态 |
 |------|------|------|
@@ -1028,7 +1028,7 @@ agentrt-linux 工程工具链整体属于 **[IND] 完全独立层**：
 | `kernel/airymax/Kconfig` | 智能体调度配置 | 1.0.1 规划 |
 | `include/airymax/airymax_q16.h` | Q16.16 定点数 | 1.0.1 规划 |
 | `lib/airymax/airymax_q16_test.c` | Q16.16 单元测试 | 1.0.1 规划 |
-| `tools/testing/selftests/airymax/` | agentrt-linux 自测 | 1.0.1 规划 |
+| `tools/testing/selftests/airymax/` | agent-linux 自测 | 1.0.1 规划 |
 
 ---
 

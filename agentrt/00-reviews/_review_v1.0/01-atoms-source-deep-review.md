@@ -821,7 +821,7 @@ taskflow_engine_t *taskflow_engine;
 
 | 术语 | 定义 |
 |------|------|
-| OLK-6.6 | Linux 6.6 内核基线编码风格（agentrt-linux 工程标准基线） |
+| OLK-6.6 | Linux 6.6 内核基线编码风格（agent-linux 工程标准基线） |
 | IRON-9 v2 | agentrt 三层模型（[SC] 共享契约层 / [SS] 语义同源层 / [IND] 完全独立层） |
 | A 类 | 微核心原语（corekern） |
 | B 类 | 应用语义层（coreloopthree/taskflow/syscall/memory） |

@@ -22,9 +22,9 @@ L2: 协议层              are_ipc_message_header_t  128B   协议多路复用 +
     (corekern/ipc/are_ipc.c + daemons/common/)
 ```
 
-**L0 是[SC]共享契约**（在 `commons/include/airymax/ipc.h`），agentrt 和 agentrt-linux 两端使用同一份物理文件。它定义了消息头的**布局**（字段顺序、偏移、packing）但不参与任何运行时逻辑——它只是"线路上长什么样"。
+**L0 是[SC]共享契约**（在 `commons/include/airymax/ipc.h`），agentrt 和 agent-linux 两端使用同一份物理文件。它定义了消息头的**布局**（字段顺序、偏移、packing）但不参与任何运行时逻辑——它只是"线路上长什么样"。
 
-**L1 是内核机制层**（`corekern/ipc/binder.c`），负责通道创建/连接/发送/接收——它不知道消息内容，只负责把字节从 A 传递到 B。在 agentrt 上通过 `shm_open+mmap+semaphore` 实现，在 agentrt-linux 上通过 `io_uring SQE/CQE` 实现。
+**L1 是内核机制层**（`corekern/ipc/binder.c`），负责通道创建/连接/发送/接收——它不知道消息内容，只负责把字节从 A 传递到 B。在 agentrt 上通过 `shm_open+mmap+semaphore` 实现，在 agent-linux 上通过 `io_uring SQE/CQE` 实现。
 
 **L2 是协议层**（`corekern/ipc/are_ipc.c`），负责消息头初始化/校验/CRC。它知道 `magic`、`protocol`、`msg_type`，但不负责传输——它把自己的整个消息（128B 头 + payload）作为 L1 的 `data` 指针传进去。
 
@@ -62,9 +62,9 @@ airy_ipc_recv(channel, timeout, &out_msg)
 
 ---
 
-## 2. agentrt（用户态）vs agentrt-linux（内核态）的 IPC 实现对比
+## 2. agentrt（用户态）vs agent-linux（内核态）的 IPC 实现对比
 
-| 层面 | agentrt（用户态，已实现） | agentrt-linux（内核态，设计文档） |
+| 层面 | agentrt（用户态，已实现） | agent-linux（内核态，设计文档） |
 |------|------------------------|--------------------------------|
 | L0 [SC] | `commons/include/airymax/ipc.h` — 同一物理文件 | 同一文件（物理宿主在 kernel 侧） |
 | L1 传输 | `corekern/src/ipc/binder.c` — POSIX mtx+cond+queue | `io_uring SQE/CQE + registered buffer` |
@@ -73,9 +73,9 @@ airy_ipc_recv(channel, timeout, &out_msg)
 | Capability | `syscall/src/sandbox.c` + `daemons/common/` 权限检查 | `airy_sys_ipc_send_with_cap()` + `agent_lsm` LSM hook |
 | 跨平台 | Linux/macOS/Windows | 仅 Linux |
 
-**关键观察**：agentrt-linux 的 IPC 设计文档中有一些目前没有代码支撑但论文中值得强调的设计：
+**关键观察**：agent-linux 的 IPC 设计文档中有一些目前没有代码支撑但论文中值得强调的设计：
 
-1. **seL4 Endpoint 状态机映射到 io_uring**：agentrt-linux 将 seL4 三态 Endpoint（Idle/Send/Recv）映射到 io_uring SQ/CQ 队列语义。Fastpath 走 sched_ext 直接切换，Slowpath 走 CQE 通知。这个映射是论文的核心材料——它把一个经过形式化验证的 577 行代码（seL4 endpoint）映射到一个高性能工业 I/O 框架（io_uring）上。
+1. **seL4 Endpoint 状态机映射到 io_uring**：agent-linux 将 seL4 三态 Endpoint（Idle/Send/Recv）映射到 io_uring SQ/CQ 队列语义。Fastpath 走 sched_ext 直接切换，Slowpath 走 CQE 通知。这个映射是论文的核心材料——它把一个经过形式化验证的 577 行代码（seL4 endpoint）映射到一个高性能工业 I/O 框架（io_uring）上。
 
 2. **Reply 原子性**：直接借鉴 seL4 `doReplyTransfer` 的临界区串行模式——内核在持锁期间串行完成"写入回复+恢复接收方"，保证 IPC 语义完整性。
 
@@ -102,9 +102,9 @@ airy_sandbox_invoke(sb, syscall_num, args, argc, out_result) {
 
 agentrt 的 capability 检查是**前置步骤**，不是 inline 到消息头的。它通过 `permission_rule_t` 规则链表匹配 `(agent_id, action, resource) -> allow/deny`。
 
-### 3.2 在 agentrt-linux（内核态）中的设计
+### 3.2 在 agent-linux（内核态）中的设计
 
-agentrt-linux 把 capability check **折叠进 IPC 消息头**。这是 `02-ipc-protocol.md` §4.6 中描述的：
+agent-linux 把 capability check **折叠进 IPC 消息头**。这是 `02-ipc-protocol.md` §4.6 中描述的：
 
 ```c
 // 消息头中的 capability 折叠：
@@ -137,7 +137,7 @@ int airy_sys_ipc_send_with_cap(const struct airy_ipc_msg_hdr *hdr,
 
 ### 3.3 与 seL4 的本质区别
 
-| 对比项 | seL4 | Airymax (agentrt-linux) |
+| 对比项 | seL4 | Airymax (agent-linux) |
 |--------|------|------------------------|
 | Capability 存储 | CTE (CNode Table Entry) | CNode (设计文档) |
 | Capability 传递 | 通过 IPC buffer 独立传递 | 通过消息头 `AIRY_IPC_F_CAP_CARRY` 标记 |
@@ -187,7 +187,7 @@ Fastpath        → sched_ext 直接上下文切换
 
 **创新 3：[SC] 共享契约层跨用户/内核边界**
 
-agentrt 用户态的 L2 消息和 agentrt-linux 内核态的 L2 消息使用同一份 `[SC]/airymax/ipc.h` 物理头文件——agentrt 在 agentrt-linux 上运行时**不需要任何协议转换层**。消息头字段布局二进制兼容。
+agentrt 用户态的 L2 消息和 agent-linux 内核态的 L2 消息使用同一份 `[SC]/airymax/ipc.h` 物理头文件——agentrt 在 agent-linux 上运行时**不需要任何协议转换层**。消息头字段布局二进制兼容。
 
 ---
 
@@ -204,7 +204,7 @@ agentrt 用户态的 L2 消息和 agentrt-linux 内核态的 L2 消息使用同�
 2. 接收方不需要被唤醒就能拒绝非授权消息（"die silently" 模式——内核返回 AIRY_EPERM 不唤醒接收方 daemon）
 3. 这个设计与 seL4 的 CTE derived model 兼容（mint/derive/revoke 语义仍然适用）
 
-### 陷阱 3：agentrt-linux 还没实现
+### 陷阱 3：agent-linux 还没实现
 
 **应对**：论文应该定位为 "position paper"（HotOS 的类型），而不是 "implemented system paper"（OSDI 的类型）。描述设计、论证动机、提供预期的微基准（来自 agentrt 用户态现有的性能数据），但不假装已经在内核中实现了。
 
@@ -233,12 +233,12 @@ agentrt 用户态的 L2 消息和 agentrt-linux 内核态的 L2 消息使用同�
   - vs. seL4 的性能预期（单次 vs 三次往返）
   - vs. io_uring 的功能对比（capability vs 无 cap）
 
-§5 同源红利的实证：agentrt ↔ agentrt-linux 零适配层
-  - [SC] ipc.h 共享契约 + agentrt 直接引用 agentrt-linux 头文件
+§5 同源红利的实证：agentrt ↔ agent-linux 零适配层
+  - [SC] ipc.h 共享契约 + agentrt 直接引用 agent-linux 头文件
   - 与 Linux UAPI / FIDL / Treble HIDL 的对比
 
 §6 局限与讨论
-  - agentrt-linux 尚未实现（当前是设计 + agentrt 用户态原型）
+  - agent-linux 尚未实现（当前是设计 + agentrt 用户态原型）
   - 真正的零拷贝需要 io_uring + RDMA，我们的嵌套不是零拷贝
   - 形式化验证的范围限制
 
@@ -253,9 +253,9 @@ agentrt 用户态的 L2 消息和 agentrt-linux 内核态的 L2 消息使用同�
 |------|------|-----------|
 | "这和 seL4 有什么区别？" | seL4 的 IPC 是纯微内核调用，没有 io_uring。我们保持了 seL4 的 IPC 语义，但底层跑在 io_uring 上 | ✅ |
 | "嵌套本身不是创新" | 对的。创新不在嵌套，在于 (1) seL4 语义在 io_uring 上的映射 (2) cap 折叠 | ✅ |
-| "你们的 capability 检查不是 inline 到消息头的" | agentrt 用的是前置检查。agentrt-linux 的设计是 inline 的，但代码还在 M1 阶段 | ⚠️ 需要诚实声明 |
+| "你们的 capability 检查不是 inline 到消息头的" | agentrt 用的是前置检查。agent-linux 的设计是 inline 的，但代码还在 M1 阶段 | ⚠️ 需要诚实声明 |
 | "实验数据在哪？" | 这个需要先跑出来 | ❌ 没有数据 |
-| "这和把 seL4 的 libsel4 搬到 Linux 有什么区别？" | libsel4 是用户态库，没有内核态支持。我们的 [SC] 共享契约是物理头文件双向共享，agentrt-linux 的内核 LSM 直接解析同一份头文件 | ✅ |
+| "这和把 seL4 的 libsel4 搬到 Linux 有什么区别？" | libsel4 是用户态库，没有内核态支持。我们的 [SC] 共享契约是物理头文件双向共享，agent-linux 的内核 LSM 直接解析同一份头文件 | ✅ |
 
 ---
 

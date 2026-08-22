@@ -186,7 +186,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 5.3 [SS] 语义同源层 API 映射
 
-| agentrt API | agentrt-linux API | 同源类型 | 验证状态 |
+| agentrt API | agent-linux API | 同源类型 | 验证状态 |
 |-------------|------------------|---------|---------|
 | `agent_select_cpu` | BPF `select_cpu` 回调 | sched_ext 同源 | ✅ |
 | `agent_enqueue`/`agent_dequeue` | BPF `enqueue`/`dispatch` 回调 | sched_ext 同源 | ✅ |
@@ -238,13 +238,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **修复执行**: 三组 sed 批量替换：`AGENTOS → AGENTRT`（大写宏前缀）、`AgentOS → AgentRT`（PascalCase Rust 类型）、`agentos → agentrt`（小写函数前缀+路径）。仅做命名前缀替换，错误码名称和数值的统一（`AGENTRT_OK → AGENTRT_EOK`、`AGENTRT_ERR_INVALID_PARAM → AGENTRT_EINVAL` 等）归属 P0-03 决策范畴。
 
-#### P0-03: agentrt ↔ agentrt-linux 系统调用 API 签名根本性不一致
+#### P0-03: agentrt ↔ agent-linux 系统调用 API 签名根本性不一致
 
 **状态**: ✅ 已决策（方案 D：分层 API 设计）+ Task #45 [SS] 表述修正已完成（2026-07-10）
 
-**问题描述**: IRON-9 v2 [SS] 语义同源层声明"API 签名同源、实现独立"，但实际验证发现 agentrt（用户态）与 agentrt-linux（内核态）的系统调用 API 签名**根本不同**：
+**问题描述**: IRON-9 v2 [SS] 语义同源层声明"API 签名同源、实现独立"，但实际验证发现 agentrt（用户态）与 agent-linux（内核态）的系统调用 API 签名**根本不同**：
 
-| 对比项 | AirymaxRT（agentrt 用户态，P0-02 改名后） | AirymaxOS（agentrt-linux 内核态） | 差异性质 |
+| 对比项 | AirymaxRT（agentrt 用户态，P0-02 改名后） | AirymaxOS（agent-linux 内核态） | 差异性质 |
 |--------|---------------------------|--------------------------------|---------|
 | 参数类型 | JSON 字符串（`const char *input, size_t input_len`） | 类型化结构体（`const agentrt_task_desc_t *task_desc`） | 抽象层级不同 |
 | 返回类型 | JSON 字符串（`char **out_output`）+ `agentrt_error_t` | `int`（`AGENTRT_E*` 负值） | 接口范式不同 |
@@ -259,7 +259,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **用户决策**: 用户拒绝了简单 A/B/C 选择，要求"重新思考方案，使用 Linux 编号会减少多少用户态易用性？agentrt 是要作为行业底座的话，哪个方案最好？"经 8 维度量化分析（跨平台 -33%、跨语言 -60%、ABI 稳定性 -30%、开发复杂度 +40% 等），用户选择了 **方案 D（分层 API 设计）**：
 - agentrt 保持 JSON-RPC 高层 API（`agentrt_syscall_invoke()` 统一入口，跨平台行业底座）
-- agentrt-linux 保持编号 syscall（512-631，Linux 传统 + seL4 借鉴）
+- agent-linux 保持编号 syscall（512-631，Linux 传统 + seL4 借鉴）
 - [SS] 修正为"高层 API 语义同源（概念操作一致），签名因抽象层级不同而独立演进"
 - SDK 层（AirymaxClient 4 语言，同一份源码两端编译）签名确实同源，保留"签名同源"但限定为"SDK 层"
 - 详见决策报告 `02-p0-03-api-paradigm-decision.md`
@@ -311,10 +311,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **问题描述**: P0-02 改名已完成（`agentos_ → agentrt_` 前缀统一 ✅），但 AirymaxRT 错误码名称仍为 `AGENTRT_OK` / `AGENTRT_ERR_*`（非 `AGENTRT_EOK` / `AGENTRT_E*`），且 AirymaxRT 使用 `agentrt_syscall_invoke()` 统一入口（非编号 syscall），与 AirymaxOS 的 512-631 编号段无法对齐。该问题依赖 P0-03（API 签名统一方向决策）完成后才能建立有效映射表。
 
 **修复执行**: P0-03 方案 D 决策后，已创建 `30-interfaces/05-syscall-semantic-mapping.md`（467 行），完成以下工作：
-- 建立分层 API 设计概览（agentrt JSON-RPC 高层 API ↔ agentrt-linux 编号 syscall 512-631）
+- 建立分层 API 设计概览（agentrt JSON-RPC 高层 API ↔ agent-linux 编号 syscall 512-631）
 - [SS] 语义同源映射表：6 组直接语义映射 + 5 组条件语义映射（概念操作一致，签名独立演进）
 - [IND] agentrt 独有系统调用清单：19 个高层 API（初始化/Session/Agent/Skill/Memory/Telemetry/Task-wait）
-- [IND] agentrt-linux 独有系统调用清单：11 个内核 syscall（io_uring/CXL/MGLRU/sched_ext/capability/LSM/CLT kthread/Wasm）
+- [IND] agent-linux 独有系统调用清单：11 个内核 syscall（io_uring/CXL/MGLRU/sched_ext/capability/LSM/CLT kthread/Wasm）
 - SDK 层签名同源说明（4 语言 AirymaxClient 同一份源码两端编译）
 - 调用路径选择决策（4 平台路径 + 内核加速检测机制）
 - IRON-9 v2 三层共享模型标注（OS-IFACE-009/010 两条新规则）
@@ -403,7 +403,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |--------|--------|---------|------|
 | ~~P0~~ | ~~完成 Phase 3.3 IRON-9 v2 标注补充（9 文档）~~ | ~4h | ✅ 已完成（9/9 文档，18 条规则） |
 | ~~P0~~ | ~~P0-02: AirymaxRT 文档执行 `agentos_ → agentrt_` 改名（103 文件 4612 处）~~ | ~1h | ✅ 已完成（0 残留） |
-| ~~P0~~ | ~~P0-03: 决策 agentrt ↔ agentrt-linux API 签名统一方向~~ | ~~决策 ~1h~~ | ✅ 已决策（方案 D 分层 API 设计） |
+| ~~P0~~ | ~~P0-03: 决策 agentrt ↔ agent-linux API 签名统一方向~~ | ~~决策 ~1h~~ | ✅ 已决策（方案 D 分层 API 设计） |
 | ~~P0~~ | ~~P0-03-1: 修正 IRON-9 v2 [SS] 表述为"高层 API 语义同源"（31 文件 ~95 处）~~ | ~2h | ✅ 已完成（0 残留，SDK 层正确保留） |
 | ~~P1~~ | ~~P0-03-2: 统一 AirymaxRT 错误码为 AGENTRT_E* 风格（Task #46）~~ | ~3h | ✅ 已完成（40 文件 344 行 + 7 权威文件 + 11 遗留文件，0 残留） |
 | ~~P1~~ | ~~统一 AirymaxRT 错误码数值（对齐 AirymaxOS 数值）~~ | ~2h | ✅ 已完成（紧凑编号 -1~-19，0 残留） |

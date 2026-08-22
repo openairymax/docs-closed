@@ -1,14 +1,14 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 内核设计方案深度评估报告
+# agent-linux 内核设计方案深度评估报告
 
-> **报告定位**：逐行对比 OLK-6.6（Linux 6.6）和 seL4-master 的内核实现方式，评估 agentrt-linux 当前内核设计方案，识别可修改的问题点和设计未考虑到位之处
+> **报告定位**：逐行对比 OLK-6.6（Linux 6.6）和 seL4-master 的内核实现方式，评估 agent-linux 当前内核设计方案，识别可修改的问题点和设计未考虑到位之处
 > **报告版本**：v1.0
 > **生成日期**：2026-07-23
 > **对比基准**：
 > - Linux 6.6（OLK-6.6）：`/home/spharx/SpharxWorks/.engineer-reference/kernel-OLK-6.6`
 > - seL4-master：`/home/spharx/SpharxWorks/.engineer-reference/seL4-master`
-> - agentrt-linux 设计方案：`docs/AirymaxOS/10-architecture/` + `docs/AirymaxOS/30-interfaces/` + `docs/AirymaxOS/110-security/`
+> - agent-linux 设计方案：`docs/AirymaxOS/10-architecture/` + `docs/AirymaxOS/30-interfaces/` + `docs/AirymaxOS/110-security/`
 > **审查方法**：逐行源码阅读 + 设计文档交叉对比 + 实现可行性验证
 
 ---
@@ -54,7 +54,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 2.1 核心设计哲学对比
 
-| 维度 | Linux 6.6（OLK-6.6） | seL4 | agentrt-linux |
+| 维度 | Linux 6.6（OLK-6.6） | seL4 | agent-linux |
 |------|---------------------|------|---------------|
 | **内核形态** | 单体内核（~3000 万行） | 微内核（~1.44 万行核心） | Linux fork + 增量改造 |
 | **安全模型** | DAC + MAC + POSIX cap（三套并存） | capability 单一模型 | seL4 cap + POSIX 混合 |
@@ -63,9 +63,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | **形式化验证** | 无 | 全属性验证（AArch32） | 不追求验证，预留接口 |
 | **syscall 数量** | ~360 | ~10（通过 op-dispatch） | 4 核心 + op-dispatch |
 
-### 2.2 agentrt-linux 设计定位
+### 2.2 agent-linux 设计定位
 
-agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 思想"**（ADR-012），而非从零开发微内核。这意味着：
+agent-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 思想"**（ADR-012），而非从零开发微内核。这意味着：
 - **机制复用**：复用 Linux 的 mm/、sched/、io_uring、IRQ 等成熟机制
 - **思想借鉴**：借鉴 seL4 的 capability 模型、消息传递、机制策略分离
 - **增量改造**：不修改 Linux 主线源码（OS-ARCH-001），仅新增目录
@@ -145,18 +145,18 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 - `cteRevoke()` **递归遍历** MDB 子树，逐个撤销
 - 撤销时间复杂度：O(N)（N = 子 capability 数量）
 
-**agentrt-linux 实现**（`03-capability-model.md` §13）：
+**agent-linux 实现**（`03-capability-model.md` §13）：
 - 使用 **`agent_caps[1024]` 静态数组 + `airy_cap_global_epoch` O(1) 撤销**
 - 撤销时递增 epoch，所有旧 epoch 的 badge 自动失效
 - 撤销时间复杂度：O(1)（仅递增 epoch 计数器）
 
 **问题**：
-1. **原理完全不同**：seL4 是递归遍历撤销，agentrt-linux 是 epoch 失效。两者在语义上等价（都达到"撤销所有子 cap"的效果），但实现原理完全不同。
+1. **原理完全不同**：seL4 是递归遍历撤销，agent-linux 是 epoch 失效。两者在语义上等价（都达到"撤销所有子 cap"的效果），但实现原理完全不同。
 2. **文档声称"借鉴 seL4 cteRevoke"** 但实际用的是 epoch 方案，这会让审查者困惑。
 3. **epoch 方案的安全风险**：epoch 溢出后需要全量刷新，1024 槽位用完后无法扩展（GAP-06 已识别但未解决）。
 
 **修复方案**：
-1. 在 `03-capability-model.md` 中明确说明："agentrt-linux 的 epoch O(1) 撤销是**对 seL4 递归撤销的工程优化**，而非直接借鉴。seL4 的 MDB 递归撤销在形式化验证上有优势，但 O(N) 复杂度不适合 1024 槽位的高频场景。epoch 方案以 16 位溢出风险换取 O(1) 性能。"
+1. 在 `03-capability-model.md` 中明确说明："agent-linux 的 epoch O(1) 撤销是**对 seL4 递归撤销的工程优化**，而非直接借鉴。seL4 的 MDB 递归撤销在形式化验证上有优势，但 O(N) 复杂度不适合 1024 槽位的高频场景。epoch 方案以 16 位溢出风险换取 O(1) 性能。"
 2. 增加 epoch 溢出处理设计（如 epoch 接近溢出时全量刷新机制）。
 
 ### P1-K02: seL4 同步阻塞 IPC vs io_uring 异步模型的语义差异
@@ -169,14 +169,14 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 - **fastpath**：当发送方和接收方同时就绪时，直接在寄存器间传递消息，无队列开销
 - **语义保证**：消息投递时序确定（FIFO），发送方知道消息已被接收
 
-**agentrt-linux IPC 模型**（`02-ipc-protocol.md`）：
+**agent-linux IPC 模型**（`02-ipc-protocol.md`）：
 - **异步**：基于 io_uring SQ/CQ ring，发送方提交 SQE 后不阻塞
 - **无 Endpoint 状态机**：用 SQ/CQ ring 替代，但 ring 是异步队列，不是同步 rendezvous
 - **fastpath C-S9**：内联 Badge 校验（~10ns），但这是**校验 fastpath**，不是 seL4 的**传输 fastpath**
 
 **问题**：
 1. **语义差异未充分说明**：seL4 的同步阻塞模型提供确定性时序保证，io_uring 的异步模型不提供。设计文档说"io_uring 的 SQ / CQ ring 提供等效的异步消息传递语义"，但没有说明**同步→异步的语义转换**如何处理。
-2. **缺少 fastpath 对等性分析**：seL4 的 fastpath 是"发送方+接收方同时就绪时零拷贝传输"，agentrt-linux 的 C-S9 是"Badge 校验 fastpath"。两者不是同一个层次的 fastpath——seL4 的是传输 fastpath，agentrt-linux 的是校验 fastpath。
+2. **缺少 fastpath 对等性分析**：seL4 的 fastpath 是"发送方+接收方同时就绪时零拷贝传输"，agent-linux 的 C-S9 是"Badge 校验 fastpath"。两者不是同一个层次的 fastpath——seL4 的是传输 fastpath，agent-linux 的是校验 fastpath。
 3. **io_uring 的 MSG_RING vs URING_CMD**：L133 说"io_uring 零拷贝 + MSG_RING"，但 `02-ipc-protocol.md` 说"IORING_OP_URING_CMD"。MSG_RING 和 URING_CMD 是不同的 io_uring 操作码，需要统一。
 
 **修复方案**：
@@ -194,17 +194,17 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 - **安全性**：所有内核对象都通过 Retype 创建，确保来源可追溯
 - **代码证据**：`src/object/objecttype.c`（1,024 行）
 
-**agentrt-linux 设计**：
+**agent-linux 设计**：
 - L137: `| 内存 Retype | Untyped → Typed 转换 | buddy allocator + Retype 层（新增） | ~2,000 行 |`
 - 但**没有详细设计文档**说明 Retype 层如何工作
 
 **问题**：
 1. **设计空洞**：声称新增 Retype 层（~2,000 行），但没有设计文档说明：
    - Retype 层与 Linux buddy allocator 的关系
-   - 如何将 buddy 分配的页"Retype"为 agentrt-linux 内核对象
+   - 如何将 buddy 分配的页"Retype"为 agent-linux 内核对象
    - Retype 的安全保证（是否防止未授权对象创建）
    - 与 capability 系统的关系（Retype 后的对象是否需要 cap 授权）
-2. **与 Linux 机制冲突的风险**：Linux 的 buddy allocator 是内核内部机制，用户态不可见。agentrt-linux 的 Retype 层如果暴露给用户态，需要新的接口设计。
+2. **与 Linux 机制冲突的风险**：Linux 的 buddy allocator 是内核内部机制，用户态不可见。agent-linux 的 Retype 层如果暴露给用户态，需要新的接口设计。
 
 **修复方案**：
 1. 新增 `docs/AirymaxOS/20-modules/04-memory-retype.md` 设计文档
@@ -235,14 +235,14 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 - root task 从 bootinfo 获取**初始 capability 集合**（包括 IO 空间、中断、物理内存）
 - 此后内核**不再主动创建资源**——所有资源分配由用户态通过 Retype 驱动
 
-**agentrt-linux 适配**（L175-179）：
+**agent-linux 适配**（L175-179）：
 - 保留 Linux 的 initramfs / systemd 启动模型
 - "在 capability 层引入等效机制"
 - "systemd unit + capability 初始化守护进程"
 
 **未考虑的问题**：
 1. **语义不等价**：seL4 的 bootinfo 是"内核将所有资源交给用户态"，systemd 是"内核保留资源管理权，用户态通过 syscall 请求资源"。两者在**信任边界**上完全不同。
-2. **初始 capability 来源**：seL4 的初始 cap 由内核创建（可信），agentrt-linux 的初始 cap 由"capability 初始化守护进程"创建——但这个守护进程的权限从哪来？如果它需要 root 权限，那 root 就成了万能后门，破坏 capability 模型。
+2. **初始 capability 来源**：seL4 的初始 cap 由内核创建（可信），agent-linux 的初始 cap 由"capability 初始化守护进程"创建——但这个守护进程的权限从哪来？如果它需要 root 权限，那 root 就成了万能后门，破坏 capability 模型。
 3. **资源回收**：seL4 的 root task 退出时所有资源自动回收（因为内核不管理资源），Linux 的 systemd 服务退出时内核资源不自动回收。
 
 **建议**：补充 `docs/AirymaxOS/10-architecture/12-boot-capability-init.md` 设计文档，详细说明初始 capability 的来源、信任链、资源回收机制。
@@ -252,15 +252,15 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 **问题位置**：`03-microkernel-strategy.md` L81-108
 
 **当前设计**：
-- "agentrt-linux 不追求全量形式化验证（基于 Linux 改造的复杂度不允许）"
+- "agent-linux 不追求全量形式化验证（基于 Linux 改造的复杂度不允许）"
 - "但预留验证接口（ES-SEL4-19）"
 - 列举了 `MODIFIES`/`FNSPEC`/`GHOSTUPD`/`DONT_TRANSLATE` 注解
 
 **未考虑的问题**：
-1. **验证工具链缺失**：seL4 的形式化验证依赖 l4v 仓库（独立的 Isabelle/HOL 证明），agentrt-linux 没有对应的验证工具链计划。
+1. **验证工具链缺失**：seL4 的形式化验证依赖 l4v 仓库（独立的 Isabelle/HOL 证明），agent-linux 没有对应的验证工具链计划。
 2. **注解无验证器**：`MODIFIES`/`FNSPEC` 注解如果没有验证器检查，就是普通注释，没有实际约束力。
-3. **Linux 代码不可验证**：agentrt-linux 依赖的 Linux 6.6 代码（mm/、sched/、io_uring 等）没有形式化规范，无法与 agentrt-linux 的增量代码一起验证。
-4. **C 语言子集限制**：seL4 的验证要求 C 代码使用受限子集（无指针运算、无未定义行为），agentrt-linux 的 Linux 基线代码不可能满足。
+3. **Linux 代码不可验证**：agent-linux 依赖的 Linux 6.6 代码（mm/、sched/、io_uring 等）没有形式化规范，无法与 agent-linux 的增量代码一起验证。
+4. **C 语言子集限制**：seL4 的验证要求 C 代码使用受限子集（无指针运算、无未定义行为），agent-linux 的 Linux 基线代码不可能满足。
 
 **建议**：
 1. 明确"形式化验证预留"的范围——是仅预留注解格式，还是有实际验证计划？
@@ -290,7 +290,7 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 **未考虑的问题**：
 1. **权限冲突**：当 POSIX capability（如 CAP_SYS_ADMIN）与 seL4 风格 capability 冲突时，哪个优先？
 2. **攻击面增加**：混合模型意味着两种安全机制并存，攻击者可以利用两种机制的交互漏洞。
-3. **seL4 的设计哲学被违背**：seL4 选择"单一 capability 模型"正是为了避免 DAC/MAC/cap 三套并存的复杂性。agentrt-linux 的混合模型重新引入了这种复杂性。
+3. **seL4 的设计哲学被违背**：seL4 选择"单一 capability 模型"正是为了避免 DAC/MAC/cap 三套并存的复杂性。agent-linux 的混合模型重新引入了这种复杂性。
 4. **审计困难**：两种权限模型的审计日志如何关联？
 
 **建议**：
@@ -306,12 +306,12 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 - 用户态中断驱动程序通过 `seL4_IRQHandler_Ack` 确认中断
 - 内核不处理中断逻辑，仅传递中断事件
 
-**agentrt-linux 设计**：
+**agent-linux 设计**：
 - L136: `| 中断/异常处理 | Interrupt 对象 + fault handler | Linux IRQ + fault handler（保留） | Linux 原生 |`
 - 完全保留 Linux 的中断处理机制
 
 **未考虑的问题**：
-1. **中断用户态化的路径缺失**：seL4 将中断传递到用户态驱动，agentrt-linux 保留 Linux 内核中断处理。如果要实现"设备驱动用户态化"（L147），需要将中断传递到用户态，但设计未说明如何实现。
+1. **中断用户态化的路径缺失**：seL4 将中断传递到用户态驱动，agent-linux 保留 Linux 内核中断处理。如果要实现"设备驱动用户态化"（L147），需要将中断传递到用户态，但设计未说明如何实现。
 2. **VFIO 的中断传递**：L147 说"通过 VFIO / libvfio 下沉"，VFIO 确实支持中断传递（VFIO_IRQ_SET），但设计未说明如何与 capability 系统集成。
 
 **建议**：补充设备驱动用户态化的中断传递设计文档。
@@ -387,4 +387,4 @@ agentrt-linux 的核心设计选择是**"基于 Linux 6.6 改造，借鉴 seL4 �
 
 ---
 
-*本评估报告基于 OLK-6.6 + seL4-master 源码逐行对比 + agentrt-linux 设计文档交叉验证编制，识别 2 项 P0 + 4 项 P1 + 6 项 P2 问题，为后续设计优化提供修复清单。*
+*本评估报告基于 OLK-6.6 + seL4-master 源码逐行对比 + agent-linux 设计文档交叉验证编制，识别 2 项 P0 + 4 项 P1 + 6 项 P2 问题，为后续设计优化提供修复清单。*

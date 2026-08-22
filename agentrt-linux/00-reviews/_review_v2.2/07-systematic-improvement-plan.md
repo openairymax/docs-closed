@@ -1,9 +1,9 @@
-# 07 — agentrt-linux 系统性改进报告与实施计划 v1.0
+# 07 — agent-linux 系统性改进报告与实施计划 v1.0
 
 > **报告日期**：2026-07-16
 > **报告性质**：闭源内部审查报告（docs-closed 路径）
 > **报告范围**：基于 _review_v2.2 7 份审查报告 + 3 轮实地调研的系统性改进方案
-> **执行基线**：IRON-9 v2 共享模型 + Airymax Unify Design 5 模块 + agentrt-linux 1.0.1 工程铁律
+> **执行基线**：IRON-9 v2 共享模型 + Airymax Unify Design 5 模块 + agent-linux 1.0.1 工程铁律
 > **关联审查**：[00-comprehensive-analysis-v2.2.md](00-comprehensive-analysis-v2.2.md)~[06-ipc-data-plane-autonomy-report.md](06-ipc-data-plane-autonomy-report.md)
 
 ---
@@ -12,14 +12,14 @@
 
 ### 0.1 核心判定
 
-**复核结论：agentrt-linux 当前状态确实尚未达到"可按方案启动全面开发"的标准。**
+**复核结论：agent-linux 当前状态确实尚未达到"可按方案启动全面开发"的标准。**
 
 _v2.2 审查报告揭示的 5 大系统性缺陷全部经实地复核确认：
 
 | # | 缺陷类别 | 复核结果 | 阻塞等级 |
 |---|---------|---------|---------|
-| 1 | 代码真空（0 行可编译源码） | **复核通过** — agentrt-linux 8 子仓均为 README-only，kernel/include/airymax/ 目录不存在 | P0 |
-| 2 | [SC] 共享头文件不完整 | **复核通过** — error.h + log_types.h 两端均不存在；agentrt 端实际 8 个 [SC] 头文件（含 uapi_compat.h），agentrt-linux 端 0 个 | P0 |
+| 1 | 代码真空（0 行可编译源码） | **复核通过** — agent-linux 8 子仓均为 README-only，kernel/include/airymax/ 目录不存在 | P0 |
+| 2 | [SC] 共享头文件不完整 | **复核通过** — error.h + log_types.h 两端均不存在；agentrt 端实际 8 个 [SC] 头文件（含 uapi_compat.h），agent-linux 端 0 个 | P0 |
 | 3 | agentrt 技术债阻塞统一 | **复核通过** — BAN-294/299/305 仍然存在；双错误码（AIRY_E* vs AIRY_ERR_*）+ 双日志管线（LOG_* vs AIRY_LOG_*）并存 | P0 |
 | 4 | 设计文档鸿沟（20 份缺失） | **复核通过** — 10-architecture 缺 08-unify-design/09-degraded-survival-layer；20-modules 缺 09~13；30-interfaces 缺 08~10；40-dataflows 缺 05~07；110-security 缺 04~05 | P0+P1 |
 | 5 | 生存层 + IPC 数据面自治缺失 | **复核通过** — IRON-9 v2 仅定义 [SC]/[SS]/[IND] 三层，无 [DSL] 第四层 | P0+P1 |
@@ -45,7 +45,7 @@ _v2.2 审查报告揭示的 5 大系统性缺陷全部经实地复核确认：
 
 ### 1.1 历史问题分类总览
 
-经全面回顾所有对话记录，agentrt-linux 方案历史问题共 **47 项**，分为 6 类：
+经全面回顾所有对话记录，agent-linux 方案历史问题共 **47 项**，分为 6 类：
 
 | 类别 | 问题数 | 已修复 | 待修复 | 阻塞开发 |
 |------|--------|--------|--------|---------|
@@ -62,7 +62,7 @@ _v2.2 审查报告揭示的 5 大系统性缺陷全部经实地复核确认：
 
 | ID | 问题描述 | 当前状态 | 阻塞等级 | 修复路径 |
 |----|---------|---------|---------|---------|
-| VAC-001 | agentrt-linux 无任何 .c/.h 源文件 | 待修复 | P0 | Phase 0 创建首个 airy_core.c |
+| VAC-001 | agent-linux 无任何 .c/.h 源文件 | 待修复 | P0 | Phase 0 创建首个 airy_core.c |
 | VAC-002 | 8 子仓全部为 README-only 空壳 | 待修复 | P0 | Phase 0 kernel/ 创建 include/airymax/ + airy_core.c |
 | VAC-003 | 无 Kconfig 文件 | 待修复 | P0 | Phase 0 创建 kernel/Kconfig |
 | VAC-004 | 无 Kbuild 文件 | 待修复 | P0 | Phase 0 创建 kernel/Makefile |
@@ -73,10 +73,10 @@ _v2.2 审查报告揭示的 5 大系统性缺陷全部经实地复核确认：
 
 | ID | 问题描述 | 当前状态 | 阻塞等级 | 修复路径 |
 |----|---------|---------|---------|---------|
-| SC-001 | error.h 不存在（两端） | 待修复 | P0 | Phase 0 创建于 agentrt-linux/kernel/include/airymax/ |
-| SC-002 | log_types.h 不存在（两端） | 待修复 | P0 | Phase 0 创建于 agentrt-linux/kernel/include/airymax/ |
+| SC-001 | error.h 不存在（两端） | 待修复 | P0 | Phase 0 创建于 agent-linux/kernel/include/airymax/ |
+| SC-002 | log_types.h 不存在（两端） | 待修复 | P0 | Phase 0 创建于 agent-linux/kernel/include/airymax/ |
 | SC-003 | uapi_compat.h 未处理 `#ifdef __KERNEL__` 路径 | 待修复 | P0 | Phase 0 修复为三路桥接 |
-| SC-004 | [SC] 双向 CI 无法验证（无 agentrt-linux 代码端） | 待修复 | P0 | Phase 0 后 sc-dual-ci.yml 可运行 |
+| SC-004 | [SC] 双向 CI 无法验证（无 agent-linux 代码端） | 待修复 | P0 | Phase 0 后 sc-dual-ci.yml 可运行 |
 | SC-005 | sched.h 缺少 Agent 生命周期状态枚举 | 待修复 | P1 | Phase 1 扩展 sched.h |
 | SC-006 | ipc.h 缺少 capability 缓存校验字段 | 待修复 | P1 | Phase 1 扩展 ipc.h reserved[84] |
 
@@ -139,12 +139,12 @@ _v2.2 审查报告揭示的 5 大系统性缺陷全部经实地复核确认：
 
 ## 2. 当前状态实地评估
 
-### 2.1 agentrt-linux 仓库实际状态（复核结果）
+### 2.1 agent-linux 仓库实际状态（复核结果）
 
 #### 2.1.1 顶层目录结构
 
 ```
-agentrt-linux/
+agent-linux/
 ├── CODEOWNERS              # 工程治理
 ├── CONTRIBUTING.md         # 工程治理
 ├── LICENSE                 # 许可证
@@ -247,7 +247,7 @@ agentrt-linux/
 | **成熟度** | ✅ 成熟 | eBPF 在内核中已被大量使用（XDP、io_uring、cgroup） |
 | **风险** | 低 | dynamic pointer 提升了 eBPF 内存安全性，但可加载的 kfunc 数量在 6.6 中有限 |
 | **边界** | eBPF verifier 拒绝复杂程序 | 需在设计阶段约束 BPF 程序复杂度 |
-| **改进建议** | 1) 列出 agentrt-linux 必需的 kfunc 清单 2) 定义 BPF 程序大小上限 3) 增加 verifier 失败的降级路径 |
+| **改进建议** | 1) 列出 agent-linux 必需的 kfunc 清单 2) 定义 BPF 程序大小上限 3) 增加 verifier 失败的降级路径 |
 
 #### 3.1.3 io_uring 零拷贝 IPC
 
@@ -273,7 +273,7 @@ agentrt-linux/
 
 #### 3.2.1 已借鉴的核心思想
 
-| seL4 概念 | agentrt-linux 借鉴点 | 借鉴深度 | 评估 |
+| seL4 概念 | agent-linux 借鉴点 | 借鉴深度 | 评估 |
 |-----------|---------------------|---------|------|
 | Capability-based security | security 子仓 capability 模型（93 字节 airy_cnode） | 深度 | ✅ 充分借鉴 |
 | Minimal IPC（消息传递） | services 子仓 io_uring + 128B 消息头 | 中度 | ⚠️ 缺离线校验（IPC-D02） |
@@ -415,7 +415,7 @@ Airymax Unify Design 是在 IRON-9 v2 [SC]/[SS]/[IND] 三层共享模型基础�
 ```
 ┌───────────────────────────────────────────────────┐
 │  Tier 1: 机器可读 SSoT                            │
-│  agentrt-linux/ssot-registry.yaml                 │
+│  agent-linux/ssot-registry.yaml                 │
 │  ↓ CI 自动校验                                    │
 ├───────────────────────────────────────────────────┤
 │  Tier 2: 人类可读 SSoT                            │
@@ -497,7 +497,7 @@ static const int airy_printk_to_level[8] = {
 #### 5.3.1 决策：`airy_` 为 Airymax 全项目唯一前缀
 
 **理由**：
-1. `airy_` 与 agentrt-linux 的 `airy_*` 函数前缀一致
+1. `airy_` 与 agent-linux 的 `airy_*` 函数前缀一致
 2. `agentrt_` 前缀仅用于 CMake target / 包名（不用于函数）
 3. `agentos_` 前缀已于 2026-07-05 全面废弃（IRON 决策）
 4. 子模块前缀（heapstore_*、memoryrovol_*、coreloopthree_*）需收敛到 `airy_*`
@@ -594,22 +594,22 @@ typedef __s32 airy_err_t;
 
 ---
 
-## 6. agentrt 与 agentrt-linux 一致性规范
+## 6. agentrt 与 agent-linux 一致性规范
 
 ### 6.1 项目定位与边界（再次明确）
 
-| 维度 | agentrt | agentrt-linux |
+| 维度 | agentrt | agent-linux |
 |------|---------|-----------|
 | **定位** | AI Agent 运行时平台工程 | 智能体操作系统（AirymaxOS） |
 | **形态** | 用户态运行时（库 + 守护进程） | 操作系统发行版 |
 | **平台** | Linux / macOS / Windows（跨平台） | 仅 Linux 6.6 内核基线 |
 | **代码性质** | 用户态库 + 守护进程 | Linux 内核 + 用户态服务 |
-| **关系** | 可独立运行 | agentrt-linux 是 agentrt 的最佳载体 |
+| **关系** | 可独立运行 | agent-linux 是 agentrt 的最佳载体 |
 | **共享** | [SC] 契约层代码共享 + 实现独立 | [SC] 契约层代码共享 + 实现独立 |
 
 ### 6.2 工程标准统一清单
 
-| 标准维度 | agentrt 现状 | agentrt-linux 标准 | 统一方向 |
+| 标准维度 | agentrt 现状 | agent-linux 标准 | 统一方向 |
 |---------|-------------|------------------|---------|
 | **函数前缀** | airy_* + heapstore_* + memoryrovol_* 等多前缀 | airy_* 唯一 | Phase 2 收敛 |
 | **错误码** | AIRY_E* + AIRY_ERR_* 双轨 | AIRY_E* 唯一 | Phase 2 收敛 |
@@ -624,11 +624,11 @@ typedef __s32 airy_err_t;
 
 #### 6.3.1 共享契约层（[SC]）
 
-agentrt 和 agentrt-linux 通过以下 8+1 个 [SC] 头文件共享契约：
+agentrt 和 agent-linux 通过以下 8+1 个 [SC] 头文件共享契约：
 
 | [SC] 文件 | 物理宿主 | 引用方式 | 状态 |
 |-----------|---------|---------|------|
-| ipc.h | agentrt-linux/kernel/include/airymax/ | agentrt: `-I../agentrt-linux/kernel/include` | 待创建 |
+| ipc.h | agent-linux/kernel/include/airymax/ | agentrt: `-I../agent-linux/kernel/include` | 待创建 |
 | sched.h | 同上 | 同上 | 待创建 |
 | memory_types.h | 同上 | 同上 | 待创建 |
 | security_types.h | 同上 | 同上 | 待创建 |
@@ -641,7 +641,7 @@ agentrt 和 agentrt-linux 通过以下 8+1 个 [SC] 头文件共享契约：
 
 #### 6.3.2 语义同源层（[SS]）
 
-| API 类别 | agentrt 实现 | agentrt-linux 实现 | 语义契约 |
+| API 类别 | agentrt 实现 | agent-linux 实现 | 语义契约 |
 |---------|-------------|-------------------|---------|
 | log_write() | vsnprintf + fwrite | prb_reserve + commit | 同签名，同语义 |
 | airy_err_t | 返回 AIRY_E* | 返回 AIRY_E* | 同类型，同值域 |
@@ -658,10 +658,10 @@ agentrt 和 agentrt-linux 通过以下 8+1 个 [SC] 头文件共享契约：
 
 | 天 | 工作项 | 交付物 | 关联缺陷 |
 |----|--------|--------|---------|
-| D1 | 创建 agentrt-linux/kernel/include/airymax/ 目录 | 空目录 + .gitkeep | VAC-002 |
+| D1 | 创建 agent-linux/kernel/include/airymax/ 目录 | 空目录 + .gitkeep | VAC-002 |
 | D1 | 创建 [SC] error.h（基于 5 模块设计） | error.h（~200 行） | SC-001 |
 | D1 | 创建 [SC] log_types.h（基于 Ring Buffer 设计） | log_types.h（~150 行） | SC-002 |
-| D2 | 复制 7 个现有 [SC] 头文件到 agentrt-linux 端 | 7 个 .h 文件 | VAC-002 |
+| D2 | 复制 7 个现有 [SC] 头文件到 agent-linux 端 | 7 个 .h 文件 | VAC-002 |
 | D2 | 修复 uapi_compat.h 三路桥接 | uapi_compat.h 更新 | SC-003 |
 | D3 | 创建 kernel/airy_core.c（最小内核模块） | airy_core.c（~50 行） | VAC-001/006 |
 | D3 | 创建 kernel/Makefile + kernel/Kconfig | Makefile + Kconfig | VAC-003/004 |
@@ -671,7 +671,7 @@ agentrt 和 agentrt-linux 通过以下 8+1 个 [SC] 头文件共享契约：
 | D5 | 端到端验证：`make modules` + `insmod airy_core.ko` + `rmmod` | 验证报告 | 全部 |
 
 **Phase 0 验收标准**：
-- ✅ `agentrt-linux/kernel/airy_core.ko` 可成功 insmod
+- ✅ `agent-linux/kernel/airy_core.ko` 可成功 insmod
 - ✅ `sc-dual-ci.yml` 双向 CI 全绿
 - ✅ 10 个 [SC] 头文件两端逐字节相同
 - ✅ 每个头文件含 `#ifdef AIRY_SC_FALLBACK` 降级块
@@ -853,26 +853,26 @@ Phase 3 完成 → M0.4 评估 → 通过 → 启动 1.0.1 全面开发
 - `docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md`（SSoT 权威源）
 - `docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md`（16 条 OS-IRON 铁律）
 - `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（工程标准手册）
-- `agentrt-linux/ssot-registry.yaml`（SSoT 机器可读源）
+- `agent-linux/ssot-registry.yaml`（SSoT 机器可读源）
 
 ### 9.3 实施计划文件清单
 
 需要在 Phase 0~3 期间创建/修改的文件：
 
 **Phase 0（10 个文件）**：
-- agentrt-linux/kernel/include/airymax/error.h（新建）
-- agentrt-linux/kernel/include/airymax/log_types.h（新建）
-- agentrt-linux/kernel/include/airymax/ipc.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/sched.h（新建，从 agentrt 复制 + 扩展）
-- agentrt-linux/kernel/include/airymax/memory_types.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/security_types.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/cognition_types.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/syscalls.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/bpf_struct_ops.h（新建，从 agentrt 复制）
-- agentrt-linux/kernel/include/airymax/uapi_compat.h（新建，从 agentrt 复制 + 修复三路桥接）
-- agentrt-linux/kernel/airy_core.c（新建）
-- agentrt-linux/kernel/Makefile（新建）
-- agentrt-linux/kernel/Kconfig（新建）
+- agent-linux/kernel/include/airymax/error.h（新建）
+- agent-linux/kernel/include/airymax/log_types.h（新建）
+- agent-linux/kernel/include/airymax/ipc.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/sched.h（新建，从 agentrt 复制 + 扩展）
+- agent-linux/kernel/include/airymax/memory_types.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/security_types.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/cognition_types.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/syscalls.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/bpf_struct_ops.h（新建，从 agentrt 复制）
+- agent-linux/kernel/include/airymax/uapi_compat.h（新建，从 agentrt 复制 + 修复三路桥接）
+- agent-linux/kernel/airy_core.c（新建）
+- agent-linux/kernel/Makefile（新建）
+- agent-linux/kernel/Kconfig（新建）
 
 **Phase 1（20 个文档）**：
 - 见 1.2.4 节 DOC-N01~N18 + DOC-U01~U04
@@ -891,7 +891,7 @@ Phase 3 完成 → M0.4 评估 → 通过 → 启动 1.0.1 全面开发
 
 ## 10. 结论
 
-agentrt-linux 方案的**设计层**是完整且自洽的（128 个 .md 文档覆盖了操作系统设计的方方面面），但存在**设计→工程的系统性断层**。_review_v2.2 揭示的 5 大缺陷经实地复核全部确认。
+agent-linux 方案的**设计层**是完整且自洽的（128 个 .md 文档覆盖了操作系统设计的方方面面），但存在**设计→工程的系统性断层**。_review_v2.2 揭示的 5 大缺陷经实地复核全部确认。
 
 本报告提出的 **4 阶段 28 天改进路径** 以"先奠基、再文档化、再修复技术债、最后启动开发"为原则，严格遵守 IRON-1~5 工程铁律，不引入新特性、不创建桩文件、不绕开功能限制、不简化功能、不设计未实现的功能。
 
@@ -903,7 +903,7 @@ agentrt-linux 方案的**设计层**是完整且自洽的（128 个 .md 文档�
 4. **Phase 3 必须在 Phase 2 之后**：5 模块工程可行性达标依赖于 agentrt 技术债清零
 5. **1.0.1 全面开发启动的前置条件**：Phase 0~3 全部完成，M0.4 评估通过
 
-**最终判定**：在本报告所述 4 阶段改进全部完成前，agentrt-linux 不具备启动 1.0.1 全面开发的条件。建议按本计划严格推进，预计 28 个工作日后达到开发就绪状态。
+**最终判定**：在本报告所述 4 阶段改进全部完成前，agent-linux 不具备启动 1.0.1 全面开发的条件。建议按本计划严格推进，预计 28 个工作日后达到开发就绪状态。
 
 ---
 

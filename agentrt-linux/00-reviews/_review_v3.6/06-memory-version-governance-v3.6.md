@@ -3,14 +3,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 06 — 内存管理 + 版本治理深度对比：seL4/openEuler vs Airymax
 
-> **文档定位**：Airymax agentrt-linux v3.6 评审系列第 06 篇，聚焦内存管理模型与版本治理机制的跨项目深度对比。
-> **对比基准**：seL4-master（microkernel 类型安全内存模型）、openEuler kernel-OLK-6.6（KABI 二进制兼容治理）、Airymax agentrt-linux/kernel（ALK 改造 + OS-IRON 原则）。
+> **文档定位**：Airymax agent-linux v3.6 评审系列第 06 篇，聚焦内存管理模型与版本治理机制的跨项目深度对比。
+> **对比基准**：seL4-master（microkernel 类型安全内存模型）、openEuler kernel-OLK-6.6（KABI 二进制兼容治理）、Airymax agent-linux/kernel（ALK 改造 + OS-IRON 原则）。
 > **方法论**：基于已逐行核验的源码证据进行静态对比，不依赖推测；行号引用均来自证据清单，严禁编造。代码位置引用使用 `file:///` 绝对路径锚点。
 > **最后更新**：2026-07-30
 
 ## 1. 引言
 
-本报告对比三个内核项目在两个维度上的设计取舍：内存管理（物理页如何分配、类型化、映射）与版本治理（如何在不破坏既有 ABI 的前提下持续演进）。seL4 代表"类型安全、cap 粒度"的微内核内存模型；openEuler OLK-6.6 代表"宏内核 + KABI 宏"的二进制兼容治理实践；Airymax agentrt-linux 则以"只新增文件、不改主线 + OS-IRON 分级稳定性"为治理基线。
+本报告对比三个内核项目在两个维度上的设计取舍：内存管理（物理页如何分配、类型化、映射）与版本治理（如何在不破坏既有 ABI 的前提下持续演进）。seL4 代表"类型安全、cap 粒度"的微内核内存模型；openEuler OLK-6.6 代表"宏内核 + KABI 宏"的二进制兼容治理实践；Airymax agent-linux 则以"只新增文件、不改主线 + OS-IRON 分级稳定性"为治理基线。
 
 对比目的不是判定优劣，而是为 Airymax 在 0.1.1→1.0.1（IRON-8）演进窗口内识别可借鉴的机制与待修补的违规点。
 
@@ -30,7 +30,7 @@ seL4 将所有物理内存以 `Untyped` cap 的形式分配给 root task，再�
 
 Airymax 没有重写 mm 子系统，而是复用 Linux 6.6 主线的 `alloc_pages` 与 `vm_insert_pages` 实现零拷贝 IPC：
 
-- [kernel/corekern/ipc/airy_ipc_zero_copy.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/corekern/ipc/airy_ipc_zero_copy.c) — 零拷贝实现，基于 `vm_insert_pages` + `alloc_pages`。
+- [kernel/corekern/ipc/airy_ipc_zero_copy.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/corekern/ipc/airy_ipc_zero_copy.c) — 零拷贝实现，基于 `vm_insert_pages` + `alloc_pages`。
 - airy_ipc_internal.h L43-47 — `zero_copy register/unregister/map` 声明。
 
 这一选择与 ALK"只新增文件"原则一致：不修改主线 `mm/` 既有代码，而是在新增目录 `kernel/corekern/ipc/` 内叠加实现。代价是 Airymax 无法获得 seL4 那种"机制级类型安全"——物理页类型由 Linux slab/buddy 管理，Airymax 只在调用点约束用途。
@@ -44,7 +44,7 @@ Airymax 没有重写 mm 子系统，而是复用 Linux 6.6 主线的 `alloc_page
 | 映射粒度 | Frame cap map/unmap | `vm_insert_pages` 批量映射 |
 | 改动范围 | 自有微内核 | 复用 Linux mm，仅新增文件 |
 
-Airymax 的取舍是工程现实的：在 6.6 主线之上叠加类型安全会破坏 ALK 原则，且收益有限——agentrt-linux 的威胁模型并不要求形式化证明级别的内存隔离，而依赖 LSM（`security/airy/`）与 capability 表（`airy_ipc_capability.c`）做策略层隔离。
+Airymax 的取舍是工程现实的：在 6.6 主线之上叠加类型安全会破坏 ALK 原则，且收益有限——agent-linux 的威胁模型并不要求形式化证明级别的内存隔离，而依赖 LSM（`security/airy/`）与 capability 表（`airy_ipc_capability.c`）做策略层隔离。
 
 ## 3. 内存治理对比
 
@@ -124,8 +124,8 @@ Airymax 的 ABI 稳定性承诺分层（见 `50-engineering-standards/04-enginee
 
 Airymax 的 UAPI 结构体通过 `_reserved`/`reserved` 字段自留扩展空间，思路类似 `KABI_RESERVE`：
 
-- [include/uapi/linux/airymax/lsm_types.h L53](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L53) — `__u8 _reserved[56];` — `cap_slot` 结构体内部保留字段。
-- [include/uapi/linux/airymax/sched.h L70](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h#L70) — `__u8 reserved[12];` — `task_desc` 结构体内部保留字段。
+- [include/uapi/linux/airymax/lsm_types.h L53](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L53) — `__u8 _reserved[56];` — `cap_slot` 结构体内部保留字段。
+- [include/uapi/linux/airymax/sched.h L70](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h#L70) — `__u8 reserved[12];` — `task_desc` 结构体内部保留字段。
 
 二者均配合 `AIRY_ALIGNED(64)` 收尾对齐（lsm_types.h L54、sched.h L71），形成"保留字段 + 显式对齐"的 UAPI 演进范式。
 
@@ -140,30 +140,30 @@ openEuler OLK-6.6 是标准 Linux 内核，允许使用 `__attribute__`、`__bui
 Airymax 在编译器无关性上设了硬约束（见 `04-engineering-philosophy.md` L163-199）：
 
 - OS-IRON-016：UAPI 禁止 `__attribute__`/`__builtin_*`/`__asm__`/`__sync_*`，`AIRY_ALIGNED(N)` 是唯一例外。
-- [include/uapi/linux/airymax/uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) — 定义 `AIRY_ALIGNED(N)` 宏，作为编译器无关原则的唯一豁免出口。
+- [include/uapi/linux/airymax/uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) — 定义 `AIRY_ALIGNED(N)` 宏，作为编译器无关原则的唯一豁免出口。
 
 UAPI 结构体普遍正确使用 `AIRY_ALIGNED(64)`：
 
-- [include/uapi/linux/airymax/ipc.h L89](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h#L89) — `msg_hdr` 正确使用 `AIRY_ALIGNED(64)`。
-- [include/uapi/linux/airymax/lsm_types.h L54](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L54) — `cap_slot` 正确使用 `AIRY_ALIGNED(64)`。
-- [include/uapi/linux/airymax/sched.h L71](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h#L71) — `task_desc` 正确使用 `AIRY_ALIGNED(64)`。
+- [include/uapi/linux/airymax/ipc.h L89](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h#L89) — `msg_hdr` 正确使用 `AIRY_ALIGNED(64)`。
+- [include/uapi/linux/airymax/lsm_types.h L54](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L54) — `cap_slot` 正确使用 `AIRY_ALIGNED(64)`。
+- [include/uapi/linux/airymax/sched.h L71](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h#L71) — `task_desc` 正确使用 `AIRY_ALIGNED(64)`。
 
 ### 6.3 AIRY_ALIGNED 违规点
 
 但内核内部实现文件存在一处违规——`airy_ipc_capability.c` 直接用了 `__aligned(64)` 而非 `AIRY_ALIGNED(64)`：
 
-- [kernel/ipc/airy_ipc_capability.c L29-30](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/ipc/airy_ipc_capability.c#L29) — `static struct airy_cap_slot __airymax_cap_table[AIRY_CAP_MAX_AGENTS] __aligned(64);` ★ 用 `__aligned(64)` 而非 `AIRY_ALIGNED(64)`，违反 OS-IRON-016。
-- [kernel/ipc/airy_ipc_capability.c L32](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/ipc/airy_ipc_capability.c#L32) — `struct airy_cap_slot *agent_caps __ro_after_init = __airymax_cap_table;`
+- [kernel/ipc/airy_ipc_capability.c L29-30](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/ipc/airy_ipc_capability.c#L29) — `static struct airy_cap_slot __airymax_cap_table[AIRY_CAP_MAX_AGENTS] __aligned(64);` ★ 用 `__aligned(64)` 而非 `AIRY_ALIGNED(64)`，违反 OS-IRON-016。
+- [kernel/ipc/airy_ipc_capability.c L32](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/ipc/airy_ipc_capability.c#L32) — `struct airy_cap_slot *agent_caps __ro_after_init = __airymax_cap_table;`
 
-此处争议点在于：`airy_ipc_capability.c` 是内核内部实现文件，而非 UAPI 头文件。OS-IRON-016 的字面约束范围是 UAPI；但 Airymax 工程哲学倾向于在所有 agentrt-linux 新增代码中保持编译器无关，以便未来工具链迁移。这一点需在 §7.1 中明确处理。
+此处争议点在于：`airy_ipc_capability.c` 是内核内部实现文件，而非 UAPI 头文件。OS-IRON-016 的字面约束范围是 UAPI；但 Airymax 工程哲学倾向于在所有 agent-linux 新增代码中保持编译器无关，以便未来工具链迁移。这一点需在 §7.1 中明确处理。
 
 ## 7. 改进建议
 
 ### 7.1 [P1] airy_ipc_capability.c L30 __aligned(64) 违规修复
 
-**现状**：[kernel/ipc/airy_ipc_capability.c L29-30](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/ipc/airy_ipc_capability.c#L29) 使用 `__aligned(64)`（GCC/Clang 内置宏），与 OS-IRON-016 编译器无关原则冲突。
+**现状**：[kernel/ipc/airy_ipc_capability.c L29-30](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/ipc/airy_ipc_capability.c#L29) 使用 `__aligned(64)`（GCC/Clang 内置宏），与 OS-IRON-016 编译器无关原则冲突。
 
-**参考**：[include/uapi/linux/airymax/ipc.h L89](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h#L89)、[lsm_types.h L54](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L54)、[sched.h L71](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h#L71) 均正确使用 `AIRY_ALIGNED(64)`。
+**参考**：[include/uapi/linux/airymax/ipc.h L89](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h#L89)、[lsm_types.h L54](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L54)、[sched.h L71](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h#L71) 均正确使用 `AIRY_ALIGNED(64)`。
 
 **建议**：将 L29-30 的 `__aligned(64)` 替换为 `AIRY_ALIGNED(64)`。由于 `airy_cap_slot` 定义在 UAPI 头（lsm_types.h）且其 64 字节对齐语义跨 UAPI/内核内部一致，统一使用 `AIRY_ALIGNED(64)` 可消除"同结构体两套对齐宏"的歧义。需确认 `uapi_compat.h` 在该 `.c` 文件的 include 链中可见。
 
@@ -185,8 +185,8 @@ UAPI 结构体普遍正确使用 `AIRY_ALIGNED(64)`：
 ### 7.3 [P2] _reserved 字段统一策略
 
 **现状**：UAPI 结构体已采用 `_reserved`/`reserved` 字段预留扩展空间：
-- [lsm_types.h L53](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L53) — `cap_slot._reserved[56]`。
-- [sched.h L70](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h#L70) — `task_desc.reserved[12]`。
+- [lsm_types.h L53](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/lsm_types.h#L53) — `cap_slot._reserved[56]`。
+- [sched.h L70](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h#L70) — `task_desc.reserved[12]`。
 
 但字段命名不统一（`_reserved` 带下划线前缀 vs `reserved` 无前缀），且是否所有 UAPI 结构体都保留了扩展槽尚需审计。
 

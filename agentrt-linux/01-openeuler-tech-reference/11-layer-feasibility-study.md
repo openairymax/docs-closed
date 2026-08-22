@@ -12,12 +12,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 方案概述
 
-**LAYER 方案**：以 vanilla linux-stable 6.6.144 为唯一核心基线（IRON-7），在其上叠加**复用openEuler的硬件适配能力**形成的国产硬件驱动层。驱动层与 agentrt-linux 微内核化改造补丁正交，仅触及 `drivers/`、`arch/` 硬件适配，不触及调度/安全/IPC/内存核心子系统。
+**LAYER 方案**：以 vanilla linux-stable 6.6.144 为唯一核心基线（IRON-7），在其上叠加**复用openEuler的硬件适配能力**形成的国产硬件驱动层。驱动层与 agent-linux 微内核化改造补丁正交，仅触及 `drivers/`、`arch/` 硬件适配，不触及调度/安全/IPC/内存核心子系统。
 
 ```
 ALK-6.6 = vanilla 6.6.144 (IRON-7 基线)
          + openEuler 硬件适配层（LAYER，架构可选）
-         + agentrt-linux 微内核化改造补丁（≤ 2 万行）
+         + agent-linux 微内核化改造补丁（≤ 2 万行）
 ```
 
 本文档从**技术、维护、法律、工程**四个维度论证此方案可行性。
@@ -86,7 +86,7 @@ LAYER 方案涉及三个上游源，同步策略各异：
 |--------|---------|---------|---------|
 | vanilla linux-stable 6.6.y | 每月（LTS 补丁） | fast-forward merge 到 ALK-6.6-upstream | 极低（纯基线更新） |
 | openEuler OLK-6.6 | 每季度（SP 版本） | cherry-pick 硬件驱动补丁到 `patches/hw-vendor/` | 低（驱动代码与核心子系统正交） |
-| agentrt-linux 自有补丁 | 持续 | ALK-6.6-dev 分支开发 | 无（自有代码） |
+| agent-linux 自有补丁 | 持续 | ALK-6.6-dev 分支开发 | 无（自有代码） |
 
 **关键优势**：由于 ALK 采用"只新增文件"策略（微内核化改造补丁不修改 Linux 主线源码），且 LAYER 驱动补丁仅触及 `drivers/`、`arch/`，三者合并冲突概率极低。唯一潜在冲突点在 `MAINTAINERS`、`Makefile`、`Kconfig` 等顶层文件。
 

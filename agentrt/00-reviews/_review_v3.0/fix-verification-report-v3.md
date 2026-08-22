@@ -9,7 +9,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档定位**：v3.0 全面审查 + 系统性修正任务的阶段 4 验证报告。在 4 域并行修正 Agent（域1 错误码 SSoT / 域2 IPC 头+路径术语 / 域3 闭源文档 / 域4 源码并发安全）全部完成后，通过 20 项独立 Grep 机器检查验证修正持久性与正确性，给出最终评分和 1.0.1 M1 就绪判定。
 > **保密级别**：SPHARX Ltd 内部参考，**闭源不公开**。
 > **版本**：3.0（2026-07-14）。
-> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agentrt-linux`。
+> **审查范围**：仅 `agentrt` 模块（`docs/AirymaxRT/` + `docs-closed/agentrt/` + `agentrt/` 源码）；**不涉及** `agent-linux`。
 > **SPDX-License-Identifier**：AGPL-3.0-or-later OR Apache-2.0。
 
 ---

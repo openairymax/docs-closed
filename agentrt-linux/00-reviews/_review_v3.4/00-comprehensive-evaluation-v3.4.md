@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v3.4 细致审查报告：方案一致性深度验证
+# agent-linux v3.4 细致审查报告：方案一致性深度验证
 
 > **报告版本**：v3.4\
 > **生成日期**：2026-07-25\
-> **评估范围**：docs/AirymaxOS 全量文档 + agentrt-linux/kernel 全部 [SC] 头文件 + 关键代码文件\
+> **评估范围**：docs/AirymaxOS 全量文档 + agent-linux/kernel 全部 [SC] 头文件 + 关键代码文件\
 > **评估方法**：SSoT 逐项交叉验证 + 代码-文档逐字节比对 + 交叉引用穷尽式扫描 + magic/结构体/枚举值精确校验\
 > **上级报告**：[v3.3 综合评估](../_review_v3.3/00-comprehensive-evaluation-v3.3.md)
 
@@ -43,14 +43,14 @@ v3.3 审查虽然发现了 P0-029（Agent 生命周期 SSoT 违规）和 P0-030�
   - 技术点 #11 = "Agent 8 态生命周期"
   - 物理宿主 = `[SC] cognition_types.h`
 
-- 但 [cognition_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/cognition_types.h) 实际内容：
+- 但 [cognition_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/cognition_types.h) 实际内容：
   - 定义 `airy_q16_t`（Q16.16 定点数）
   - 定义 `enum airy_cog_phase`（CoreLoopThree：PERCEPT/THINK/ACT）
   - 定义 `enum airy_think_mode`（Thinkdual：FAST/SLOW）
   - 定义 `struct airy_cog_config`
   - **不包含** `enum airy_agent_state`
 
-- [sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/sched.h) L84-94 实际定义了 `enum airy_agent_state`：
+- [sched.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/sched.h) L84-94 实际定义了 `enum airy_agent_state`：
   ```c
   enum airy_agent_state {
       AIRY_AGENT_INACTIVE = 0,
@@ -100,7 +100,7 @@ v3.3 审查虽然发现了 P0-029（Agent 生命周期 SSoT 违规）和 P0-030�
   - `cnode_ops.c`（设计参考）：7 种 CNode 操作 [SS]
   ```
 
-- `find` 验证结果：agentrt-linux/kernel 下**不存在**这 4 个文件
+- `find` 验证结果：agent-linux/kernel 下**不存在**这 4 个文件
   - 仅 `fs/hfs/mdb.c` 存在（Linux HFS 文件系统，与 capability 无关）
 
 - 但 L308 明确说明："实际 capability 工程实现位于 `security/airy/`（`airy_cap_derive.c` 等 7 操作）"
@@ -109,11 +109,11 @@ v3.3 审查虽然发现了 P0-029（Agent 生命周期 SSoT 违规）和 P0-030�
 **重新定性**：
 - v3.3 将此定性为 "design hallucination" 不完全准确
 - 文档标注为"设计参考"和 `[SS]` 语义同源层，是指 seL4 文件作为设计溯源参考
-- 但表述容易引起误解，读者可能误认为 agentrt-linux 有这些文件
+- 但表述容易引起误解，读者可能误认为 agent-linux 有这些文件
 
 **修复方案**：
-1. 在 L304-307 明确标注"seL4 源码文件，agentrt-linux 不存在对应物理文件"
-2. 或将"设计参考"改为"seL4 设计溯源（非 agentrt-linux 文件）"
+1. 在 L304-307 明确标注"seL4 源码文件，agent-linux 不存在对应物理文件"
+2. 或将"设计参考"改为"seL4 设计溯源（非 agent-linux 文件）"
 
 ---
 
@@ -121,7 +121,7 @@ v3.3 审查虽然发现了 P0-029（Agent 生命周期 SSoT 违规）和 P0-030�
 
 **问题确认**：
 
-**代码实际**（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) L31-35）：
+**代码实际**（[ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) L31-35）：
 ```c
 #define AIRY_IPC_FLAG_ZEROCOPY    0x0001
 #define AIRY_IPC_FLAG_CAP_CARRY   0x0002
@@ -173,7 +173,7 @@ v3.3 审查虽然发现了 P0-029（Agent 生命周期 SSoT 违规）和 P0-030�
 
 **问题确认**：
 
-**代码实际**（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_lsm.c) L150-152）：
+**代码实际**（[airy_lsm.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_lsm.c) L150-152）：
 ```c
 DEFINE_LSM(airy) = {
     .name   = "airy",
@@ -197,7 +197,7 @@ DEFINE_LSM(airy) = {
 
 **根因分析**：
 - Linux 6.6 的 `commoncap.c` 使用 `LSM_ORDER_FIRST`（这是 POSIX capability 的 order）
-- agentrt-linux 的 `airy_lsm.c` 使用 `LSM_ORDER_MUTABLE`
+- agent-linux 的 `airy_lsm.c` 使用 `LSM_ORDER_MUTABLE`
 - 文档混淆了 POSIX capability 的 `LSM_ORDER_FIRST` 和 airy_lsm 的 `LSM_ORDER_MUTABLE`
 - L1475 有澄清但前面 5 处仍然错误
 
@@ -212,7 +212,7 @@ DEFINE_LSM(airy) = {
 
 **问题确认**：
 
-**代码实际**（[security_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/security_types.h) L25-72）：
+**代码实际**（[security_types.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/security_types.h) L25-72）：
 ```c
 enum airy_cap_id {
     AIRY_CAP_CHOWN            = 0,    // POSIX 开始
@@ -263,7 +263,7 @@ enum airy_cap_id {
 
 **实际验证**：
 ```bash
-$ find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "bpf_struct_ops.h"
+$ find /home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel -name "bpf_struct_ops.h"
 # 无输出 — 文件不存在
 ```
 
@@ -279,7 +279,7 @@ $ find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "bpf_struc
 
 **问题确认**：
 
-**代码实际**（[error.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/error.h) L46-55）：
+**代码实际**（[error.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/error.h) L46-55）：
 ```c
 #define AIRY_EIPC_MAGIC       (-41)
 #define AIRY_EIPC_CHECKSUM    (-42)
@@ -366,7 +366,7 @@ $ find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "bpf_struc
 
 **问题确认**：
 
-以下 IPC flags 在文档中被引用，但在代码 [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h) 中**完全不存在**：
+以下 IPC flags 在文档中被引用，但在代码 [ipc.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h) 中**完全不存在**：
 
 | 文档引用的 flag | 引用位置 | 代码中是否存在 |
 |----------------|---------|--------------|
@@ -553,19 +553,19 @@ $ find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "bpf_struc
 
 ### A.1 文件存在性验证
 ```bash
-find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "bpf_struct_ops.h"
-find /home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel -name "cte.c" -o -name "cspace.c" -o -name "mdb.c" -o -name "cnode_ops.c"
+find /home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel -name "bpf_struct_ops.h"
+find /home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel -name "cte.c" -o -name "cspace.c" -o -name "mdb.c" -o -name "cnode_ops.c"
 ```
 
 ### A.2 命名一致性验证
 ```bash
 grep -rn "AIRY_IPC_F_\|AIRY_IPC_FLAG_" docs/AirymaxOS/
-grep -rn "LSM_ORDER_FIRST\|LSM_ORDER_MUTABLE" docs/AirymaxOS/ agentrt-linux/kernel/
+grep -rn "LSM_ORDER_FIRST\|LSM_ORDER_MUTABLE" docs/AirymaxOS/ agent-linux/kernel/
 ```
 
 ### A.3 错误码验证
 ```bash
-grep -n "AIRY_EIPC_" agentrt-linux/kernel/include/uapi/linux/airymax/error.h
+grep -n "AIRY_EIPC_" agent-linux/kernel/include/uapi/linux/airymax/error.h
 grep -rn "AIRY_EIPC_FLAGS\|AIRY_EIPC_NOTSUPP" docs/AirymaxOS/
 ```
 

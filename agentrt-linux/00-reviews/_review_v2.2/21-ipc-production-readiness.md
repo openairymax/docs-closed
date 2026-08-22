@@ -6,7 +6,7 @@
 > **报告性质**：闭源内部 A-IPC 第六轮审查 — 以生产就绪度为唯一标准的系统性评估
 > **评估标准**：能否作为整个 Airymax 项目（12 daemon + 5 内核组件 + 7 数据流 + 全部 Agent 应用）的唯一通信骨干？
 > **审查范围**：控制面/数据面双平面一致性、daemon 网格死锁风险、能力模型贯穿性、异常路径完整性、性能上限
-> **前置报告**：[16](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md) / [19](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/19-aipc-flaw-review.md) / [20](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agentrt-linux/00-reviews/_review_v2.2/20-capability-folding-audit.md)
+> **前置报告**：[16](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/16-ipc-comprehensive-review.md) / [17](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/17-uipf-deep-review-v2.md) / [18](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/18-aipc-systematic-review.md) / [19](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/19-aipc-flaw-review.md) / [20](file:///home/spharx/SpharxWorks/airymaxhub/docs-closed/agent-linux/00-reviews/_review_v2.2/20-capability-folding-audit.md)
 
 ---
 

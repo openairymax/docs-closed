@@ -3,7 +3,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 22 — seL4 工程标准与工程思想研究（第三轮）
 
-> **文档定位**：agentrt-linux 内核设计深度对比研究 · 第三轮 · seL4 工程思想研究
+> **文档定位**：agent-linux 内核设计深度对比研究 · 第三轮 · seL4 工程思想研究
 > **研究主体**：seL4-master（`/home/spharx/SpharxWorks/.engineer-reference/seL4-master`）
 > **最后更新**：2026-08-01
 > **方法论**：逐字节阅读源码与工程文档，所有引用标注文件路径+行号，严禁编造
@@ -115,7 +115,7 @@ seL4 工程体系的核心特征是"**为可验证性而设计**"——SSoT 代�
 
 **工程思想金句 5**：一个宏两套实现服务两套工具链（gcc/clang 与 C parser）——"验证工具链友好"的定制断言。内核-用户态接口契约的一致性不是靠约定，而是靠编译期钉死。
 
-**与极境内核的对比**：极境内核 grep `BUILD_BUG_ON`/`static_assert` 于全部 airy 代码**零命中**（报告 19 E1 已指出）。seL4 用 compile_assert 在编译期钉死内核-用户态常量一致性（[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26），极境内核的 [SC] 一致性（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 三方一致声明）靠 CI 脚本。**建议在 [SC] uapi_compat.h 定义 AIRY_COMPILE_ASSERT 双模式宏**（内核侧 typedef 数组/用户态侧 C11 _Static_assert），为 magic/枚举/常量一致性提供编译期强制。
+**与极境内核的对比**：极境内核 grep `BUILD_BUG_ON`/`static_assert` 于全部 airy 代码**零命中**（报告 19 E1 已指出）。seL4 用 compile_assert 在编译期钉死内核-用户态常量一致性（[faults.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/api/faults.c) L20-26），极境内核的 [SC] 一致性（[syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L8-12 三方一致声明）靠 CI 脚本。**建议在 [SC] uapi_compat.h 定义 AIRY_COMPILE_ASSERT 双模式宏**（内核侧 typedef 数组/用户态侧 C11 _Static_assert），为 magic/枚举/常量一致性提供编译期强制。
 
 ---
 
@@ -137,7 +137,7 @@ seL4 工程体系的核心特征是"**为可验证性而设计**"——SSoT 代�
 
 **工程思想金句 6**：decode（校验 + 翻译成错误码）与 invoke（执行）分离，错误精确到参数序号——错误处理本身可证明、可测试。
 
-**与极境内核的对比**：极境内核采用 Linux 的 errno + goto 风格（[03-microkernel-strategy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) L511），错误码统一为 `AIRY_E*`（[SC] error.h，A-UEF 模块）。两者是"结构化错误码 + 参数序号" vs "errno + 上下文"的取舍——极境内核的 [A-UEF] 统一错误码方向正确，但缺少 seL4 的"错误精确到参数序号"能力（如 capability 校验失败时返回具体是第几个参数/哪个权限位）。可在 airy_cap_badge_ok 的错误码上补充细分（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L75-90 已有 -AIRY_ECAP_EPOCH/-AIRY_ECAP_MISSING 等细分，方向已对齐）。
+**与极境内核的对比**：极境内核采用 Linux 的 errno + goto 风格（[03-microkernel-strategy.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) L511），错误码统一为 `AIRY_E*`（[SC] error.h，A-UEF 模块）。两者是"结构化错误码 + 参数序号" vs "errno + 上下文"的取舍——极境内核的 [A-UEF] 统一错误码方向正确，但缺少 seL4 的"错误精确到参数序号"能力（如 capability 校验失败时返回具体是第几个参数/哪个权限位）。可在 airy_cap_badge_ok 的错误码上补充细分（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L75-90 已有 -AIRY_ECAP_EPOCH/-AIRY_ECAP_MISSING 等细分，方向已对齐）。
 
 ---
 
@@ -184,7 +184,7 @@ seL4 工程体系的核心特征是"**为可验证性而设计**"——SSoT 代�
 
 [cspace.c](file:///home/spharx/SpharxWorks/.engineer-reference/seL4-master/src/kernel/cspace.c) `resolveAddressBits` L126-192：L142 起循环取 radixBits/guardBits/levelBits（L143-145），guard 匹配（L157-162）、深度检查（L164-169）、`offset = (capptr >> ...) & MASK(radixBits)`（L171-172）、沿 CNode 指针链下钻（L183-191）。
 
-**与极境内核的对比**：极境内核用固定 1024 槽数组 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L52-56），seL4 用 CNode 树形寻址。固定数组在 1024 上限内 fastpath 更快（O(1) badge 校验 vs 树形逐级），但无无限扩展与树形隔离（报告 20 检查 3 已论证为合理权衡）。
+**与极境内核的对比**：极境内核用固定 1024 槽数组 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L52-56），seL4 用 CNode 树形寻址。固定数组在 1024 上限内 fastpath 更快（O(1) badge 校验 vs 树形逐级），但无无限扩展与树形隔离（报告 20 检查 3 已论证为合理权衡）。
 
 ---
 
@@ -206,7 +206,7 @@ seL4 工程体系的核心特征是"**为可验证性而设计**"——SSoT 代�
 
 **工程思想金句 8**：SMP 明确"未验证"（CAVEATS L129-130），单一 big kernel lock 是"为可验证性牺牲细粒度并发"的工程决策——正确性优先于可扩展性。
 
-**与极境内核的对比**：极境内核使用 Linux 原生锁 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L52-56）+ lock-free ring（第二轮正面发现），并发模型远复杂于 seL4 的 big kernel lock。这使极境内核在并发性能上领先，但可验证性复杂度也相应更高——需要在 known-caveats 明确 SMP 验证覆盖（报告 19 E4）。
+**与极境内核的对比**：极境内核使用 Linux 原生锁 + per-bucket 锁（[airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L52-56）+ lock-free ring（第二轮正面发现），并发模型远复杂于 seL4 的 big kernel lock。这使极境内核在并发性能上领先，但可验证性复杂度也相应更高——需要在 known-caveats 明确 SMP 验证覆盖（报告 19 E4）。
 
 ---
 
@@ -275,11 +275,11 @@ seL4 工程体系的核心特征是"**为可验证性而设计**"——SSoT 代�
 
 | 编号 | 借鉴点 | 极境内核落点 |
 |------|--------|-------------|
-| E18 | compile_assert 双模式宏（AIRY_COMPILE_ASSERT） | [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) 定义内核侧 typedef 数组/用户态侧 C11 _Static_assert（与 E1 合并） |
-| E19 | 验证注解（MODIFIES/FNSPEC）用于 capability/IPC fastpath | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L75-90 badge_ok + [airy_ipc_fastpath.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_ipc_fastpath.c)（与 E2 合并） |
+| E18 | compile_assert 双模式宏（AIRY_COMPILE_ASSERT） | [uapi_compat.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h) 定义内核侧 typedef 数组/用户态侧 C11 _Static_assert（与 E1 合并） |
+| E19 | 验证注解（MODIFIES/FNSPEC）用于 capability/IPC fastpath | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L75-90 badge_ok + [airy_ipc_fastpath.c](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_ipc_fastpath.c)（与 E2 合并） |
 | E20 | 验证配置锁存（airymax_verified.cmake 等价物） | 新增，声明验证适用的平台/配置/特性组合（与 E3 合并） |
-| E21 | 错误码精确到"参数/权限位"细分 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap.h) L75-90 已细分（EPOCH/MISSING/RANDTAG/PERM），需在 [SC] error.h 集中登记错误码语义（A-UEF） |
-| E22 | 内核-用户态常量一致性编译期钉死 | [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/syscalls.h) L20-29 的 548-571 编号 + magic（0x41475453/0x41524531）加 compile_assert（与 E1 合并） |
+| E21 | 错误码精确到"参数/权限位"细分 | [airy_cap.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap.h) L75-90 已细分（EPOCH/MISSING/RANDTAG/PERM），需在 [SC] error.h 集中登记错误码语义（A-UEF） |
+| E22 | 内核-用户态常量一致性编译期钉死 | [syscalls.h](file:///home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/syscalls.h) L20-29 的 548-571 编号 + magic（0x41475453/0x41524531）加 compile_assert（与 E1 合并） |
 
 ### 12.3 正面确认
 

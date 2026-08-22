@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux 8 子仓完整项目目录结构设计（v0.2.4 生产级修正版）
+# agent-linux 8 子仓完整项目目录结构设计（v0.2.4 生产级修正版）
 
-> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构的穷尽式直接测绘**，对 [v0.2.3 目录结构设计](../_design_0.2.3/01-agentrt-linux-directory-structure.md) 进行生产级修正。v0.2.4 吸收 [v0.2.3 最佳实践审查报告](../../00-reviews/_review_0.2.3/01-directory-structure-best-practices-review.md) 的 12 项发现（3 P0 + 5 P1 + 4 P2），并落实**用户三项架构裁决**：(1) kernel/ 采用**模型 A（完整 Linux 6.6 fork）**——以生产级 Linux 发行版为标准；(2) security/ 采用**方案 A（扁平对齐 OLK-6.6）**；(3) memory/ 明确**三方边界声明**。本设计是 agentrt-linux 1.0.1 开发阶段目录骨架的**技术阐述载体**（规则编号 SSoT 为 [`docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md`](../../../../../airymaxhub/docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)），亦是未来十年项目演进的目录结构根基。
+> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构的穷尽式直接测绘**，对 [v0.2.3 目录结构设计](../_design_0.2.3/01-agent-linux-directory-structure.md) 进行生产级修正。v0.2.4 吸收 [v0.2.3 最佳实践审查报告](../../00-reviews/_review_0.2.3/01-directory-structure-best-practices-review.md) 的 12 项发现（3 P0 + 5 P1 + 4 P2），并落实**用户三项架构裁决**：(1) kernel/ 采用**模型 A（完整 Linux 6.6 fork）**——以生产级 Linux 发行版为标准；(2) security/ 采用**方案 A（扁平对齐 OLK-6.6）**；(3) memory/ 明确**三方边界声明**。本设计是 agent-linux 1.0.1 开发阶段目录骨架的**技术阐述载体**（规则编号 SSoT 为 [`docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md`](../../../../../airymaxhub/docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)），亦是未来十年项目演进的目录结构根基。
 > **版本**: 0.2.4（生产级修正版目录结构设计）
 > **最后更新**: 2026-07-09
 > **质量要求**: 绝对严谨、严格、严肃——每一处目录设计决策均附直接源代码证据引用，经得起第三方独立推敲
@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 - [第 0 章 修正依据与直接证据索引](#第-0-章-修正依据与直接证据索引)
 - [第 1 章 设计总则（修正版）](#第-1-章-设计总则修正版)
-- [第 2 章 管理仓 agentrt-linux 目录结构](#第-2-章-管理仓-agentrt-linux-目录结构)
+- [第 2 章 管理仓 agent-linux 目录结构](#第-2-章-管理仓-agent-linux-目录结构)
 - [第 3 章 kernel（kernel/）](#第-3-章-kernelkernel)
 - [第 4 章 services（services/）](#第-4-章-servicesservices)
 - [第 5 章 security（security/）](#第-5-章-securitysecurity)
@@ -44,7 +44,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | v0.2.3 最佳实践审查报告 12 项发现 | `00-reviews/_review_0.2.3/01-directory-structure-best-practices-review.md` | 12 项 | 3 P0 全部采纳（模型 A + memory 三方边界 + security 扁平）；5 P1 全部采纳；4 P2 全部声明或调整 |
 | 用户三项架构裁决 | 本轮交互决策 | 3 项 | (1) kernel/ = 模型 A（完整 Linux 6.6 fork）；(2) security/ = 方案 A（扁平对齐 OLK-6.6）；(3) 核心价值标准 = 生产级 Linux 发行版 |
 
-> **v0.2.3 历史修正来源**（保留引用）：v0.2.3 综合三类输入——v0.2.2 优化报告 18 项发现（16 项有效）+ Phase 4 独立审查 11 项 + 直接源代码重新测绘。详见 [v0.2.3 §0.1](../_design_0.2.3/01-agentrt-linux-directory-structure.md#01-修正来源)。
+> **v0.2.3 历史修正来源**（保留引用）：v0.2.3 综合三类输入——v0.2.2 优化报告 18 项发现（16 项有效）+ Phase 4 独立审查 11 项 + 直接源代码重新测绘。详见 [v0.2.3 §0.1](../_design_0.2.3/01-agent-linux-directory-structure.md#01-修正来源)。
 
 ### 0.2 直接证据索引（v0.2.4 全部修正的可复现证据）
 
@@ -201,12 +201,12 @@ ccflags-y += -I$(srctree)/../kernel/include
 
 ---
 
-## 第 2 章 管理仓 agentrt-linux 目录结构
+## 第 2 章 管理仓 agent-linux 目录结构
 
 管理仓（非 leaf 仓）聚合 8 个子模块，自身不含实现代码，仅含治理与文档索引。
 
 ```
-agentrt-linux/                    # 管理仓（main 分支）
+agent-linux/                    # 管理仓（main 分支）
 ├── README.md                     # 英文 README（8 子仓矩阵 + 架构层次图）
 ├── README_zh.md                  # 中文 README
 ├── LICENSE                       # AGPL-3.0 + Apache-2.0 双许可证
@@ -237,7 +237,7 @@ agentrt-linux/                    # 管理仓（main 分支）
 **说明**:
 - 管理仓的 `docs/` 是对 umbrella 仓库 `docs/AirymaxAgentOS/` 的引用（软链接或文档指针），避免设计文档与代码分离维护。
 - 管理仓的 `tools/`（v0.2.4 P2-DIR-04）是**跨子仓工具聚合入口**，对齐 OLK-6.6 顶层 tools/ 实践——各子仓内部工具在自身 `scripts/`，管理仓 `tools/` 仅提供聚合入口与索引（如 `checkpatch-airymax.sh` 调用 kernel/scripts/checkpatch.pl），不重复实现。
-- agentrt-linux 管理仓本身不创建 feature 分支（`main` only），所有子仓开发在 `feature/official-hubs-01` 分支进行。
+- agent-linux 管理仓本身不创建 feature 分支（`main` only），所有子仓开发在 `feature/official-hubs-01` 分支进行。
 
 ---
 
@@ -627,7 +627,7 @@ kernel/                           # kernel（feature/official-hubs-01 分支）
    | `arch/` | `src/arch/{arm,riscv,x86}/`，内部镜像 src/ 结构 | `arch/{x86,arm64,riscv}/`，内部含 machine/ + entry/ + configs/ + 上游 26 子目录 | `arch/` 内部无 machine/ |
    | `plat/` | `src/plat/` **42 平台扁平枚举**（EV-04） | v0.2.4 删除顶层 plat/，平台特定代码在 `scripts/dts/` + `arch/<arch>/` | `plat/{qemu-x86_64,qemu-arm64,hardware-platforms}/` 三分类 |
 
-   **plat/ 删除理由**: seL4 的 `src/plat/` 含 42 个真实硬件平台（bcm2711/imx8m/rk3568/zynqmp 等），是**编译期选择的具体平台**。agentrt-linux 1.0.1 阶段仅支持 QEMU 虚拟平台，平台特定差异通过 DTS（`scripts/dts/`）+ arch（`arch/<arch>/`）覆盖，不需要独立 plat/ 顶层目录。若未来支持真实硬件平台，可按 seL4 模式新增 `plat/` 扁平枚举。
+   **plat/ 删除理由**: seL4 的 `src/plat/` 含 42 个真实硬件平台（bcm2711/imx8m/rk3568/zynqmp 等），是**编译期选择的具体平台**。agent-linux 1.0.1 阶段仅支持 QEMU 虚拟平台，平台特定差异通过 DTS（`scripts/dts/`）+ arch（`arch/<arch>/`）覆盖，不需要独立 plat/ 顶层目录。若未来支持真实硬件平台，可按 seL4 模式新增 `plat/` 扁平枚举。
 
 2. **corekern/ 极简原则与子目录扩展（DIR-P1-03/05/07）**:
 
@@ -1394,7 +1394,7 @@ cloudnative/                     # cloudnative（feature/official-hubs-01）
 
 ### 8.3 关键设计说明
 
-1. **sdk/ 借鉴 libsel4 独立 API 库思想（v0.2.4 P1-DIR-03 修正）**: 4 语言 SDK 独立于运行时，用户程序通过 SDK 与 agentrt-linux 通信，不直接调用内核/daemon 内部函数（ES-SEL4-9）。seL4 的 libsel4 采用四级 include 分层（arch_include + sel4_arch_include + sel4_plat_include + mode_include，EV-06），但该分层是 seL4 针对 C 头文件跨架构/跨模式复用的特殊设计。agentrt-linux SDK 面向高层应用（非内核 ABI），按**目标语言**组织（python/rust/go/typescript），符合 SDK 多语言生态惯例，**非四级 include 分层**。
+1. **sdk/ 借鉴 libsel4 独立 API 库思想（v0.2.4 P1-DIR-03 修正）**: 4 语言 SDK 独立于运行时，用户程序通过 SDK 与 agent-linux 通信，不直接调用内核/daemon 内部函数（ES-SEL4-9）。seL4 的 libsel4 采用四级 include 分层（arch_include + sel4_arch_include + sel4_plat_include + mode_include，EV-06），但该分层是 seL4 针对 C 头文件跨架构/跨模式复用的特殊设计。agent-linux SDK 面向高层应用（非内核 ABI），按**目标语言**组织（python/rust/go/typescript），符合 SDK 多语言生态惯例，**非四级 include 分层**。
 
 2. **Go 为主语言**: K8s 生态主流语言，CRD 控制器/containerd shim/agentctl 均为 Go。
 
@@ -1577,7 +1577,7 @@ tests-linux/                      # tests-linux（feature/official-hubs-01）
 │   │                             # 说明: seL4 的形式化证明在独立仓库（l4v/capDL），
 │   │                             # seL4-master 仓库内无 proof/spec/capDL 目录（EV-07 证据），
 │   │                             # 仅 .github/workflows/proof.yml 触发外部验证。
-│   │                             # agentrt-linux 采用相同模式：本目录是形式化验证的
+│   │                             # agent-linux 采用相同模式：本目录是形式化验证的
 │   │                             # 入口与规约，Isabelle/HOL 重依赖证明在独立仓库
 │   │                             # airymaxos-proofs（1.0.1 M2 阶段创建）。
 │   ├── spec/                     # 抽象规约（Isabelle/HOL）
@@ -1744,7 +1744,7 @@ v0.2.1 §11.5 引用"L2→L3→L4→L5→L6→L7"依赖层次但全文未定义�
 
 ## 附录 B：规则编号映射
 
-本设计涉及的 agentrt-linux 工程标准规则编号：
+本设计涉及的 agent-linux 工程标准规则编号：
 
 | 规则编号 | 含义 | 落地位置 |
 |---------|------|---------|
@@ -1801,7 +1801,7 @@ v0.2.1 §11.5 引用"L2→L3→L4→L5→L6→L7"依赖层次但全文未定义�
 | DIR-P2-02 | v0.2.2 | Kbuild→Makefile 过度简化 | 修正为 Kbuild + Makefile 并存（EV-11：OLK-6.6 顶层 Kbuild 2573B + Makefile 68KB） |
 | DIR-P2-03 | v0.2.2 | tests 边界不清 | kernel/tests/ 仅 kernel 自身测试；tests-linux/integration/ 跨子仓集成 |
 | DIR-P2-04 | v0.2.2 | src/api 概念未映射 | `corekern/api/` 对应 seL4 src/api/（syscall 分发） |
-| DIR-P2-05 | v0.2.2 | include/linux 映射未说明 | OLK-6.6 include/linux/ → agentrt-linux include/airymax/（等价映射） |
+| DIR-P2-05 | v0.2.2 | include/linux 映射未说明 | OLK-6.6 include/linux/ → agent-linux include/airymax/（等价映射） |
 | DIR-P2-06 | v0.2.2 | tools/dts 缺失 | 新增 `kernel/scripts/dts/`（seL4 tools/dts/ 各平台 .dts） |
 | NEW-P2-01 | Phase 4 | cognition/embodied-ai + gpu-npu 范围问题 | embodied-ai→embodied-io（I/O 通道）；gpu-npu→compute-accel（算力加速调度） |
 | NEW-P2-02 | Phase 4 | super-node 命名重叠 | cognition/super-node-sandbox→super-node-cog-snapshot（认知态快照） |

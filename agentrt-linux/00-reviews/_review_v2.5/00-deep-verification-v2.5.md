@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 00 — agentrt-linux v2.4 判定深度验证报告 v2.5
+# 00 — agent-linux v2.4 判定深度验证报告 v2.5
 
 > **审查日期**：2026-07-22
 > **审查目标**：深度验证 v2.4 报告中的所有发现，逐一确认问题是否真实存在，纠正误判
@@ -33,7 +33,7 @@ v2.5 深度验证发现 **v2.4 报告存在 6 项误判**，同时确认 **4 项
 
 v2.4 报告产生误判的根因：
 
-1. **检查路径错误**：P0-013 错误检查 `kernel/.github/`（子仓级别），而 CI 在管理仓 `agentrt-linux/.github/` 层级
+1. **检查路径错误**：P0-013 错误检查 `kernel/.github/`（子仓级别），而 CI 在管理仓 `agent-linux/.github/` 层级
 2. **设计文档阅读不充分**：decode/invoke 分离、MCS 映射、禁 union 约束均已在设计文档中详细定义，但 v2.4 未充分阅读
 3. **代码实践未验证**：seL4 差距 #2（禁 union）只需 grep `security/airy/` 目录即可验证，但未执行
 4. **过度依赖摘要**：v2.4 部分判定基于子代理摘要而非直接验证，导致信息失真
@@ -45,7 +45,7 @@ v2.4 报告产生误判的根因：
 ### 误判 1：P0-013 CI/CD 基础设施完全缺失 — **误判**
 
 - **v2.4 判定**："`.github/workflows/` 目录不存在"
-- **v2.5 验证**：`agentrt-linux/.github/workflows/` 下存在 7 个 workflow 文件：
+- **v2.5 验证**：`agent-linux/.github/workflows/` 下存在 7 个 workflow 文件：
 
 | 文件 | 状态 | 内容验证 |
 |------|------|---------|
@@ -57,7 +57,7 @@ v2.4 报告产生误判的根因：
 | `release.yml` | ✅ 存在 | release tag 流水线 |
 | `mgmt-orchestrator.yml` | ✅ 存在 | 管理仓编排 |
 
-- **误判根因**：v2.4 检查了 `kernel/.github/`（子仓级别），而 CI 设计在管理仓 `agentrt-linux/.github/` 层级（与 `03-ci-cd-pipeline.md` §2.1 一致）
+- **误判根因**：v2.4 检查了 `kernel/.github/`（子仓级别），而 CI 设计在管理仓 `agent-linux/.github/` 层级（与 `03-ci-cd-pipeline.md` §2.1 一致）
 - **结论**：**P0-013 撤销**——CI/CD 基础设施已存在且内容完整
 
 ### 误判 2：seL4 差距 #1 decode/invoke 分离未实现 — **误判**
@@ -319,7 +319,7 @@ matrix:
 
 v2.4 报告产生 6 项误判的根因是**验证方法不够严谨**：
 
-1. **路径检查错误**：P0-013 检查了错误的路径（kernel/.github/ 而非 agentrt-linux/.github/）
+1. **路径检查错误**：P0-013 检查了错误的路径（kernel/.github/ 而非 agent-linux/.github/）
 2. **设计文档阅读不充分**：decode/invoke、MCS 映射等已在设计文档中详细定义，但未充分阅读
 3. **代码实践未验证**：禁 union 约束只需简单 grep 即可验证
 4. **过度依赖子代理摘要**：部分判定基于摘要而非直接验证
@@ -332,7 +332,7 @@ v2.5 的验证方法：**每项判定都通过 Grep/Read/RunCommand 直接验证
 
 | 验证项 | 验证方法 | 验证命令/路径 |
 |--------|---------|-------------|
-| CI/CD 存在性 | `find .github/workflows/` | `agentrt-linux/.github/workflows/` |
+| CI/CD 存在性 | `find .github/workflows/` | `agent-linux/.github/workflows/` |
 | CI 内容完整性 | `Read ci-kernel.yml` | L1-60 验证 32 configs 矩阵 |
 | decode/invoke | `Grep decode.*invoke` | `docs/AirymaxOS/30-interfaces/01-syscalls.md` L88-200 |
 | IPC Fastpath | `Grep validate.*C-S` | `docs/AirymaxOS/30-interfaces/07-ipc-fastpath.md` L197-431 |
@@ -345,5 +345,5 @@ v2.5 的验证方法：**每项判定都通过 Grep/Read/RunCommand 直接验证
 
 ---
 
-> **文档结束** | agentrt-linux v2.5 深度验证报告
+> **文档结束** | agent-linux v2.5 深度验证报告
 > 核心原则：深度检查发现的所有问题是否真实存在，不能随意判定

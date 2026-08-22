@@ -152,7 +152,7 @@ Phase 2 已打通 MCP/OpenAI/A2A → 内部 daemon 三链路，但存在两处**
 
 ## 8. 同源约束说明
 
-- 全部改动位于 agentrt 仓库内（gateway_d），**不新增**与 agentrt-linux 的代码共享；
+- 全部改动位于 agentrt 仓库内（gateway_d），**不新增**与 agent-linux 的代码共享；
 - 不触碰 [SC] 共享契约层 10 个头文件（`agentrt/commons/include/airymax/`）；
 - 内部服务协议遵循既有 L2 服务协议 `mem.*` 命名空间；ACL 复用 daemon_security 既有机制（非新增安全子系统）。
 

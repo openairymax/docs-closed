@@ -3,7 +3,7 @@
 > **报告编号**：REVIEW-AGENTRT-2026-08-14-012PLAN
 > **报告类型**：版本规划（0.1.2 权威功能整合统一总纲）
 > **方法论文本**：`docs/AirymaxOS/10-architecture/10-unify-design.md`（Airymax Unify Design 总纲）
-> **对照对象**：`agentrt`（0.1.1 → 0.1.2）+ `agentrt-linux`（AirymaxOS，设计阶段）+ `deepseek-harness-master`（标杆参照）
+> **对照对象**：`agentrt`（0.1.1 → 0.1.2）+ `agent-linux`（AirymaxOS，设计阶段）+ `deepseek-harness-master`（标杆参照）
 > **产出目录**：`closed-docs/agentrt/00-reviews/_review_v4.3/`
 > **审查日期**：2026-08-14
 > **审查人**：SPHARX 工程标准组
@@ -20,7 +20,7 @@ agentrt 0.1.2 的核心方法论是 **Unify Design 的 SSoT（Single Source of T
 这直接对应 Unify Design 消解 7+1 个架构冲突点（C-01~C-08）的方法：50 个文件的调度策略统一成 sched_tac、双轨错误码统一成 A-UEF、双轨日志统一成 A-ULP、双平面 IPC 统一成 Capability Folding 单平面。agentrt 0.1.2 要做的是**把同样的方法应用于 agentrt 内部**——识别 agentrt 的"多权威源冲突点"，逐点收敛为唯一权威实现。
 
 **核心立场（已确认）**：
-- corekern/commons **不砍反而加强**（它们是 [SC] 契约 + 微核心原语 + 跨平台抽象的承载者，未来 agentrt-linux 跨态复用的基石）；
+- corekern/commons **不砍反而加强**（它们是 [SC] 契约 + 微核心原语 + 跨平台抽象的承载者，未来 agent-linux 跨态复用的基石）；
 - 五认知机制（GCCP/GRAD/蓝图调度/双思考/DAG/任务大厅）的**功能语义全保留**，全功能运行；
 - "削减复杂度"通过 **SSoT 收敛**（消除冗余权威源）实现，而非删除功能。
 
@@ -132,7 +132,7 @@ agentrt 0.1.2 的核心方法论是 **Unify Design 的 SSoT（Single Source of T
 | 模块 | 加强动作 | 依据 |
 |------|---------|------|
 | corekern IPC 契约 | 收敛 are_ipc.h 到 [SC] Layout C v4，使 IPC 契约成为跨态唯一权威源 | S-3 |
-| corekern 微核心原语 | 四层分配器/OOM/调度保留并加强（未来 agentrt-linux 内核态复用） | 用户立场 |
+| corekern 微核心原语 | 四层分配器/OOM/调度保留并加强（未来 agent-linux 内核态复用） | 用户立场 |
 | commons [SC] 契约 | 10 头逐字节对齐内核侧（S-8） | C-04 |
 | commons 平台抽象 | platform/compat/atomic_compat 保留加强（三平台基石） | 用户立场 |
 | commons 零依赖安全基元 | banned_functions/logging/memory/security/sync 保留（工程规范执行器） | 用户立场 |
@@ -164,7 +164,7 @@ agentrt 0.1.2 的核心方法论是 **Unify Design 的 SSoT（Single Source of T
    - **统一扩展机制**：把 memory vtable 的"能力接缝"模式统一推广到 LLM/tool/storage/sandbox 四域 + 统一注册表（参考 dsh Cordis 三角色，但用 agentrt 的 vtable 形态）。
 4. **阶段 3：corekern/commons 加强**——[SC] 对齐 + airy_effect 原语 + 品牌化 ID。
 5. **阶段 4：CLI/TUI 优化**——基于⑥事件流做决策链可视化 + 多会话 + 事件流驱动 + 视觉优化。
-6. **后置（不属 0.1.2）**：分布式一致存储（etcd 等价物）→ 云原生多机阶段（agentrt-linux cloudnative 子仓）；L1/L2 开源 + 评测基准 + 文档分层 → 生态工作。
+6. **后置（不属 0.1.2）**：分布式一致存储（etcd 等价物）→ 云原生多机阶段（agent-linux cloudnative 子仓）；L1/L2 开源 + 评测基准 + 文档分层 → 生态工作。
 
 ---
 

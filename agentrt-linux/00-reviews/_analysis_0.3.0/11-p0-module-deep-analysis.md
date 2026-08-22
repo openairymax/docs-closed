@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # Phase 3.2: P0 模块（60-120）深度审查与修复计划
 
-> **文档定位**: agentrt-linux P0 优先级模块（60-driver-model 至 120-development-process 共 7 模块 20 文档）的系统性深度审查报告，识别草案级问题并制定修复计划
+> **文档定位**: agent-linux P0 优先级模块（60-driver-model 至 120-development-process 共 7 模块 20 文档）的系统性深度审查报告，识别草案级问题并制定修复计划
 > **版本**: v0.3.0
 > **日期**: 2026-07-09
 > **审查范围**: `docs/AirymaxOS/{60,70,80,90,100,110,120}-*/` 全部 20 个 `.md` 文件
@@ -35,7 +35,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 五维原则引用 ≥1 | STD-DOC-08 | 22/22 | 0 | 100% ✅ |
 | IRON-9 v2 [SC]/[SS]/[IND] | STD-DOC-03（仅 20-modules 强制） | 2/15 | 13/15 | 13% ⚠️ |
 
-> **注**: STD-DOC-03 适用范围仅限 `20-modules/0[1-8]-*.md`（8 个子系统设计文档），60-120 模块不强制要求 IRON-9 v2 标注。但含有 agentrt-linux 专属扩展的文档**强烈建议**补充标注，以保持与 03-capability-model.md 和 02-ebpf-probes.md 的一致性。
+> **注**: STD-DOC-03 适用范围仅限 `20-modules/0[1-8]-*.md`（8 个子系统设计文档），60-120 模块不强制要求 IRON-9 v2 标注。但含有 agent-linux 专属扩展的文档**强烈建议**补充标注，以保持与 03-capability-model.md 和 02-ebpf-probes.md 的一致性。
 
 ### 1.3 IRON-9 v2 标注现状
 
@@ -53,12 +53,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### P0-01: 缺少 IRON-9 v2 三层标注（13 个文档）
 
-**问题**: 13 个含有 agentrt-linux 专属扩展的主文档缺少 IRON-9 v2 [SC]/[SS]/[IND] 三层共享模型标注，导致与 agentrt 的同源映射关系不明确。
+**问题**: 13 个含有 agent-linux 专属扩展的主文档缺少 IRON-9 v2 [SC]/[SS]/[IND] 三层共享模型标注，导致与 agentrt 的同源映射关系不明确。
 
 **影响文档**:
 - 60-driver-model/01-device-model.md（Agent 驱动模型，与 agentrt daemons 同源）
 - 60-driver-model/02-platform-driver.md（devm_ 扩展至智能体资源）
-- 70-build-system/01-kbuild-system.md（agentrt-linux 子仓构建）
+- 70-build-system/01-kbuild-system.md（agent-linux 子仓构建）
 - 70-build-system/02-kconfig-system.md（CONFIG_AIRYMAX_* 配置项）
 - 80-testing/01-kunit-framework.md（Agent 契约测试，与 agentrt 互操作）
 - 80-testing/02-kselftest.md（Agent 行为测试）
@@ -106,9 +106,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **修复方案**: 在每个文档的相应章节增补 stateDiagram-v2 图。
 
-#### P1-02: agentrt-linux 专属扩展内容不充分
+#### P1-02: agent-linux 专属扩展内容不充分
 
-**问题**: 部分文档内容偏向纯 Linux 内核文档复制，缺少 agentrt-linux 专属扩展的深度论述：
+**问题**: 部分文档内容偏向纯 Linux 内核文档复制，缺少 agent-linux 专属扩展的深度论述：
 - 60-driver-model: Agent 虚拟设备驱动仅概念性描述，缺少 agent_driver_register() 完整签名和 Agent bus 匹配逻辑
 - 70-build-system: 缺少 8 子仓的构建依赖图和交叉构建配置
 - 80-testing: Agent 行为契约测试仅有示例代码片段，缺少完整测试矩阵
@@ -116,7 +116,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - 110-security/01-02: LSM 和 Landlock 缺少与 Cupolas 的集成细节
 - 120-development-process: 缺少 8 子仓的补丁流转路径
 
-**修复方案**: 为每个文档增补"agentrt-linux 专属扩展深化"章节。
+**修复方案**: 为每个文档增补"agent-linux 专属扩展深化"章节。
 
 #### P1-03: 文档深度不一致
 
@@ -185,7 +185,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### N.2 跨态协作
 
-（Mermaid 图展示 agentrt 用户态与 agentrt-linux 内核态的协作流）
+（Mermaid 图展示 agentrt 用户态与 agent-linux 内核态的协作流）
 ```
 
 #### 接口定义附录模板
@@ -473,13 +473,13 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 11 | 120-development-process/01-patch-lifecycle.md | §9.4 补丁生命周期 | 7 | 11 | Agent I | ✅ |
 | 12 | 120-development-process/02-maintainer-hierarchy.md | §7.4 贡献者晋升 | 6 | 11 | Agent I | ✅ |
 
-**汇总**：12/12 文档全部完成，共新增 12 个状态机子章节，合计 79 个状态、126 行转换条件表。所有状态机均使用 `stateDiagram-v2` 语法，含 (1) 一句话描述 (2) stateDiagram-v2 代码块（含状态/转换/note）(3) 状态转换条件表格（从状态/到状态/触发条件/系统行为 四列）。状态名均使用纯英文 ASCII（如 UNBOUND/PROBING/BOUND/PROBE_FAILED/UNBINDING/REMOVING 等），引用真实 Linux 内核 API 与 agentrt-linux 规则编号。
+**汇总**：12/12 文档全部完成，共新增 12 个状态机子章节，合计 79 个状态、126 行转换条件表。所有状态机均使用 `stateDiagram-v2` 语法，含 (1) 一句话描述 (2) stateDiagram-v2 代码块（含状态/转换/note）(3) 状态转换条件表格（从状态/到状态/触发条件/系统行为 四列）。状态名均使用纯英文 ASCII（如 UNBOUND/PROBING/BOUND/PROBE_FAILED/UNBINDING/REMOVING 等），引用真实 Linux 内核 API 与 agent-linux 规则编号。
 
 **Batch-3 完成时间**：2026-07-10
 
 ### 5.4 Batch-4: 专属扩展深化（P1，~8h）
 
-对 7 个模块的 agentrt-linux 专属扩展内容进行深化。参照 P1-02 问题清单，各模块专属扩展深化要点：
+对 7 个模块的 agent-linux 专属扩展内容进行深化。参照 P1-02 问题清单，各模块专属扩展深化要点：
 
 | # | 模块 | 专属扩展深化要点 | 目标行数增量 |
 |---|------|----------------|-------------|
@@ -491,7 +491,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 6 | 110-security/02 | Landlock 与 Cupolas 集成细节（域叠加顺序 + 访问掩码合并算法） | +60 行 |
 | 7 | 120-development-process | 8 子仓补丁流转路径图 + 跨仓依赖排序算法 | +70 行 |
 
-**执行方式**：在对应模块的"agentrt-linux 专属扩展"章节或"同源 agentrt 映射"章节后增补深化内容，不修改现有章节编号。
+**执行方式**：在对应模块的"agent-linux 专属扩展"章节或"同源 agentrt 映射"章节后增补深化内容，不修改现有章节编号。
 
 **执行进度**（2026-07-10，全部完成 ✅）:
 
@@ -547,7 +547,7 @@ Phase 3.2 完成后，Phase 3.3 将审查核心设计层（00/10/20/30/40）。�
 Batch-1~5 的修复均为 0.1.1 文档体系完善工作，不涉及代码实施。1.0.1 开发阶段将：
 1. 根据 Batch-2 的接口定义附录编写代码
 2. 根据 Batch-3 的状态机图实现状态转换逻辑
-3. 根据 Batch-4 的专属扩展深化实现 agentrt-linux 专属功能
+3. 根据 Batch-4 的专属扩展深化实现 agent-linux 专属功能
 
 ---
 
@@ -568,7 +568,7 @@ Batch-1~5 的修复均为 0.1.1 文档体系完善工作，不涉及代码实施
 （完整 C 代码定义）
 
 ### 13.3 [SS] 语义同源层
-（agentrt 用户态 vs agentrt-linux 内核态 对照表）
+（agentrt 用户态 vs agent-linux 内核态 对照表）
 
 ### 13.4 [IND] 完全独立层
 （独立实现清单表）

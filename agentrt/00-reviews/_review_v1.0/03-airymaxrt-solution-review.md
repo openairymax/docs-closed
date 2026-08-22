@@ -223,7 +223,7 @@ AirymaxOS 拥有而 AirymaxRT 缺失的顶层目录：
 
 > **证据**：`grep -rn "操作系统" --include="*.md" docs/AirymaxRT/` = 40 行匹配
 
-**影响**：技术定位混乱，开源社区误解 agentrt 为 OS 内核项目，与 AirymaxOS（agentrt-linux）产生定位混淆。
+**影响**：技术定位混乱，开源社区误解 agentrt 为 OS 内核项目，与 AirymaxOS（agent-linux）产生定位混淆。
 
 ### 3.3 [P0-CRITICAL] [SC] 头文件清单与 SSoT 不一致
 

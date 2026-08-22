@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 第二部分：seL4 工程思想分析
 
-> **文档定位**： v0.9.0 综合审查报告第二部分。基于 seL4 `seL4-master`（src/ + include/ + libsel4/ + tools/ + proof/ + spec/ 全量源码）的深度研究，分析 seL4 在架构层被选择性借鉴的 5 项工程思想（ES-SEL4-1~5）、被 OS-IRON-012 明确禁止借鉴的编码风格层，以及研究范围与借鉴范围之间的差异。本部分揭示 agentrt-linux 在 seL4 借鉴范围声明上存在 P0-CRITICAL 级别的数量三重冲突。\
+> **文档定位**： v0.9.0 综合审查报告第二部分。基于 seL4 `seL4-master`（src/ + include/ + libsel4/ + tools/ + proof/ + spec/ 全量源码）的深度研究，分析 seL4 在架构层被选择性借鉴的 5 项工程思想（ES-SEL4-1~5）、被 OS-IRON-012 明确禁止借鉴的编码风格层，以及研究范围与借鉴范围之间的差异。本部分揭示 agent-linux 在 seL4 借鉴范围声明上存在 P0-CRITICAL 级别的数量三重冲突。\
 > **版本**： 0.9.0\
 > **审查对象**： `01Reference/seL4-master/`（全量源码）\
 > **审查方法**： 源码级证据 + 闭源总纲 §12 / 附录 D 对照 + 开源手册 OS-IRON-012 对照\
@@ -12,7 +12,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 1. seL4 架构层借鉴：ES-SEL4-1~5 源码级验证
 
-agentrt-linux 在架构层选择性借鉴 seL4 的 5 项工程思想。以下对每项进行源码级验证，确认 seL4 源码中真实存在且借鉴方式合理。
+agent-linux 在架构层选择性借鉴 seL4 的 5 项工程思想。以下对每项进行源码级验证，确认 seL4 源码中真实存在且借鉴方式合理。
 
 ### 1.1 ES-SEL4-1：极简原则（Liedtke minimality）
 
@@ -43,7 +43,7 @@ seL4-master/src/
 
 seL4 内核不包含文件系统、网络栈、设备驱动——这些全部在用户态实现。内核只提供：线程（TCB）、IPC（Endpoint）、capability（CNode）、内存（Untyped + Frame）、通知（Notification）。
 
-**agentrt-linux 借鉴方式**： 影响 `airymaxos-kernel` 子仓的内核机制最小化取向——corekern 仅保留 4 原子机制（task/memory/ipc/time），不将文件系统/网络栈/驱动放入内核态。
+**agent-linux 借鉴方式**： 影响 `airymaxos-kernel` 子仓的内核机制最小化取向——corekern 仅保留 4 原子机制（task/memory/ipc/time），不将文件系统/网络栈/驱动放入内核态。
 
 **品味评价**： 极简原则的借鉴是合理的——它让内核保持小而美，复杂功能移至用户态，便于形式化验证和安全性论证。
 
@@ -65,7 +65,7 @@ seL4 的 capability 模型：
 - capability 可派生（derive），形成权限树
 - 撤销（revoke）会递归撤销所有派生 capability
 
-**agentrt-linux 借鉴方式**： 影响 `airymaxos-security` 子仓的 capability 设计——`security_types.h` 定义 `enum airy_cap_op` 包含 7 种操作（AIRY_CAP_OP_COPY/MINT/MOVE/MUTATE/REVOKE/DELETE/ROTATE），与 seL4 同源。
+**agent-linux 借鉴方式**： 影响 `airymaxos-security` 子仓的 capability 设计——`security_types.h` 定义 `enum airy_cap_op` 包含 7 种操作（AIRY_CAP_OP_COPY/MINT/MOVE/MUTATE/REVOKE/DELETE/ROTATE），与 seL4 同源。
 
 ```c
 /* include/airymax/security_types.h —— [SC] 共享契约层 */
@@ -80,7 +80,7 @@ enum airy_cap_op {
 };
 ```
 
-**品味评价**： capability 单一模型的借鉴是合理的——它统一了权限表达，避免了 ACL/RBAC/capability 三套并存的复杂性。但 agentrt-linux 同时保留了 LSM 钩子（252 ID），这是与 seL4 的关键差异——seL4 纯 capability，agentrt-linux 是 capability + LSM 融合模型。这种融合的合理性需要在 1.0.1 阶段进一步论证。
+**品味评价**： capability 单一模型的借鉴是合理的——它统一了权限表达，避免了 ACL/RBAC/capability 三套并存的复杂性。但 agent-linux 同时保留了 LSM 钩子（252 ID），这是与 seL4 的关键差异——seL4 纯 capability，agent-linux 是 capability + LSM 融合模型。这种融合的合理性需要在 1.0.1 阶段进一步论证。
 
 ### 1.3 ES-SEL4-3：服务用户态化
 
@@ -95,9 +95,9 @@ seL4 内核源码中不包含：
 
 这些服务在用户态实现，通过 IPC 与内核通信。seL4 的 `libsel4/` 是用户态库，不是内核的一部分。
 
-**agentrt-linux 借鉴方式**： 影响 `airymaxos-services` 子仓——VFS/网络栈/部分驱动移至用户态。闭源总纲 §13.4 声明"用户态服务架构"。
+**agent-linux 借鉴方式**： 影响 `airymaxos-services` 子仓——VFS/网络栈/部分驱动移至用户态。闭源总纲 §13.4 声明"用户态服务架构"。
 
-**品味评价**： 服务用户态化的借鉴需要审慎——seL4 是从零设计的微内核，服务用户态化是其基本架构；而 agentrt-linux 基于 Linux 6.6 fork，将 VFS/网络栈移至用户态是重大改造，需评估性能影响和工程复杂度。这一借鉴的落地难度远高于其他 4 项，是 1.0.1 阶段的最大技术风险。
+**品味评价**： 服务用户态化的借鉴需要审慎——seL4 是从零设计的微内核，服务用户态化是其基本架构；而 agent-linux 基于 Linux 6.6 fork，将 VFS/网络栈移至用户态是重大改造，需评估性能影响和工程复杂度。这一借鉴的落地难度远高于其他 4 项，是 1.0.1 阶段的最大技术风险。
 
 ### 1.4 ES-SEL4-4：消息传递 IPC（含 fastpath）
 
@@ -119,7 +119,7 @@ seL4 IPC 模型：
 - MessageInfo 编码（label + caps + length + unwrap）
 - fastpath 优化：常见 IPC 路径绕过完整调度，直接切换线程
 
-**agentrt-linux 借鉴方式**： 影响 `airymaxos-kernel` 子仓的 IPC 子系统——采用 io_uring 消息传递模型，[SC] 共享 `ipc.h` 定义 128 字节消息头 + magic 0x41524531 ('ARE1')。
+**agent-linux 借鉴方式**： 影响 `airymaxos-kernel` 子仓的 IPC 子系统——采用 io_uring 消息传递模型，[SC] 共享 `ipc.h` 定义 128 字节消息头 + magic 0x41524531 ('ARE1')。
 
 ```c
 /* include/airymax/ipc.h —— [SC] 共享契约层 */
@@ -139,7 +139,7 @@ _Static_assert(sizeof(struct airy_ipc_msg_hdr) == 128,
         "IPC message header must be exactly 128 bytes");
 ```
 
-**品味评价**： 消息传递 IPC 的借鉴是合理的，但 agentrt-linux 选择 io_uring 而非 seL4 的 Endpoint 模型，这是基于 Linux 6.6 基线的务实选择——io_uring 是 Linux 6.6 原生的高性能异步 I/O 框架，复用它比重新实现 Endpoint 模型更符合"Linux 6.6 为基"的工程取向。
+**品味评价**： 消息传递 IPC 的借鉴是合理的，但 agent-linux 选择 io_uring 而非 seL4 的 Endpoint 模型，这是基于 Linux 6.6 基线的务实选择——io_uring 是 Linux 6.6 原生的高性能异步 I/O 框架，复用它比重新实现 Endpoint 模型更符合"Linux 6.6 为基"的工程取向。
 
 ### 1.5 ES-SEL4-5：形式化验证驱动
 
@@ -160,9 +160,9 @@ seL4 的形式化验证三段式：
 2. **设计规约**（Design Spec）—— 可执行规约
 3. **C 代码验证**（C Verification）—— 证明 C 实现符合设计规约
 
-**agentrt-linux 借鉴方式**： 影响 `airymaxos-tests-linux` 子仓——`formal-verification` 三段式框架。但 0.1.1 阶段仅文档框架，1.0.1 阶段才填充实际验证代码。
+**agent-linux 借鉴方式**： 影响 `airymaxos-tests-linux` 子仓——`formal-verification` 三段式框架。但 0.1.1 阶段仅文档框架，1.0.1 阶段才填充实际验证代码。
 
-**品味评价**： 形式化验证的借鉴是雄心勃勃的——seL4 的形式化验证耗费数年，agentrt-linux 基于 Linux 6.6 fork（数百万行代码），全量形式化验证不现实。建议借鉴的是形式化验证的"思想"（关键路径不变量检查），而非"全套方法"（Isabelle/HOL 全量证明）。
+**品味评价**： 形式化验证的借鉴是雄心勃勃的——seL4 的形式化验证耗费数年，agent-linux 基于 Linux 6.6 fork（数百万行代码），全量形式化验证不现实。建议借鉴的是形式化验证的"思想"（关键路径不变量检查），而非"全套方法"（Isabelle/HOL 全量证明）。
 
 ---
 
@@ -290,21 +290,21 @@ seL4 的全局错误状态模型在 SMP 场景下需要 per-CPU 变量，增加�
 
 ## 3. P0-CRITICAL：ES-SEL4 数量三重冲突
 
-本次审查发现 agentrt-linux 在 seL4 借鉴范围声明上存在 **P0-CRITICAL 级别的数量三重冲突**——同一项目内的不同文档对"借鉴了多少项 seL4 工程思想"给出三个不同的数字。
+本次审查发现 agent-linux 在 seL4 借鉴范围声明上存在 **P0-CRITICAL 级别的数量三重冲突**——同一项目内的不同文档对"借鉴了多少项 seL4 工程思想"给出三个不同的数字。
 
 ### 3.1 冲突三源
 
 | 来源文档 | 声明数量 | 借鉴范围 | 文档位置 |
 |---------|---------|---------|---------|
 | **开源手册 + SSoT 注册表** | **5 项** | ES-SEL4-1~5（仅架构层） | `00-engineering-standards-handbook.md` OS-IRON-012 + `09-ssot-registry.md` 第 89 行 + `04-engineering-philosophy.md` 第 591 行 + `05-development-process.md` 第 1831/1837/1839/1864/1869/2098 行 |
-| **闭源总纲正文 + 附录 D 标题** | **10 项** | ES-SEL4-1~10（架构层 + P2 增强） | `agentrt-linux基本工程标准规范.md` 目录第 37 行"附录 D ES-SEL4-1~10 工程思想借鉴映射" + §12.5/§12.6/§12.8 |
+| **闭源总纲正文 + 附录 D 标题** | **10 项** | ES-SEL4-1~10（架构层 + P2 增强） | `agent-linux基本工程标准规范.md` 目录第 37 行"附录 D ES-SEL4-1~10 工程思想借鉴映射" + §12.5/§12.6/§12.8 |
 | **闭源研究文档** | **54 项** | ES-SEL4-01~54（全量研究范围） | `00-reviews/_research_0.2.5/01-sel4-deep-analysis.md` 第 10/32/95-105/235-259 行 |
 
 ### 3.2 冲突本质分析
 
 这三个数字并非简单的矛盾，而是**三个不同作用域的混淆**：
 
-1. **5 项（ES-SEL4-1~5）**——架构层**强制借鉴**范围。这是 OS-IRON-012 铁律定义的、agentrt-linux 在 0.1.1 阶段必须落地的 seL4 工程思想。
+1. **5 项（ES-SEL4-1~5）**——架构层**强制借鉴**范围。这是 OS-IRON-012 铁律定义的、agent-linux 在 0.1.1 阶段必须落地的 seL4 工程思想。
 
 2. **10 项（ES-SEL4-1~10）**——架构层 + P2 增强建议范围。闭源总纲 §12.8 明确说明 ES-SEL4-6~10（接口契约 XML / bitfield codegen / libsel4 独立 / CMake 构建 / 现代构建系统）"不作为架构层强制借鉴，而是作为 P2 增强建议在 1.0.1 阶段增量落地"。
 
@@ -348,11 +348,11 @@ seL4 的全局错误状态模型在 SMP 场景下需要 per-CPU 变量，增加�
 
 ---
 
-## 5. 对 agentrt-linux 的启示
+## 5. 对 agent-linux 的启示
 
 ### 5.1 应保持的对齐
 
-agentrt-linux 在以下方面已正确对齐 seL4 借鉴：
+agent-linux 在以下方面已正确对齐 seL4 借鉴：
 
 - ES-SEL4-1~5 架构层借鉴选择合理（极简原则 / capability / 服务用户态化 / 消息传递 IPC / 形式化验证）
 - 编码风格层 5 项禁止借鉴正确（4 空格 / camelCase / 重度 typedef / #pragma once / enum 错误处理）
@@ -366,7 +366,7 @@ agentrt-linux 在以下方面已正确对齐 seL4 借鉴：
 ### 5.3 建议的长期演进
 
 - **形式化验证范围明确化**——1.0.1 阶段应明确形式化验证的范围（全量 / 关键路径 / 仅 corekern），而非笼统说"形式化验证驱动"。
-- **capability + LSM 融合模型论证**——agentrt-linux 同时使用 capability（seL4 借鉴）和 LSM（Linux 6.6 原生），两者的交互模型需要在 1.0.1 阶段论证，避免权限检查双重化。
+- **capability + LSM 融合模型论证**——agent-linux 同时使用 capability（seL4 借鉴）和 LSM（Linux 6.6 原生），两者的交互模型需要在 1.0.1 阶段论证，避免权限检查双重化。
 
 ---
 

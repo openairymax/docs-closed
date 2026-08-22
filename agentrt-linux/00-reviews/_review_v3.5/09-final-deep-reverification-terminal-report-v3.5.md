@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）整体方案系统性深度复核终审报告 v3.5
+# agent-linux（AirymaxOS）整体方案系统性深度复核终审报告 v3.5
 
 > **报告编号**：09
 > **报告版本**：v3.5（终审稿）
 > **生成时间**：2026-07-25
-> **审查前提**：agentrt-linux 目前处于**方案设计阶段（M0/M1）**，仅完成"文档体系 + [SC] 共享契约层头文件占位 + 内核改造框架骨架"，**不含内核/OS 代码实施**
+> **审查前提**：agent-linux 目前处于**方案设计阶段（M0/M1）**，仅完成"文档体系 + [SC] 共享契约层头文件占位 + 内核改造框架骨架"，**不含内核/OS 代码实施**
 > **审查方法**：9 个并行子代理逐一深度复核 + 独立字节级证据收集 + 与 03/04/05/06/07/08 报告交叉验证
 > **审查范围**：03 报告 130 P0（7 个 [SC] 头文件组 × 46 份文档）+ 04 报告 18 P0 + 22 P1 + 17 P2 + 6 项误报撤销 + 48 个骨架源文件状态 + 05/06/07 验证结论
 > **上一版本**：08-m0-design-phase-reassessment-v3.5.md（2026-07-25）
@@ -15,7 +15,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 0. 执行摘要
 
-本报告是 v3.5 审查系列的**终审稿**，针对用户提出的"对 `\home\spharx\SpharxWorks\airymaxhub\docs-closed\agentrt-linux\00-reviews\_review_v3.5` 报告内的数百个问题进行逐一确认和复核"要求，使用 **9 个并行子代理**对全部问题进行**逐一深度复核**，每个裁定均基于实际文件内容字节级证据。
+本报告是 v3.5 审查系列的**终审稿**，针对用户提出的"对 `\home\spharx\SpharxWorks\airymaxhub\docs-closed\agent-linux\00-reviews\_review_v3.5` 报告内的数百个问题进行逐一确认和复核"要求，使用 **9 个并行子代理**对全部问题进行**逐一深度复核**，每个裁定均基于实际文件内容字节级证据。
 
 ### 0.1 关键数据
 
@@ -157,7 +157,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 #### 发现 3：security_types.h 双端 SSoT 远未达"逐字节相同"
 
-| 维度 | agentrt-linux 端 | agentrt commons 端 | 差异 |
+| 维度 | agent-linux 端 | agentrt commons 端 | 差异 |
 |------|------------------|---------------------|------|
 | 行数 | 134 行 | 50 行 | 🔴 结构悬殊 |
 | SPDX 许可证 | `BSD-3-Clause OR GPL-2.0` | `AGPL-3.0-or-later OR Apache-2.0` | 🔴 不一致 |
@@ -176,7 +176,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 检查项 | 实际内容 | 文件:行号 | 结论 |
 |--------|---------|-----------|------|
 | 03-capability-model.md 是否写 LSM_ORDER_FIRST | L60 表格描述 POSIX capability 模块（`security/commoncap.c`） | 03-capability-model.md:60 | ✓ 写 LSM_ORDER_FIRST，但归属 capability 模块 |
-| 03-capability-model.md 是否写 LSM_ORDER_MUTABLE | L42 "agentrt-linux 的 `airy_lsm` 模块使用 `LSM_ORDER_MUTABLE`" | 03-capability-model.md:42 | ✓ airy_lsm 用 MUTABLE |
+| 03-capability-model.md 是否写 LSM_ORDER_MUTABLE | L42 "agent-linux 的 `airy_lsm` 模块使用 `LSM_ORDER_MUTABLE`" | 03-capability-model.md:42 | ✓ airy_lsm 用 MUTABLE |
 | `airy_lsm.c` 实际 order | `.order = LSM_ORDER_MUTABLE` | airy_lsm.c:152 | ✓ 与文档 L42 一致 |
 | capability 模块实际 order | OLK 6.6 硬编码 `LSM_ORDER_FIRST`（`include/linux/lsm_hooks.h:113`） | Linux 6.6 源码 | ✓ 与文档 L60 一致 |
 
@@ -200,7 +200,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | P0 # | 问题 | 裁定 | 证据 |
 |------|------|------|------|
-| P0-1 | [SC] verdict 双端不一致（COMPLAIN vs ASK） | **A 类真缺陷** | agentrt-linux `security_types.h:79` COMPLAIN=3；commons `security_types.h:36` ASK=3 |
+| P0-1 | [SC] verdict 双端不一致（COMPLAIN vs ASK） | **A 类真缺陷** | agent-linux `security_types.h:79` COMPLAIN=3；commons `security_types.h:36` ASK=3 |
 | P0-2 | AIRY_CAP_GPU_SCHED42 拼写错误 | **D 类误报** | xxd 证实 `AIRY_CAP_GPU_SCHED\t\t42`（TAB 分隔，非粘连） |
 | P0-3 | 双 airy_lsm.c 并存导致 UAF | **A 类真缺陷** | defconfig 默认 `CONFIG_SECURITY_AIRY=y`，airy_ind.ko 可加载，触发 UAF/double-free |
 | P0-4 | airy_struct_ops.c 重定义枚举/结构体 | **A 类真缺陷** | .c 不 include SSoT 头文件，3 态 vs 4 态，前缀错误 |
@@ -391,7 +391,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - [DSL] 降级生存层设计周到
 
 **需修复**：
-1. [SC] verdict 双端不一致（P0-1）——agentrt-linux 用 COMPLAIN，agentrt commons 用 ASK
+1. [SC] verdict 双端不一致（P0-1）——agent-linux 用 COMPLAIN，agentrt commons 用 ASK
 2. 双 airy_lsm.c UAF 风险（P0-3）——需增加安全警告注释或迁移到 blob 机制
 3. `airy_security_fault` 误伤 current（SEC-P1-6）——参数 agent_id 未用于定位 target agent
 4. `AIRY_EIPC_FROZEN` 未定义但被使用（撤销 #5 错误）——导致编译错误
@@ -543,7 +543,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 9. 结论
 
-agentrt-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实，IRON 工程铁律执行严格。
+agent-linux 整体方案**设计质量高（85/B+）**，三大技术支柱（Capability Folding + sched_tac + io_uring IPC）设计扎实，IRON 工程铁律执行严格。
 
 ### 9.1 前序报告的根本性错误已修正
 

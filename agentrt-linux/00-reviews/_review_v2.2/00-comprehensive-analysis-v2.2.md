@@ -1,8 +1,8 @@
-# 00 — agentrt-linux 方案全面系统性分析报告 v2.2
+# 00 — agent-linux 方案全面系统性分析报告 v2.2
 
 > **审查日期**：2026-07-16
 > **审查来源**：近 10 轮对话（d8 memory_compat.h → d12 Airymax Unify Design 评估）
-> **审查范围**：agentrt-linux 仓库、docs/AirymaxOS 文档体系、agentrt 对照仓库、docs/AirymaxRT 文档体系
+> **审查范围**：agent-linux 仓库、docs/AirymaxOS 文档体系、agentrt 对照仓库、docs/AirymaxRT 文档体系
 > **审查基线**：IRON-9 v2 三层共享模型（[SC]/[SS]/[IND]）+ 第四层 [DSL] 降级生存层
 
 ---
@@ -11,7 +11,7 @@
 
 ### 1.1 核心判定
 
-**agentrt-linux 目前不具备"可以根据方案开始全面开发"的条件。**
+**agent-linux 目前不具备"可以根据方案开始全面开发"的条件。**
 
 近 10 轮对话揭示了方案在五个维度上的系统性缺陷：
 
@@ -35,7 +35,7 @@
 
 ## 2. 项目现状统计
 
-### 2.1 agentrt-linux 仓库
+### 2.1 agent-linux 仓库
 
 | 维度 | 数量 | 备注 |
 |------|------|------|
@@ -77,7 +77,7 @@
 
 | ID | 缺陷 | 严重度 | 依据 |
 |----|------|--------|------|
-| VAC-001 | agentrt-linux 无任何 .c/.h 源文件 | **P0 阻塞** | Glob 扫描 0 结果 |
+| VAC-001 | agent-linux 无任何 .c/.h 源文件 | **P0 阻塞** | Glob 扫描 0 结果 |
 | VAC-002 | 8 子仓全部为 README-only 空壳 | **P0 阻塞** | 逐目录扫描 |
 | VAC-003 | 无 Kconfig 文件 | P0 | Glob 扫描 0 结果 |
 | VAC-004 | 无 Kbuild 文件 | P0 | Glob 扫描 0 结果 |
@@ -91,7 +91,7 @@
 | SC-001 | error.h 不存在 | **P0 阻塞** | Glob 扫描确认缺失 |
 | SC-002 | log_types.h 不存在 | **P0 阻塞** | Glob 扫描确认缺失 |
 | SC-003 | uapi_compat.h 未处理 `__KERNEL__` 路径 | P0 | 仅用 `#ifdef __linux__` 桥接 |
-| SC-004 | [SC] 双向 CI 无法验证（无 agentrt-linux 代码端） | P0 | sc-dual-ci.yml 无输入 |
+| SC-004 | [SC] 双向 CI 无法验证（无 agent-linux 代码端） | P0 | sc-dual-ci.yml 无输入 |
 | SC-005 | sched.h 缺少 Agent 生命周期状态枚举 | P1 | 仅含 task_desc 和调度原语 |
 | SC-006 | ipc.h 缺少 capability 缓存校验字段 | P1 | 仅有 header，无 cap 相关字段 |
 
@@ -149,11 +149,11 @@
 
 | # | 工作项 | 关联缺陷 |
 |---|--------|---------|
-| 1 | agentrt-linux kernel 子仓创建第一个可 insmod 的内核模块（1 .c + Makefile + Kconfig） | VAC-001~006 |
-| 2 | [SC] error.h 创建于 agentrt-linux/include/uapi/airymax/ | SC-001 |
-| 3 | [SC] log_types.h 创建于 agentrt-linux/include/uapi/airymax/ | SC-002 |
+| 1 | agent-linux kernel 子仓创建第一个可 insmod 的内核模块（1 .c + Makefile + Kconfig） | VAC-001~006 |
+| 2 | [SC] error.h 创建于 agent-linux/include/uapi/airymax/ | SC-001 |
+| 3 | [SC] log_types.h 创建于 agent-linux/include/uapi/airymax/ | SC-002 |
 | 4 | [SC] 双向 CI 验证可运行（两端均有代码可对比） | SC-004 |
-| 5 | uapi_compat.h 增加 `#ifdef __KERNEL__` 路径 + agentrt/agentrt-linux 双端验证 | SC-003 |
+| 5 | uapi_compat.h 增加 `#ifdef __KERNEL__` 路径 + agentrt/agent-linux 双端验证 | SC-003 |
 | 6 | Airymax Unify Design 完整方案文档化（[SC] error.h + log_types.h 设计） | DOC-001 |
 | 7 | 二进制 Ring Buffer + Logger Daemon 方案文档化进 docs/AirymaxOS | DOC-002 |
 | 8 | [DSL] 降级生存层设计文档化进 docs/AirymaxOS | DOC-003, DSL-001~005 |
@@ -198,7 +198,7 @@
 ### 5.3 判定依据
 
 工程可行性需要同时满足三个条件：
-1. 存在至少一个可编译的目标（agentrt-linux 的内核模块 / agentrt 的库）
+1. 存在至少一个可编译的目标（agent-linux 的内核模块 / agentrt 的库）
 2. 共享契约层物理文件存在且两端可编译
 3. CI 可验证共享头文件的一致性
 
@@ -206,14 +206,14 @@
 
 ### 5.4 关于"内核态和用户态共享"
 
-**概念上可行的前提**是 P0 和 P1 工作全部完成。在 P0/P1 完成前，断言"5 模块可以内核态和用户态共享"缺乏工程证据支撑。一旦 agentrt-linux kernel 子仓有了第一个可编译的内核模块、[SC] 共享头文件完整且 CI 验证通过、agentrt 技术债修复完毕，这些前提条件达成后，共享才从"概念可行"跃迁为"工程可行"。
+**概念上可行的前提**是 P0 和 P1 工作全部完成。在 P0/P1 完成前，断言"5 模块可以内核态和用户态共享"缺乏工程证据支撑。一旦 agent-linux kernel 子仓有了第一个可编译的内核模块、[SC] 共享头文件完整且 CI 验证通过、agentrt 技术债修复完毕，这些前提条件达成后，共享才从"概念可行"跃迁为"工程可行"。
 
 ---
 
 ## 6. 审查结论
 
-agentrt-linux 方案的**设计文档体系**（128 个 .md 文件）在抽象层次上是完整且自洽的——从微内核策略到 IPC fastpath 状态机到 capability 模型到 syscall 注册表，覆盖了操作系统设计的方方面面。
+agent-linux 方案的**设计文档体系**（128 个 .md 文件）在抽象层次上是完整且自洽的——从微内核策略到 IPC fastpath 状态机到 capability 模型到 syscall 注册表，覆盖了操作系统设计的方方面面。
 
-但方案存在**设计文档 → 工程产物的系统性断层**：0 行可编译内核源码、0 个共享头文件的 agentrt-linux 端物理副本、0 个可运行的 CI 验证、0 个可安装的内核模块。
+但方案存在**设计文档 → 工程产物的系统性断层**：0 行可编译内核源码、0 个共享头文件的 agent-linux 端物理副本、0 个可运行的 CI 验证、0 个可安装的内核模块。
 
-建议将 agentrt-linux 1.0.1 全面开发启动的前置条件明确为 **P0 工作项全部完成**（8 项）。在此期间，先完成 Airymax Unify Design 的文档化（将对话上下文中的设计方案固化为正式文档），再修复 agentrt 的技术债（BAN 违规和双轨制），最后以"第一个内核模块可编译可验证"作为全面开发的起点。
+建议将 agent-linux 1.0.1 全面开发启动的前置条件明确为 **P0 工作项全部完成**（8 项）。在此期间，先完成 Airymax Unify Design 的文档化（将对话上下文中的设计方案固化为正式文档），再修复 agentrt 的技术债（BAN 违规和双轨制），最后以"第一个内核模块可编译可验证"作为全面开发的起点。

@@ -56,14 +56,14 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **问题描述**：
 
-agentrt-linux 在 seL4 借鉴范围声明上存在三重冲突——同一项目内的不同文档对"借鉴了多少项 seL4 工程思想"给出三个不同的数字（5/10/54）。
+agent-linux 在 seL4 借鉴范围声明上存在三重冲突——同一项目内的不同文档对"借鉴了多少项 seL4 工程思想"给出三个不同的数字（5/10/54）。
 
 **证据来源**：
 
 | 来源 | 数量 | 文档位置 |
 |------|------|---------|
 | 开源手册 + SSoT 注册表 | 5 项 | `00-engineering-standards-handbook.md` OS-IRON-012 + `09-ssot-registry.md` 第 89 行 |
-| 闭源总纲附录 D 标题 | 10 项 | `agentrt-linux基本工程标准规范.md` 目录第 37 行 |
+| 闭源总纲附录 D 标题 | 10 项 | `agent-linux基本工程标准规范.md` 目录第 37 行 |
 | 闭源研究文档 | 54 项 | `00-reviews/_research_0.2.5/01-sel4-deep-analysis.md` 第 10/32 行 |
 
 **影响分析**：
@@ -214,7 +214,7 @@ SSoT 注册表变更日志承认 Rust 文件存在编号登记缺口：OS-STD-03
 
 **问题描述**：
 
-agentrt-linux 有六大编码规范支柱和 13 项工程思想的规则，但缺少 OLK-6.6 品味哲学层的显式文档化。8 项隐性智慧未被记录。
+agent-linux 有六大编码规范支柱和 13 项工程思想的规则，但缺少 OLK-6.6 品味哲学层的显式文档化。8 项隐性智慧未被记录。
 
 **证据来源**：
 
@@ -250,7 +250,7 @@ agentrt-linux 有六大编码规范支柱和 13 项工程思想的规则，但�
 
 **问题描述**：
 
-agentrt 现有源码与 agentrt-linux 规范声明之间存在显著品味鸿沟。
+agentrt 现有源码与 agent-linux 规范声明之间存在显著品味鸿沟。
 
 **证据来源**：
 

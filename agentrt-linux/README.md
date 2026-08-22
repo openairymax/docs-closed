@@ -1,20 +1,20 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）闭源技术参考文档
+# agent-linux（AirymaxOS）闭源技术参考文档
 
-> **文档定位**: agentrt-linux 内部技术参考文档索引，**闭源不公开**
+> **文档定位**: agent-linux 内部技术参考文档索引，**闭源不公开**
 > **保密级别**: SPHARX Ltd 内部参考
 > **版本**: v1.0.1（M0 设计阶段 100% 就绪）
 > **最后更新**: 2026-07-27（v7.2 同步：M0 100% 就绪）
-> **适用范围**: agentrt-linux 架构委员会 + 内核开发组
+> **适用范围**: agent-linux 架构委员会 + 内核开发组
 
 ---
 
 ## 1. 文档定位与保密声明
 
-本目录存放 agentrt-linux（AirymaxOS）的**内部技术参考文档**，这些文档：
+本目录存放 agent-linux（AirymaxOS）的**内部技术参考文档**，这些文档：
 
-1. **全面参考 Euler 技术规范**：Euler 社区的技术规范、内核改动、工程实践对 agentrt-linux 设计具有重要参考价值，但参考文档不能公开
+1. **全面参考 Euler 技术规范**：Euler 社区的技术规范、内核改动、工程实践对 agent-linux 设计具有重要参考价值，但参考文档不能公开
 2. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
 3. **开源文档隔离**：开源文档（`docs/AirymaxOS/`）中**严禁**出现对 Euler 参考发行版的相关描述；所有参考内容仅限本目录
 
@@ -23,7 +23,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ## 2. 目录结构
 
 ```
-docs-closed/agentrt-linux/
+docs-closed/agent-linux/
 ├── README.md                          # 本文件 — 闭源参考文档索引
 ├── 01-openeuler-tech-reference/       # openEuler 技术规范参考
 │   ├── README.md                      # 索引
@@ -53,8 +53,8 @@ docs-closed/agentrt-linux/
 │   ├── 01-latest-theory.md            # 2026 年最新微内核/OS 理论
 │   ├── 02-best-practices.md           # 行业最佳实践汇总
 │   └── 03-airymaxos-synthesis.md      # AirymaxOS 技术方案综合（Euler + 最新理论 → AirymaxOS）
-├── agentrt-linux基本工程标准规范.md    # agentrt-linux 工程标准规范（1026 行）
-└── agentrt-linux开发路线和进度.md      # agentrt-linux 开发路线与进度跟踪
+├── agent-linux基本工程标准规范.md    # agent-linux 工程标准规范（1026 行）
+└── agent-linux开发路线和进度.md      # agent-linux 开发路线与进度跟踪
 ```
 
 ---
@@ -74,7 +74,7 @@ AirymaxOS 开源设计文档（`docs/AirymaxOS/`）的编写和修订流程：
 
 | 规则 | 说明 |
 |------|------|
-| **BAN-INTERNAL-001** | openEuler 技术规范参考内容**只能**存在于 `docs-closed/agentrt-linux/` 目录 |
+| **BAN-INTERNAL-001** | openEuler 技术规范参考内容**只能**存在于 `docs-closed/agent-linux/` 目录 |
 | **BAN-INTERNAL-002** | 开源文档 `docs/AirymaxOS/` 中**严禁**出现 "openEuler"、"open Euler"、"openeuler" 等描述 |
 | **BAN-INTERNAL-003** | 闭源参考文档中的 openEuler 内容必须经过**消化吸收**后才能体现在开源设计文档中 |
 | **BAN-INTERNAL-004** | 闭源参考文档**不对外发布**，不包含在任何开源 LICENSE 范围内 |

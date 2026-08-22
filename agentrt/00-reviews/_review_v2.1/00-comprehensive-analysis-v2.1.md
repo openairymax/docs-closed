@@ -23,7 +23,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 |---|------|------|----------|----------|------|----------|----------|--------|
 | A1 | agentrt 源码 | 25% | 25 | 32 | ↑ +7 | D | D+ | ❌ 未达标 |
 | A2 | AirymaxRT 整体方案 | 20% | 62 | 58 | ↓ -4 | C+ | C | ❌ 未达标 |
-| A3 | agentrt-linux 方案 | 20% | 80 | 70 | ↓ -10 | B | C+ | ❌ 未达标 |
+| A3 | agent-linux 方案 | 20% | 80 | 70 | ↓ -10 | B | C+ | ❌ 未达标 |
 | A4 | OpenStandards 开放标准 | 20% | 26 | 26 | → 0 | F | F | ❌ 未达标 |
 | A5 | 文档规范与质量控制 | 15% | 58 | 68 | ↑ +10 | D+ | C+ | ❌ 未达标 |
 | — | **加权综合** | 100% | **48.6** | **49.0** | **↑ +0.4** | **F** | **F/E+** | **❌ 未达标** |
@@ -56,7 +56,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 |-------|------|---------|---------|------|
 | A1 | agentrt 源码 | `/agentrt/`（~875 个 C/H 文件） | `docs-closed/agentrt/00-reviews/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
 | A2 | AirymaxRT 方案 | `/docs/AirymaxRT/`（88 .md + 3 .drawio） | `docs-closed/agentrt/00-reviews/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
-| A3 | agentrt-linux 方案 | `/docs/AirymaxOS/` + `/docs-closed/agentrt-linux/` | `docs-closed/agentrt-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
+| A3 | agent-linux 方案 | `/docs/AirymaxOS/` + `/docs-closed/agent-linux/` | `docs-closed/agent-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
 | A4 | OpenStandards | `/docs/OpenStandards/`（8 文件 4409 行）+ `_research_v1.0/v2.0/v2.1` | `docs/OpenStandards/_research_v2.1/01-open-standards-review-v2.1.md` | 1241 |
 | A5 | 文档规范与质量控制 | 5 个文档子仓库（228 开源 + 225 闭源 .md） | `docs-closed/agentrt/00-reviews/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
 
@@ -101,7 +101,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 |---|------|--------|----------|
 | 1 | `.clang-format` 不存在 | P0 | ❌ 未修复 |
 | 2 | 4 空格缩进全面违规 | P0 | ❌ 未修复（Tab 8 仅 71 处） |
-| 3 | agentrt-linux 空仓库 | P1 | ⚠️ 部分修复（55 文件脚手架，0 源码） |
+| 3 | agent-linux 空仓库 | P1 | ⚠️ 部分修复（55 文件脚手架，0 源码） |
 | 4 | fprintf 直接使用 | P0 | ❌ 未修复（memory.c 10 处 + heapstore_migration.c 5 处） |
 | 5 | Windows localtime 线程不安全 | P1 | ⚠️ 部分修复（POSIX 已修，Windows 未修） |
 | 6 | typedef struct _t 命名违规 | P1 | ❌ 未修复（421 处/100 文件） |
@@ -190,7 +190,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 
 **证据**：`02-airymaxrt-solution-review-v2.1.md:87-91, 328-336`
 
-### 2.3 agentrt-linux 方案（A3）— 70/C+
+### 2.3 agent-linux 方案（A3）— 70/C+
 
 **评分变化：v1.0=80/B → v2.1=70/C+（-10）**
 
@@ -367,7 +367,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 | 仓库 | agentrt_* 残留 | airy_* 已迁移 |
 |------|---------------|--------------|
 | `docs-closed/agentrt/` | 218 处/12 文件 | 163 处（手册） |
-| `docs-closed/agentrt-linux/` | 388 处/34 文件 | **0 处**（手册完全未迁移） |
+| `docs-closed/agent-linux/` | 388 处/34 文件 | **0 处**（手册完全未迁移） |
 | **合计** | **606 处** | — |
 
 **矛盾点**：手册 §1518-1524 标注 `agentrt_*` 为"已废弃"，但手册自身代码示例（§1578、§3176-3226）仍使用 `agentrt_*` 前缀。
@@ -406,7 +406,7 @@ v2.1 阶段 5 大维度综合审查结论：**v1.0 识别的核心问题修复�
 
 | # | 维度 | 问题 | v2.1 状态 | 证据 |
 |---|------|------|----------|------|
-| 1 | A1 | agentrt-linux 空仓库 | ⚠️ 部分修复（脚手架已建，0 源码） | `01-agentrt-source-review-v2.1.md:63-73` |
+| 1 | A1 | agent-linux 空仓库 | ⚠️ 部分修复（脚手架已建，0 源码） | `01-agentrt-source-review-v2.1.md:63-73` |
 | 2 | A1 | Windows localtime 线程不安全 | ⚠️ 部分修复（POSIX 已修，Windows 未修） | `01-agentrt-source-review-v2.1.md:85-94` |
 | 3 | A1 | typedef struct _t 命名违规 | ❌ 未修复（421 处/100 文件） | `01-agentrt-source-review-v2.1.md:96-105` |
 | 4 | A2 | Cupola vs Cupolas 术语不一致 | ⚠️ 加剧（4→5 文件） | `02-airymaxrt-solution-review-v2.1.md:161-184` |
@@ -479,7 +479,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | A2-N4 | P1 | 03-overall-architecture.drawio 含 11 处 Cupola 单数（v1.0 漏检） | `02-airymaxrt-solution-review-v2.1.md:352-363` |
 | A2-N5 | P1 | 50-specifications/06-glossary-index.md 与 20-modules 版本内容重复但宏名不一致（AGENTRT_SECURE_ZERO vs AIRY_SECURE_ZERO） | `02-airymaxrt-solution-review-v2.1.md:389-394` |
 
-### 4.3 A3 新发现（agentrt-linux 方案）
+### 4.3 A3 新发现（agent-linux 方案）
 
 | # | 严重级别 | 问题 | 证据 |
 |---|---------|------|------|
@@ -540,7 +540,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | 维度 | 表现 | 证据 |
 |------|------|------|
 | A2（AirymaxRT） | `06-iron9-shared-model.md` 将 bpf_struct_ops.h 列第 1 位，syscalls.h 完全缺失 | `06-iron9-shared-model.md:68` |
-| A3（agentrt-linux） | SSoT（`120-cross-project-code-sharing.md:65-76`）正确定义，但 contracts.md 使用旧布局 112B | `contracts.md:49-57` |
+| A3（agent-linux） | SSoT（`120-cross-project-code-sharing.md:65-76`）正确定义，但 contracts.md 使用旧布局 112B | `contracts.md:49-57` |
 
 **根因**：`06-iron9-shared-model.md` 未对齐 SSoT `120-cross-project-code-sharing.md`，导致下游消费者（IPC/syscall 文档）引用错误布局。
 
@@ -549,7 +549,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | 维度 | 表现 | 证据 |
 |------|------|------|
 | A1（源码） | `triple_coordinator.c.bak` 含 43 处 agentrt_ 残留 | `01-agentrt-source-review-v2.1.md:203-210` |
-| A5（文档） | 闭源文档 606 处 agentrt_* 残留（agentrt 218 + agentrt-linux 388） | `03-docs-quality-review-v2.1.md:476-555` |
+| A5（文档） | 闭源文档 606 处 agentrt_* 残留（agentrt 218 + agent-linux 388） | `03-docs-quality-review-v2.1.md:476-555` |
 
 **矛盾点**：源码已迁移至 airy_*，但闭源工程标准手册仍使用 agentrt_* 且标注"已废弃"——手册内容自相矛盾。
 
@@ -558,7 +558,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | 维度 | 表现 | 证据 |
 |------|------|------|
 | A2（AirymaxRT） | `are_ipc_message_header_t` 13-14 字段 / 无 packed / `char source[32]` / 2 文件违规 | `06-ipc/README.md:27-42`, `02-l2-service-protocol.md:60-109` |
-| A3（agentrt-linux） | contracts.md 112B 旧布局（version/type/src_pid/dst_pid）vs SSoT 128B（opcode/src_task/dst_task） | `contracts.md:49-57` |
+| A3（agent-linux） | contracts.md 112B 旧布局（version/type/src_pid/dst_pid）vs SSoT 128B（opcode/src_task/dst_task） | `contracts.md:49-57` |
 
 **vs SSoT**：`airy_ipc_msg_hdr` / 8 字段 / `__attribute__((packed))` / `_Static_assert(sizeof(...) == 128)`
 
@@ -574,7 +574,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 |------|------|----------|----------|----------|----------|------|
 | A1 agentrt 源码 | 25% | 25 | 6.25 | 32 | 8.00 | +1.75 |
 | A2 AirymaxRT 方案 | 20% | 62 | 12.40 | 58 | 11.60 | -0.80 |
-| A3 agentrt-linux 方案 | 20% | 80 | 16.00 | 70 | 14.00 | -2.00 |
+| A3 agent-linux 方案 | 20% | 80 | 16.00 | 70 | 14.00 | -2.00 |
 | A4 OpenStandards | 20% | 26 | 5.20 | 26 | 5.20 | 0.00 |
 | A5 文档质控 | 15% | 58 | 8.70 | 68 | 10.20 | +1.50 |
 | **综合** | **100%** | **48.6** | — | **49.0** | — | **+0.4** |
@@ -646,7 +646,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | P1-4 | A1 | agent_registry_core_get() 数据竞争修复 | 4h |
 | P1-5 | A1 | cupolas 错误码 4 变体统一为 AIRY_ERR_* | 8h |
 | P1-6 | A1 | typedef struct _t 分批重构 | 32h |
-| P1-7 | A1 | agentrt-linux kernel 子仓填充微内核核心代码 | 80h |
+| P1-7 | A1 | agent-linux kernel 子仓填充微内核核心代码 | 80h |
 | P1-8 | A2 | 统一 Cupola/Cupolas 术语（5 文件） | 2h |
 | P1-9 | A2 | 修正 daemon 数量标注（10→12） | 0.5h |
 | P1-10 | A2 | 文档化 29 仓拆分结构 | 6h |
@@ -751,7 +751,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 |---|------|------|------|
 | 1 | agentrt 源码 v2.1 深度复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/01-agentrt-source-review-v2.1.md` | 537 |
 | 2 | AirymaxRT 整体方案 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/02-airymaxrt-solution-review-v2.1.md` | 924 |
-| 3 | agentrt-linux 方案 v2.1 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
+| 3 | agent-linux 方案 v2.1 系统性复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agent-linux/_review_v2.1/01-systematic-recheck-v2.1.md` | 886 |
 | 4 | OpenStandards v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs/OpenStandards/_research_v2.1/01-open-standards-review-v2.1.md` | 1241 |
 | 5 | 文档规范与质量控制 v2.1 复审 | `/home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/00-reviews/_review_v2.1/03-docs-quality-review-v2.1.md` | 939 |
 | — | **合计** | — | **4527** |
@@ -823,7 +823,7 @@ v1.0 未识别、v2.1 新发现的问题，按维度分组。
 | 05 COG 双码同值 BUG | `05-airy-cognition-loop-standard.md:411-412`（TIMEOUT=-1004 = EBUDGET=-1004） |
 | are_cap_t 26 处 + cap_t 8 处 | `03-airy-security-model-standard.md`（22 处）+ `01-airy-agent-runtime-standard.md:501`（1 处）+ `02-airy-ipc-protocol-standard.md:282,287,305`（3 处）+ `07-airy-syscall-standard.md:207,224,241,258,275,293,326,400`（8 处） |
 | 断裂引用 67+ 处 | `docs/OpenStandards/README.md:231` + 8 处 `08-compliance-checklist.md` + 25 处 `00-basic-theories/` + 23 处 `30-coding-standard/` + 4 处 `PROTOCOL_GUIDE.md` + 4 处 `DocsClosed/` |
-| agentrt_* 606 处残留 | `docs-closed/agentrt/`（218 处/12 文件）+ `docs-closed/agentrt-linux/`（388 处/34 文件） |
+| agentrt_* 606 处残留 | `docs-closed/agentrt/`（218 处/12 文件）+ `docs-closed/agent-linux/`（388 处/34 文件） |
 | goto 集中出口 151 处 | 36 文件（v1.0 为 14 处，+978%） |
 | IPC magic 0x41524531 | `120-cross-project-code-sharing.md:302-303`（全文一致） |
 | 任务 magic 0x41475453 | `120-cross-project-code-sharing.md:236-237`（全文一致） |

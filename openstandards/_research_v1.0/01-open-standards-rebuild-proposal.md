@@ -28,7 +28,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 - **决策者**：阅读第 1、5、6、8 节，重点关注四阶段路径与关键决策点。
 - **协议对接工程师**：阅读第 3、5.3、5.5 节，理解 MCP/A2A/AG-UI/ANP 与 7 域的映射。
 - **治理与法务**：阅读第 4、5.1、5.2 节，理解 OWFa 1.0 与 CNCF 三级孵化机制。
-- **agentrt/agentrt-linux 实现者**：阅读第 2、7 节，理解迁移路径与实现同步风险。
+- **agentrt/agent-linux 实现者**：阅读第 2、7 节，理解迁移路径与实现同步风险。
 
 ***
 
@@ -559,7 +559,7 @@ ISO/IEC 5230 的 25 项验证材料覆盖六大领域：
 |---------|---------|----------|----------|------|
 | **规范文档**（`*.md` 主题标准） | AGPL-3.0-or-later OR Apache-2.0 | **CC-BY-4.0 + OWFa 1.0 Patent Only** | CC-BY-4.0 | 鼓励最广泛引用，专利授权独立 |
 | **参考实现 agentrt**（SPHARX 主实现） | AGPL-3.0-or-later OR Apache-2.0 | **AGPL-3.0-or-later** | AGPL-3.0-or-later | 保障网络服务场景代码回流 |
-| **第三方参考实现**（如 agentrt-linux） | AGPL-3.0-or-later OR Apache-2.0 | **Apache-2.0** | Apache-2.0 | 允许商业闭源派生 |
+| **第三方参考实现**（如 agent-linux） | AGPL-3.0-or-later OR Apache-2.0 | **Apache-2.0** | Apache-2.0 | 允许商业闭源派生 |
 | **兼容性测试套件**（`compatibility/`） | 内嵌文档 | **Apache-2.0** | Apache-2.0 | 鼓励社区贡献测试用例 |
 | **示例代码**（`examples/`） | 内嵌文档 | **MIT** | MIT | 允许直接复制到商业项目 |
 | **研究报告**（`_research_v1.0/`） | — | **CC-BY-4.0** | CC-BY-4.0 | 鼓励学术引用 |
@@ -665,7 +665,7 @@ ISO/IEC 5230 的 25 项验证材料覆盖六大领域：
 
 **版本变更**：v1.2 → v2.0（MAJOR 升级，因新增 2 个域）
 
-**风险**：中。新增域不破坏既有 L1 契约，但需要 agentrt 与 agentrt-linux 同步实现桥接层。
+**风险**：中。新增域不破坏既有 L1 契约，但需要 agentrt 与 agent-linux 同步实现桥接层。
 
 #### 5.3.3 阶段 3：治理升级（~6 周）
 
@@ -855,11 +855,11 @@ docs/OpenStandards/
 | W7-W8 | OpenChain ISO/IEC 18974 安全自认证 | 25 项安全验证材料 + 自认证结果 |
 | W8 | v2.2 发布 | v2.2 正式发布 |
 
-### 6.3 与 agentrt / agentrt-linux 实现同步
+### 6.3 与 agentrt / agent-linux 实现同步
 
-OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 agentrt-linux（智能体操作系统发行版）的实现同步。同步原则：
+OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 agent-linux（智能体操作系统发行版）的实现同步。同步原则：
 
-| 标准变更类型 | agentrt 同步要求 | agentrt-linux 同步要求 |
+| 标准变更类型 | agentrt 同步要求 | agent-linux 同步要求 |
 |------------|----------------|---------------------|
 | L1 条目新增 | MAJOR 版本同步 | MAJOR 版本同步 |
 | L2 条目新增 | MINOR 版本同步 | MINOR 版本同步 |
@@ -869,7 +869,7 @@ OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 age
 | PROTO/INTEROP 新增 | MAJOR 版本同步（实现桥接层） | MAJOR 版本同步（实现桥接层） |
 | 兼容性测试新增 | 必须通过新测试 | 必须通过新测试 |
 
-**关键约束**：agentrt 与 agentrt-linux 的实现进度**不得落后**于 OpenStandards 标准发布超过 1 个 MINOR 版本。若实现滞后，标准发布必须延期。
+**关键约束**：agentrt 与 agent-linux 的实现进度**不得落后**于 OpenStandards 标准发布超过 1 个 MINOR 版本。若实现滞后，标准发布必须延期。
 
 ***
 
@@ -926,15 +926,15 @@ OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 age
 
 ### 7.4 实现同步风险
 
-**风险描述**：agentrt 与 agentrt-linux 的实现进度可能落后于标准发布，导致"标准先于实现"的悬空状态：
+**风险描述**：agentrt 与 agent-linux 的实现进度可能落后于标准发布，导致"标准先于实现"的悬空状态：
 
-1. **PROTO/INTEROP 桥接层实现滞后**：阶段 2 新增的 PROTO/INTEROP 域需要 agentrt 与 agentrt-linux 同步实现桥接层，若实现滞后，标准将缺乏参考实现验证。
+1. **PROTO/INTEROP 桥接层实现滞后**：阶段 2 新增的 PROTO/INTEROP 域需要 agentrt 与 agent-linux 同步实现桥接层，若实现滞后，标准将缺乏参考实现验证。
 2. **形式化验证人力不足**：阶段 4 的形式化验证需要 Isabelle/HOL 或 Coq 专业人力，SPHARX 当前可能不具备该能力。
 3. **OpenChain 自认证工作量**：25 + 25 = 50 项验证材料的准备需要法务、工程、运营多角色协作，可能拖延工期。
 
 **缓解措施**：
 
-1. **实现先行原则**：PROTO/INTEROP 标准在 Proposed 阶段必须至少有 1 个参考实现（agentrt 或 agentrt-linux），否则不进入 Stable。
+1. **实现先行原则**：PROTO/INTEROP 标准在 Proposed 阶段必须至少有 1 个参考实现（agentrt 或 agent-linux），否则不进入 Stable。
 2. **外部合作**：与高校或研究机构合作完成形式化验证，降低 SPHARX 内部人力压力。
 3. **OpenChain 渐进式自认证**：阶段 1 完成基线评估，阶段 3 完成 50% 验证材料，阶段 4 完成全部。
 
@@ -1035,7 +1035,7 @@ OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 age
 3. **治理机制升级**：通过 CNCF 风格三级孵化、公开 RFC、社区代表投票，将本体系从 SPHARX 单一主导演进为社区共治。
 4. **生态认证建立**：通过 Airymax Certified 商标、OCI 格式对接、seL4 风格形式化验证、OpenChain 自认证，建立完整的生态信任体系。
 
-重建的核心理念是**"不破坏既有契约，分层叠加新能力"**——所有 L1 永久稳定条目（约 84.5%）保持不变，新增能力以独立域、独立文档、独立许可的形式叠加。这确保了 agentrt、agentrt-linux 及任何已采纳 v1.1 的第三方实现可在零迁移成本下受益于 v2.x 的法律与生态增强。
+重建的核心理念是**"不破坏既有契约，分层叠加新能力"**——所有 L1 永久稳定条目（约 84.5%）保持不变，新增能力以独立域、独立文档、独立许可的形式叠加。这确保了 agentrt、agent-linux 及任何已采纳 v1.1 的第三方实现可在零迁移成本下受益于 v2.x 的法律与生态增强。
 
 本报告作为 v2.x 重建的起点，提交标准委员会评审。评审通过后，将按四阶段路径逐步落地，每阶段交付物独立发布、独立采纳。
 
@@ -1129,8 +1129,8 @@ OpenStandards 的重建必须与 agentrt（用户态微核心运行时）和 age
 | 05 认知循环标准 | `docs/OpenStandards/05-airy-cognition-loop-standard.md` |
 | 06 调度标准 | `docs/OpenStandards/06-airy-scheduling-standard.md` |
 | 07 系统调用标准 | `docs/OpenStandards/07-airy-syscall-standard.md` |
-| agentrt-linux 统一术语表 | `docs/AirymaxOS/TERMINOLOGY.md` |
-| agentrt-linux 工程标准手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` |
+| agent-linux 统一术语表 | `docs/AirymaxOS/TERMINOLOGY.md` |
+| agent-linux 工程标准手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` |
 | 五维正交 24 原则 | `docs/AirymaxOS/10-architecture/02-five-dimensional-principles.md` |
 | 跨项目代码共享 | `docs/AirymaxOS/50-engineering-standards/120-cross-project-code-sharing.md` |
 

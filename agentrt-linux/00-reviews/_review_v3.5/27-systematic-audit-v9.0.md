@@ -1,6 +1,6 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux v9.0 系统性深度审查报告
+# agent-linux v9.0 系统性深度审查报告
 
 > **文档定位**：v8.0 报告之后的"不计成本深度科学推论"——5 轨道并行 + 4 维度综合 + 字节级证据\
 > **文档版本**：v9.0\
@@ -502,14 +502,14 @@ v9.0 修正反映"深度科学推论发现的根本性设计冲突"，而非"外
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/03-microkernel-strategy.md:607` — A-1 MAC\_MAX\_AGENTS
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/20-modules/01-kernel.md:823` — A-1 MAC\_MAX\_AGENTS
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/160-compatibility/01-abi-stability.md:385-387,399` — A-2 + A-3
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/ipc.h:77-89` — SSoT airy_ipc_msg_hdr
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/include/uapi/linux/airymax/uapi_compat.h:22-32` — A-4 kernel 侧
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/ipc.h:77-89` — SSoT airy_ipc_msg_hdr
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/include/uapi/linux/airymax/uapi_compat.h:22-32` — A-4 kernel 侧
 - `/home/spharx/SpharxWorks/airymaxhub/agentrt/commons/include/airymax/uapi_compat.h:23-27` — A-4 commons 侧
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_revoke.c:18,30,40,46` — K-B4 死代码
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_uring_cmd.c:38` — K-B5 死代码
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_die_notify.c:142-155` — K-B6 注册 #1
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/superv/airy_die_notify_superv.c:74-81` — K-B6 注册 #2
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/Kconfig:6-10` — K-B1 已修复证据
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_revoke.c:18,30,40,46` — K-B4 死代码
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_uring_cmd.c:38` — K-B5 死代码
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_die_notify.c:142-155` — K-B6 注册 #1
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/superv/airy_die_notify_superv.c:74-81` — K-B6 注册 #2
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/Kconfig:6-10` — K-B1 已修复证据
 
 ### A.2 v9.0 新发现文件
 
@@ -517,9 +517,9 @@ v9.0 修正反映"深度科学推论发现的根本性设计冲突"，而非"外
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md:1297-1299` — D9-9, D9-15
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/07-directory-structure.md:1332` — D9-12
 - `/home/spharx/SpharxWorks/airymaxhub/docs/AirymaxOS/10-architecture/05-adrs.md:86,1224` — D9-17, D9-21
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_rotate.c:76-77` — K9-2 竞态
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/security/airy/airy_cap_revoke.c:40` — K9-1 全局 epoch
-- `/home/spharx/SpharxWorks/airymaxhub/agentrt-linux/kernel/kernel/corekern/ipc/airy_ipc_zero_copy.c` — K9-4 TOCTOU
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_rotate.c:76-77` — K9-2 竞态
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/security/airy/airy_cap_revoke.c:40` — K9-1 全局 epoch
+- `/home/spharx/SpharxWorks/airymaxhub/agent-linux/kernel/kernel/corekern/ipc/airy_ipc_zero_copy.c` — K9-4 TOCTOU
 
 ### A.3 借鉴参考源码
 

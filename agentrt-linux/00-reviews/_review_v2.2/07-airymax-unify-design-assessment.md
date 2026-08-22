@@ -2,7 +2,7 @@
 
 > **评估日期**：2026-07-16
 > **评估范围**：5 大核心组件（UEF/ULP/UCF/USV/UIPC）对整体方案的重构能力
-> **评估基线**：Linux 6.6 内核源码 + seL4 微内核源码 + agentrt-linux 现有 128 文档体系
+> **评估基线**：Linux 6.6 内核源码 + seL4 微内核源码 + agent-linux 现有 128 文档体系
 > **核心问题**：Airymax Unify Design 能否解决大部分冲突点？
 
 ---
@@ -389,7 +389,7 @@ Logger Daemon 是普通用户进程，不是硬件设备。内核-用户态共�
 |----|------|--------|
 | ENG-01 | 0 行可编译内核源码 | P0 |
 | ENG-02 | 0 个 Kconfig/Kbuild 文件 | P0 |
-| ENG-03 | [SC] 双向 CI 无法运行（agentrt-linux 端无代码） | P0 |
+| ENG-03 | [SC] 双向 CI 无法运行（agent-linux 端无代码） | P0 |
 | ENG-04 | error.h / log_types.h 两端都不存在 | P0 |
 | ENG-05 | uapi_compat.h 未处理 `#ifdef __KERNEL__` | P0 |
 

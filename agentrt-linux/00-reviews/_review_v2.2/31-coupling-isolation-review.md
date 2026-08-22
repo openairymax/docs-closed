@@ -270,7 +270,7 @@ agent_caps[src_task] 的访问延迟取决于 L1 cache 状态:
 无法做到的事：向内核发送"仅做能力校验，不投递数据"的请求。
 seL4 可以做到（调用 seL4_Call 然后不发送数据）。
 
-但 agentrt-linux 的场景不需要这个能力：
+但 agent-linux 的场景不需要这个能力：
   - 能力只有在数据需要投递时才有意义
   - 如果一条消息的 Badge 无效，它会被拒绝（inline deny），
     接收方不会被唤醒——这与"不投递数据"等价
@@ -343,11 +343,11 @@ A-IPC 提供的隔离是 DATA-STRUCTURAL:
 
 ---
 
-## §3 这个 trade-off 对 agentrt-linux 是否可接受
+## §3 这个 trade-off 对 agent-linux 是否可接受
 
-### 3.1 agentrt-linux 与 seL4 的根本差异
+### 3.1 agent-linux 与 seL4 的根本差异
 
-| 维度 | seL4 | agentrt-linux |
+| 维度 | seL4 | agent-linux |
 |------|------|---------------|
 | 目标场景 | 军事/航空/医疗（硬安全） | AI Agent 运行时（性能优先） |
 | 认证等级 | EAL7 / SIL4 | 无认证要求 |
@@ -364,16 +364,16 @@ A-IPC 提供的隔离是 DATA-STRUCTURAL:
 
 **安全**：可接受。C-S9 只读取 agent_caps[]（内核内存）和 badge（用户可控但通过随机标签保护）。30 号审查修复后，Badge 不可伪造。
 
-**调试**：可接受。A-UEF 错误码分区 + ftrace 探针 + sysfs 统计计数器提供了足够的能力/数据分离诊断手段。缺少"独立能力测试"不是 agentrt-linux 需要的特性。
+**调试**：可接受。A-UEF 错误码分区 + ftrace 探针 + sysfs 统计计数器提供了足够的能力/数据分离诊断手段。缺少"独立能力测试"不是 agent-linux 需要的特性。
 
-**隔离**：**这是最大的 trade-off。** A-IPC 用"数据结构隔离"替代了 seL4 的"架构隔离"。对于 agentrt-linux 的非认证场景，数据结构隔离是可接受的，但必须清楚地记录：
+**隔离**：**这是最大的 trade-off。** A-IPC 用"数据结构隔离"替代了 seL4 的"架构隔离"。对于 agent-linux 的非认证场景，数据结构隔离是可接受的，但必须清楚地记录：
 - fastpath 的 CBMC 验证必须覆盖整个函数（100 行），而不是分别验证能力层和数据层
 - 任何对 fastpath 的代码修改都需要重新运行完整的 CBMC 验证
 - 静态分析规则必须保证 agent_caps[] 和 kfifo 是独立的内存区域
 
 ### 3.3 如果未来需要更强的隔离
 
-如果 agentrt-linux 未来需要更强的隔离（例如，支持不可信硬实时负载），可以在不推翻 Capability Folding 的前提下增加隔离：
+如果 agent-linux 未来需要更强的隔离（例如，支持不可信硬实时负载），可以在不推翻 Capability Folding 的前提下增加隔离：
 
 ```
 方案: 在 fastpath 内部增加显式的"能力门"（Capability Gate）
@@ -402,13 +402,13 @@ A-IPC 提供的隔离是 DATA-STRUCTURAL:
 
 **Capability Folding 确实牺牲了 seL4 的架构级隔离。这是一个真实的 trade-off，不是一个可以忽略的细节。**
 
-但这个 trade-off 对 agentrt-linux 是可接受的，因为：
-1. agentrt-linux 不是安全认证系统，不需要架构级隔离
+但这个 trade-off 对 agent-linux 是可接受的，因为：
+1. agent-linux 不是安全认证系统，不需要架构级隔离
 2. 数据结构隔离（agent_caps[] 与 kfifo 独立）足以满足多租户隔离需求
 3. fastpath 的 100 行代码规模使得全函数验证（CBMC）可行
 4. Capability Folding 带来的性能改善（10ns vs 50-100ns）和复杂度的降低（消除 radix tree + per-CPU cache + IPI coherency）在实际工程中价值更大
 
-**这不是"设计没有注意到这个问题"——这是"经过分析后，我们认为这个 trade-off 对 agentrt-linux 是正确的"。** 如果未来场景变化（例如 agentrt-linux 被用于安全认证系统），§3.3 中的"能力门"方案可以在不推翻 Capability Folding 的前提下增加隔离。
+**这不是"设计没有注意到这个问题"——这是"经过分析后，我们认为这个 trade-off 对 agent-linux 是正确的"。** 如果未来场景变化（例如 agent-linux 被用于安全认证系统），§3.3 中的"能力门"方案可以在不推翻 Capability Folding 的前提下增加隔离。
 
 ---
 

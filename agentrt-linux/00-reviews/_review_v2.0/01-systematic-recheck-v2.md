@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）系统性全面审查报告 v2.0（深化复审）
+# agent-linux（AirymaxOS）系统性全面审查报告 v2.0（深化复审）
 
-> **文档定位**： agentrt-linux（AirymaxOS，极境智能体操作系统）整体方案系统性复审 v2.0——在 v1.0（2026-07-13，综合评分 79/B+）基础上的第二轮深化审查，聚焦"验证 + 深化 + 补充"。\
+> **文档定位**： agent-linux（AirymaxOS，极境智能体操作系统）整体方案系统性复审 v2.0——在 v1.0（2026-07-13，综合评分 79/B+）基础上的第二轮深化审查，聚焦"验证 + 深化 + 补充"。\
 > **保密级别**： SPHARX Ltd 内部参考，**闭源不公开**\
 > **版本**： 2.0（2026-07-13）\
 > **审查范围**： v1.0 全部 11 项问题（1 P0 + 3 P1 + 7 P2）逐项重新验证 + 方案内部冲突深化检查 + 技术点唯一性深化验证 + openEuler 工程实践参考充分性深化（含 MGLRU/sched\_ext/io\_uring 最新实践）+ seL4 微内核化改造参考充分性深化（含 capability 7 操作 / IPC fastpoint POINT OF NO RETURN / 三态机 / doReplyTransfer 临界区 / vtime Q16.16）+ 开发就绪度 8 项判定标准重新评估 + 细节完成度深化 + 8 子仓命名规范深化\
@@ -57,7 +57,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 | v2.0-NEW-P1-01 | **OS-FMT-001\~007 未在 SSoT 注册表登记**                | P1 | 闭源总纲 L331-387/L1324-1330/L1422-1426 使用 OS-FMT-001\~007；`09-ssot-registry.md` 无 OS-FMT 章节；闭源总纲 L91-103 的 11 类前缀表未列 OS-FMT                                                                                            |
 | v2.0-NEW-P1-02 | **\[SC] 6 头文件清单在闭源/开源间不一致**                      | P1 | 闭源总纲 L1061 OS-IRON-014 列 `bpf_struct_ops.h`（无 `syscalls.h`）；开源 `120-cross-project-code-sharing.md:71-76` 列 `syscalls.h`（无 `bpf_struct_ops.h`）；开源 `20-modules/01-kernel.md:48` 明确 `bpf_struct_ops.h` "非 \[SC] 核心头文件" |
 | v2.0-NEW-P1-03 | **ES-SEL4 编号在开源文档扩展到 43 但未在 SSoT 注册**            | P1 | 开源 `10-architecture/03-microkernel-strategy.md` 使用 ES-SEL4-21\~43（共 19 个扩展编号）；`20-modules/01-kernel.md:119/858` 使用 ES-SEL4-21；SSoT 注册表未登记 ES-SEL4-11\~43                                                            |
-| v2.0-NEW-P2-01 | **开发路线 L1019 声明"8 项判定标准全部满足"与 ES-SEL4-7 残留冲突矛盾** | P2 | `agentrt-linux开发路线和进度.md:1019` 声明全部满足；闭源总纲 L1403/L1410 ES-SEL4-7 残留冲突未修复                                                                                                                                            |
+| v2.0-NEW-P2-01 | **开发路线 L1019 声明"8 项判定标准全部满足"与 ES-SEL4-7 残留冲突矛盾** | P2 | `agent-linux开发路线和进度.md:1019` 声明全部满足；闭源总纲 L1403/L1410 ES-SEL4-7 残留冲突未修复                                                                                                                                            |
 | v2.0-NEW-P2-02 | *闭源总纲 OS-STD-005 与开源 SSoT 矛盾（airymaxos\_* 前缀）\*  | P2 | 闭源总纲 L167 声明 `airymaxos_*` 用于专属 API；开源 `06-directory-structure.md:294` 标"已废弃"                                                                                                                                       |
 | v2.0-NEW-P2-03 | **OLK-6.6 术语残留 49 处（v1.0 误判为"已修复"）**             | P2 | 闭源总纲 49 处 OLK-6.6；L14 已添加术语说明豁免，但 L980-986/L1030-1035 等位置仍为概念引用而非分支名引用                                                                                                                                              |
 
@@ -70,7 +70,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 | 实现落地层（25%） | N/A（72 代理） | N/A（72 代理） | 持平                                                      |
 | **综合评分**   | **79/B+**  | **76/B**   | **-3**                                                  |
 
-**核心结论**：agentrt-linux 整体方案经 v2.0 深化审查，综合评分从 79/B+ 降至 76/B。**P0 级 ES-SEL4-7 残留冲突仍未修复**，且新发现 3 项 P1 级问题（OS-FMT 未注册 / \[SC] 头文件清单冲突 / ES-SEL4 编号扩展未注册），开发就绪度从 v1.0 的"有条件通过"降级为"有条件通过（条件加强）"——需修复 1 项 P0 + 3 项 P1 后方可进入 1.0.1 M1 代码开发。
+**核心结论**：agent-linux 整体方案经 v2.0 深化审查，综合评分从 79/B+ 降至 76/B。**P0 级 ES-SEL4-7 残留冲突仍未修复**，且新发现 3 项 P1 级问题（OS-FMT 未注册 / \[SC] 头文件清单冲突 / ES-SEL4 编号扩展未注册），开发就绪度从 v1.0 的"有条件通过"降级为"有条件通过（条件加强）"——需修复 1 项 P0 + 3 项 P1 后方可进入 1.0.1 M1 代码开发。
 
 ***
 
@@ -82,20 +82,20 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **标题声明（5 项强制）**：
 
-- `agentrt-linux基本工程标准规范.md:1389`：`附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）`
-- `agentrt-linux基本工程标准规范.md:1393`：`ES-SEL4-1~5 在架构层强制借鉴，ES-SEL4-6~10 作为 P2 增强建议增量落地`
-- `agentrt-linux基本工程标准规范.md:1024`（OS-IRON-012）：`seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5），不包括编码风格层（4 空格 / camelCase / 重度 typedef）和接口契约层`
-- `agentrt-linux基本工程标准规范.md:1010`（§12.5 标题）：`架构层借鉴 seL4（5 项选择性借鉴）`
+- `agent-linux基本工程标准规范.md:1389`：`附录 D ES-SEL4 工程思想借鉴映射（ES-SEL4-1~5 强制 + ES-SEL4-6~10 P2 增强）`
+- `agent-linux基本工程标准规范.md:1393`：`ES-SEL4-1~5 在架构层强制借鉴，ES-SEL4-6~10 作为 P2 增强建议增量落地`
+- `agent-linux基本工程标准规范.md:1024`（OS-IRON-012）：`seL4 工程思想的借鉴仅限架构层（ES-SEL4-1~5），不包括编码风格层（4 空格 / camelCase / 重度 typedef）和接口契约层`
+- `agent-linux基本工程标准规范.md:1010`（§12.5 标题）：`架构层借鉴 seL4（5 项选择性借鉴）`
 
 **正文分类矛盾（ES-SEL4-7 被归入"架构层强制"，6 项）**：
 
-- `agentrt-linux基本工程标准规范.md:1403`：`| ES-SEL4-7 | 架构正交分层 | ... | 架构层强制（已落地） | airymaxos-kernel arch/{x86,arm64,riscv}/{machine,plat}/、OS-STD-061 | §13.2、§13.3 |`
-- `agentrt-linux基本工程标准规范.md:1410`：`**架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）**: 6 项，已在 1.0.1 架构设计中落地`
+- `agent-linux基本工程标准规范.md:1403`：`| ES-SEL4-7 | 架构正交分层 | ... | 架构层强制（已落地） | airymaxos-kernel arch/{x86,arm64,riscv}/{machine,plat}/、OS-STD-061 | §13.2、§13.3 |`
+- `agent-linux基本工程标准规范.md:1410`：`**架构层强制借鉴（ES-SEL4-1~5 + ES-SEL4-7）**: 6 项，已在 1.0.1 架构设计中落地`
 
 **§12.8 表格中的矛盾**：
 
-- `agentrt-linux基本工程标准规范.md:1041`（§12.8 标题）：`ES-SEL4-6~10 的落地方式`——将 ES-SEL4-7 归入"ES-SEL4-6\~10"范围
-- `agentrt-linux基本工程标准规范.md:1051`：`| ES-SEL4-7 架构正交分层 | arch/machine/plat 三层适配 | 已在 kernel 子仓落地（借鉴 seL4 而非 OLK-6.6 单 arch/） |`
+- `agent-linux基本工程标准规范.md:1041`（§12.8 标题）：`ES-SEL4-6~10 的落地方式`——将 ES-SEL4-7 归入"ES-SEL4-6\~10"范围
+- `agent-linux基本工程标准规范.md:1051`：`| ES-SEL4-7 架构正交分层 | arch/machine/plat 三层适配 | 已在 kernel 子仓落地（借鉴 seL4 而非 OLK-6.6 单 arch/） |`
 
 **冲突本质**：标题（4 处）声明架构层强制借鉴为 5 项（ES-SEL4-1\~5），但正文（2 处）将其归入 6 项（ES-SEL4-1\~5 + ES-SEL4-7）。这是 SSoT 唯一性原则的严重违反。
 
@@ -105,11 +105,11 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **重新读取验证**：
 
-- `agentrt-linux基本工程标准规范.md:1389` 标题：ES-SEL4-9/10 属于"P2 增强"
-- `agentrt-linux基本工程标准规范.md:1049`：`| ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已在 airymaxos-cloudnative 落地 |`
-- `agentrt-linux基本工程标准规范.md:1050`：`| ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已在 services/cloudnative 落地 |`
-- `agentrt-linux基本工程标准规范.md:1405-1406`：ES-SEL4-9/10 标"已落地"
-- `agentrt-linux基本工程标准规范.md:1412`：`已落地（ES-SEL4-9 + ES-SEL4-10）: 2 项，用户态子仓构建系统已采纳`
+- `agent-linux基本工程标准规范.md:1389` 标题：ES-SEL4-9/10 属于"P2 增强"
+- `agent-linux基本工程标准规范.md:1049`：`| ES-SEL4-9 libsel4 独立 | SDK 层借鉴 libsel4 模型 | 已在 airymaxos-cloudnative 落地 |`
+- `agent-linux基本工程标准规范.md:1050`：`| ES-SEL4-10 CMake 构建 | 用户态子仓采用 Meson/CMake | 已在 services/cloudnative 落地 |`
+- `agent-linux基本工程标准规范.md:1405-1406`：ES-SEL4-9/10 标"已落地"
+- `agent-linux基本工程标准规范.md:1412`：`已落地（ES-SEL4-9 + ES-SEL4-10）: 2 项，用户态子仓构建系统已采纳`
 
 **冲突本质**：P2 增强建议的定义是"1.0.1 阶段增量落地"（L1043），但 ES-SEL4-9/10 已标注"已落地"，与 P2 的"未来落地"语义冲突。
 
@@ -121,8 +121,8 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **证据**：
 
-- `agentrt-linux开发路线和进度.md:1019`：`1.0.1 M1 就绪判定 ✅ 通过（8 项判定标准全部满足：工程思想统一 + 工程标准规范 + 无方案冲突点 + 对齐 openEuler 代码品味 + 对齐 seL4 微内核思想 + 系统性目录结构 + 全部 README 重写 + v0.9.0 P0 修复）`
-- `agentrt-linux基本工程标准规范.md:1403/1410`：ES-SEL4-7 残留冲突未修复（详见 §2.1）
+- `agent-linux开发路线和进度.md:1019`：`1.0.1 M1 就绪判定 ✅ 通过（8 项判定标准全部满足：工程思想统一 + 工程标准规范 + 无方案冲突点 + 对齐 openEuler 代码品味 + 对齐 seL4 微内核思想 + 系统性目录结构 + 全部 README 重写 + v0.9.0 P0 修复）`
+- `agent-linux基本工程标准规范.md:1403/1410`：ES-SEL4-7 残留冲突未修复（详见 §2.1）
 
 **影响**：开发就绪度声明与实际方案状态不一致，可能误导决策者认为已满足"无方案冲突点"条件。
 
@@ -194,7 +194,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 - `09-ssot-registry.md`：**无 OS-FMT 章节**（Grep 验证 0 处匹配）
 - 开源 `docs/AirymaxOS/`：*无 OS-FMT-* 引用\*（Grep 验证 0 处匹配）
 
-**影响**：六大编码支柱是 agentrt-linux 工程标准的核心，其中三大支柱（Tab 8 / 80 列 / K\&R）的规则编号 OS-FMT-001/002/003 未在 SSoT 注册表登记，违反 SSoT 唯一性原则。审查者无法从 SSoT 注册表追溯这些规则的权威定义。这是 v1.0 遗漏的重大 SSoT 完整性漏洞。
+**影响**：六大编码支柱是 agent-linux 工程标准的核心，其中三大支柱（Tab 8 / 80 列 / K\&R）的规则编号 OS-FMT-001/002/003 未在 SSoT 注册表登记，违反 SSoT 唯一性原则。审查者无法从 SSoT 注册表追溯这些规则的权威定义。这是 v1.0 遗漏的重大 SSoT 完整性漏洞。
 
 **修复建议**：
 
@@ -278,8 +278,8 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **证据**：
 
-- `agentrt-linux基本工程标准规范.md:1380-1385`：ES-OLK-1\~13 完整映射表
-- `agentrt-linux基本工程标准规范.md:999-1008`：§12.4 ES-OLK 落地方式表
+- `agent-linux基本工程标准规范.md:1380-1385`：ES-OLK-1\~13 完整映射表
+- `agent-linux基本工程标准规范.md:999-1008`：§12.4 ES-OLK 落地方式表
 - 13/13 项均有源码级证据（`01Reference/kernel-OLK-6.6/`）
 
 **状态**：**确认完整，与 v1.0 一致**。
@@ -315,7 +315,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 ### 4.4 新检查：MGLRU / sched\_ext / io\_uring 最新实践参考——确认充分
 
-**v2.0 新增检查**：验证 openEuler/OLK-6.6 的三项最新实践是否被 agentrt-linux 参考。
+**v2.0 新增检查**：验证 openEuler/OLK-6.6 的三项最新实践是否被 agent-linux 参考。
 
 **MGLRU（多代 LRU）**：
 
@@ -418,7 +418,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **证据**：
 
-- 闭源总纲 `agentrt-linux基本工程标准规范.md:1061`（OS-IRON-014）：`[SC] 共享契约层 6 个头文件（bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h）`——**包含 bpf\_struct\_ops.h，不包含 syscalls.h**
+- 闭源总纲 `agent-linux基本工程标准规范.md:1061`（OS-IRON-014）：`[SC] 共享契约层 6 个头文件（bpf_struct_ops.h / memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h）`——**包含 bpf\_struct\_ops.h，不包含 syscalls.h**
 - 开源 `120-cross-project-code-sharing.md:71-76`：6 个头文件为 `memory_types.h / security_types.h / cognition_types.h / sched.h / ipc.h / syscalls.h`——**包含 syscalls.h，不包含 bpf\_struct\_ops.h**
 - 开源 `20-modules/01-kernel.md:48`：`struct_ops 状态机与 common_value 布局与 agentrt 共享（补充共享文件 bpf_struct_ops.h，非 [SC] 核心头文件）`——**明确 bpf\_struct\_ops.h 非 \[SC] 核心头文件**
 
@@ -610,8 +610,8 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **重新统计**：
 
-- 闭源总纲 `agentrt-linux基本工程标准规范.md`：`airymaxos-` 前缀 **37 处**（与 v1.0 一致）
-- 开发路线 `agentrt-linux开发路线和进度.md`：`airymaxos-` 前缀 **4 处**（v1.0 未提及）
+- 闭源总纲 `agent-linux基本工程标准规范.md`：`airymaxos-` 前缀 **37 处**（与 v1.0 一致）
+- 开发路线 `agent-linux开发路线和进度.md`：`airymaxos-` 前缀 **4 处**（v1.0 未提及）
 - 开源 `docs/AirymaxOS/README.md:131-139`：8 子仓 git URL 使用裸名 ✅
 - 开源 `06-directory-structure.md:175-184`：8 子仓映射表使用裸名 ✅
 
@@ -623,8 +623,8 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 **证据**：
 
-- 闭源总纲 `agentrt-linux基本工程标准规范.md:167`（OS-STD-005）：`agentrt_* 前缀保留给 agentrt 同源 API；airymaxos_* 前缀用于 AirymaxOS 内核/发行版专属 API`
-- 闭源总纲 `agentrt-linux基本工程标准规范.md:171`：示例代码 `int airymaxos_lsm_hook_register(...)` 使用 `airymaxos_*` 前缀
+- 闭源总纲 `agent-linux基本工程标准规范.md:167`（OS-STD-005）：`agentrt_* 前缀保留给 agentrt 同源 API；airymaxos_* 前缀用于 AirymaxOS 内核/发行版专属 API`
+- 闭源总纲 `agent-linux基本工程标准规范.md:171`：示例代码 `int airymaxos_lsm_hook_register(...)` 使用 `airymaxos_*` 前缀
 - 开源 `06-directory-structure.md:294`：`禁止前缀：airymaxos_*（已废弃，详见 project_memory）、agentrt_*（已改名）、agentos_*（已废弃）`
 
 **冲突本质**：闭源总纲 OS-STD-005 声明 `airymaxos_*` 用于专属 API，但开源 SSoT 已明确废弃该前缀。两者矛盾。
@@ -763,7 +763,7 @@ v1.0 报告识别 11 项问题（1 P0 + 3 P1 + 7 P2）。本轮对全部 11 项�
 
 ### 9.6 最终结论
 
-agentrt-linux（AirymaxOS）整体方案经过 v0.9.0 综合审查 + Wave 2 v2 源码级深读 + v1.0 系统性复核 + v2.0 深化复审，**尚未达到可开发状态**——存在 1 项 P0 级残留冲突（ES-SEL4-7 分类）+ 3 项 v2.0 新发现 P1 级问题（OS-FMT 未注册 / \[SC] 头文件清单冲突 / ES-SEL4 编号扩展未注册）需在 1.0.1 M1 启动前修复，合计 \~6h。
+agent-linux（AirymaxOS）整体方案经过 v0.9.0 综合审查 + Wave 2 v2 源码级深读 + v1.0 系统性复核 + v2.0 深化复审，**尚未达到可开发状态**——存在 1 项 P0 级残留冲突（ES-SEL4-7 分类）+ 3 项 v2.0 新发现 P1 级问题（OS-FMT 未注册 / \[SC] 头文件清单冲突 / ES-SEL4 编号扩展未注册）需在 1.0.1 M1 启动前修复，合计 \~6h。
 
 **v1.0 → v2.0 评分变化**：综合评分从 79/B+ 降至 76/B，主要原因是 v2.0 深化审查发现 v1.0 遗漏的 3 项 P1 级 SSoT 完整性问题（OS-FMT / \[SC] 头文件 / ES-SEL4 扩展）。
 
@@ -787,7 +787,7 @@ ES-SEL4-7 分类残留冲突（P0，\~2h 修复）
 - airymaxos- 前缀不一致（P1，\~4h 修复）
 - 7 项已知遗留移交 1.0.1（tests 简写 15+ 文件/31+ 处 / OS-STD-2xx / OS-KER-005 / Rust 编号 / 品味哲学 / agentrt 源码 / OLK-6.6 残留）
 
-**建议**：修复 3 项阻断性阻碍（P0 ES-SEL4-7 + P1 OS-FMT + P1 \[SC] 头文件清单，合计 \~6h）后，agentrt-linux 方案可正式进入 1.0.1 M1 代码开发阶段。其余 P1/P2 问题可在 1.0.1 M1 阶段并行修复。
+**建议**：修复 3 项阻断性阻碍（P0 ES-SEL4-7 + P1 OS-FMT + P1 \[SC] 头文件清单，合计 \~6h）后，agent-linux 方案可正式进入 1.0.1 M1 代码开发阶段。其余 P1/P2 问题可在 1.0.1 M1 阶段并行修复。
 
 ***
 

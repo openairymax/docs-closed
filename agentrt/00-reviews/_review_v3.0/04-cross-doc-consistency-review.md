@@ -315,13 +315,13 @@ magic 值（IPC/AGTS/SCHED_EXT）在源码和主流文档中**一致** ✅。但
 
 | 行号 | 内容 | 矛盾 |
 |------|------|------|
-| L2599 | `airy_*` 用于 [SC]/[SS]，agentrt + agentrt-linux 共享 | — |
-| L2601 | `AIRYMAXOS_*` 用于 agentrt-linux [IND] 专属宏 | 与 `06-iron9:270` `~~airymaxos_*~~` 已废弃矛盾（大写宏 vs 小写函数前缀） |
-| L2606 | agentrt-linux [IND] 专属符号使用 `airy_*` 前缀 | — |
-| L2607 | "`airy_*` 前缀不得用于 agentrt-linux 专属功能" | **与 L2606 直接矛盾** |
+| L2599 | `airy_*` 用于 [SC]/[SS]，agentrt + agent-linux 共享 | — |
+| L2601 | `AIRYMAXOS_*` 用于 agent-linux [IND] 专属宏 | 与 `06-iron9:270` `~~airymaxos_*~~` 已废弃矛盾（大写宏 vs 小写函数前缀） |
+| L2606 | agent-linux [IND] 专属符号使用 `airy_*` 前缀 | — |
+| L2607 | "`airy_*` 前缀不得用于 agent-linux 专属功能" | **与 L2606 直接矛盾** |
 | L2607 | "`airy_*` 前缀不得用于 agentrt 用户态" | **与 L2599 共享（含 agentrt）矛盾，与 `06-iron9:274` 矛盾** |
 
-**L2606 vs L2607 直接矛盾**：L2606 说 agentrt-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agentrt-linux 专属功能——同一节内自相矛盾。
+**L2606 vs L2607 直接矛盾**：L2606 说 agent-linux [IND] 用 `airy_*`，L2607 说 `airy_*` 不得用于 agent-linux 专属功能——同一节内自相矛盾。
 
 ### 5.5 D 部分结论
 
@@ -353,7 +353,7 @@ Grep pattern="AgentRT/" path="docs/AirymaxRT" → 60 occurrences across 24 files
 
 ### 6.2 docs/AirymaxAgentOS/ 断链
 
-闭源手册 7 处引用 `docs/AirymaxAgentOS/`，实际目录为 `docs-closed/agentrt-linux/`。
+闭源手册 7 处引用 `docs/AirymaxAgentOS/`，实际目录为 `docs-closed/agent-linux/`。
 
 **Grep 执行记录**：
 ```
@@ -438,7 +438,7 @@ Grep pattern="[^s]Cupola[^s]" path="docs/AirymaxRT" → No matches found (0)
 
 **Grep 执行记录**：
 ```
-Grep pattern="操作系统" path="docs/AirymaxRT" → 34 occurrences (全部合法，指 agentrt-linux/AirymaxOS 定位)
+Grep pattern="操作系统" path="docs/AirymaxRT" → 34 occurrences (全部合法，指 agent-linux/AirymaxOS 定位)
 ```
 
 ✅ 全部合法使用。
@@ -590,15 +590,15 @@ v2.0 修正在其已识别范围内**有效**（7/7 项通过验证），但存�
 #### P1-v3-2：docs/AirymaxAgentOS/ 7 处断链
 
 - **位置**：`docs-closed/agentrt/agentrt工程标准规范手册.md` L20/2232/4327/4341/4398/4421/4442
-- **问题**：实际目录为 `docs-closed/agentrt-linux/`，引用 `docs/AirymaxAgentOS/` 断链
+- **问题**：实际目录为 `docs-closed/agent-linux/`，引用 `docs/AirymaxAgentOS/` 断链
 - **Grep**：`Grep "AirymaxAgentOS" path="docs-closed/agentrt/agentrt工程标准规范手册.md"` → 7
 
 #### P1-v3-3：SSoT §4.4.2 函数前缀规则内部矛盾
 
 - **位置**：`docs/AirymaxOS/50-engineering-standards/10-coding-style/coding_conventions.md:2599-2607`
 - **矛盾**：
-  - L2606 说 agentrt-linux [IND] 用 `airy_*`
-  - L2607 说 `airy_*` 不得用于 agentrt-linux 专属功能（与 L2606 直接矛盾）
+  - L2606 说 agent-linux [IND] 用 `airy_*`
+  - L2607 说 `airy_*` 不得用于 agent-linux 专属功能（与 L2606 直接矛盾）
   - L2607 说 `airy_*` 不得用于 agentrt 用户态（与 L2599 共享矛盾，与 `06-iron9:274` 矛盾）
   - L2601 用 `AIRYMAXOS_*` 作为活跃前缀，但 `06-iron9:270` 说 `airymaxos_*` 已废弃
 

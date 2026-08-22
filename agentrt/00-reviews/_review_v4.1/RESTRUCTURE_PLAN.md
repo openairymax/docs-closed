@@ -87,7 +87,7 @@ schema 在 [agent-registry.schema.json#L39](file:///home/spharx/SpharxWorks/airy
 
 ### 3.1 用户决策约束（不可违背）
 
-1. **agentrt 核心平台（`airymaxhub/agentrt/`）只能用纯 C** —— 与 agentrt-linux 同源
+1. **agentrt 核心平台（`airymaxhub/agentrt/`）只能用纯 C** —— 与 agent-linux 同源
 2. **所有 Agent 执行体集中到 `airymaxhub/ecosystem/agents/`** —— Agent 可用 Rust 或 Python 实现
 3. **减少重复造轮子**
 

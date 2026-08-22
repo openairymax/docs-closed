@@ -43,14 +43,14 @@
 
 ### 组 B：`../_review_0.1.1/` 目录不存在（2 处）
 
-实际审查报告位于 `docs-closed/agentrt-linux/_review_0.1.1/`，而 AirymaxOS 树下不存在 `00-reviews/_review_0.1.1/` 目录。
+实际审查报告位于 `docs-closed/agent-linux/_review_0.1.1/`，而 AirymaxOS 树下不存在 `00-reviews/_review_0.1.1/` 目录。
 
 | 文件 | 行号 | 链接文本 | 错误目标 |
 |------|------|----------|----------|
 | `50-engineering-standards/00-engineering-standards-handbook.md` | 9 | comprehensive-review-report.md | `../_review_0.1.1/comprehensive-review-report.md` |
 | `50-engineering-standards/00-engineering-standards-handbook.md` | 9 | revision-changelog.md | `../_review_0.1.1/revision-changelog.md` |
 
-**建议修复**：删除这两处链接，或改为指向 `docs-closed/agentrt-linux/_review_0.1.1/`（但跨 `docs/` 与 `docs-closed/` 两个顶层目录的相对路径会非常深，建议改为纯文字引用或删除链接）。
+**建议修复**：删除这两处链接，或改为指向 `docs-closed/agent-linux/_review_0.1.1/`（但跨 `docs/` 与 `docs-closed/` 两个顶层目录的相对路径会非常深，建议改为纯文字引用或删除链接）。
 
 ### 组 C：`../project_erp/` 应为 `../50-project-erp/`（6 处）
 
@@ -87,9 +87,9 @@
 
 | 文件 | 行号 | 链接文本 | 错误目标 |
 |------|------|----------|----------|
-| `50-engineering-standards/20-contracts/logging_contract.md` | 524 | agentrt-linux（AirymaxOS）IRON-9 v2 通道规范 | `iron9_channel_contract.md` |
-| `50-engineering-standards/20-contracts/logging_contract.md` | 525 | agentrt-linux（AirymaxOS）安全策略规范 | `security_policy.md` |
-| `50-engineering-standards/20-contracts/logging_contract.md` | 526 | agentrt-linux（AirymaxOS）OpenTelemetry 集成指南 | `otel_integration.md` |
+| `50-engineering-standards/20-contracts/logging_contract.md` | 524 | agent-linux（AirymaxOS）IRON-9 v2 通道规范 | `iron9_channel_contract.md` |
+| `50-engineering-standards/20-contracts/logging_contract.md` | 525 | agent-linux（AirymaxOS）安全策略规范 | `security_policy.md` |
+| `50-engineering-standards/20-contracts/logging_contract.md` | 526 | agent-linux（AirymaxOS）OpenTelemetry 集成指南 | `otel_integration.md` |
 
 **建议修复**：这 3 个文件（`iron9_channel_contract.md`、`security_policy.md`、`otel_integration.md`）在 OpenAirymax 全树均不存在。应创建对应文件，或删除/改为纯文字引用。
 
@@ -122,19 +122,19 @@
 
 ### 2.2 文档内 TOC 锚点（`[文本](#锚点)`）
 
-共扫描 190 处文档内 TOC 锚点，发现 **5 处断锚**。均为同一根因：TOC 锚点中 `agentrt-linux` 被错误替换为 `airymaxos`，导致锚点与标题不匹配。
+共扫描 190 处文档内 TOC 锚点，发现 **5 处断锚**。均为同一根因：TOC 锚点中 `agent-linux` 被错误替换为 `airymaxos`，导致锚点与标题不匹配。
 
 | 文件 | 行号 | TOC 链接文本 | 错误锚点 | 对应实际标题 |
 |------|------|--------------|----------|--------------|
-| `90-observability/01-ftrace-framework.md` | 25 | 第 10 章 agentrt-linux Agent 行为追踪扩展 | `#第-10-章-airymaxos-agent-行为追踪扩展` | `## 第 10 章 agentrt-linux Agent 行为追踪扩展` |
-| `90-observability/02-ebpf-probes.md` | 26 | 第 11 章 agentrt-linux Token 能效监控与 Agent 行为追踪 | `#第-11-章-airymaxos-token-能效监控与-agent-行为追踪` | `## 第 11 章 agentrt-linux Token 能效监控与 Agent 行为追踪` |
-| `110-security/01-lsm-framework.md` | 23 | 第 8 章 agentrt-linux Cupolas 作为 LSM 模块集成 | `#第-8-章-airymaxos-cupolas-作为-lsm-模块集成` | `## 第 8 章 agentrt-linux Cupolas 作为 LSM 模块集成` |
-| `110-security/02-landlock-sandbox.md` | 17 | 第 2 章 Landlock 在 agentrt-linux 中的定位 | `#第-2-章-landlock-在-airymaxos-中的定位` | `## 第 2 章 Landlock 在 agentrt-linux 中的定位` |
-| `110-security/02-landlock-sandbox.md` | 23 | 第 8 章 agentrt-linux Agent 沙箱实现 | `#第-8-章-airymaxos-agent-沙箱实现` | `## 第 8 章 agentrt-linux Agent 沙箱实现` |
+| `90-observability/01-ftrace-framework.md` | 25 | 第 10 章 agent-linux Agent 行为追踪扩展 | `#第-10-章-airymaxos-agent-行为追踪扩展` | `## 第 10 章 agent-linux Agent 行为追踪扩展` |
+| `90-observability/02-ebpf-probes.md` | 26 | 第 11 章 agent-linux Token 能效监控与 Agent 行为追踪 | `#第-11-章-airymaxos-token-能效监控与-agent-行为追踪` | `## 第 11 章 agent-linux Token 能效监控与 Agent 行为追踪` |
+| `110-security/01-lsm-framework.md` | 23 | 第 8 章 agent-linux Cupolas 作为 LSM 模块集成 | `#第-8-章-airymaxos-cupolas-作为-lsm-模块集成` | `## 第 8 章 agent-linux Cupolas 作为 LSM 模块集成` |
+| `110-security/02-landlock-sandbox.md` | 17 | 第 2 章 Landlock 在 agent-linux 中的定位 | `#第-2-章-landlock-在-airymaxos-中的定位` | `## 第 2 章 Landlock 在 agent-linux 中的定位` |
+| `110-security/02-landlock-sandbox.md` | 23 | 第 8 章 agent-linux Agent 沙箱实现 | `#第-8-章-airymaxos-agent-沙箱实现` | `## 第 8 章 agent-linux Agent 沙箱实现` |
 
-**根因分析**：链接文本与实际标题均使用 `agentrt-linux`，但锚点部分被批量替换工具误改为 `airymaxos`（OS 简称），造成锚点无法匹配标题。这是一个系统性的批量替换副作用。
+**根因分析**：链接文本与实际标题均使用 `agent-linux`，但锚点部分被批量替换工具误改为 `airymaxos`（OS 简称），造成锚点无法匹配标题。这是一个系统性的批量替换副作用。
 
-**建议修复**：将上述 5 处锚点中的 `airymaxos` 改回 `agentrt-linux`（与标题文本一致）。
+**建议修复**：将上述 5 处锚点中的 `airymaxos` 改回 `agent-linux`（与标题文本一致）。
 
 ---
 
@@ -257,8 +257,8 @@
 |------|----------|------------------------|--------|
 | 212 | ADR-001: 基于 Linux 内核，不从零开发微内核 | ADR-001: 采用 Linux 6.6 内核基线（同步 SP3 增强） | 主题相近，描述偏简 |
 | 213 | ADR-002: 微内核化改造策略 | ADR-002: 微内核化改造策略 | ✅ 一致 |
-| 214 | ADR-003: 全面采用 agentrt-linux 工程基线 | ADR-003: 8 子仓划分 | ❌ **不符**（描述对应工程基线文档，非 ADR-003） |
-| 215 | ADR-004: agentrt 和 agentrt-linux 同源且部分代码共享 | ADR-004: capability 安全模型 | ❌ **不符**（描述实际对应 ADR-010） |
+| 214 | ADR-003: 全面采用 agent-linux 工程基线 | ADR-003: 8 子仓划分 | ❌ **不符**（描述对应工程基线文档，非 ADR-003） |
+| 215 | ADR-004: agentrt 和 agent-linux 同源且部分代码共享 | ADR-004: capability 安全模型 | ❌ **不符**（描述实际对应 ADR-010） |
 | 216 | ADR-005: 8 子仓按能力域划分 | ADR-005: io_uring IPC 子系统 | ❌ **不符**（描述实际对应 ADR-003） |
 | 217 | ADR-006: OS 文档与 RT 文档物理分开 | ADR-006: CoreLoopThree kthread 认知循环 | ❌ **不符**（无对应 ADR） |
 
@@ -349,7 +349,7 @@
 8 个子仓（`airymaxos-kernel`、`airymaxos-services`、`airymaxos-security`、`airymaxos-memory`、`airymaxos-cognition`、`airymaxos-cloudnative`、`airymaxos-system`、`airymaxos-tests-linux`）在文档中**命名一致**，未发现拼写变体：
 - 无 `airymaxos_cloudnative`（下划线变体）作为子仓名——`airymaxos_*`（下划线）出现处均为 Prometheus 指标名（如 `airymaxos_cognition_latency_seconds`），属指标命名规范，非子仓名错误。
 - 无 `airymax-kernel`/`airymax-services` 等缺 `os` 前缀的子仓引用——`airymax-*` 出现处（`90-maintainers-subsystem-model.md`）均为**内核源码树内子系统路径**（如 `kernel/airymax/`、`security/airymax/`），与子仓名（`airymaxos-*`）是刻意区分的两套命名，非错误。
-- 无 `agentrt-linux-kernel`/`agentrtos-kernel` 等错误前缀。
+- 无 `agent-linux-kernel`/`agentrtos-kernel` 等错误前缀。
 
 ### 8.2 `README.md` 子仓表表述不一致（小问题）
 
@@ -387,7 +387,7 @@
 | 问题类别 | 问题数 | 备注 |
 |----------|--------|------|
 | **断链（相对路径）** | **29** | 7 组（A=10, B=2, C=6, D=5, E=3, F=1, G=2） |
-| **文档内 TOC 锚点错误** | **5** | 均为 `agentrt-linux`→`airymaxos` 误替换 |
+| **文档内 TOC 锚点错误** | **5** | 均为 `agent-linux`→`airymaxos` 误替换 |
 | **跨文档锚点引用** | **0** | 文档中不存在该形式引用 |
 | **跨目录引用非对称** | **3 对** | 10-arch⇄30-if、10-arch⇄40-df、30-if⇄40-df |
 | **目录路径引用错误** | **151 处** | `docs/AirymaxAgentOS/`=148（16 文件）+ `docs/AirymaxAgentRT/`=3 |

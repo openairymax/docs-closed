@@ -1,8 +1,8 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）开发路线与进度
+# agent-linux（AirymaxOS）开发路线与进度
 
-> **文档定位**: agentrt-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**。本文档是 **v3.6 审查后的全面开发执行视图**——`docs/AirymaxOS/130-roadmap/`（docs 仓，权威）定义"做什么/为什么/验收什么"，本文档给出"按什么顺序做、每步测什么、何时可推进"的可执行节奏，首次补齐**内核代码模块级实施顺序**（Phase 0-6 总表）。
+> **文档定位**: agent-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**。本文档是 **v3.6 审查后的全面开发执行视图**——`docs/AirymaxOS/130-roadmap/`（docs 仓，权威）定义"做什么/为什么/验收什么"，本文档给出"按什么顺序做、每步测什么、何时可推进"的可执行节奏，首次补齐**内核代码模块级实施顺序**（Phase 0-6 总表）。
 > **保密级别**: SPHARX Ltd 内部参考
 > **版本**: v2.1（v3.6 三份审查结论基线 + Phase 0-6 模块化开发总表 + **Phase 0 已完成**）
 > **最后更新**: 2026-08-01（v3.6 三轮深度对比审查闭环：kernel 框架 60% / docs 93% / 叶子仓结构完整；**Phase 0 已完成并验证，Phase 1 系统调用面已规划**）
@@ -408,7 +408,7 @@ docs 仓权威里程碑（02-milestones-and-timeline.md）保持 M0-M8 定义不
 
 ### 7.1 双版本策略（保留原口径）
 
-AirymaxOS（agentrt-linux）采用双版本策略，明确区分文档体系建设与实际开发：
+AirymaxOS（agent-linux）采用双版本策略，明确区分文档体系建设与实际开发：
 
 | 版本 | 定义 | 范围 | 工时 |
 |------|------|------|------|
@@ -632,7 +632,7 @@ timeline
 | LAYER 双轨制 | sw_64 与驱动 LAYER 双轨描述统一（架构导入层 + 驱动复用层） | ✅ 完成 | commit 81941ae |
 | OBS 方案文档 | sw_64 OBS 远程构建方案落地（airy-kernel.spec 5 包拆分 + Patch0 placeholder） | ✅ 完成 | `01-openeuler-tech-reference/13-obs-remote-build.md`（commit 2b26025） |
 | IPC benchmark 实测 | `airy_fastpath_bench`（UML x86_64/WSL2、gcc 13.3.0）：**badge_ok 2-10ns**、fastpath_send 37-61ns、ring_post 51-83ns、ring_consume 13-33ns，**fastpath 均值 ~46ns**——设计估算（~10ns/~158ns）替换为实测数据 | ✅ 完成 | commit 65d16bb（design estimates → measured fastpath data） |
-| M0 内核框架编译验证 | 39 .o 零错误零警告 + vmlinux 生成 + Kbuild/Kconfig 5 层依赖链 + H1-H6 硬约束全部通过；arm64+airy 完整构建 EXIT_CODE=0 | ✅ 完成（v1.2） | `agentrt-linux基本工程标准规范.md` 附录 F |
+| M0 内核框架编译验证 | 39 .o 零错误零警告 + vmlinux 生成 + Kbuild/Kconfig 5 层依赖链 + H1-H6 硬约束全部通过；arm64+airy 完整构建 EXIT_CODE=0 | ✅ 完成（v1.2） | `agent-linux基本工程标准规范.md` 附录 F |
 | docs SSoT 权威加强 | OS-IRON-018~021 + 110 项 OS-ACC + 三层质量门禁 + 里程碑门禁（M0 过 OS-ACC-001~020 解锁 M1） | ✅ 完成（v2.9/v3.0） | docs 仓 `130-roadmap/` |
 | **Phase 0 工程基线修复（2026-08-01）** | 5 模块全部完成：① 版本库卫生（`build-arm64.log` 移出跟踪 + `/build-*.log` 规则 + mrproper + O= 分离构建验证通过）；② `.gitmodules` kernel 分支对齐 `ALK-6.6-dev`；③ tools/scripts 14 文件入库（`__pycache__` 排除）；④ CI 工作流修复（路径监听修正 + 7 个缺失脚本存在性守卫 + working-directory 修正）；⑤ **sw_64 syscall 号段 548-571 接线**（`__NR_syscalls=572` 生成验证通过） | ✅ **完成（2026-08-01）** | kernel `0207ff0`/`dd990c6` + 管理仓 `ef6103e`/`8fe4e7d`/`7813134` |
 | **Phase 1 系统调用面规划（2026-08-01）** | 4 syscall 实现步骤 + 测试用例细化：P1-1（Badge 校验 + ring 分发，8 KUnit + 3 kselftest）、P1-2（rovol 10 op，含 [SC] 枚举补齐，6 KUnit + 2 kselftest）、P1-3（sched_ctl 策略/状态迁移，6 KUnit + 2 kselftest）、P1-4（clt_notify 事件通知，5 KUnit + 2 kselftest） | ✅ 规划完成（待实施） | 本文档 §4.3 |
@@ -755,23 +755,23 @@ timeline
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| 闭源文档索引 | `docs-closed/agentrt-linux/README.md` | 本目录 README |
+| 闭源文档索引 | `docs-closed/agent-linux/README.md` | 本目录 README |
 | 工程标准规范手册 | `docs-closed/0.1.1工程标准规范手册.md` | 17 类规则编号体系 |
 | 技术全面改进方案 v3.0 | `docs-closed/0.1.1技术全面改进方案v3.0.md` | 技术方案总纲 |
 | 详细任务清单 | `docs-closed/0.1.1详细任务清单.md` | 0.1.1 任务清单 |
-| 基本工程标准规范 | `docs-closed/agentrt-linux/agentrt-linux基本工程标准规范.md` | agentrt-linux 工程标准（附录 F：v1.2 内核框架验证） |
-| v3.6 深度对比研究 | `docs-closed/agentrt-linux/00-reviews/_review_v3.6/` | 23 份报告（00-overview + 6+8 子域 + 17-23 汇总闭环） |
-| v3.5 系统审计 | `docs-closed/agentrt-linux/00-reviews/_review_v3.5/` | SSoT/IRON 合规性审计（27-systematic-audit-v9.0.md） |
-| 构建与烧录策略 | `docs-closed/agentrt-linux/01-openeuler-tech-reference/12-build-and-flash-strategy.md` | sw_64 导入 + LAYER 双轨制 + 三架构配置（§11） |
-| OBS 远程构建 | `docs-closed/agentrt-linux/01-openeuler-tech-reference/13-obs-remote-build.md` | sw_64 OBS 构建方案（P6-3 落地依据） |
+| 基本工程标准规范 | `docs-closed/agent-linux/agent-linux基本工程标准规范.md` | agent-linux 工程标准（附录 F：v1.2 内核框架验证） |
+| v3.6 深度对比研究 | `docs-closed/agent-linux/00-reviews/_review_v3.6/` | 23 份报告（00-overview + 6+8 子域 + 17-23 汇总闭环） |
+| v3.5 系统审计 | `docs-closed/agent-linux/00-reviews/_review_v3.5/` | SSoT/IRON 合规性审计（27-systematic-audit-v9.0.md） |
+| 构建与烧录策略 | `docs-closed/agent-linux/01-openeuler-tech-reference/12-build-and-flash-strategy.md` | sw_64 导入 + LAYER 双轨制 + 三架构配置（§11） |
+| OBS 远程构建 | `docs-closed/agent-linux/01-openeuler-tech-reference/13-obs-remote-build.md` | sw_64 OBS 构建方案（P6-3 落地依据） |
 | 里程碑与时间线（权威） | `docs/AirymaxOS/130-roadmap/02-milestones-and-timeline.md` | M0-M8 + Gantt + 关键路径 |
 | 依赖关系图（权威） | `docs/AirymaxOS/130-roadmap/04-dependency-graph.md` | Part/模块依赖 + OS-ACC 里程碑门禁（§7.2） |
 | 验收标准与质量门禁（权威） | `docs/AirymaxOS/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层质量门禁 |
 | 开发策略（权威） | `docs/AirymaxOS/130-roadmap/01-development-strategy.md` | 三大支柱与开发原则 |
 | 风险缓解（权威） | `docs/AirymaxOS/130-roadmap/05-risk-mitigation.md` | 风险编号引用 |
 | 开源目录结构 SSoT | `docs/AirymaxOS/10-architecture/07-directory-structure.md` | 8 子仓目录结构 SSoT（~1800 行 v2.0） |
-| 内核代码位置 | `airymaxhub/agentrt-linux/kernel/` | kernel 子仓（分支 ALK-6.6-dev） |
-| 构建定义 | `airymaxhub/agentrt-linux/build/` | airy-kernel.spec（5 包）+ ks-airymax.cfg + meta-airymax |
+| 内核代码位置 | `airymaxhub/agent-linux/kernel/` | kernel 子仓（分支 ALK-6.6-dev） |
+| 构建定义 | `airymaxhub/agent-linux/build/` | airy-kernel.spec（5 包）+ ks-airymax.cfg + meta-airymax |
 
 ---
 

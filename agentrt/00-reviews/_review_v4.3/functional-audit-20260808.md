@@ -1,7 +1,7 @@
 # AgentRT 全功能审查与补齐报告（v4.3）
 
 > **审查日期**：2026-08-08
-> **审查范围**：14 模块（agentrt 7 模块 + ecosystem 6 模块 + products/memoryrovol）全功能可用性、执行体工具链/联网/项目分析、daemon 标准方法合规、agentrt-linux 协作契约、用户交互提升
+> **审查范围**：14 模块（agentrt 7 模块 + ecosystem 6 模块 + products/memoryrovol）全功能可用性、执行体工具链/联网/项目分析、daemon 标准方法合规、agent-linux 协作契约、用户交互提升
 > **审查方式**：3 路并行子代理审计 + 2 路并行开发子代理补齐 + 主会话 E2E 验证
 > **审查结论**：v4.2 报告中的**工具链路/调度链路断点已全部修复**，执行体已能**真实调用工具（fs_glob/fs_grep/fs_edit/web_search）联网并分析具体路径项目**；本轮补齐 16 daemon 标准方法（shutdown/get_stats）、MCP 9 工具、gateway 四传输（HTTP/WS/Stdio/HTTP2）、AGTS 任务描述符、manager 管理 CLI 等。15 daemon 全部在线运行，E2E 全链路（spawn→invoke→工具调用→终止）验证通过。
 
@@ -16,7 +16,7 @@
 | 分析具体路径项目 | ✅ 已验证 | fs_glob/fs_grep/fs_read 组合分析项目结构、搜索符号定义、读取文件 |
 | 14 个模块全面可用 | ✅ 大部分 | 见 §3 交付清单；剩余未实现项见 §7 |
 | 用户交互/UI 提升 | ✅ 部分 | gateway 四传输接线（WS/Stdio/HTTP2 可支持 WebUI/进程内交互）；manager CLI 统一入口；TUI 提升仍为后续项 |
-| agentrt-linux 协作 | ✅ 部分 | AGTS 任务描述符已实现；[SC] IPC 头 L2 文档已对齐；多后端服务发现/内存卷载桥接为后续项 |
+| agent-linux 协作 | ✅ 部分 | AGTS 任务描述符已实现；[SC] IPC 头 L2 文档已对齐；多后端服务发现/内存卷载桥接为后续项 |
 | 遵循 50 工程规范 | ✅ | 本轮实现均真实（无桩）、SSoT 对齐、中文注释、SPDX 头 |
 
 ---
@@ -55,7 +55,7 @@
 - **WS/Stdio/HTTP2 接线**：[service.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt/daemons/gateway_d/src/service.c) 按 config 启动 ws_gateway/stdio_gateway/http2_gateway；修复 ws_gateway 两个既有缺陷（缺 lws 事件线程、ws_callback 对 NULL user 解引用崩溃）
 - 验证：8080(HTTP)/8081(WS)/8082(HTTP2) 三端口均在监听，Stdio 启用
 
-### 3.4 agentrt-linux 协作契约
+### 3.4 agent-linux 协作契约
 - **AGTS 任务描述符**：新增 [task_desc.h](file:///home/spharx/SpharxWorks/airymaxhub/agentrt/commons/include/airymax/task_desc.h)（128B aligned(64)，magic 0x41475453）与 [task_desc.c](file:///home/spharx/SpharxWorks/airymaxhub/agentrt/commons/utils/task/src/task_desc.c)（创建/校验/CRC-32 IEEE 802.3），篡改 payload_len/crc32 分别返回 AIRY_EIPC_PAYLOAD/AIRY_EIPC_CRC32
 - **IPC 头文档对齐**：[02-l2-service-protocol.md](file:///home/spharx/SpharxWorks/airymaxhub/docs/AirymaxRT/30-interfaces/05-runtime-interfaces/02-l2-service-protocol.md) §2.1 更新为 Layout C v4（11 字段、capability_badge@40、payload_len@48、crc32@52、reserved[72]@56、aligned(64)），与 [SC] 契约头逐字节一致
 

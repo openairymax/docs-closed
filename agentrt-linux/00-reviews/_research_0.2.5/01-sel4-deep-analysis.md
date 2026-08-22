@@ -5,11 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 This document contains proprietary research and analysis of the seL4 microkernel
 source code (located at /home/spharx/SpharxWorks/01Reference/seL4-master/) conducted
-by SPHARX Ltd. for the agentrt-linux project (Linux 6.6 microkernel-based agent OS).
+by SPHARX Ltd. for the agent-linux project (Linux 6.6 microkernel-based agent OS).
 
 The analysis distills 54 engineering principles (ES-SEL4-01 through ES-SEL4-54)
 across 12 dimensions, providing deep technical input for rewriting the microkernel
-strategy documentation of agentrt-linux.
+strategy documentation of agent-linux.
 
 Reference: seL4 is released under GPL-2.0-only (kernel) and BSD-2-Clause (libsel4).
 Original repository: https://github.com/seL4/seL4
@@ -18,7 +18,7 @@ Original repository: https://github.com/seL4/seL4
 # seL4 源代码深度研读报告 — 工程规范、技术标准与设计哲学提炼
 
 > **研读对象**:`/home/spharx/SpharxWorks/01Reference/seL4-master/` 全部源代码
-> **研读目的**:为 agentrt-linux(Linux 6.6 微内核化智能体操作系统)的微内核策略文档重写提供深度技术输入
+> **研读目的**:为 agent-linux(Linux 6.6 微内核化智能体操作系统)的微内核策略文档重写提供深度技术输入
 > **编号体系**:`ES-SEL4-XX`(Engineering Standards from seL4)
 > **研读日期**:2026-07-09
 > **研读执行**:SPHARX Ltd.
@@ -121,7 +121,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/api/{syscall.c(662),faults.c(261)}.c` 合计 ≈ 923 行
   - `src/fastpath/fastpath.c` 899 行
   - `src/model/{statedata.c(110),smp.c(?),preemption.c(44)}` + `src/smp/{ipi.c(218),lock.c(29)}` + `src/benchmark/{benchmark.c(156),benchmark_track.c(?),benchmark_utilisation.c(78)}`
-- **对 agentrt-linux 借鉴价值**:在 Linux 6.6 微内核化时,可参照此体量基线评估"哪些子系统必须留在内核态"。Linux 单体内核 ~3,000 万行,seL4 核心 1.44 万行——agentrt 应明确"内核态必需代码"的预算上限(建议 5-10 万行,含 agent 调度原语)。
+- **对 agent-linux 借鉴价值**:在 Linux 6.6 微内核化时,可参照此体量基线评估"哪些子系统必须留在内核态"。Linux 单体内核 ~3,000 万行,seL4 核心 1.44 万行——agentrt 应明确"内核态必需代码"的预算上限(建议 5-10 万行,含 agent 调度原语)。
 
 #### ES-SEL4-02 服务用户态化清单(POSIX 全部上移)
 
@@ -133,7 +133,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - MCS 模式 11 个:`libsel4/include/api/syscall.xml:23-36`(增加 Wait/NBWait/NBSendRecv/NBSendWait)
   - **没有** open/read/write/fork/exec/wait/mmap/pipe/socket——全部由用户态 root taskn 提供
   - 调度策略在内核但调度参数由用户态通过 `seL4_TCB_SetPriority` 等配置:`libsel4/include/interfaces/object-api.xml:275-301`
-- **对 agentrt-linux 借鉴价值**:agentrt 应明确划分"内核态原语 vs 用户态服务"。建议将 Linux 的 VFS、网络栈、设备驱动模型整体下沉到用户态 server,内核仅保留 capability 管理、IPC、地址空间、调度原语。
+- **对 agent-linux 借鉴价值**:agentrt 应明确划分"内核态原语 vs 用户态服务"。建议将 Linux 的 VFS、网络栈、设备驱动模型整体下沉到用户态 server,内核仅保留 capability 管理、IPC、地址空间、调度原语。
 
 #### ES-SEL4-03 内存管理二元论(Typed vs Untyped)
 
@@ -146,7 +146,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/kernel/boot.c:790-854` `create_untypeds` 在 boot 阶段把所有空闲物理内存转换成 untyped caps 交给 root task
   - `src/kernel/boot.c:824-834` boot 代码所在内存(`.boot.*` section)在 boot 完成后转为 untyped 可回收
   - `include/object/structures_64.bf:14-22` `untyped_cap` 含 `capFreeIndex`(canonical_size 位)/`capIsDevice`(1 位)/`capBlockSize`(6 位)
-- **对 agentrt-linux 借鉴价值**:Linux 的 `buddy allocator` + `slab` 完全可以保留,但应在 capability 层之上引入"untyped → typed"的显式 Retype 操作,使 agent 的内存授权可追溯、可撤销。
+- **对 agent-linux 借鉴价值**:Linux 的 `buddy allocator` + `slab` 完全可以保留,但应在 capability 层之上引入"untyped → typed"的显式 Retype 操作,使 agent 的内存授权可追溯、可撤销。
 
 #### ES-SEL4-04 零策略内核(No Policy in Kernel)
 
@@ -157,7 +157,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/tcb.c:32-50` `checkPrio` 仅校验 `prio > mcp`,不决定优先级数值
   - 调度器只实现 priority + round-robin + domain,具体优先级由用户态通过 `seL4_TCB_SetPriority` 设置
   - page replacement、cache eviction、IPC buffer 管理——全部由用户态负责
-- **对 agentrt-linux 借鉴价值**:agent 调度策略(优先级、QoS、deadline)应作为用户态 policy server 实现,内核仅提供 `set_priority`/`yield_to`/`bind_sched_context` 等原语。
+- **对 agent-linux 借鉴价值**:agent 调度策略(优先级、QoS、deadline)应作为用户态 policy server 实现,内核仅提供 `set_priority`/`yield_to`/`bind_sched_context` 等原语。
 
 ### 维度 2:Capability 安全模型的具体实现【核心维度 1】
 
@@ -171,7 +171,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/object/structures.h:60-75` TCB 内嵌 CTE 数组:`TCB_CNODE_RADIX=4` 即每个 TCB 内嵌 16 个 cte_t 槽位(tcbCTable/tcbVTable/tcbReply/tcbCaller/tcbBuffer 等)
   - `include/object/structures.h:48-58` TCB 物理布局:`|cte_t[16]|debug_tcb_t|tcb_t|` 三段共用一个 `seL4_TCBBits` 对象
   - `include/object/structures.h:62-66` `TCB_SIZE_BITS (seL4_TCBBits - 1)` TCB 子对象占半
-- **对 agentrt-linux 借鉴价值**:agentrt 的 capability 应设计为定长(64 或 128 bit),内嵌在内核对象中以减少 cache miss。Linux 现有的 `struct file*`/`struct task_struct*` 可视为"fat capability",agentrt 应增加 rights/badge/guard 字段。
+- **对 agent-linux 借鉴价值**:agentrt 的 capability 应设计为定长(64 或 128 bit),内嵌在内核对象中以减少 cache miss。Linux 现有的 `struct file*`/`struct task_struct*` 可视为"fat capability",agentrt 应增加 rights/badge/guard 字段。
 
 #### ES-SEL4-06 CSpace 树形寻址(CNode + Guard + Radix)
 
@@ -183,7 +183,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/kernel/cspace.c:142-192` while 循环逐级解析:`radixBits + guardBits = levelBits`,offset = cptr 的高 levelBits 位
   - `include/object/structures_64.bf:71-79` `cnode_cap` 含 `capCNodeGuard`(64bit)/`capCNodeGuardSize`(6bit)/`capCNodeRadix`(6bit)/`capCNodePtr`(47bit)
   - `include/fastpath/fastpath.h:46-90` `lookup_fp` fastpath 版本:无递归 do-while,适合流水线
-- **对 agentrt-linux 借鉴价值**:Linux 的 fd table 是单层 radix;agentrt 应支持多层 CSpace + guard,使 agent 可传递"局部 capability 视图"给子 agent,实现 capability 命名空间隔离。
+- **对 agent-linux 借鉴价值**:Linux 的 fd table 是单层 radix;agentrt 应支持多层 CSpace + guard,使 agent 可传递"局部 capability 视图"给子 agent,实现 capability 命名空间隔离。
 
 #### ES-SEL4-07 Capability 派生与撤销(MDB 双向链表)
 
@@ -196,7 +196,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/cnode.c:528-550` `cteRevoke` 递归删除所有子 cap:`for (nextPtr = ...; nextPtr && isMDBParentOf(slot, nextPtr); ...)` 循环删除
   - `src/object/cnode.c:775-819` `isMDBParentOf` 父子关系判定:基于 `mdbRevocable` + `sameRegionAs` + badge 检查 + `Arch_isMDBParentOf`
   - `src/object/cnode.c:846-874` `isFinalCapability` 最终 cap 判定(用于触发对象销毁):检查 prev/next 是否 sameObjectAs
-- **对 agentrt-linux 借鉴价值**:这是 seL4 安全模型的精髓。agentrt 必须实现 MDB 风格的 capability 派生树,使主 agent 可"一键撤销"授予子 agent 的所有权限——这是智能体沙箱的关键安全原语。
+- **对 agent-linux 借鉴价值**:这是 seL4 安全模型的精髓。agentrt 必须实现 MDB 风格的 capability 派生树,使主 agent 可"一键撤销"授予子 agent 的所有权限——这是智能体沙箱的关键安全原语。
 
 #### ES-SEL4-08 CNode 七大操作(Copy/Mint/Move/Mutate/Revoke/Delete/Rotate)
 
@@ -215,7 +215,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/cnode.c:315-361` 对应 invoke 函数:`invokeCNodeRevoke`/`invokeCNodeDelete`/`invokeCNodeInsert`/`invokeCNodeMove`/`invokeCNodeRotate`
   - `src/object/objecttype.c:62-102` `deriveCap` 派生校验:zombie/irq_control/reply 不可派生,untyped 需 `ensureNoChildren`
   - `src/object/objecttype.c:104-200` `finaliseCap` 终结化:final cap 触发 `cancelAllIPC`/`cancelAllSignals`/`unbindMaybeNotification`
-- **对 agentrt-linux 借鉴价值**:agentrt 的 capability API 应提供这 7 种原语,特别是 `Mint`(带 badge 复制)和 `Revoke`(递归撤销)。badge 机制可用于标识"哪个 agent 授予的权限",实现可审计的权限流转。
+- **对 agent-linux 借鉴价值**:agentrt 的 capability API 应提供这 7 种原语,特别是 `Mint`(带 badge 复制)和 `Revoke`(递归撤销)。badge 机制可用于标识"哪个 agent 授予的权限",实现可审计的权限流转。
 
 #### ES-SEL4-09 Badge 机制(标识消息来源)
 
@@ -228,7 +228,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/fastpath/fastpath.c:185` `badge = cap_endpoint_cap_get_capEPBadge(ep_cap)` fastpath 直接传递 badge
   - `src/object/cnode.c:798-819` `isMDBParentOf` 中 badge=0 表示"可派生任意 badge",badge!=0 时子 cap badge 必须相同且 `mdbFirstBadged` 必须为 false
   - `src/object/endpoint.c:489-539` `cancelBadgedSends` 按 badge 取消特定发送者
-- **对 agentrt-linux 借鉴价值**:agent 间通信必须支持 badge,使 server agent 能识别"哪个 client agent 通过共享 endpoint 发来的请求"。这是 seL4 实现多客户端 server 的核心机制,无需维护连接表。
+- **对 agent-linux 借鉴价值**:agent 间通信必须支持 badge,使 server agent 能识别"哪个 client agent 通过共享 endpoint 发来的请求"。这是 seL4 实现多客户端 server 的核心机制,无需维护连接表。
 
 ### 维度 3:消息传递 IPC 的具体实现【核心维度 2】
 
@@ -242,7 +242,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/object/structures.h:34-44` `EPState_Idle=0`/`EPState_Send=1`/`EPState_Recv=2`
   - `src/object/endpoint.c:27-131` `sendIPC` 状态机:Idle/Send 时阻塞发送者(ThreadState_BlockedOnSend),Recv 时直接 transfer + dequeue 接收者
   - `src/object/endpoint.c:174-296` `receiveIPC` 镜像状态机:Idle/Recv 时阻塞(ThreadState_BlockedOnReceive),Send 时直接 transfer
-- **对 agentrt-linux 借鉴价值**:agentrt 的 IPC channel 应采用显式状态机,而非 Linux pipe 的"缓冲区+阻塞"模型。显式状态使 IPC 路径可形式化推理,且支持 fastpath 优化。
+- **对 agent-linux 借鉴价值**:agentrt 的 IPC channel 应采用显式状态机,而非 Linux pipe 的"缓冲区+阻塞"模型。显式状态使 IPC 路径可形式化推理,且支持 fastpath 优化。
 
 #### ES-SEL4-11 Message Register + IPC Buffer 双通道
 
@@ -254,7 +254,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/object/tcb.h:28-42` `setMR` 同样优先寄存器,超出走 receiveIPCBuffer
   - `libsel4/tools/syscall_stub_gen.py:61-70` `MESSAGE_REGISTERS_FOR_ARCH`:aarch32=4, aarch64=4, ia32=2, x86_64=4, riscv32=4, riscv64=4
   - `src/fastpath/fastpath.c:223` `fastpath_copy_mrs(length, NODE_STATE(ksCurThread), dest)` fastpath 只复制 length 个寄存器
-- **对 agentrt-linux 借鉴价值**:agent 间高频消息(如 RPC 参数)应走寄存器,长消息走共享 buffer。Linux 的 `copy_to_user` 模型在微内核间通信中性能不可接受。
+- **对 agent-linux 借鉴价值**:agent 间高频消息(如 RPC 参数)应走寄存器,长消息走共享 buffer。Linux 的 `copy_to_user` 模型在微内核间通信中性能不可接受。
 
 #### ES-SEL4-12 MessageInfo 编码(label + caps + length + unwrap)
 
@@ -266,7 +266,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/api/syscall.c:346` `length = seL4_MessageInfo_get_length(info)` 提取长度
   - `src/fastpath/fastpath.c:230` `seL4_MessageInfo_set_capsUnwrapped(info, 0)` fastpath 显式清零 caps unwrapped 位
   - label 字段标识 invocation 类型(如 `UntypedRetype`/`TCBConfigure`),caps 字段标识附带 cap 数量
-- **对 agentrt-linux 借鉴价值**:agent 间消息应有紧凑的 metadata word,避免每条消息都走结构体 marshal/unmarshal。这对智能体高频小消息通信至关重要。
+- **对 agent-linux 借鉴价值**:agent 间消息应有紧凑的 metadata word,避免每条消息都走结构体 marshal/unmarshal。这对智能体高频小消息通信至关重要。
 
 #### ES-SEL4-13 IPC Fastpath(POINT OF NO RETURN 哲学)
 
@@ -290,7 +290,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/fastpath/fastpath.c:167-171` 注释 `--- POINT OF NO RETURN ---` 明确标记提交点
   - `src/fastpath/fastpath.c:173-232` 提交后:dequeue dest → 设置 reply cap → `fastpath_copy_mrs` → `switchToThread_fp` → `fastpath_restore`
   - 共 4 个 fastpath:`fastpath_call`(行 19)、`fastpath_reply_recv`(行 240)、`fastpath_signal`(行 558)、`fastpath_vm_fault`(行 720)
-- **对 agentrt-linux 借鉴价值**:这是性能关键。agentrt 应为最常见的 agent→agent RPC 设计 fastpath:全部前置检查 → 原子提交 → 寄存器级消息复制 → 上下文切换。Linux 的系统调用路径太重,不适合微内核间通信。
+- **对 agent-linux 借鉴价值**:这是性能关键。agentrt 应为最常见的 agent→agent RPC 设计 fastpath:全部前置检查 → 原子提交 → 寄存器级消息复制 → 上下文切换。Linux 的系统调用路径太重,不适合微内核间通信。
 
 #### ES-SEL4-14 Notification(异步信号 + word)
 
@@ -302,7 +302,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/notification.c:62-100` `sendSignal` 三状态机:Idle 唤醒 bound TCB,Waiting dequeue,Active 累积 badge
   - `src/api/syscall.c:491-506` `handleRecv` 支持 endpoint 和 notification 两种接收
   - `include/object/structures.h:45-50` `NtfnState_Idle=0`/`NtfnState_Waiting=1`/`NtfnState_Active=2`
-- **对 agentrt-linux 借鉴价值**:agent 间通知(如事件触发、状态变更)应使用异步 notification,避免阻塞 RPC。Linux 的 `eventfd`/`signalfd` 概念相近,但 seL4 的 notification 可绑定 TCB + 累积 badge,更适合多事件源聚合。
+- **对 agent-linux 借鉴价值**:agent 间通知(如事件触发、状态变更)应使用异步 notification,避免阻塞 RPC。Linux 的 `eventfd`/`signalfd` 概念相近,但 seL4 的 notification 可绑定 TCB + 累积 badge,更适合多事件源聚合。
 
 #### ES-SEL4-15 Reply Cap 自动管理(非 MCS vs MCS)
 
@@ -314,7 +314,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - MCS:`src/fastpath/fastpath.c:190-206` 使用独立的 `reply_t` 对象 + `call_stack` 链表,支持 SC(scheduling context)捐赠
   - `src/object/endpoint.c:120-127` 非 MCS `setupCallerCap` 在 slowpath 中调用
   - `src/object/endpoint.c:96-103` MCS `reply_push` 实现 SC 捐赠链
-- **对 agentrt-linux 借鉴价值**:agent RPC 的 reply 路径应自动化,client 不应手动管理 reply capability。MCS 的 SC 捐赠机制对 agent 调度公平性很重要——server agent 应继承 client agent 的执行预算。
+- **对 agent-linux 借鉴价值**:agent RPC 的 reply 路径应自动化,client 不应手动管理 reply capability。MCS 的 SC 捐赠机制对 agent 调度公平性很重要——server agent 应继承 client agent 的执行预算。
 
 ### 维度 4:形式化验证的代码结构【核心维度 3】
 
@@ -328,7 +328,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CAVEATS.md:248` `[l4v]: https://github.com/seL4/l4v`
   - `CAVEATS.md:252` `[ASpec]: https://github.com/seL4/l4v/blob/master/spec/abstract`
   - 仓库内无 `proof/`/`spec/`/`capDL/` 目录(已确认通过 `find . -type d \( -name "proof" -o -name "spec" -o -name "capDL" -o -name "l4v" \)` 验证)
-- **对 agentrt-linux 借鉴价值**:agentrt 的形式化验证(若做)应独立 repo 维护,避免污染内核源码。但内核代码必须为验证留有 hook(如 seL4 的 `/** MODIFIES */`/`/** DONT_TRANSLATE */`/`/** GHOSTUPD */` 注解,见 `util.h:93-97,189-196`)。
+- **对 agent-linux 借鉴价值**:agentrt 的形式化验证(若做)应独立 repo 维护,避免污染内核源码。但内核代码必须为验证留有 hook(如 seL4 的 `/** MODIFIES */`/`/** DONT_TRANSLATE */`/`/** GHOSTUPD */` 注解,见 `util.h:93-97,189-196`)。
 
 #### ES-SEL4-17 验证范围显式声明(CAVEATS.md)
 
@@ -345,7 +345,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
     - integrity(已验证 AArch32/AArch64)
     - confidentiality(仅 AArch32)
     - intransitive non-interference(仅 AArch32)
-- **对 agentrt-linux 借鉴价值**:agentrt 应明确声明"哪些子集经过形式化验证",而非笼统宣称"形式化内核"。Linux 6.6 微内核化后,验证范围必然有限,应诚实标注。
+- **对 agent-linux 借鉴价值**:agentrt 应明确声明"哪些子集经过形式化验证",而非笼统宣称"形式化内核"。Linux 6.6 微内核化后,验证范围必然有限,应诚实标注。
 
 #### ES-SEL4-18 Verification Build 配置开关
 
@@ -357,7 +357,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `config.cmake:178-184` `KernelBinaryVerificationBuild`(DEFAULT OFF, DEPENDS `KernelVerificationBuild`) "restricts the use of other options that would interfere with binary verification"
   - `config.cmake:130-145` `KernelFastpath`(ON)、`KernelExceptionFastpath`(OFF, 仅 AArch64 非 verified)、`KernelSignalFastpath`(OFF, 仅 MCS+AArch64 非 verified)
   - `CMakeLists.txt:238-240` 验证构建时禁用 cloned functions:`-fno-partial-inlining -fno-ipa-cp -fno-ipa-sra`
-- **对 agentrt-linux 借鉴价值**:agentrt 构建系统应有 `AGENTRT_VERIFICATION_BUILD` 开关,在验证模式下禁用激进优化和未验证的 fastpath。
+- **对 agent-linux 借鉴价值**:agentrt 构建系统应有 `AGENTRT_VERIFICATION_BUILD` 开关,在验证模式下禁用激进优化和未验证的 fastpath。
 
 #### ES-SEL4-19 代码中的验证注解(GHOSTUPD/AUXUPD/MODIFIES/DONT_TRANSLATE)
 
@@ -370,7 +370,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/cnode.c:733-734` `cteDeleteOne` 的 `/** GHOSTUPD */` ghost state 断言
   - `src/object/cnode.c:391-393` `handleReply` 路径的 `/** GHOSTUPD */`
   - `src/object/untyped.c:248-251` `resetUntypedCap` 的 `/** AUXUPD */` + `/** GHOSTUPD */`
-- **对 agentrt-linux 借鉴价值**:若 agentrt 引入形式化验证,代码应有类似注解机制。即使不做完整验证,这种"显式声明副作用"的实践对代码质量提升显著。
+- **对 agent-linux 借鉴价值**:若 agentrt 引入形式化验证,代码应有类似注解机制。即使不做完整验证,这种"显式声明副作用"的实践对代码质量提升显著。
 
 #### ES-SEL4-20 汇编边界与假设声明
 
@@ -381,7 +381,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CAVEATS.md:51-55` "This proof covers the functional behaviour of the C code of the kernel. It does not cover machine code, compiler, linker, boot code, cache or TLB management."
   - `CAVEATS.md:84-88` "Even verified configurations contain some code that is assumed to do the right thing, including boot code, assembly stubs, and cache management."
   - `CAVEATS.md:89-97` 硬件假设:内存不可破坏(Rowhammer 可能违反)、RAM 不发生随机翻转等
-- **对 agentrt-linux 借鉴价值**:Linux 6.6 微内核化后,大量汇编入口(head.S/traps.S)和 cache/TLB 管理代码将构成"可信计算基(TCB)外的假设",应明确文档化。
+- **对 agent-linux 借鉴价值**:Linux 6.6 微内核化后,大量汇编入口(head.S/traps.S)和 cache/TLB 管理代码将构成"可信计算基(TCB)外的假设",应明确文档化。
 
 ### 维度 5:接口契约定义【核心维度 4】
 
@@ -395,7 +395,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - 结构:`<api-master>`(7 syscall:Call/ReplyRecv/Send/NBSend/Recv/Reply/Yield/NBRecv) + `<api-mcs>`(11 syscall) + `<debug>`(条件 syscall)
   - 条件机制:`<condition><config var="CONFIG_PRINTING"/></condition>`、`<and>` 组合
   - `CMakeLists.txt:427-439` `syscall_header_gen.py` 生成 `gen_headers/arch/api/syscall.h`,先用 `xmllint.sh` 校验 XSD
-- **对 agentrt-linux 借鉴价值**:agentrt 的系统调用接口应用 XML/IDL 定义,自动生成内核 dispatch 表、用户态 stub、文档。Linux 现有 syscall 表是 `unistd.h` 散落定义,不适合微内核的严格 ABI 管理。
+- **对 agent-linux 借鉴价值**:agentrt 的系统调用接口应用 XML/IDL 定义,自动生成内核 dispatch 表、用户态 stub、文档。Linux 现有 syscall 表是 `unistd.h` 散落定义,不适合微内核的严格 ABI 管理。
 
 #### ES-SEL4-22 object-api.xml 三层接口契约
 
@@ -407,7 +407,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/arch_include/{arm,riscv,x86}/interfaces/object-api-arch.xml` 架构特定 invocation
   - `libsel4/sel4_arch_include/{aarch32,aarch64,ia32,x86_64,riscv32,riscv64}/interfaces/object-api-sel4-arch.xml` 子架构特定
   - `libsel4/include/interfaces/object-api.xml:10-84` `seL4_Untyped` interface 示例:每个 `<method>` 有 `<brief>`/`<description>`/`<param>`/`<error>` 完整文档
-- **对 agentrt-linux 借鉴价值**:agentrt 应建立三层 API 契约:common(跨架构)+ arch(x86/arm/riscv)+ sel4-arch(32/64 bit)。每个方法定义参数、错误码、文档,作为 ABI 稳定性承诺。
+- **对 agent-linux 借鉴价值**:agentrt 应建立三层 API 契约:common(跨架构)+ arch(x86/arm/riscv)+ sel4-arch(32/64 bit)。每个方法定义参数、错误码、文档,作为 ABI 稳定性承诺。
 
 #### ES-SEL4-23 invocation_header_gen.py 生成枚举
 
@@ -420,7 +420,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `tools/invocation_header_gen.py:91-100` `ARCH_INVOCATION_TEMPLATE` 架构标签
   - Jinja2 模板 + `condition_to_cpp` 处理条件编译
   - `tools/invocation_header_gen.py:75` 第一个标签从 `nInvocationLabels` 开始,确保编号连续
-- **对 agentrt-linux 借鉴价值**:agentrt 的 invocation label 应自动生成,确保 ABI 编号连续且可追踪。新增方法时,旧编号不变,实现 ABI 兼容性。
+- **对 agent-linux 借鉴价值**:agentrt 的 invocation label 应自动生成,确保 ABI 编号连续且可追踪。新增方法时,旧编号不变,实现 ABI 兼容性。
 
 #### ES-SEL4-24 syscall_stub_gen.py 生成用户态封装
 
@@ -433,7 +433,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/tools/syscall_header_gen.py` 内核侧 syscall ID 生成
   - 每个 stub 自动处理:参数 marshal 到 msgRegisters/IPC buffer、syscall 指令、返回值 unmarshal、错误检查
   - `libsel4/tools/syscall_stub_gen.py:61-70` 不同架构的 message register 数量配置
-- **对 agentrt-linux 借鉴价值**:agentrt 应提供多语言 stub 生成器(C/Rust/Python),使 agent 开发者无需手动处理 IPC marshalling。这对智能体生态至关重要。
+- **对 agent-linux 借鉴价值**:agentrt 应提供多语言 stub 生成器(C/Rust/Python),使 agent 开发者无需手动处理 IPC marshalling。这对智能体生态至关重要。
 
 ### 维度 6:Bitfield codegen【核心维度 5】
 
@@ -453,7 +453,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
     - `libsel4/arch_include/*/sel4/arch/shared_types.bf`
   - 语法:`block name(field1, field2) { field capType 5; field_ptr capPtr word_size-5; }` + `tagged_union name tag { tag variant1 0; }`
   - 支持 `field`/`field_high`/`field_ptr`/`padding`/`mask`/`base`
-- **对 agentrt-linux 借鉴价值**:agentrt 的内核数据结构(尤其是 capability)应用 DSL 声明,自动生成访问器。这避免手写位操作的错误,且支持跨语言绑定生成。
+- **对 agent-linux 借鉴价值**:agentrt 的内核数据结构(尤其是 capability)应用 DSL 声明,自动生成访问器。这避免手写位操作的错误,且支持跨语言绑定生成。
 
 #### ES-SEL4-26 bitfield_gen.py 双输出(C 代码 + Isabelle 证明)
 
@@ -466,7 +466,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `tools/bitfield_gen.py:34` `loc_name = 'kernel_all_substitute'` — Isabelle locale 名称
   - 支持 `sel4` 和 `libsel4` 两种环境(行 57-86):不同 include、assert、inline、types
   - `tools/bitfield_gen.py:72-86` TYPES 映射:sel4 用 uint8_t/uint16_t/uint32_t/uint64_t,libsel4 用 seL4_Uint8 等
-- **对 agentrt-linux 借鉴价值**:这是 seL4 的核心创新。即使 agentrt 不做形式化验证,DSL → 代码生成 + 文档生成的模式仍值得采用,确保数据结构定义的单一事实来源。
+- **对 agent-linux 借鉴价值**:这是 seL4 的核心创新。即使 agentrt 不做形式化验证,DSL → 代码生成 + 文档生成的模式仍值得采用,确保数据结构定义的单一事实来源。
 
 #### ES-SEL4-27 Prune 机制(只生成用到的函数)
 
@@ -478,7 +478,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CMakeLists.txt:456-462` 注释:"not generating unused functions has significant time savings for the automated verification tools"
   - 流程:`dummy_header_wrapper` → `kernel_all_pp_prune.c` → `GenHBFTarget` 用 prune 文件指导生成
   - `CMakeLists.txt:463-477` dummy headers 生成 + prune 编译
-- **对 agentrt-linux 借鉴价值**:agentrt 的 codegen 应支持 prune,减少生成代码体积,加速编译和(若做)验证。
+- **对 agent-linux 借鉴价值**:agentrt 的 codegen 应支持 prune,减少生成代码体积,加速编译和(若做)验证。
 
 #### ES-SEL4-28 单文件编译(kernel_all.c 拼接)
 
@@ -491,7 +491,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CMakeLists.txt:563-568` `circular_includes.py` 检查循环 include
   - 主要为形式化验证(C parser 单 TU)和 whole-program 优化
   - `tools/cpp_gen.sh` 拼接脚本
-- **对 agentrt-linux 借鉴价值**:Linux 模块化编译与此相反。agentrt 若引入验证,可考虑关键子系统(如 capability 模块)单 TU 编译。
+- **对 agent-linux 借鉴价值**:Linux 模块化编译与此相反。agentrt 若引入验证,可考虑关键子系统(如 capability 模块)单 TU 编译。
 
 ### 维度 7:服务用户态化【核心维度 6】
 
@@ -507,7 +507,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   4. **地址空间**:`src/arch/*/kernel/vspace.c`(架构相关)
   5. **中断/异常**:`src/object/interrupt.c`(297) + `src/api/{syscall,faults}.c`(923) + `src/kernel/faulthandler.c`(173)
   6. **内存 Retype**:`src/object/untyped.c`(305) + `src/kernel/boot.c` 部分
-- **对 agentrt-linux 借鉴价值**:agentrt 应明确"内核态仅此 6 类职责",其余全部下沉。Linux 的 VFS/网络/设备驱动/系统调用接口(POSIX)/信号/管道——全部应作为用户态 server 实现。
+- **对 agent-linux 借鉴价值**:agentrt 应明确"内核态仅此 6 类职责",其余全部下沉。Linux 的 VFS/网络/设备驱动/系统调用接口(POSIX)/信号/管道——全部应作为用户态 server 实现。
 
 #### ES-SEL4-30 用户态承担的职责清单
 
@@ -523,7 +523,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - 内存分配器 → 用户态 malloc(基于 untyped cap)
   - 调度策略 → 用户态配置(通过 `seL4_TCB_SetPriority` 等)
   - 中断处理流程 → 用户态 driver(通过 IRQ handler cap + notification)
-- **对 agentrt-linux 借鉴价值**:agentrt 的"微内核化"应明确哪些 Linux 子系统下沉到用户态 server。建议优先:VFS、网络栈、设备驱动模型;保留内核态:capability、IPC、调度原语、地址空间。
+- **对 agent-linux 借鉴价值**:agentrt 的"微内核化"应明确哪些 Linux 子系统下沉到用户态 server。建议优先:VFS、网络栈、设备驱动模型;保留内核态:capability、IPC、调度原语、地址空间。
 
 #### ES-SEL4-31 内核-用户态边界(bootinfo 契约)
 
@@ -535,7 +535,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/kernel/boot.c:848-853` `bi_finalise` 设置 `bi_frame->empty`(空槽区域)
   - `libsel4/include/sel4/bootinfo.h` bootinfo 结构定义
   - 内核 boot 后:把 root CNode(含初始 caps)+ bootinfo 交给 root task,内核不再参与
-- **对 agentrt-linux 借鉴价值**:agentrt 内核启动后应通过显式 bootinfo 把"初始 capability 集合"交给 root agent,而非像 Linux 那样内核持续管理所有资源。
+- **对 agent-linux 借鉴价值**:agentrt 内核启动后应通过显式 bootinfo 把"初始 capability 集合"交给 root agent,而非像 Linux 那样内核持续管理所有资源。
 
 ### 维度 8:构建系统【核心维度 7】
 
@@ -551,7 +551,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `config.cmake:150-158` `KernelMaxNumNodes` 依赖 `KernelNumDomains EQUAL 1`(SMP 与 domain 互斥)
   - `config.cmake:170-184` `KernelVerificationBuild` 默认 ON,限制其他选项
   - `config.cmake:96-104` `KernelRootCNodeSizeBits` 配置项带文档说明
-- **对 agentrt-linux 借鉴价值**:agentrt 构建系统应支持 Kconfig 风格的依赖声明,避免无效配置组合。Linux 已有 Kconfig,微内核化后应保留并扩展(如 `AGENTRT_MICROKERNEL_MODE`/`AGENTRT_CAPABILITY_SUPPORT`)。
+- **对 agent-linux 借鉴价值**:agentrt 构建系统应支持 Kconfig 风格的依赖声明,避免无效配置组合。Linux 已有 Kconfig,微内核化后应保留并扩展(如 `AGENTRT_MICROKERNEL_MODE`/`AGENTRT_CAPABILITY_SUPPORT`)。
 
 #### ES-SEL4-33 多架构/平台/模式三维正交
 
@@ -564,7 +564,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CMakeLists.txt:309-329` include 路径三维:`include/arch/${KernelArch}` + `include/plat/${KernelPlatform}` + `include/${KernelWordSize}`
   - 平台支持 40+:`src/plat/` 下有 bcm2711/bcm2837/hikey/imx8m-evk/odroidc2/pc99/rk3568/zynqmp/spacemit-k1 等
   - `CMakeLists.txt:314-317` ARM 特殊:`include/arch/arm/armv/${KernelArmArmV}` 子架构路径
-- **对 agentrt-linux 借鉴价值**:agentrt 应保持 Linux 的多架构支持,但引入"sel4-arch"概念(32/64 bit 子架构分离),使验证范围更精确。
+- **对 agent-linux 借鉴价值**:agentrt 应保持 Linux 的多架构支持,但引入"sel4-arch"概念(32/64 bit 子架构分离),使验证范围更精确。
 
 #### ES-SEL4-34 Freestanding 编译约束
 
@@ -577,7 +577,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CMakeLists.txt:215-219` 链接:`-static -Wl,--build-id=none -Wl,-n`(可复现构建)
   - `src/string.c` + `src/util.c` + `src/assert.c` + `src/inlines.c` 自实现 string/memcpy/memset/util
   - `CMakeLists.txt:179-184` `-ffreestanding` 注释:"implies -fno-builtin. Execution will not start at main()."
-- **对 agentrt-linux 借鉴价值**:agentrt 微内核核心应 freestanding 编译,不依赖 glibc。Linux 现有内核已是 freestanding,但微内核化后应强化 `-Werror` 和严格 prototype 检查。
+- **对 agent-linux 借鉴价值**:agentrt 微内核核心应 freestanding 编译,不依赖 glibc。Linux 现有内核已是 freestanding,但微内核化后应强化 `-Werror` 和严格 prototype 检查。
 
 #### ES-SEL4-35 代码生成工具链集成
 
@@ -589,7 +589,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CMakeLists.txt:375-444` 三阶段生成:invocation header → syscall header(带 xmllint 校验) → 加入 `kernel_headers` 依赖
   - `CMakeLists.txt:463-531` bitfield 生成:dummy headers → prune scan → 实际生成 C + .thy
   - `CMakeLists.txt:344-348` `kernel_config_headers` 和 `kernel_headers` 自定义目标管理依赖
-- **对 agentrt-linux 借鉴价值**:agentrt 应将代码生成深度集成到构建系统,确保"XML/DSL 改动 → 代码重新生成 → 编译"的自动化流水线。Linux 的 `scripts/` 已有类似机制,应扩展。
+- **对 agent-linux 借鉴价值**:agentrt 应将代码生成深度集成到构建系统,确保"XML/DSL 改动 → 代码重新生成 → 编译"的自动化流水线。Linux 的 `scripts/` 已有类似机制,应扩展。
 
 ### 维度 9:MAINTAINERS 文件
 
@@ -603,7 +603,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `CONTRIBUTING.md:36-41` "The people responsible for the technical direction, procedures, and quality control are the Technical Steering Committee (TSC) of the seL4 foundation"
   - `CONTRIBUTING.md:44-56` DCO(Dveloper Certificate of Origin)sign-off,与 Linux kernel 一致:`git commit -s`
   - `CONTRIBUTING.md:14-18` 额外的 git history 要求:每个 commit 应处于可工作状态,便于 bisect
-- **对 agentrt-linux 借鉴价值**:agentrt 可借鉴 Linux 的 `MAINTAINERS` 文件模式(子模块明确责任人),而非 seL4 的 TSC 集中治理。智能体 OS 子模块多(capability/IPC/scheduler/agent runtime),需明确 ownership。
+- **对 agent-linux 借鉴价值**:agentrt 可借鉴 Linux 的 `MAINTAINERS` 文件模式(子模块明确责任人),而非 seL4 的 TSC 集中治理。智能体 OS 子模块多(capability/IPC/scheduler/agent runtime),需明确 ownership。
 
 ### 维度 10:编码风格
 
@@ -618,7 +618,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/object/structures.h:34-44` 全大写枚举 `EPState_Idle`/`NtfnState_Active`
   - 宏全大写:`BIT`/`MASK`/`MIN`/`MAX`/`ARRAY_SIZE`(`util.h:39-46`)
   - `include/object/structures.h:64-66` `TCB_CNODE_SIZE_BITS`/`TCB_CNODE_RADIX`/`TCB_OFFSET` 宏常量
-- **对 agentrt-linux 借鉴价值**:Linux 用 snake_case + tab 缩进。agentrt 微内核核心若新写,可考虑采用 seL4 风格(camelCase + 4 空格)以区分于 Linux 主体,但需在文档中明确风格边界。
+- **对 agent-linux 借鉴价值**:Linux 用 snake_case + tab 缩进。agentrt 微内核核心若新写,可考虑采用 seL4 风格(camelCase + 4 空格)以区分于 Linux 主体,但需在文档中明确风格边界。
 
 #### ES-SEL4-38 Haskell error 注释传统
 
@@ -632,7 +632,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/cnode.c:675` `/* Haskell error: "reduceZombie: expected unremovable zombie" */`
   - `src/object/cnode.c:701-704` `/* Haskell error: "Expected new Zombie to be self-referential." */`
   - seL4 的抽象规范用 Haskell 编写(l4v 仓库的 `spec/abstract/`),C 代码逐函数对应
-- **对 agentrt-linux 借鉴价值**:agentrt 若做形式化,代码注释应关联到规范条目(如 `/* ASpec: TCB.configure requires valid priority */`),便于规范-代码双向追溯。
+- **对 agent-linux 借鉴价值**:agentrt 若做形式化,代码注释应关联到规范条目(如 `/* ASpec: TCB.configure requires valid priority */`),便于规范-代码双向追溯。
 
 #### ES-SEL4-39 compile_assert 编译期断言
 
@@ -644,7 +644,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/model/statedata.c:27` `compile_assert(ksReadyQueuesL1BitmapBigEnough, (L2_BITMAP_SIZE - 1) <= wordBits)`
   - `src/model/statedata.c:81` `compile_assert(irqCNodeSize, sizeof(intStateIRQNode) >= ...)`
   - `include/object/tcb.h:19` `#define TCB_NAME_LENGTH (BIT(seL4_TCBBits-1) - (tcbCNodeEntries * sizeof(cte_t)) - sizeof(debug_tcb_t))`
-- **对 agentrt-linux 借鉴价值**:agentrt 应广泛使用编译期断言,确保数据结构大小、对齐等不变量在编译时检查。Linux 已有 `BUILD_BUG_ON`,应强化使用。
+- **对 agent-linux 借鉴价值**:agentrt 应广泛使用编译期断言,确保数据结构大小、对齐等不变量在编译时检查。Linux 已有 `BUILD_BUG_ON`,应强化使用。
 
 #### ES-SEL4-40 likely/unlikely + FORCE_INLINE 性能注解
 
@@ -658,7 +658,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/fastpath/fastpath.c:40-43` `if (unlikely(fastpath_mi_check(msgInfo) || ...))` fastpath 失败路径标注 unlikely
   - `src/fastpath/fastpath.c:19` `void NORETURN fastpath_call(...)` 标注不返回
   - `include/util.h:72-99` 其他属性:`PACKED`/`CONST`/`PURE`/`ALIGN`/`FASTCALL`/`VISIBLE`/`SECTION`/`UNUSED`/`USED`/`MAY_ALIAS`
-- **对 agentrt-linux 借鉴价值**:agentrt 微内核热路径应广泛使用 `likely`/`unlikely` + `FORCE_INLINE`,引导编译器优化。Linux 已有此传统,微内核化后应强化 fastpath 标注。
+- **对 agent-linux 借鉴价值**:agentrt 微内核热路径应广泛使用 `likely`/`unlikely` + `FORCE_INLINE`,引导编译器优化。Linux 已有此传统,微内核化后应强化 fastpath 标注。
 
 ### 维度 11:架构正交分层
 
@@ -674,7 +674,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/plat/{bcm2711,pc99,hikey,zynqmp,...}/` 40+ 平台层
   - `include/arch/${KernelArch}/arch/${KernelWordSize}/` 头文件同样分层
   - `CMakeLists.txt:309-317` include 路径组合三层
-- **对 agentrt-linux 借鉴价值**:Linux 的 `arch/` 已有类似分层,但 seL4 的"machine 层"概念(跨平台共享的硬件抽象)值得借鉴。agentrt 可引入"machine 层"抽象 FPU/register/cache 等跨平台共性。
+- **对 agent-linux 借鉴价值**:Linux 的 `arch/` 已有类似分层,但 seL4 的"machine 层"概念(跨平台共享的硬件抽象)值得借鉴。agentrt 可引入"machine 层"抽象 FPU/register/cache 等跨平台共性。
 
 #### ES-SEL4-42 mode/sel4_arch 子层分离
 
@@ -687,7 +687,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/32/` + `include/64/` 模式相关头文件
   - `libsel4/mode_include/{32,64}/sel4/shared_types.bf` 用户态模式分离
   - `include/arch/arm/arch/{32,64,object}/mode/object/structures.bf` ARM 模式相关 bitfield
-- **对 agentrt-linux 借鉴价值**:agentrt 应将 32/64 bit 相关代码彻底分离,避免 `#ifdef CONFIG_64BIT` 散落。Linux 已有此趋势,应强化。
+- **对 agent-linux 借鉴价值**:agentrt 应将 32/64 bit 相关代码彻底分离,避免 `#ifdef CONFIG_64BIT` 散落。Linux 已有此趋势,应强化。
 
 #### ES-SEL4-43 API 三层契约(arch/sel4-arch/common)
 
@@ -700,7 +700,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/sel4_arch_include/{aarch32,aarch64,ia32,x86_64,riscv32,riscv64}/interfaces/object-api-sel4-arch.xml` 子架构接口
   - `tools/invocation_header_gen.py:59-100` 三模板对应三接口
   - `tools/invocation_header_gen.py:75` 子架构标签从 `nInvocationLabels` 续编
-- **对 agentrt-linux 借鉴价值**:agentrt API 应三层组织,使架构相关 invocation 不污染通用接口。Linux 的 ioctl 接口混乱,微内核化应引入此分层。
+- **对 agent-linux 借鉴价值**:agentrt API 应三层组织,使架构相关 invocation 不污染通用接口。Linux 的 ioctl 接口混乱,微内核化应引入此分层。
 
 ### 维度 12:libsel4 独立性
 
@@ -715,7 +715,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/include/sel4/sel4.h` 仅依赖生成的 headers + `sel4/config.h` + `sel4/types.h`
   - `libsel4/src/sel4_bootinfo.c` 唯一的 .c 文件(28 行)
   - `libsel4/CMakeLists.txt:1-9` 独立的 cmake_minimum_required 和 project
-- **对 agentrt-linux 借鉴价值**:agentrt 应提供独立的 `libagentrt` 用户态库,与内核源码解耦。智能体开发者只需链接 libagentrt,无需访问内核源码。
+- **对 agent-linux 借鉴价值**:agentrt 应提供独立的 `libagentrt` 用户态库,与内核源码解耦。智能体开发者只需链接 libagentrt,无需访问内核源码。
 
 #### ES-SEL4-45 API 稳定性通过 codegen 保证
 
@@ -728,7 +728,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - 两边从同一 `libsel4/include/api/syscall.xml` 生成,确保 syscall ID 一致
   - `libsel4/tools/syscall_stub_gen.py` 生成用户态封装,`tools/invocation_header_gen.py` 生成内核 invocation 枚举
   - `libsel4/include/interfaces/sel4.xml` 仅 `#include object-api.xml` —— 单一事实来源
-- **对 agentrt-linux 借鉴价值**:agentrt 的 ABI 稳定性应通过"XML 单一来源 + 双边 codegen"保证,而非人工维护的 `unistd.h`。这避免内核与用户态 syscall 编号不同步。
+- **对 agent-linux 借鉴价值**:agentrt 的 ABI 稳定性应通过"XML 单一来源 + 双边 codegen"保证,而非人工维护的 `unistd.h`。这避免内核与用户态 syscall 编号不同步。
 
 #### ES-SEL4-46 libsel4 多种配置(inline/default/public)
 
@@ -743,7 +743,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/CMakeLists.txt:27-34` `LibSel4StubsUseIPCBufferOnly` 仅用 IPC buffer(性能换兼容)
   - `libsel4/CMakeLists.txt:42-48` `LibSel4UseThreadLocals` IPC buffer 标记 `__thread`
   - `libsel4/CMakeLists.txt:36-41` `LibSel4PrintInvocationErrors` 错误打印开关
-- **对 agentrt-linux 借鉴价值**:agentrt 应支持多套 ABI 配置(性能/验证/绑定友好),适应不同 agent 运行时需求。
+- **对 agent-linux 借鉴价值**:agentrt 应支持多套 ABI 配置(性能/验证/绑定友好),适应不同 agent 运行时需求。
 
 #### ES-SEL4-47 跨语言绑定(Rust/Python)
 
@@ -754,7 +754,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/tools/syscall_stub_gen_rs.py` Rust 绑定生成器
   - `libsel4/tools/sel4_idl.xsd` IDL schema
   - `libsel4/tools/syscall_stub_gen.py` C 绑定生成器
-- **对 agentrt-linux 借鉴价值**:agent 智能体可能用 Rust/Python/Go 等多语言实现,agentrt 应提供多语言绑定生成,而非仅 C。
+- **对 agent-linux 借鉴价值**:agent 智能体可能用 Rust/Python/Go 等多语言实现,agentrt 应提供多语言绑定生成,而非仅 C。
 
 ### 补充维度:综合工程思想
 
@@ -770,7 +770,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `NODE_STATE(_state)` 自动展开为当前核访问(行 125)
   - `SMP_TERNARY(_smp, _up)` / `SMP_COND_STATEMENT(_st)` 条件编译(行 24-25, 44-45)
   - `include/model/statedata.h:58-92` `NODE_STATE_BEGIN(nodeState)` 声明全部内核状态:ksReadyQueues/ksCurThread/ksSchedulerAction/ksCurSC 等
-- **对 agentrt-linux 借鉴价值**:agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持单核和多核。Linux 的 `per_cpu` 宏概念相近,应保留并适配微内核场景。
+- **对 agent-linux 借鉴价值**:agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持单核和多核。Linux 的 `per_cpu` 宏概念相近,应保留并适配微内核场景。
 
 #### ES-SEL4-49 Section 注解(BOOT_CODE/SKIM_DATA)
 
@@ -783,7 +783,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/kernel/boot.c:30` `BOOT_CODE p_region_t get_p_reg_kernel_img_boot(void)`
   - boot 完成后,`.boot.*` section 内存可回收为 untyped(`src/kernel/boot.c:824-834`)
   - SKIM_DATA 用于 Meltdown 缓解的受限地址空间
-- **对 agentrt-linux 借鉴价值**:agentrt 应通过 section 注解分离 boot 代码(可回收)和运行时代码,并支持 SKIM 模式应对 Meltdown。Linux 的 `__init`/`__initdata` 概念相近,应保留。
+- **对 agent-linux 借鉴价值**:agentrt 应通过 section 注解分离 boot 代码(可回收)和运行时代码,并支持 SKIM 模式应对 Meltdown。Linux 的 `__init`/`__initdata` 概念相近,应保留。
 
 #### ES-SEL4-50 Exception 五态模型
 
@@ -796,7 +796,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/api/syscall.c:365-370` `EXCEPTION_SYSCALL_ERROR` 处理(返回错误)
   - `include/object/structures_64.bf:258-263` `tagged_union lookup_fault` 四态:invalid_root/missing_capability/depth_mismatch/guard_mismatch
   - `include/api/failures.h:21-35` `syscall_error` 结构含多种错误类型字段
-- **对 agentrt-linux 借鉴价值**:agentrt 应细化异常编码,区分"无错/能力 fault/查找 fault/syscall 错误/抢占",使错误处理路径精确。Linux 的 `-EINVAL`/`-EFAULT` 粒度不够。
+- **对 agent-linux 借鉴价值**:agentrt 应细化异常编码,区分"无错/能力 fault/查找 fault/syscall 错误/抢占",使错误处理路径精确。Linux 的 `-EINVAL`/`-EFAULT` 粒度不够。
 
 #### ES-SEL4-51 Preemption Point 机制
 
@@ -809,7 +809,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `src/object/untyped.c:262-267` `resetUntypedCap` 分块 clearMemory + preemptionPoint
   - `config.cmake:118-123` `KernelMaxNumWorkUnitsPerPreemption`(DEFAULT 100) "Maximum number of work units until the kernel checks for pending interrupts"
   - `src/model/preemption.c` 44 行 preemption 实现
-- **对 agentrt-linux 借鉴价值**:agentrt 长操作(cap revoke/memory zero)应插入 preemption point,避免长时间关中断。Linux 已有 `cond_resched`,微内核化后应强化。
+- **对 agent-linux 借鉴价值**:agentrt 长操作(cap revoke/memory zero)应插入 preemption point,避免长时间关中断。Linux 已有 `cond_resched`,微内核化后应强化。
 
 #### ES-SEL4-52 compile-time config 检测(config_set 宏)
 
@@ -821,7 +821,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `include/util.h:118-121` `wrap_config_set` 包装为函数防止 verification 简化
   - `include/util.h:125-128` `_is_set_`/`_is_set__`/`_is_set___` 三层宏展开
   - `include/util.h:132-135` `_config_ternary` 系列宏
-- **对 agentrt-linux 借鉴价值**:agentrt 可借鉴此宏技巧,在编译期检测配置项,生成条件优化的代码路径。
+- **对 agent-linux 借鉴价值**:agentrt 可借鉴此宏技巧,在编译期检测配置项,生成条件优化的代码路径。
 
 #### ES-SEL4-53 Domain Scheduler(信息流隔离)
 
@@ -834,7 +834,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/include/interfaces/object-api.xml:1336-1445` `seL4_DomainSet` interface:`Set`/`ScheduleConfigure`/`ScheduleSetStart`
   - `CAVEATS.md:62-68` AArch32 有 intransitive non-interference 证明
   - `include/model/statedata.h:105-108` `ksDomScheduleIdx`/`ksCurDomain`/`ksDomScheduleStart`/`ksDomainTime` 全局状态
-- **对 agentrt-linux 借鉴价值**:agentrt 若需强隔离(如多租户 agent),可引入 domain scheduler 概念,实现时间维度的信息流隔离。
+- **对 agent-linux 借鉴价值**:agentrt 若需强隔离(如多租户 agent),可引入 domain scheduler 概念,实现时间维度的信息流隔离。
 
 #### ES-SEL4-54 IDL/XSD 校验(xmllint)
 
@@ -847,7 +847,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
   - `libsel4/tools/sel4_idl.xsd` IDL schema
   - `tools/xmllint.sh` + `libsel4/tools/xmllint.sh`
   - `CMakeLists.txt:434` DEPENDS 包含 `${syscall_xml_base}/syscall.xsd`
-- **对 agentrt-linux 借鉴价值**:agentrt 的 API XML 应有 XSD schema 校验,在构建时确保接口定义合法。
+- **对 agent-linux 借鉴价值**:agentrt 的 API XML 应有 XSD schema 校验,在构建时确保接口定义合法。
 
 ---
 
@@ -1805,13 +1805,13 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 
 ## 十一、对 01-kernel.md 重写的章节结构建议
 
-> 本章针对 agentrt-linux 的 `01-kernel.md` 文档,基于 seL4 源代码深度研读,提出 9 章 28 小节的章节结构建议。重点参考 seL4 的内核对象组织(`src/object/`)、内核线程模型(`src/kernel/thread.c`)、capability 寻址(`src/kernel/cspace.c`)、boot 流程(`src/kernel/boot.c`)、以及形式化验证注解模式。
+> 本章针对 agent-linux 的 `01-kernel.md` 文档,基于 seL4 源代码深度研读,提出 9 章 28 小节的章节结构建议。重点参考 seL4 的内核对象组织(`src/object/`)、内核线程模型(`src/kernel/thread.c`)、capability 寻址(`src/kernel/cspace.c`)、boot 流程(`src/kernel/boot.c`)、以及形式化验证注解模式。
 
 ### 第 1 章:内核架构总览
 
 #### 1.1 设计哲学与边界声明
 - **要点**:
-  - Liedtke 极简原则的 agentrt-linux 诠释(ES-SEL4-01,04)
+  - Liedtke 极简原则的 agent-linux 诠释(ES-SEL4-01,04)
   - 内核态/用户态职责边界(ES-SEL4-29,30,31)
   - 与 Linux 6.6 单体内核的根本差异
   - 形式化验证预留(ES-SEL4-17,20)
@@ -1819,14 +1819,14 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 #### 1.2 内核代码体量预算
 - **要点**:
   - seL4 基线:1.44 万行核心 / 6,612 行对象实现(ES-SEL4-01)
-  - agentrt-linux 预算:5-10 万行(含 agent 调度原语)
+  - agent-linux 预算:5-10 万行(含 agent 调度原语)
   - 体量控制策略:每新增子系统需论证"无法在用户态安全实现"
   - 定期审计:消除"蠕变增胖"(kernel bloat)
 
 #### 1.3 系统调用数量约束
 - **要点**:
   - seL4 基线:7 个(非 MCS)/ 11 个(MCS)系统调用(ES-SEL4-02)
-  - agentrt-linux 目标:≤ 20 个系统调用
+  - agent-linux 目标:≤ 20 个系统调用
   - syscall 审计流程:新增 syscall 需 TSC 评审
   - syscall.xml 单一来源管理(ES-SEL4-21)
 
@@ -1835,7 +1835,7 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 #### 2.1 对象类型清单(参考 seL4 五大对象)
 - **要点**:
   - seL4 五大对象:TCB / CNode / Endpoint / Notification / Untyped(ES-SEL4-01)
-  - agentrt-linux 扩展对象:AgentTCB / SchedContext / TaskFlow
+  - agent-linux 扩展对象:AgentTCB / SchedContext / TaskFlow
   - 对象生命周期:Create / Activate / Suspend / Resume / Delete
   - 对象 Retype 机制(ES-SEL4-03)
 
@@ -2011,7 +2011,7 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 
 ## 十二、agentrt 应吸收的 10 大 seL4 核心思想
 
-> 按"对 agentrt-linux 价值 × 工程可行性"综合排序,Top 10 优先级如下。
+> 按"对 agent-linux 价值 × 工程可行性"综合排序,Top 10 优先级如下。
 
 ### 优先级 1:Capability 单一安全模型(ES-SEL4-05,06,07,08,09)
 
@@ -2039,7 +2039,7 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 
 ### 优先级 5:Liedtke 极简原则与代码体量预算(ES-SEL4-01,04)
 
-- **核心理由**:防止 agentrt-linux 内核"蠕变增胖"。设定 5-10 万行预算上限,定期审计。
+- **核心理由**:防止 agent-linux 内核"蠕变增胖"。设定 5-10 万行预算上限,定期审计。
 - **吸收方式**:在 01-kernel.md 第 1.2 节明确预算,每版本发布前审计代码行数。
 - **工程代价**:低(流程性约束)
 
@@ -2058,12 +2058,12 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 ### 优先级 8:NODE_STATE 宏抽象(ES-SEL4-48)
 
 - **核心理由**:SMP/UP 统一抽象,避免 `#ifdef CONFIG_MAX_NUM_NODES` 散落。
-- **吸收方式**:在 agentrt-linux 内核态采用 NODE_STATE 风格宏,SMP 编译期展开。
+- **吸收方式**:在 agent-linux 内核态采用 NODE_STATE 风格宏,SMP 编译期展开。
 - **工程代价**:低
 
 ### 优先级 9:构建系统三维正交(ES-SEL4-32,33,34,35,41,42,43)
 
-- **核心理由**:arch/machine/plat 三层正交是 seL4 多架构支持的关键。agentrt-linux 应借鉴而非 OLK-6.6 的单 arch/ 目录。
+- **核心理由**:arch/machine/plat 三层正交是 seL4 多架构支持的关键。agent-linux 应借鉴而非 OLK-6.6 的单 arch/ 目录。
 - **吸收方式**:在 kernel 子仓采 arch/machine/plat 三层架构(已在 v0.2.1 设计中确定)。
 - **工程代价**:中
 
@@ -2132,7 +2132,7 @@ agentrt 应支持 SMP/UP 统一的内核状态访问宏,使代码同一份支持
 
 本次对 seL4 全部源代码的逐行深度研读,共提炼 **54 条工程思想**(ES-SEL4-01 至 ES-SEL4-54),覆盖 12 个维度:
 
-- **核心 7 维度**(ES-SEL4-05 至 ES-SEL4-35):capability 模型、IPC 消息传递、形式化验证、接口契约、bitfield codegen、服务用户态化、构建系统——这些是 agentrt-linux 微内核化改造的直接技术输入。
+- **核心 7 维度**(ES-SEL4-05 至 ES-SEL4-35):capability 模型、IPC 消息传递、形式化验证、接口契约、bitfield codegen、服务用户态化、构建系统——这些是 agent-linux 微内核化改造的直接技术输入。
 - **辅助 5 维度**(ES-SEL4-01 至 ES-SEL4-04, ES-SEL4-36 至 ES-SEL4-54):Liedtke 极简原则、MAINTAINERS 治理、编码风格、架构正交分层、libsel4 独立性、综合工程思想——这些是工程标准与质量基线。
 
 ### 14.2 关键代码规模基线
@@ -2146,7 +2146,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
 
 这印证了 Liedtke 极简原则的工程可行性。Linux 单体内核约 3,000 万行,seL4 核心 1.44 万行——差距约 2,000 倍,这正是"微内核"一词的量化诠释。
 
-### 14.3 对 agentrt-linux 的核心建议
+### 14.3 对 agent-linux 的核心建议
 
 1. **架构层**:借鉴 seL4 的 capability 单一模型、服务用户态化、Untyped-Retype 内存模型,作为微内核化改造的三大支柱。
 2. **工程层**:引入接口契约 codegen 三件套(syscall.xml + structures.bf + bitfield_gen.py),消除手写 stub 的人为错误。对应 R-01/R-02 增强(纳入 1.0.1 M1 阶段)。
@@ -2162,7 +2162,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
 - **架构思想层**:选择性借鉴 seL4(capability 单一模型 / 消息传递 IPC / 服务用户态化 / 形式化验证预留 / 接口契约 codegen / bitfield codegen)。
 - **工程实现层**:遵循 OLK-6.6 的 Kbuild + Kconfig + MAINTAINERS + checkpatch + 回归零容忍 + ABI 永久稳定。
 
-这一定位确保 agentrt-linux 既能吸收 seL4 的微内核设计哲学,又能保持与 Linux 6.6 生态的兼容性,符合 IRON-9 v2 的 [SC] 共享契约层设计原则。
+这一定位确保 agent-linux 既能吸收 seL4 的微内核设计哲学,又能保持与 Linux 6.6 生态的兼容性,符合 IRON-9 v2 的 [SC] 共享契约层设计原则。
 
 ### 14.5 后续行动项
 
@@ -2179,7 +2179,7 @@ seL4 真正的"微内核必需代码"约 **1.44 万行 C**(不含 arch/plat/driv
 
 ### 14.6 报告定位声明
 
-本报告为 seL4 源代码的工程规范、技术标准、工程思想及设计实现哲学的研读分析,基于公开的 seL4 源代码(GPL-2.0-only 内核 / BSD-2-Clause libsel4)进行。所有引用的代码证据均标注 `file:line`,遵循合理使用原则。本报告不涉及 seL4 代码的复制或移植,仅作为 agentrt-linux 微内核策略文档重写的工程思想参考。agentrt 与 AirymaxOS 之间的代码共享仅限于 IRON-9 v2 [SC] 共享契约层 6 个头文件,与 seL4 项目无代码共享关系。
+本报告为 seL4 源代码的工程规范、技术标准、工程思想及设计实现哲学的研读分析,基于公开的 seL4 源代码(GPL-2.0-only 内核 / BSD-2-Clause libsel4)进行。所有引用的代码证据均标注 `file:line`,遵循合理使用原则。本报告不涉及 seL4 代码的复制或移植,仅作为 agent-linux 微内核策略文档重写的工程思想参考。agentrt 与 AirymaxOS 之间的代码共享仅限于 IRON-9 v2 [SC] 共享契约层 6 个头文件,与 seL4 项目无代码共享关系。
 
 ---
 

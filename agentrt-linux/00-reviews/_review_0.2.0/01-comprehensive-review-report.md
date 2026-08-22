@@ -1,10 +1,10 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt-linux（AirymaxOS）技术方案全面审查与完善报告 v0.2.0
+# agent-linux（AirymaxOS）技术方案全面审查与完善报告 v0.2.0
 
 > **审查日期**: 2026-07-09
 > **审查版本**: v0.2.0（在 v0.1.1 基础上的二次完善审查）
-> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agentrt-linux/（闭源审查文档）
+> **审查范围**: OpenAirymax/docs/AirymaxAgentOS/（125 篇开源文档）+ docs-closed/agent-linux/（闭源审查文档）
 > **参考基线**:
 > - seL4 源码：/home/spharx/SpharxWorks/01Reference/seL4-master
 > - openEuler 内核源码：/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6
@@ -30,18 +30,18 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 审查目标
 
-本报告记录 agentrt-linux（AirymaxOS，极境智能体操作系统）技术设计方案在 v0.1.1 文档体系完成后的**第二轮全面审查与完善**工作。本轮审查在 v0.1.1 首轮审查（v0.1.1 综合评分 93/100，"有条件 Go"）的基础上，执行用户提出的 **8 项注意点 + 6 项执行任务**，目标为**成熟度 100%**。
+本报告记录 agent-linux（AirymaxOS，极境智能体操作系统）技术设计方案在 v0.1.1 文档体系完成后的**第二轮全面审查与完善**工作。本轮审查在 v0.1.1 首轮审查（v0.1.1 综合评分 93/100，"有条件 Go"）的基础上，执行用户提出的 **8 项注意点 + 6 项执行任务**，目标为**成熟度 100%**。
 
 ### 1.2 8 项注意点（硬约束）
 
 | 编号 | 注意点 | 执行状态 |
 |------|--------|----------|
-| 1 | agentrt（用户态）使用"微核心"（micro-core）；agentrt-linux（OS 发行版）使用"微内核"（micro-kernel），不能混淆 | ✅ 已验证 |
-| 2 | `00-reviews/_review_0.1.1` 不在开源公开仓库中，移到 `docs-closed/agentrt-linux` | ✅ 已迁移 |
+| 1 | agentrt（用户态）使用"微核心"（micro-core）；agent-linux（OS 发行版）使用"微内核"（micro-kernel），不能混淆 | ✅ 已验证 |
+| 2 | `00-reviews/_review_0.1.1` 不在开源公开仓库中，移到 `docs-closed/agent-linux` | ✅ 已迁移 |
 | 3 | openEuler 相关描述只能在管理仓或大纲性质的非核心文档中 | ✅ 已验证（12 处合法引用） |
 | 4 | Capital_Specifications 整合到 50-engineering-standards，然后删除 | ✅ 内容已迁移，交叉引用已更新 |
 | 5 | 开源商业化"开发标准"整理到 `docs/AirymaxStandards` | ✅ 7 文件 3718 行已完成 |
-| 6 | agentrt 和 agentrt-linux 代码共享最大化 | ✅ IRON-9 v2 [SC] 6 个头文件 |
+| 6 | agentrt 和 agent-linux 代码共享最大化 | ✅ IRON-9 v2 [SC] 6 个头文件 |
 | 7 | 内核是严肃工程，不能为创新忽视风险 | ✅ seL4 形式化验证方案 |
 | 8 | C 语言代码编写规范额外注重 | ✅ 8 文件 4684 行工程标准 |
 
@@ -50,7 +50,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | 编号 | 执行任务 | 执行状态 |
 |------|---------|----------|
 | 1 | 基于已有 docs/AirymaxAgentOS 全部设计方案进行问题检查 | ✅ 完成（二次问题检查） |
-| 2 | 研究 01Reference/kernel-OLK-6.6 源代码，对比 agentrt-linux 弱点加强 | ✅ 完成（02-olk66-source-mapping） |
+| 2 | 研究 01Reference/kernel-OLK-6.6 源代码，对比 agent-linux 弱点加强 | ✅ 完成（02-olk66-source-mapping） |
 | 3 | 所有方案文档不能有占位文档，编写实施示例和示例代码 | ✅ 完成（140-190 目录 27 文件） |
 | 4 | seL4 源码参考，制定详尽方案 | ✅ 完成（03-microkernel-design-ref） |
 | 5 | 遵循乔布斯设计思想，简约又极致的细节 | ✅ 贯穿全部文档 |
@@ -62,7 +62,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |---------|--------|--------|--------|
 | 开源文档（docs/AirymaxAgentOS/） | 125 | ~80,000+ | 100% |
 | 开放标准（docs/AirymaxStandards/） | 7 | ~3,718 | 100% |
-| 闭源审查文档（docs-closed/agentrt-linux/） | ~35 | ~20,000+ | 100% |
+| 闭源审查文档（docs-closed/agent-linux/） | ~35 | ~20,000+ | 100% |
 | seL4 源码验证路径 | — | — | 关键路径全覆盖 |
 | OLK-6.6 源码验证路径 | 12 | — | 关键路径全覆盖 |
 
@@ -291,7 +291,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 **v0.2.0 状态**：100/100（A+ 级）—— **无条件 Go**
 
-agentrt-linux 0.1.1 文档体系经第二轮全面审查与完善后，已达到 **100% 就绪度**。所有 P0 阻断性问题和 P1 开发障碍均已完全修复。18 项验证清单全部通过。二次问题检查确认无新增违规。
+agent-linux 0.1.1 文档体系经第二轮全面审查与完善后，已达到 **100% 就绪度**。所有 P0 阻断性问题和 P1 开发障碍均已完全修复。18 项验证清单全部通过。二次问题检查确认无新增违规。
 
 ---
 
@@ -301,7 +301,7 @@ agentrt-linux 0.1.1 文档体系经第二轮全面审查与完善后，已达到
 
 **现状**：`docs/AirymaxAgentRT/50-specifications/` 目录仍存在（agentrt 用户态文档区）。其内容已复制迁移至 `docs/AirymaxAgentOS/50-engineering-standards/`。
 
-**建议**：此目录属于 agentrt（用户态）文档范畴，应在 agentrt 专项审查中处理。agentrt-linux 侧的交叉引用已全部更新，不再依赖该目录。
+**建议**：此目录属于 agentrt（用户态）文档范畴，应在 agentrt 专项审查中处理。agent-linux 侧的交叉引用已全部更新，不再依赖该目录。
 
 ### 7.2 占位文档（README 索引类）
 
@@ -322,7 +322,7 @@ agentrt-linux 0.1.1 文档体系经第二轮全面审查与完善后，已达到
 
 ## 8. 最终结论
 
-agentrt-linux（AirymaxOS）0.1.1 文档体系经 v0.2.0 第二轮全面审查与完善，已达到 **100% 综合成熟度**：
+agent-linux（AirymaxOS）0.1.1 文档体系经 v0.2.0 第二轮全面审查与完善，已达到 **100% 综合成熟度**：
 
 - **13/13 P0 阻断性问题**全部修复（含本轮修复的 SCHED_AGENT 宏违规）
 - **14/14 P1 开发障碍**全部修复（含本轮修复的 [SC] 头文件统一、150-cloudnative、Capital_Specifications 引用）

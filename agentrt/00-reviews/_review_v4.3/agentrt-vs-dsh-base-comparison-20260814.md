@@ -54,7 +54,7 @@ agentrt 要接近"平台本质"，**不是必须照抄 K8s 的 4 个组件**。�
 | 子代理列出的差距 | 平台本质（必须达到） | K8s 实现（可选路径） | agentrt 自己的路径 |
 |-----------------|---------------------|---------------------|-------------------|
 | reconcile 闭环 | 声明式 + 自愈收敛 | controller watch etcd | **认知层已有雏形**：蓝图（desired）→ GRAD 收敛 → 执行 → 复核（DRIFT）→ 回灌（replan）。需延伸到生命周期层 |
-| etcd 等价物 | 状态可共享、可 watch、可恢复 | 分布式一致 KV（Raft） | 单机阶段用事件流 + SQLite WAL + watch；分布式 etcd 推迟到云原生多机（agentrt-linux cloudnative） |
+| etcd 等价物 | 状态可共享、可 watch、可恢复 | 分布式一致 KV（Raft） | 单机阶段用事件流 + SQLite WAL + watch；分布式 etcd 推迟到云原生多机（agent-linux cloudnative） |
 | 统一扩展机制 | 第三方不改核心即可接入 | CRD/Operator | memory vtable 推广到 LLM/tool/storage/sandbox + 统一注册表（dsh Cordis 三角色为参考） |
 | 可验证开源 | 第三方能独立验证复现 | conformance + 全开源 | L1/L2 开源 + 公开评测基准 + 文档分层（生态准入）；L3/L4 闭源是商业策略可保留 |
 
@@ -83,7 +83,7 @@ agentrt 要接近"平台本质"，**不是必须照抄 K8s 的 4 个组件**。�
 
 2. **统一扩展机制**：把 memory vtable 的能力接缝模式统一推广（LLM/tool/storage/sandbox 四域 + 统一注册表）。
 
-**推迟项**：etcd 等价物（分布式一致 KV）→ 云原生多机阶段（agentrt-linux cloudnative）；可验证开源 → 生态工作（与平台本质正交）。
+**推迟项**：etcd 等价物（分布式一致 KV）→ 云原生多机阶段（agent-linux cloudnative）；可验证开源 → 生态工作（与平台本质正交）。
 
 ### 4.3 0.1.2 范围修正
 
@@ -91,7 +91,7 @@ agentrt 要接近"平台本质"，**不是必须照抄 K8s 的 4 个组件**。�
 |------|------|---------|
 | 阶段 1 | SSoT 收敛（8 冲突点）+ CLI/TUI | 契约收敛 + 复杂度收敛（让系统能收敛） |
 | 阶段 2 | reconcile 延伸 + 统一扩展机制 | 平台本质（声明式自愈 + 可组合扩展） |
-| 阶段 3（后置） | 分布式一致存储 + 云原生多机 | 多机集群（agentrt-linux cloudnative） |
+| 阶段 3（后置） | 分布式一致存储 + 云原生多机 | 多机集群（agent-linux cloudnative） |
 | 阶段 4（生态） | L1/L2 开源 + 评测基准 + 文档分层 | 生态信任（可验证开源） |
 
 ---
