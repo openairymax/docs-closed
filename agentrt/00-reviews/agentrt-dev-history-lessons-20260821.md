@@ -198,6 +198,27 @@
   但需注意模拟环境（Linux 下 __linux__ 与 __APPLE__ 并存）会引入
   平台探测宏重复定义的假象，须排除。
 
+### 2.14 遗留缺口收敛（2026-08-22 补充）
+- 已修复（2.13 遗留清单中的 3 项）：
+  - compat.c/compat2.c Windows 重复符号 → **SSoT 收敛**：compat2.c 与
+    compat.c 平行重复（assert handler/mem*_s/version/build_info/
+    gethostname/sysconf 等近全部函数），且 airy_strlcpy/airy_strlcat
+    与 platform.c 重复。静态库按需拉取侥幸掩盖 multiple definition
+    （Windows DLL/特定链接配置必冲突）。删除 compat2.c（净删 238
+    行），权威源收敛为 compat.c + platform.c；sysconf 私有 AIRY_SC_*
+    枚举与 build_info 硬编码 "0.1.1"/"gcc"/"linux" 随文件删除一并
+    收敛（compat.c 用标准 _SC_* 与宏注入）。验证：libairy_common.a
+    重复符号消除（airy_version_string/airy_build_info 2→1）。
+  - sync.c 原子操作 Windows 硬编码 64 位 → 按 _WIN64 选择
+    Interlocked 32/64 变体（32 位 Windows uintptr_t 32 位，旧代码按
+    8 字节读写越界；POSIX __sync_* 本就按 uintptr_t 自适应）。
+- 教训：**静态库按需拉取会掩盖 duplicate symbol 缺陷**——多个对象
+  同符号在 .a 中不报错，直到 DLL/全量链接配置才暴露；SSoT 审查应
+  以 `nm 库 | grep 符号` 计数为判据，而非"能链接即无重复"。
+- 遗留（未扩大，记录）：ipc 模块 Windows 实现、ipc_message_t 端序、
+  platform_process.c Windows timeout/cancel/envp 失效、SRWLOCK 私有
+  布局依赖（见 2.13 遗留清单，均需目标机验证）。
+
 ### 2.10 蓝图 L2 语义缓存命中率审查（2026-08-22 补充）
 - 四项命中率缺口已修复：①默认 θ 700→550（语义命中仅作 L3 提示、安全，
   700 使 OSS bigram 路径几乎无法过阈）；②向量 top-K 低于 θ 时回退 bigram
@@ -261,10 +282,14 @@
 - [x] 2.13 commons 跨平台核查：全库静态审查 + macOS 编译级缺口修复
       （rand_r→/dev/urandom、sem_timedwait→轮询，见 2.13）。2026-08-22
       完成：Linux 构建 + -D__APPLE__ 模拟语法 PASS + 单测 13/13 + 冒烟。
+- [x] 2.14 遗留缺口收敛：compat2.c SSoT 删除（重复符号消除，净删
+      238 行）+ sync.c 原子操作 Windows 位宽自适应（见 2.14）。
+      2026-08-22 完成：全量重建 + 单测 13/13 + 冒烟 + nm 符号计数验证。
 - [ ] Windows/macOS 平台兼容性实测（当前仅 CI 编译链路 + 模拟语法检查）。
 - [ ] ipc 模块 Windows 实现（CMake 层 if(NOT WIN32) 排除，AF_UNIX/
-      MSG_WAITALL 无对应实现）+ sync.c 原子操作 32 位 Windows 位宽修复
-      + compat.c/compat2.c Windows 重复符号收敛（见 2.13 遗留缺口）。
+      MSG_WAITALL 无对应实现）+ ipc_message_t 端序 + platform_process.c
+      Windows timeout/cancel/envp 失效 + SRWLOCK 私有布局依赖（见 2.13/
+      2.14 遗留，均需目标机验证）。
 - [ ] 高圈复杂度函数系统性拆分（基线见下，拆分需专门重构轮次并全量回归）。
 
 ### 5.1 圈复杂度基线（pmccabe，2026-08-21）
