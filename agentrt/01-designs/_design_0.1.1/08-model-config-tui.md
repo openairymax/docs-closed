@@ -82,8 +82,8 @@ ecosystem/manager/model/model.yaml  +   （可不存在；存在则合并，用�
 
 ### 2.5 部署修复
 
-- `devtools/deploy/systemd/agentrt-llm.service`：`ExecStart=llm_d --manager <model.yaml>`。
-- `devtools/deploy/docker/entrypoint.sh`：llm_d 单独传 `--manager`（其参数解析只认 `--manager/--tcp/--help`，不认 `--config`）。
+- `tools/deploy/systemd/agentrt-llm.service`：`ExecStart=llm_d --manager <model.yaml>`。
+- `tools/deploy/docker/entrypoint.sh`：llm_d 单独传 `--manager`（其参数解析只认 `--manager/--tcp/--help`，不认 `--config`）。
 
 ---
 
@@ -121,8 +121,8 @@ ecosystem/manager/model/model.yaml  +   （可不存在；存在则合并，用�
 | `agentrt/daemons/llm_d/src/service.c` | YAML 加载器解析 `global` 段；`llm_service_create` 加载用户覆盖文件二次合并；新增 `llm_service_list_models()` |
 | `agentrt/daemons/llm_d/src/main.c` | `parse_params` model 缺省回落 default；注册 `list_models` 方法 |
 | `agentrt/daemons/gateway_d/src/gateway_business_handler.c` | 默认模型解析：env > 用户覆盖 > 宏 |
-| `devtools/deploy/systemd/agentrt-llm.service` | 补 `--manager` |
-| `devtools/deploy/docker/entrypoint.sh` | llm_d 单独传 `--manager` |
+| `tools/deploy/systemd/agentrt-llm.service` | 补 `--manager` |
+| `tools/deploy/docker/entrypoint.sh` | llm_d 单独传 `--manager` |
 
 ### B/C TUI（Rust）
 
