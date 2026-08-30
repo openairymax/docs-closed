@@ -1,5 +1,9 @@
 # agentrt-0.1.6 P0-5 实证报告：两套分配器逐文件 diff
 
+> **归档状态**：已归档（ARCHIVED 2026-08-30）
+> **归档原因**：0.1.6 P0-5 分配器逐文件 diff 已完成（结论：假重复，配套裁决见同目录归档）
+> **归档执行**：Decheng Li（lidecheng@spharx.cn）
+
 - 日期：2026-08-29
 - 范围：`commons/utils/memory`（用户态门面）vs `atoms/corekern/src/mem`（内核原语）
 - 结论：**无安全可删真重复（同名异实的假重复）；4 处死面候选记录待 0.1.7+ 收敛**

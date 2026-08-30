@@ -1,5 +1,9 @@
 # agentrt-0.1.6 P0-2a DAG 收敛实证门报告
 
+> **归档状态**：已归档（ARCHIVED 2026-08-30）
+> **归档原因**：0.1.6 P0-2a 实证门已完成并裁决（分支 B 薄壳已满足，无收敛动作可做）
+> **归档执行**：Decheng Li（lidecheng@spharx.cn）
+
 > **报告编号**：EMP-AGENTRT-0.1.6-P0-2a-20260829
 > **实证对象**：`atoms/coreloopthree/src/loop/loop_dag.c` vs `atoms/taskflow/src/graph_engine.c`
 > **依据方案**：PLAN-AGENTRT-0.1.6-20260828-R2（决策 1：两套 DAG 收敛前先 diff 证伪）
