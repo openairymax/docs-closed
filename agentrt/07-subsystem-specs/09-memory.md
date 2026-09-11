@@ -7,7 +7,9 @@
 
 ## 1. 职责边界
 
-Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释放、内存池管理、Arena 线性分配器、线程缓存（tcache）、引用计数、内存调试和统计追踪等基础设施。它是 AgentRT 中所有内存操作的基础，旨在消除项目中分散的内存管理代码，提供一致的内存管理策略。
+Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释放、内存池管理、内存调试和统计追踪等基础设施。它是 AgentRT 中所有内存操作的基础，旨在消除项目中分散的内存管理代码，提供一致的内存管理策略。
+
+> **归属说明（2026-09-11）**：Arena 线性分配器（`airy_arena_*`）、per-thread cache（`airy_tcache_*`）与引用计数（`refcounted_t`）的权威实现已统一到 corekern（`atoms/corekern/include/arena.h`、`include/tcache.h`、`include/refcount.h`），commons 侧的平行实现已删除。
 
 ### 核心职责
 
@@ -15,9 +17,6 @@ Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释
 |------|------|--------|
 | **核心分配层** | 安全的内存分配/释放/重分配，支持对齐分配、零初始化、失败策略、标签追踪 | `src/memory.c` (`airy_memory.h`) |
 | **内存池** | 固定大小块的内存池管理，支持预分配、动态扩展/收缩、遍历验证 | `src/memory_pool.c` (`memory_pool.h`) |
-| **Arena 分配器** | O(1) 线性 bump 分配与整体释放，链式 chunk 扩展，mark/release 回退点 | `src/arena.c` (`arena.h`) |
-| **线程缓存** | Per-thread 本地缓存（tcache），批量获取/归还，减少全局池锁竞争 | `src/tcache.c` (`tcache.h`) |
-| **引用计数** | 基于 C11 原子的线程安全引用计数，支持自定义 deleter，双重释放检测 | `refcounted.h` |
 | **兼容层** | 与标准 C 库兼容的 `AIRY_MALLOC`/`AIRY_FREE` 等宏，安全缓冲区操作，溢出检查 | `memory_compat.h` |
 | **内存调试** | 泄漏检测、边界检查、释放后使用检查、双重释放检查、堆栈跟踪、检查点比较 | `src/memory_debug.c` (`memory_debug.h`) |
 | **统计追踪** | 全局内存统计、按类别跟踪（ALLOC_SHORT_LIVED/LONG_LIVED/CRITICAL）、水位监控、OOM 响应 | `src/memory_common.c` (`memory_common.h`) |
@@ -45,9 +44,6 @@ Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释
 | `memory_pool.h` | 内存池管理：创建/分配/释放/统计/扩展 | 16+ |
 | `memory_compat.h` | 向后兼容层：安全宏 + OOM 水位监控 + 分配追踪 | 20+ |
 | `memory_debug.h` | 内存调试：泄漏检测/边界检查/堆栈跟踪/检查点 | 17+ |
-| `arena.h` | Arena 线性分配器：创建/分配/重置/mark-release | 10+ |
-| `tcache.h` | 线程本地缓存：创建/分配/释放/批量操作/统计 | 10+ |
-| `refcounted.h` | 引用计数：alloc/retain/release + 便捷宏 | 3+ 内联 |
 | `memory_prealloc.h` | 预分配应急池：init/shutdown/acquire/release | 6 |
 | `memory_stats_reporter.h` | 统计上报：init/shutdown/get/record_alloc/record_oom | 7 |
 
@@ -89,33 +85,19 @@ size_t memory_pool_shrink(memory_pool_t *pool, size_t blocks_to_keep);
 bool memory_pool_validate(memory_pool_t *pool);
 memory_pool_t *memory_pool_create_default(size_t block_size);
 
-// Arena 分配器
-airy_arena_t *arena_create(size_t chunk_size, size_t max_chunks);
-void arena_destroy(airy_arena_t *arena);
-void *arena_alloc(airy_arena_t *arena, size_t size);
-void *arena_calloc(airy_arena_t *arena, size_t size);
-void arena_reset(airy_arena_t *arena);
-void arena_mark(airy_arena_t *arena, arena_mark_t *mark);
-void arena_release(arena_mark_t *mark);
-bool arena_get_stats(airy_arena_t *arena, arena_stats_t *stats);
-bool arena_contains(airy_arena_t *arena, const void *ptr);
-size_t arena_capacity(airy_arena_t *arena);
-size_t arena_used(airy_arena_t *arena);
+// Arena 分配器（权威实现已归 corekern：atoms/corekern/include/arena.h，airy_arena_*）
+airy_arena_t *airy_arena_create(size_t block_size);
+void airy_arena_destroy(airy_arena_t *arena);
+void *airy_arena_alloc(airy_arena_t *arena, size_t size);
+void *airy_arena_alloc_aligned(airy_arena_t *arena, size_t size, size_t alignment);
+void airy_arena_reset(airy_arena_t *arena);
+airy_arena_mark_t airy_arena_mark(airy_arena_t *arena);
+void airy_arena_reset_to(airy_arena_t *arena, airy_arena_mark_t mark);
+size_t airy_arena_used(airy_arena_t *arena);
+size_t airy_arena_capacity(airy_arena_t *arena);
 
-// 线程缓存
-airy_tcache_t *tcache_create(memory_pool_t *pool, size_t batch_size, size_t max_cached);
-void tcache_destroy(airy_tcache_t *tc);
-void *tcache_alloc(airy_tcache_t *tc);
-void tcache_free(airy_tcache_t *tc, void *ptr);
-size_t tcache_batch_fill(airy_tcache_t *tc);
-size_t tcache_batch_flush(airy_tcache_t *tc);
-void tcache_flush_all(airy_tcache_t *tc);
-bool tcache_get_stats(airy_tcache_t *tc, tcache_stats_t *stats);
-
-// 引用计数（内联）
-void *refcount_alloc(size_t obj_size, void (*deleter)(void *obj));
-void *refcount_retain(void *obj);
-bool refcount_release(void *obj);
+// 线程缓存（权威实现已归 corekern：atoms/corekern/include/tcache.h，airy_tcache_*）
+// 引用计数（权威实现已归 corekern：atoms/corekern/include/refcount.h，refcount_*）
 
 // 预分配
 int airy_prealloc_init(void);
@@ -147,7 +129,6 @@ void airy_mem_stats_record_oom(void);
 | `SAFE_MALLOC(ptr, size)` | 安全分配（失败返回 NULL） |
 | `SAFE_MALLOC_ARRAY(ptr, count, element_size)` | 安全数组分配（带溢出检查） |
 | `MEMORY_FREE_SAFE(ptr_ptr)` | 安全释放并置 NULL |
-| `AIRY_ARENA_ALLOC(size)` | 从当前线程 Arena 分配（回退到 MALLOC） |
 
 ### 2.4 错误码（来自 corekern `error.h`）
 
@@ -169,7 +150,7 @@ void airy_mem_stats_record_oom(void);
 commons/utils/memory/
   ├── error.h (来自 corekern)           — airy_err_t 错误码
   ├── stdbool.h / stddef.h / stdint.h   — 标准 C 类型
-  ├── stdatomic.h                       — C11 原子操作（refcounted.h）
+  ├── stdatomic.h                       — C11 原子操作
   └── commons/utils/compliance/         — banned_functions.h（通过 CMake -include 注入）
 ```
 
@@ -188,7 +169,6 @@ commons/utils/memory/
 | CoreLoopThree | 内存分配、内存池 | 认知循环中的临时分配 |
 | Cupolas | 内存分配 | 安全守卫运行 |
 | 所有 daemon | `AIRY_MALLOC`/`AIRY_FREE` | 通用内存分配 |
-| gateway_d | Arena 分配器 | 请求处理路径短生命周期分配 |
 | llm_d | 内存池、OOM 水位回调 | LLM 推理内存管理 |
 | tool_d | 内存分配 | 工具执行 |
 
@@ -218,21 +198,15 @@ commons/utils/memory/
 | `thread_safe` | bool | true | 是否线程安全 |
 | `name` | const char* | NULL | 内存池名称（调试用） |
 
-### 4.3 Arena 配置
+### 4.3 Arena / tcache 配置（权威实现已归 corekern）
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|:---:|------|
-| `ARENA_DEFAULT_CHUNK_SIZE` | size_t | 64KB | 默认 chunk 大小 |
-| `ARENA_MAX_CHUNK_SIZE` | size_t | 1MB | 最大 chunk 大小 |
-| `ARENA_ALIGNMENT` | size_t | 16 | 默认对齐字节 |
+Arena 与 tcache 不再有全局配置常量；参数在创建时传入（corekern `atoms/corekern/include/arena.h`、`include/tcache.h`）：
 
-### 4.4 tcache 配置
-
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|:---:|------|
-| `TCACHE_DEFAULT_BATCH_SIZE` | size_t | 16 | 默认批量获取/归还数量 |
-| `TCACHE_MAX_CACHED` | size_t | 64 | 最大缓存块数 |
-| `TCACHE_FLUSH_THRESHOLD` | size_t | 48 | 强制 flush 阈值 |
+| 参数 | 传入方式 | 说明 |
+|------|------|------|
+| arena 块大小 | `airy_arena_create(block_size)` | 初始块大小，块耗尽自动链式扩展 |
+| arena 对齐 | 默认 `sizeof(void*)`；自定义用 `airy_arena_alloc_aligned(…, alignment)` | alignment 须为 2 的幂 |
+| tcache 参数 | `airy_tcache_create(const airy_tcache_config_t *config, …)` | 批量/缓存上限等经 config 结构传入 |
 
 ### 4.5 预分配池 (`memory_prealloc.h`)
 
@@ -286,8 +260,8 @@ commons/utils/memory/
 | `memory_debug_compare_checkpoints(cp1, cp2, report)` | 比较检查点差异 | 测试 |
 | `memory_pool_get_stats(pool, stats)` | 获取内存池统计 | 测试/监控 |
 | `memory_pool_validate(pool)` | 验证内存池完整性 | 测试 |
-| `arena_get_stats(arena, stats)` | 获取 Arena 统计 | 测试/监控 |
-| `tcache_get_stats(tc, stats)` | 获取 tcache 统计 | 测试/监控 |
+| `airy_arena_used(arena)` / `airy_arena_capacity(arena)` | 获取 Arena 用量/容量（corekern） | 测试/监控 |
+| `airy_tcache_get_stats(tc, stats)` | 获取 tcache 统计（corekern） | 测试/监控 |
 | `airy_mem_stats_get(stats)` | 获取运行时统计快照 | 测试/监控 |
 | `airy_mem_stats_record_oom()` | 记录 OOM 事件 | 测试 |
 
