@@ -22,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 与 AirymaxOS 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。AirymaxOS 开源文档（`docs/AirymaxOS/`）严禁出现"openEuler"等词句；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用 openEuler 工程规范。
+本文档**仅作为内部参考**，不公开引用。AirymaxOS 开源文档（`docs/docs-linux/`）严禁出现"openEuler"等词句；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用 openEuler 工程规范。
 
 ### 1.3 术语
 
@@ -974,9 +974,9 @@ echo 1 > /proc/sys/kernel/numa_balancing
   - [01-openeuler-tech-reference/03-ebpf-spec.md](03-ebpf-spec.md) — eBPF 与 mm 协同
   - [02-olk66-source-mapping/02-io-uring-mapping.md](../02-olk66-source-mapping/02-io-uring-mapping.md) — io_uring 与 L1 写入协同
 - **开源设计**：
-  - [docs/AirymaxOS/40-dataflows/02-memory-flow.md](../../../docs/AirymaxOS/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流
-  - [docs/AirymaxOS/20-modules/04-memory.md](../../../docs/AirymaxOS/20-modules/04-memory.md) — MemoryRovol 模块设计
-  - [docs/AirymaxOS/170-performance/](../../../docs/AirymaxOS/170-performance/) — 性能调优
+  - [docs/docs-linux/40-dataflows/02-memory-flow.md](../../../docs/docs-linux/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流
+  - [docs/docs-linux/20-modules/04-memory.md](../../../docs/docs-linux/20-modules/04-memory.md) — MemoryRovol 模块设计
+  - [docs/docs-linux/170-performance/](../../../docs/docs-linux/170-performance/) — 性能调优
 
 ### 13.2 版本维护
 

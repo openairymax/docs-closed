@@ -1158,10 +1158,10 @@ sequenceDiagram
 ### 16.1 相关文档
 
 - [闭源 openEuler 安全技术规范](../01-openeuler-tech-reference/05-security-spec.md)
-- [开源安全穹顶模块设计](../../docs/AirymaxOS/20-modules/03-security.md)
-- [开源 LSM 框架详解](../../docs/AirymaxOS/110-security/01-lsm-framework.md)
-- [开源 Landlock 用户态沙箱](../../docs/AirymaxOS/110-security/02-landlock-sandbox.md)
-- [开源安全加固主索引](../../docs/AirymaxOS/110-security/README.md)
+- [开源安全穹顶模块设计](../../docs/docs-linux/20-modules/03-security.md)
+- [开源 LSM 框架详解](../../docs/docs-linux/110-security/01-lsm-framework.md)
+- [开源 Landlock 用户态沙箱](../../docs/docs-linux/110-security/02-landlock-sandbox.md)
+- [开源安全加固主索引](../../docs/docs-linux/110-security/README.md)
 - [闭源源码映射 README](README.md)
 - [闭源 OLK-6.6 内存管理源码映射](04-mm-mapping.md)
 - [闭源 OLK-6.6 eBPF 源码映射](03-bpf-mapping.md)

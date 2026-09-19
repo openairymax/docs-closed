@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **单一权威源声明**：本文件是 **agentrt `AIRY_ERR_*` → `AIRY_E*` 错误码迁移计划** 的唯一权威源。迁移目标、五阶段迁移流程（识别 → 别名 → 迁移 → 废弃 → 删除）、时间线、CI 强制校验门槛均以本文件为唯一权威定义。
 >
-> `AIRY_E*` 错误码（Error 负数空间）与 `AIRY_FAULT_*` 故障码（Fault 正数空间）的权威源为 AirymaxOS [08-sc-error-contract.md](../../docs/AirymaxOS/30-interfaces/08-sc-error-contract.md)（[SC] `error.h` 共享契约）。本迁移计划是 agentrt 侧对齐 UEF 模块（见 [08-unify-design.md](../../docs/AirymaxOS/10-architecture/08-unify-design.md) §5）C-05 冲突点消解的工程落地。
+> `AIRY_E*` 错误码（Error 负数空间）与 `AIRY_FAULT_*` 故障码（Fault 正数空间）的权威源为 AirymaxOS [08-sc-error-contract.md](../../docs/docs-linux/30-interfaces/08-sc-error-contract.md)（[SC] `error.h` 共享契约）。本迁移计划是 agentrt 侧对齐 UEF 模块（见 [08-unify-design.md](../../docs/docs-linux/10-architecture/08-unify-design.md) §5）C-05 冲突点消解的工程落地。
 
 ---
 
@@ -32,7 +32,7 @@ agentrt 仓库在历史演进中累积了两套并存的错误码命名：
 两套错误码的语义模型不同：
 
 - `AIRY_ERR_*`：采用正向整数枚举（`AIRY_ERR_NOENT=1`、`AIRY_ERR_PERM=2`...），调用方需自行取负返回
-- `AIRY_E*`：采用负数返回值（`AIRY_ENOENT=-2`、`AIRY_EPERM=-1`...），直接作为函数返回值，对齐 Linux errno 语义（见 [08-sc-error-contract.md](../../docs/AirymaxOS/30-interfaces/08-sc-error-contract.md)）
+- `AIRY_E*`：采用负数返回值（`AIRY_ENOENT=-2`、`AIRY_EPERM=-1`...），直接作为函数返回值，对齐 Linux errno 语义（见 [08-sc-error-contract.md](../../docs/docs-linux/30-interfaces/08-sc-error-contract.md)）
 
 双轨并存导致：
 
@@ -63,7 +63,7 @@ agentrt 仓库在历史演进中累积了两套并存的错误码命名：
 
 ### 1.4 映射规则
 
-`AIRY_ERR_*` → `AIRY_E*` 的核心映射（完整映射表见 [08-sc-error-contract.md](../../docs/AirymaxOS/30-interfaces/08-sc-error-contract.md)）：
+`AIRY_ERR_*` → `AIRY_E*` 的核心映射（完整映射表见 [08-sc-error-contract.md](../../docs/docs-linux/30-interfaces/08-sc-error-contract.md)）：
 
 | 旧轨（正数） | 新轨（负数） | 语义 |
 |-------------|------------|------|
@@ -211,7 +211,7 @@ agentrt 仓库在历史演进中累积了两套并存的错误码命名：
 
 ### 3.3 与 AirymaxOS Phase 2 的协同
 
-agent-linux Phase 2（1.x.x+ 阶段）引入 12 daemons 用户态化（见 [03-microkernel-strategy.md](../../docs/AirymaxOS/10-architecture/03-microkernel-strategy.md) §9.1），daemons 与 agentrt 通过 IPC 交互，错误码跨 IPC 边界传递。若 agentrt 仍用 `AIRY_ERR_*` 正数、AirymaxOS 用 `AIRY_E*` 负数，IPC 错误码传递需双向转换，是高频 bug 源。因此：
+agent-linux Phase 2（1.x.x+ 阶段）引入 12 daemons 用户态化（见 [03-microkernel-strategy.md](../../docs/docs-linux/10-architecture/03-microkernel-strategy.md) §9.1），daemons 与 agentrt 通过 IPC 交互，错误码跨 IPC 边界传递。若 agentrt 仍用 `AIRY_ERR_*` 正数、AirymaxOS 用 `AIRY_E*` 负数，IPC 错误码传递需双向转换，是高频 bug 源。因此：
 
 - **阶段 2 别名**与 Phase 2 启动同步：Phase 2 新增 daemons 全部使用 `AIRY_E*`，agentrt 侧别名垫片确保旧码与新码共存期 IPC 边界无符号断裂
 - **阶段 3 迁移**与 Phase 2 中期同步：优先迁移与 daemons 有 IPC 交互的 agentrt 子系统，消除跨边界符号转换
@@ -233,9 +233,9 @@ agent-linux Phase 2（1.x.x+ 阶段）引入 12 daemons 用户态化（见 [03-m
 ## §4 相关文档
 
 - [agentrt 工程标准规范手册](agentrt工程标准规范手册.md) —— agentrt 工程标准上级文档
-- [08-unify-design.md](../../docs/AirymaxOS/10-architecture/08-unify-design.md) —— Airymax Unify Design 总纲（UEF 模块 + C-05 冲突点）
-- [08-sc-error-contract.md](../../docs/AirymaxOS/30-interfaces/08-sc-error-contract.md) —— `AIRY_E*` 错误码与 `AIRY_FAULT_*` 故障码 [SC] 契约（迁移目标）
-- [06-iron9-shared-model.md](../../docs/AirymaxOS/10-architecture/06-iron9-shared-model.md) —— IRON-9 v3 [SC] 共享契约层（`error.h` 物理宿主）
+- [08-unify-design.md](../../docs/docs-linux/10-architecture/08-unify-design.md) —— Airymax Unify Design 总纲（UEF 模块 + C-05 冲突点）
+- [08-sc-error-contract.md](../../docs/docs-linux/30-interfaces/08-sc-error-contract.md) —— `AIRY_E*` 错误码与 `AIRY_FAULT_*` 故障码 [SC] 契约（迁移目标）
+- [06-iron9-shared-model.md](../../docs/docs-linux/10-architecture/06-iron9-shared-model.md) —— IRON-9 v3 [SC] 共享契约层（`error.h` 物理宿主）
 - [11-log-convergence-plan.md](11-log-convergence-plan.md) —— 日志收敛计划（与本计划并行推进，错误码先行）
 
 ---

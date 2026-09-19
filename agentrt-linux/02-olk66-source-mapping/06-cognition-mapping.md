@@ -660,13 +660,13 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 
 ## 8. 相关文档
 
-- [认知模块设计](../../docs/AirymaxOS/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
-- [认知循环数据流](../../docs/AirymaxOS/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
+- [认知模块设计](../../docs/docs-linux/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
+- [认知循环数据流](../../docs/docs-linux/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
 - [调度子系统闭源映射](01-sched-ext-mapping.md)：sched_ext + SCHED_AGENT
 - [内存子系统闭源映射](04-mm-mapping.md)：MemoryRovol + CXL + PMEM（KV cache 分层基础）
 - [安全子系统闭源映射](05-security-mapping.md)：capability + LSM（横切关注点）
 - [认知子系统技术规范](../01-openeuler-tech-reference/06-cognition-spec.md)：kthread 工程规范 + LLM 推理调度最佳实践
-- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxOS/50-engineering-standards/README.md)
+- [IRON-9 v2 三层共享模型定义](../../docs/docs-linux/50-engineering-standards/README.md)
 
 ---
 

@@ -4,7 +4,7 @@ confidentiality: SPHARX Ltd 内部参考，闭源不公开
 version: 1.0.1 (开发) / 0.1.1 (文档体系完成)
 last_updated: 2026-07-07
 theory_source: seL4（唯一来源，ADR-014）
-open_source_reference: docs/AirymaxOS/10-architecture/03-microkernel-strategy.md
+open_source_reference: docs/docs-linux/10-architecture/03-microkernel-strategy.md
 copyright: Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ---
 
@@ -16,7 +16,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 **版本**：0.1.1（文档体系完成）/ 1.0.1（开发）  
 **最后更新**：2026-07-07  
 **理论来源**：seL4（唯一来源，ADR-014）  
-**关联文档**：`docs/AirymaxOS/10-architecture/03-microkernel-strategy.md`（开源版）
+**关联文档**：`docs/docs-linux/10-architecture/03-microkernel-strategy.md`（开源版）
 
 > 本文档是开源版 `10-architecture/03-microkernel-strategy.md` 的闭源深化版，包含内部技术决策、详细的实施路线、验收标准和风险评估。
 

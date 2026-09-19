@@ -27,8 +27,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 文档 | 性质 | 内容 |
 |------|------|------|
-| `docs/AirymaxOS/20-modules/05-cognition.md`（开源） | 公开 | 模块设计（不含 OLK-6.6 引用） |
-| `docs/AirymaxOS/40-dataflows/01-cognition-flow.md`（开源） | 公开 | 数据流设计（不含 OLK-6.6 引用） |
+| `docs/docs-linux/20-modules/05-cognition.md`（开源） | 公开 | 模块设计（不含 OLK-6.6 引用） |
+| `docs/docs-linux/40-dataflows/01-cognition-flow.md`（开源） | 公开 | 数据流设计（不含 OLK-6.6 引用） |
 | `docs-closed/agent-linux/02-olk66-source-mapping/06-cognition-mapping.md`（闭源） | 内部 | OLK-6.6 源码映射（38 条 OS-COG-MAP 规则） |
 | **本文档**（闭源） | 内部 | 工程规范（kthread + LLM 调度 + GPU/NPU + 采纳决策） |
 
@@ -671,13 +671,13 @@ AirymaxOS 认知子系统的工程思想与实现方式与 Euler 保持一致性
 
 ## 8. 相关文档
 
-- [认知模块设计](../../docs/AirymaxOS/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
-- [认知循环数据流](../../docs/AirymaxOS/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
+- [认知模块设计](../../docs/docs-linux/20-modules/05-cognition.md)：CoreLoopThree + Thinkdual + LLM 调度（开源）
+- [认知循环数据流](../../docs/docs-linux/40-dataflows/01-cognition-flow.md)：12 步数据流 + IRON-9 v2 三层标注（开源）
 - [认知子系统源码映射](../02-olk66-source-mapping/06-cognition-mapping.md)：38 条 OS-COG-MAP 规则
 - [调度子系统技术规范](01-scheduler-spec.md)：sched_ext + SCHED_AGENT
 - [内存子系统技术规范](04-memory-spec.md)：MemoryRovol + CXL + PMEM
 - [安全子系统技术规范](05-security-spec.md)：capability + LSM
-- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxOS/50-engineering-standards/README.md)
+- [IRON-9 v2 三层共享模型定义](../../docs/docs-linux/50-engineering-standards/README.md)
 
 ---
 

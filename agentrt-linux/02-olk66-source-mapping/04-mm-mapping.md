@@ -687,7 +687,7 @@ enum memory_tier_level {
 | Switched Fabric | CXL Switch 多设备 | 数据中心池化 |
 | Fabric-Attached Memory | 全解耦内存池 | 超节点 OS 跨节点共享 |
 
-> **OS-MM-MAP-023**: AirymaxOS 超节点 OS（参考 docs/AirymaxOS/10-architecture/）使用 Fabric-Attached Memory 模式——L1 原始卷可通过 CXL fabric 跨节点共享读取，避免复制。
+> **OS-MM-MAP-023**: AirymaxOS 超节点 OS（参考 docs/docs-linux/10-architecture/）使用 Fabric-Attached Memory 模式——L1 原始卷可通过 CXL fabric 跨节点共享读取，避免复制。
 
 ---
 
@@ -972,9 +972,9 @@ typedef void (*agentrt_pmem_flush_fn)(void *addr, size_t size);
   - [02-olk66-source-mapping/03-bpf-mapping.md](03-bpf-mapping.md) — eBPF 与 MemoryRovol 协同
   - [02-olk66-source-mapping/02-io-uring-mapping.md](02-io-uring-mapping.md) — io_uring 与 L1 写入协同
 - **开源设计**：
-  - [docs/AirymaxOS/40-dataflows/02-memory-flow.md](../../../docs/AirymaxOS/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流（开源）
-  - [docs/AirymaxOS/20-modules/04-memory.md](../../../docs/AirymaxOS/20-modules/04-memory.md) — MemoryRovol 模块设计（开源）
-  - [docs/AirymaxOS/50-engineering-standards/README.md](../../../docs/AirymaxOS/50-engineering-standards/README.md) §1.3 IRON-9 v2
+  - [docs/docs-linux/40-dataflows/02-memory-flow.md](../../../docs/docs-linux/40-dataflows/02-memory-flow.md) — MemoryRovol 数据流（开源）
+  - [docs/docs-linux/20-modules/04-memory.md](../../../docs/docs-linux/20-modules/04-memory.md) — MemoryRovol 模块设计（开源）
+  - [docs/docs-linux/50-engineering-standards/README.md](../../../docs/docs-linux/50-engineering-standards/README.md) §1.3 IRON-9 v2
 
 ### 12.2 版本维护
 

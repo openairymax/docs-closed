@@ -7,7 +7,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档状态**：DRAFT（待评审）\
 > **最后更新**：2026-08-06\
 > **上级文档**：[AgentRT 文档中心](../../README.md)\
-> **关联文档**：[06-agent-gateway-wiring.md](../_design_0.1.1/06-agent-gateway-wiring.md)、[07-gateway-mem-acl.md](../_design_0.1.1/07-gateway-mem-acl.md)、[02-l2-service-protocol.md](../../../../docs/AirymaxRT/30-interfaces/05-runtime-interfaces/02-l2-service-protocol.md)
+> **关联文档**：[06-agent-gateway-wiring.md](../_design_0.1.1/06-agent-gateway-wiring.md)、[07-gateway-mem-acl.md](../_design_0.1.1/07-gateway-mem-acl.md)、[02-l2-service-protocol.md](../../../../docs/docs-workload/30-interfaces/05-runtime-interfaces/02-l2-service-protocol.md)
 
 ---
 

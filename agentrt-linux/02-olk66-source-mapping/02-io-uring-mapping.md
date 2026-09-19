@@ -702,10 +702,10 @@ AirymaxOS IPC 的 [SC] 层 `include/airymax/ipc.h` 与 agentrt AgentsIPC 共享�
 ## 14. 相关文档
 
 - [闭源 openEuler io_uring 技术规范](../01-openeuler-tech-reference/02-io-uring-spec.md)
-- [开源 IPC 消息流设计](../../docs/AirymaxOS/40-dataflows/03-ipc-flow.md)
-- [开源 IPC 协议接口](../../docs/AirymaxOS/30-interfaces/02-ipc-protocol.md)
+- [开源 IPC 消息流设计](../../docs/docs-linux/40-dataflows/03-ipc-flow.md)
+- [开源 IPC 协议接口](../../docs/docs-linux/30-interfaces/02-ipc-protocol.md)
 - [sched_ext 源码映射](01-sched-ext-mapping.md)（同系列文档模式参考）
-- [IRON-9 v2 三层共享模型定义](../../docs/AirymaxOS/50-engineering-standards/README.md)
+- [IRON-9 v2 三层共享模型定义](../../docs/docs-linux/50-engineering-standards/README.md)
 
 ---
 

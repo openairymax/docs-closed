@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.1 目的
 
-本文档全面参考 openEuler 社区的调度器技术规范，作为 AirymaxOS SCHED_AGENT 策略设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/AirymaxOS/`）中。
+本文档全面参考 openEuler 社区的调度器技术规范，作为 AirymaxOS SCHED_AGENT 策略设计的参考基础。所有参考内容**仅供 SPHARX Ltd 内部使用**，不得出现在开源文档（`docs/docs-linux/`）中。
 
 ### 1.2 参考来源
 
@@ -42,7 +42,7 @@ OLK-6.6 是基于 Linux 6.6 主线的 openEuler 内核基线，包含从主线 6
 
 1. **先参考 Euler**：查阅本文档对应章节的 openEuler 调度器规范
 2. **再参考行业最新理论**：查阅 `04-industry-best-practices/01-latest-theory.md` 中的最新理论
-3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/AirymaxOS/40-dataflows/04-scheduling-flow.md`
+3. **最后形成 AirymaxOS 技术方案**：综合形成开源设计文档 `docs/docs-linux/40-dataflows/04-scheduling-flow.md`
 
 ---
 
@@ -698,11 +698,11 @@ openEuler LSM（Linux Security Module）调度钩子：
 - [微内核设计参考](../03-microkernel-design-ref/README.md)：seL4/Zircon/Minix3 参考
 - [行业最佳实践](../04-industry-best-practices/README.md)：最新理论与最佳实践
 
-### 13.2 开源设计文档（`docs/AirymaxOS/`）
+### 13.2 开源设计文档（`docs/docs-linux/`）
 
-- [调度数据流](../../docs/AirymaxOS/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
-- [内核模块设计](../../docs/AirymaxOS/20-modules/01-kernel.md)：kernel 子仓
-- [工程基线](../../docs/AirymaxOS/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
+- [调度数据流](../../docs/docs-linux/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
+- [内核模块设计](../../docs/docs-linux/20-modules/01-kernel.md)：kernel 子仓
+- [工程基线](../../docs/docs-linux/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
 
 ---
 

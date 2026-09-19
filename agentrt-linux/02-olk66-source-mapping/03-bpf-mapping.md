@@ -698,7 +698,7 @@ eBPF 与 io_uring 在 AirymaxOS 中协同：
 ### 13.1 相关文档
 
 **同模块闭源文档**：[`01-sched-ext-mapping.md`](01-sched-ext-mapping.md)（调度器源码映射）、[`02-io-uring-mapping.md`](02-io-uring-mapping.md)（IPC 源码映射）。
-**同模块开源文档**：`docs/AirymaxOS/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）、`docs/AirymaxOS/40-dataflows/03-ipc-flow.md`（IPC 数据流）、`docs/AirymaxOS/40-dataflows/04-scheduling-flow.md`（调度数据流）。
+**同模块开源文档**：`docs/docs-linux/90-observability/02-ebpf-probes.md`（eBPF 可编程探针）、`docs/docs-linux/40-dataflows/03-ipc-flow.md`（IPC 数据流）、`docs/docs-linux/40-dataflows/04-scheduling-flow.md`（调度数据流）。
 **openEuler 技术规范**：[`../01-openeuler-tech-reference/03-ebpf-spec.md`](../01-openeuler-tech-reference/03-ebpf-spec.md)。
 **内核源码**：OLK-6.6 `kernel/bpf/{syscall.c,verifier.c,bpf_struct_ops.c,helpers.c,btf.c,ringbuf.c,hashtab.c,arraymap.c}`、`include/linux/bpf.h`、`include/uapi/linux/bpf.h`、`kernel/sched/ext.c`。
 

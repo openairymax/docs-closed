@@ -22,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ### 1.2 与 agent-linux 设计的差异化声明
 
-本文档**仅作为内部参考**，不公开引用。agent-linux 开源文档（`docs/AirymaxOS/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用参考发行版工程规范。
+本文档**仅作为内部参考**，不公开引用。agent-linux 开源文档（`docs/docs-linux/`）严禁出现参考发行版相关描述；本文档作为 `docs-closed/agent-linux/` 内部资料，可全面引用参考发行版工程规范。
 
 ### 1.3 IRON-9 v2 三层共享模型标注
 
@@ -1391,8 +1391,8 @@ struct airy_ipc_otel_span {
 - [闭源 io_uring 技术规范](02-io-uring-spec.md)
 - [闭源安全技术规范](05-security-spec.md)
 - [闭源调度器技术规范](01-scheduler-spec.md)
-- [开源 IPC 协议设计](../../docs/AirymaxOS/30-interfaces/02-ipc-protocol.md)
-- [开源 io_uring IPC 数据流](../../docs/AirymaxOS/40-dataflows/03-ipc-flow.md)
+- [开源 IPC 协议设计](../../docs/docs-linux/30-interfaces/02-ipc-protocol.md)
+- [开源 io_uring IPC 数据流](../../docs/docs-linux/40-dataflows/03-ipc-flow.md)
 
 ### 16.2 版本维护
 

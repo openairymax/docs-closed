@@ -674,7 +674,7 @@ osc commit -m "trigger sw_64 build for ALK-6.6-dev $(git -C "$ALK_DIR" rev-parse
 | sync-euler-drivers.sh（`/home/spharx/SpharxWorks/sync-upstream/sync-euler-drivers.sh`） | E4 三架构 defconfig 验证（sw_64 记录跳过）；E5 diffconfig IRON-7 一致性验证（sw_64 跳过） | §8.1/§8.2 将 sw_64 从"跳过"升级为"OBS 触发构建 + 产物回灌参与 E5 校验" |
 | v3.6 审查报告（`agent-linux/00-reviews/_review_v3.6/`） | OBS 相关内容**未提及**（本方案自建）；构建事实来源：`21-openEuler-engineering-standards-v3.6c.md` §9（Makefile.oever/Kbuild filechk_offsets/Makefile.build）、§1.1+§10（KABI 构建期校验 kabideps/kabisyms/check-kabi）；sw_64 唯一提及为 `16-fault-handling-isolation-v3.6b.md` L134 与 `18-closure-summary-v3.6b.md` L152（airy_die_notify 需补 `CONFIG_SW64` 守卫，N13） | §6.1（版本解耦）、§6.6（KABI 取舍）引用上述事实；N13 的 `CONFIG_SW64` 守卫补丁纳入后续内核提交（§10.3），其编译验证经 OBS 通道 |
 
-**保密与合规边界**（与 [12-build-and-flash-strategy.md §9](12-build-and-flash-strategy.md) 一致）：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`；OBS 项目名、API 端点、toolchain path 等内部基础设施信息不对外暴露（BAN-INTERNAL-002 硬件适配语境豁免）；OBS 构建产物（含 LAYER sw_64 驱动源码）发布时须公开源码以满足 GPL-2.0 强 copyleft 要求（[11-layer-feasibility-study.md §3.2](11-layer-feasibility-study.md)）。
+**保密与合规边界**（与 [12-build-and-flash-strategy.md §9](12-build-and-flash-strategy.md) 一致）：本文档为闭源参考，不进入开源 `docs/docs-linux/`；OBS 项目名、API 端点、toolchain path 等内部基础设施信息不对外暴露（BAN-INTERNAL-002 硬件适配语境豁免）；OBS 构建产物（含 LAYER sw_64 驱动源码）发布时须公开源码以满足 GPL-2.0 强 copyleft 要求（[11-layer-feasibility-study.md §3.2](11-layer-feasibility-study.md)）。
 
 ---
 

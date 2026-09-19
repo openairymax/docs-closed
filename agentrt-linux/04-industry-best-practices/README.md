@@ -38,7 +38,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ├─────────────────────────────────────────────────────────────┤
 │ 第 3 段：形成 AirymaxOS 技术方案                              │
 │   输出：03-airymaxos-synthesis.md（综合）                     │
-│         → 转化为开源设计文档 docs/AirymaxOS/             │
+│         → 转化为开源设计文档 docs/docs-linux/             │
 │   原则：用 AirymaxOS 自身语言，非直接翻译                     │
 └─────────────────────────────────────────────────────────────┘
 ```

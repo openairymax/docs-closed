@@ -48,7 +48,7 @@ AirymaxOS 落地：MicroCoreRT 极简内核只保留 IPC、内存、任务、时
 
 ## 5. 与开源文档的关系
 
-- `04-microkernel-strategy.md` 是 `docs/AirymaxOS/10-architecture/03-microkernel-strategy.md` 的闭源深化版
+- `04-microkernel-strategy.md` 是 `docs/docs-linux/10-architecture/03-microkernel-strategy.md` 的闭源深化版
 - 闭源版可引用具体微内核源码与论文，开源版只能用 AirymaxOS 自身语言
 - seL4/Zircon/Minix3 名称在开源文档中可保留（公开学术资料），但其内部实现细节参考仅限本目录
 

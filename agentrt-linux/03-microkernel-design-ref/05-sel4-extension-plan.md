@@ -426,7 +426,7 @@ OLK-6.6 也用同样结构（`LICENSES/preferred/`、`dual/`、`exceptions/`、`
 
 agent-linux 采纳 SPDX-License-Identifier + LICENSES 目录治理（[SS] 同源），许可证策略独立：
 
-- **开源部分**（`docs/AirymaxOS/`）：AGPL v3 + Apache 2.0
+- **开源部分**（`docs/docs-linux/`）：AGPL v3 + Apache 2.0
 - **闭源部分**（`docs-closed/`）：SPHARX Ltd 内部参考，不对外发布
 - **内核代码**：GPL-2.0（与 Linux 6.6 基线一致）
 
@@ -657,7 +657,7 @@ seL4 是形式化验证的微内核，agent-linux 基于 Linux 6.6 改造，两�
 ## 7. 与开源文档的关系
 
 - 本改造方案是**闭源参考**，不对外发布
-- 开源设计文档（`docs/AirymaxOS/`）引用本方案时，必须用 agent-linux 自身语言表述
+- 开源设计文档（`docs/docs-linux/`）引用本方案时，必须用 agent-linux 自身语言表述
 - 开源文档中**严禁**出现 seL4 源码路径、行号、函数名等直接引用
 - 开源文档中**严禁**出现任何主流 Linux 发行版的名称
 

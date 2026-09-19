@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档状态**：DRAFT（待确认）\
 > **最后更新**：2026-08-06\
 > **上级文档**：[AgentRT 文档中心](../../README.md)\
-> **关联文档**：[工作大厅 08-work-hall.md](../../../../docs/AirymaxRT/10-architecture/08-work-hall.md)、[系统架构 01-system-architecture.md](../../../../docs/AirymaxRT/10-architecture/01-system-architecture.md)、[L2 服务协议 02-l2-service-protocol.md](../../../../docs/AirymaxRT/30-interfaces/05-runtime-interfaces/02-l2-service-protocol.md)
+> **关联文档**：[工作大厅 08-work-hall.md](../../../../docs/docs-workload/10-architecture/08-work-hall.md)、[系统架构 01-system-architecture.md](../../../../docs/docs-workload/10-architecture/01-system-architecture.md)、[L2 服务协议 02-l2-service-protocol.md](../../../../docs/docs-workload/30-interfaces/05-runtime-interfaces/02-l2-service-protocol.md)
 
 ---
 

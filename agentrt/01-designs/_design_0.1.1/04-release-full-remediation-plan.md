@@ -7,7 +7,7 @@
 > **决策**: 2026-07-11 用户选择**方案 B（稳妥：全修后发行）**——先修全部 P0+P1+P2，再发行 0.1.1  
 > **依赖**: 三源深度研读（① agentrt 7 子仓 ~318.6K LOC 源码逐仓审查 ② docs/AirymaxRT 85 篇设计与规范文档约束提取 ③ docs-closed/agentrt 95 份历史档案逐项修复状态追踪）  
 > **关联**: [01-repo-split-proposal.md](01-repo-split-proposal.md) / [02-tech-improvement-plan-v3.0.md](02-tech-improvement-plan-v3.0.md) / [03-detailed-task-list.md](03-detailed-task-list.md) / [CCN_LONG_TAIL_REMEDIATION.md](CCN_LONG_TAIL_REMEDIATION.md) / [_review_0.1.1/01-license-audit-report.md](../_review_0.1.1/01-license-audit-report.md)  
-> **权威契约基准**: [docs/AirymaxRT/10-architecture/06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md)（IRON-9 v2）  
+> **权威契约基准**: [docs/docs-workload/10-architecture/06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md)（IRON-9 v2）  
 > **SPDX-License-Identifier**: AGPL-3.0-or-later OR Apache-2.0  
 > **Copyright**: (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
@@ -60,12 +60,12 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 ### P0-01: [SC] 共享契约层 6 头文件完全缺失 ⭐ 最大阻断
 
-**问题描述**：IRON-9 v2 声明的 6 个 `include/airymax/*.h` 物理共享头文件全部不存在，`include/airymax/` 目录本身不存在。agentrt 代码 0 处 `#include <airymax/*.h>`，而是各子仓自行重新定义类型。文档（docs/AirymaxOS/10-architecture/01-system-architecture.md:256-257 等）大量引用这些头文件，形成"文档承诺 vs 实现悬空"的系统性脱节。
+**问题描述**：IRON-9 v2 声明的 6 个 `include/airymax/*.h` 物理共享头文件全部不存在，`include/airymax/` 目录本身不存在。agentrt 代码 0 处 `#include <airymax/*.h>`，而是各子仓自行重新定义类型。文档（docs/docs-linux/10-architecture/01-system-architecture.md:256-257 等）大量引用这些头文件，形成"文档承诺 vs 实现悬空"的系统性脱节。
 
 **三源证据**：
 - 源码 agent #1（P0-2/P0-4）：`find -name 'bpf_struct_ops.h'` 等均空；`include/airymax/` 不存在
 - 历史 agent #3（NF-01, f 项）：6 头文件均不存在，agentrt 与 agent-linux 两端都未创建
-- 规范 agent #2（ARCH-SC01）：[06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) 声明 6 头文件逐字节共享
+- 规范 agent #2（ARCH-SC01）：[06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) 声明 6 头文件逐字节共享
 
 **根因分析**：0.1.1 奠基阶段聚焦于各子仓功能实现，未将跨态契约层物理化。[SC] 头文件设计需同时满足 agentrt（用户态 C）与 agent-linux（内核态 C，1.0.1 阶段）双端约束，设计权衡未完成即进入实现。
 
@@ -79,20 +79,20 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
    - `agentrt/commons/include/airymax/cognition_types.h` — CoreLoopThree 阶段枚举（PERCEPTION/THINKING/ACTION）+ Thinkdual 模式枚举 + LLM 推理阶段枚举 + CoreLoopThree 上下文结构 + Token 能效指标结构 + GPU/NPU 能力描述符
    - `agentrt/commons/include/airymax/sched.h` — SCHED_EXT 调度类编号约束 + 任务描述符（magic 0x41475453 'AGTS'）+ vtime 类型与衰减公式 + 优先级范围 0-139 + AIRYMAX_SLICE_DFL（20ms）+ **MAC_MAX_AGENTS=1024 SSoT**
    - `agentrt/commons/include/airymax/ipc.h` — IPC magic（0x41524531 'ARE1'）+ 128B 消息头结构（`airymax_ipc_msg_hdr_t`）+ SQE/CQE 操作码与标志位
-3. **内容来源**：以 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1-§3.5 的字段定义为蓝本，逐字段物理化为 C 结构体
+3. **内容来源**：以 [06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) §3.1-§3.5 的字段定义为蓝本，逐字段物理化为 C 结构体
 4. **类型规范**（IRON-9 §4.1-5）：
    - 类型前缀统一 `__u32`/`__u16`/`__u64`（内核风格，用户态通过 `<stdint.h>` 别名兼容）
    - 函数前缀统一 `airymax_`
    - 禁止 `float`/`double`，改用 Q16.16 定点数（`__s32` 高 16 位整数 + 低 16 位小数）
    - 结构体使用 `#pragma pack(push,1)` + `_Static_assert(sizeof(struct) == N)` 保证布局冻结
 5. **agentrt 侧引用改造**：将 `are_ipc.h` 中的 `are_ipc_message_header_t` 改为 `#include <airymax/ipc.h>` 后 `typedef airymax_ipc_msg_hdr_t are_ipc_message_header_t`（兼容别名，过渡期保留）；同理处理 task.h、memory_types 等
-6. **error.h 第 7 头文件澄清**（见 P0-06 / §5.4）：明确 error.h 是否属于 [SC] 层。若属于则改为 7 头文件并更新所有引用文档；若不属于则修正 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1 line 213 + 映射表 line 327 的标注
+6. **error.h 第 7 头文件澄清**（见 P0-06 / §5.4）：明确 error.h 是否属于 [SC] 层。若属于则改为 7 头文件并更新所有引用文档；若不属于则修正 [06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) §3.1 line 213 + 映射表 line 327 的标注
 
 **涉及文件**：
 - 新建：`agentrt/commons/include/airymax/{bpf_struct_ops,memory_types,security_types,cognition_types,sched,ipc}.h`（6 文件）
 - 修改：`agentrt/atoms/corekern/include/are_ipc.h`、`task.h`、`agentrt/commons/include/agentrt_types.h`（改 #include）
 - 修改：`agentrt/commons/CMakeLists.txt`（增加 `target_include_directories(agentrt_common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)`)
-- 文档：`docs/AirymaxRT/10-architecture/06-iron9-shared-model.md`（澄清 6 vs 7）
+- 文档：`docs/docs-workload/10-architecture/06-iron9-shared-model.md`（澄清 6 vs 7）
 
 **工作量估算**：16~40h（6 头文件设计 12~24h + 引用改造 4~12h + 验证 4h）
 
@@ -303,7 +303,7 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
    - 注意：SSoT 布局与当前 agentrt `are_ipc_message_header_t`（含 source[32]/target[32]/correlation_id 等）不同，需评估兼容性。若改布局会破坏现有 daemon 间通信，则**显式声明分层**：
      - L1 corekern IPC 用 `airymax_ipc_msg_hdr_t`（SSoT，跨 agentrt↔agent-linux）
      - L2 daemon-IPC 用 `are_ipc_message_header_t`（agentrt 独有 [IND] 层，magic 统一为 0x41524531 但布局不同）
-     - 在 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) 明确此分层
+     - 在 [06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) 明确此分层
 3. **命名对齐**：`are_ipc_message_header_t` 保留为 L2 别名，但 `airymax_ipc_msg_hdr_t` 为 SSoT 主名
 4. **验证**：全量 grep 确认仅 1 个 magic 值：`grep -rn '0x49504300\|0x414F5350\|0x49534200' agentrt --include=*.{c,h}` = 0
 
@@ -312,7 +312,7 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 - 修改：`agentrt/commons/include/agentrt_types.h:138`
 - 修改：`agentrt/daemons/common/include/ipc_service_bus.h:86`
 - 修改：`agentrt/atoms/corekern/include/are_ipc.h`（对齐 SSoT 或声明 [IND] 分层）
-- 文档：`docs/AirymaxRT/10-architecture/06-iron9-shared-model.md`（声明分层）
+- 文档：`docs/docs-workload/10-architecture/06-iron9-shared-model.md`（声明分层）
 
 **工作量估算**：4~8h（magic 收敛 1h + 布局决策 2~4h + 改造 1~2h + 验证 1h）
 
@@ -328,10 +328,10 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 ### P0-06: 文档错误码值错误 + Cupolas 3 套并行错误码系统
 
 **问题描述**：
-- `docs/AirymaxRT/50-specifications/10-contracts/06-glossary-index.md`：AGENTRT_EINVAL=-2（应为 -1），全部错误码值与 SSoT 不一致
-- `docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md §5.3.1`：使用 `free()` 而非 `agentrt_sys_free()`
-- `docs/AirymaxRT/50-specifications/40-error-code/README.md`：Cupolas 存在 3 套并行错误码系统（commons/cupolas enum/cupolas 本地 #define）
-- `docs/AirymaxRT/50-specifications/70-project-erp/04-resource-management-table.md §4.1`：明确要求"始终使用 malloc()/calloc()/realloc()"，直接违反 BAN
+- `docs/docs-workload/50-specifications/10-contracts/06-glossary-index.md`：AGENTRT_EINVAL=-2（应为 -1），全部错误码值与 SSoT 不一致
+- `docs/docs-workload/50-specifications/10-contracts/03-protocol-contract.md §5.3.1`：使用 `free()` 而非 `agentrt_sys_free()`
+- `docs/docs-workload/50-specifications/40-error-code/README.md`：Cupolas 存在 3 套并行错误码系统（commons/cupolas enum/cupolas 本地 #define）
+- `docs/docs-workload/50-specifications/70-project-erp/04-resource-management-table.md §4.1`：明确要求"始终使用 malloc()/calloc()/realloc()"，直接违反 BAN
 
 **三源证据**：
 - 规范 agent #2（F-P0-01/02/03/05）独家发现
@@ -340,27 +340,27 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 **修复步骤**：
 
-1. **glossary-index.md 错误码值对齐**：以 [02-error-code-reference.md](../../docs/AirymaxRT/50-specifications/70-project-erp/02-error-code-reference.md) 为 SSoT，修正 `06-glossary-index.md` 中所有错误码值（EINVAL=-1, ENOMEM=-2, ETIMEOUT=-11, EBUSY=-9 等）
+1. **glossary-index.md 错误码值对齐**：以 [02-error-code-reference.md](../../docs/docs-workload/50-specifications/70-project-erp/02-error-code-reference.md) 为 SSoT，修正 `06-glossary-index.md` 中所有错误码值（EINVAL=-1, ENOMEM=-2, ETIMEOUT=-11, EBUSY=-9 等）
 2. **protocol-contract.md 移除 free()**：将 `§5.3.1` 代码示例中 `free(ptr)` → `MEMORY_FREE_SAFE(ptr)` 或 `agentrt_sys_free(ptr)`
 3. **Cupolas 错误码统一**：
    - 审查 `agentrt/cupolas/include/cupolas.h` 的 `cupolas_OK`/`cupolas_ERROR_UNKNOWN` 等小写前缀别名（源码 agent #1 P2-8）
    - 统一为 `#include "error.h"` 后 `#define cupolas_OK AGENTRT_OK` 等兼容别名，或删除别名直接用 AGENTRT_E*
    - 删除 cupolas 本地 `#define` 重定义
 4. **resource-management-table.md §4.1 修正**：将"始终使用 malloc()/calloc()/realloc()" → "始终使用 AGENTRT_MALLOC/AGENTRT_CALLOC/AGENTRT_REALLOC"；"使用 free() 后置 NULL" → "使用 MEMORY_FREE_SAFE(&ptr)"
-5. **验证**：`grep -rn '\bfree(' docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md` = 0
+5. **验证**：`grep -rn '\bfree(' docs/docs-workload/50-specifications/10-contracts/03-protocol-contract.md` = 0
 
 **涉及文件**：
-- 修改：`docs/AirymaxRT/50-specifications/10-contracts/06-glossary-index.md`
-- 修改：`docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md`
-- 修改：`docs/AirymaxRT/50-specifications/40-error-code/README.md`
-- 修改：`docs/AirymaxRT/50-specifications/70-project-erp/04-resource-management-table.md`
+- 修改：`docs/docs-workload/50-specifications/10-contracts/06-glossary-index.md`
+- 修改：`docs/docs-workload/50-specifications/10-contracts/03-protocol-contract.md`
+- 修改：`docs/docs-workload/50-specifications/40-error-code/README.md`
+- 修改：`docs/docs-workload/50-specifications/70-project-erp/04-resource-management-table.md`
 - 修改：`agentrt/cupolas/include/cupolas.h`（cupolas_OK 等别名）
 
 **工作量估算**：4~8h（glossary 对齐 1~2h + protocol-contract 0.5h + Cupolas 统一 2~4h + resource-table 0.5h + 验证 1h）
 
 **验收标准**：
-- ACC-RFRP-17: `grep -n 'AGENTRT_EINVAL' docs/AirymaxRT/50-specifications/10-contracts/06-glossary-index.md` 值 = -1
-- ACC-RFRP-18: `grep -rn '\bfree(' docs/AirymaxRT/50-specifications/10-contracts/03-protocol-contract.md` = 0
+- ACC-RFRP-17: `grep -n 'AGENTRT_EINVAL' docs/docs-workload/50-specifications/10-contracts/06-glossary-index.md` 值 = -1
+- ACC-RFRP-18: `grep -rn '\bfree(' docs/docs-workload/50-specifications/10-contracts/03-protocol-contract.md` = 0
 - ACC-RFRP-19: `grep -rn '#define.*ERROR' agentrt/cupolas/include/cupolas.h | grep -v '#include'` ≤ 2（仅兼容别名）
 
 **依赖**：无
@@ -370,8 +370,8 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 ### P0-07: 文档许可证冲突（MIT / GPL-3.0-only）
 
 **问题描述**：
-- `docs/AirymaxRT/50-specifications/70-project-erp/01-sbom.md`：内部组件许可证列为 MIT，与项目双许可证 AGPL-3.0-or-later OR Apache-2.0 冲突
-- `docs/AirymaxRT/50-specifications/30-coding-standard/04-config-audit-log.md`：使用 `SPDX-License-Identifier: GPL-3.0-only`
+- `docs/docs-workload/50-specifications/70-project-erp/01-sbom.md`：内部组件许可证列为 MIT，与项目双许可证 AGPL-3.0-or-later OR Apache-2.0 冲突
+- `docs/docs-workload/50-specifications/30-coding-standard/04-config-audit-log.md`：使用 `SPDX-License-Identifier: GPL-3.0-only`
 
 **三源证据**：
 - 规范 agent #2（F-P0-04, F-P1-01）独家发现
@@ -382,17 +382,17 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 1. `01-sbom.md`：内部组件许可证 `MIT` → `AGPL-3.0-or-later OR Apache-2.0`（SBOM 示例 JSON 中所有 `licenseConcluded`/`licenseDeclared` 字段）
 2. `04-config-audit-log.md`：文件头 `SPDX-License-Identifier: GPL-3.0-only` → `SPDX-License-Identifier: AGPL-3.0-or-later OR Apache-2.0`
-3. 全量验证：`grep -rn 'GPL-3.0-only\|licenseConcluded.*MIT\|licenseDeclared.*MIT' docs/AirymaxRT/` = 0
+3. 全量验证：`grep -rn 'GPL-3.0-only\|licenseConcluded.*MIT\|licenseDeclared.*MIT' docs/docs-workload/` = 0
 
 **涉及文件**：
-- 修改：`docs/AirymaxRT/50-specifications/70-project-erp/01-sbom.md`
-- 修改：`docs/AirymaxRT/50-specifications/30-coding-standard/04-config-audit-log.md`
+- 修改：`docs/docs-workload/50-specifications/70-project-erp/01-sbom.md`
+- 修改：`docs/docs-workload/50-specifications/30-coding-standard/04-config-audit-log.md`
 
 **工作量估算**：0.5h
 
 **验收标准**：
-- ACC-RFRP-20: `grep -rn 'GPL-3.0-only' docs/AirymaxRT/` = 0
-- ACC-RFRP-21: `grep -rn 'licenseConcluded.*"MIT"\|licenseDeclared.*"MIT"' docs/AirymaxRT/` = 0
+- ACC-RFRP-20: `grep -rn 'GPL-3.0-only' docs/docs-workload/` = 0
+- ACC-RFRP-21: `grep -rn 'licenseConcluded.*"MIT"\|licenseDeclared.*"MIT"' docs/docs-workload/` = 0
 
 **依赖**：无
 
@@ -572,17 +572,17 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 ### P1-17: 文档引用禁止版本号（v0.2.0/v0.3.0/v1.0.0）
 
 **问题**：
-- `docs/AirymaxRT/50-specifications/20-are-standards/README.md` 和 `60-ipc/README.md` 标准化路线图引用 v0.2.0/v0.3.0/v1.0.0 版本，违反 IRON-8（禁止 0.1.2/0.2.0/0.3.0/1.0.0 中间版本，0.1.1→1.0.1 直接过渡）
+- `docs/docs-workload/50-specifications/20-are-standards/README.md` 和 `60-ipc/README.md` 标准化路线图引用 v0.2.0/v0.3.0/v1.0.0 版本，违反 IRON-8（禁止 0.1.2/0.2.0/0.3.0/1.0.0 中间版本，0.1.1→1.0.1 直接过渡）
 - `50-specifications/30-coding-standard/11-naming-conventions.md:482` `@since v0.2.0`
 
 **修复**：
 1. ARE Standards 路线图调整为 `v0.1.1 → v1.0.1` 路径
 2. `11-naming-conventions.md:482` `@since v0.2.0` → `@since v1.0.1`
-3. 全量验证：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/AirymaxRT/` = 0
+3. 全量验证：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/docs-workload/` = 0
 
-**涉及文件**：`docs/AirymaxRT/50-specifications/20-are-standards/README.md` + `60-ipc/README.md` + `30-coding-standard/11-naming-conventions.md`
+**涉及文件**：`docs/docs-workload/50-specifications/20-are-standards/README.md` + `60-ipc/README.md` + `30-coding-standard/11-naming-conventions.md`
 
-**工作量**：1h | **验收**：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/AirymaxRT/` = 0
+**工作量**：1h | **验收**：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/docs-workload/` = 0
 
 ---
 
@@ -602,11 +602,11 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 ### P2-19: taskflow 文档与源码不同步
 
-**问题**：`docs/AirymaxRT/60-guides/26-coreloopthree-dag-integration.md:255` 仍称 `taskflow_engine_load_workflow_json()` 是桩函数违反 IRON-2，但源码 `taskflow_advanced.c:294` 已修复为 cJSON 真解析 + ENOTSUP 降级。
+**问题**：`docs/docs-workload/60-guides/26-coreloopthree-dag-integration.md:255` 仍称 `taskflow_engine_load_workflow_json()` 是桩函数违反 IRON-2，但源码 `taskflow_advanced.c:294` 已修复为 cJSON 真解析 + ENOTSUP 降级。
 
 **修复**：`§5.3` 更新为"`taskflow_engine_load_workflow_json()` 在 cJSON 可用时实现真正的 JSON 解析；cJSON 不可用时返回 ENOTSUP（非桩函数，IRON-2 合规）。W18 集成推荐使用 `taskflow_engine_register_workflow()`（结构体方式）以避免 cJSON 依赖。"
 
-**涉及文件**：`docs/AirymaxRT/60-guides/26-coreloopthree-dag-integration.md` | **工作量**：0.5h
+**涉及文件**：`docs/docs-workload/60-guides/26-coreloopthree-dag-integration.md` | **工作量**：0.5h
 
 ---
 
@@ -630,19 +630,19 @@ Week 3 (Day 15-18): P1 测试/migrations + P2 全部 + 全量验收
 
 **问题**：`10-architecture/05-syscall.md` 系统调用错误码使用正值（1001, 1002），与 IRON-9 负 errno（-22）和 syscall-api-contract（-1）冲突。
 
-**修复**：`05-syscall.md` 错误码改为负 errno 体系（对齐 [02-error-code-reference.md](../../docs/AirymaxRT/50-specifications/70-project-erp/02-error-code-reference.md) SSoT）。
+**修复**：`05-syscall.md` 错误码改为负 errno 体系（对齐 [02-error-code-reference.md](../../docs/docs-workload/50-specifications/70-project-erp/02-error-code-reference.md) SSoT）。
 
-**涉及文件**：`docs/AirymaxRT/10-architecture/05-syscall.md` | **工作量**：1h
+**涉及文件**：`docs/docs-workload/10-architecture/05-syscall.md` | **工作量**：1h
 
 ---
 
 ### P2-22: OpenStandards README 5 处断裂路径
 
-**问题**：`docs/OpenStandards/README.md:50,229,230,231,232` 引用 `docs/AirymaxAgentOS/50-engineering-standards/`，实际目录为 `docs/AirymaxOS/`。
+**问题**：`docs/openstandards/README.md:50,229,230,231,232` 引用 `docs/AirymaxAgentOS/50-engineering-standards/`，实际目录为 `docs/docs-linux/`。
 
 **修复**：`AirymaxAgentOS` → `AirymaxOS`（5 处）。
 
-**涉及文件**：`docs/OpenStandards/README.md` | **工作量**：0.5h
+**涉及文件**：`docs/openstandards/README.md` | **工作量**：0.5h
 
 ---
 
@@ -739,12 +739,12 @@ target_include_directories(agentrt_common PUBLIC
 
 ### 5.4 error.h 第 7 头文件澄清
 
-**问题**：[06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1 line 213 + 映射表 line 327 将 `error.h` 也标注为 [SC]，但"6 个"声明矛盾。
+**问题**：[06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) §3.1 line 213 + 映射表 line 327 将 `error.h` 也标注为 [SC]，但"6 个"声明矛盾。
 
 **决策建议**：**error.h 不属于 [SC] 层**。理由：
 1. error.h 是 agentrt 用户态独有的错误码定义（AGENTRT_E*），agent-linux 内核态有独立的内核错误码体系（-EINVAL 等）
 2. 两端错误码不共享，agent-linux 通过 IPC 返回值映射
-3. 修正 [06-iron9-shared-model.md](../../docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) §3.1 + 映射表，移除 error.h 的 [SC] 标注，明确"6 个 [SC] 头文件"
+3. 修正 [06-iron9-shared-model.md](../../docs/docs-workload/10-architecture/06-iron9-shared-model.md) §3.1 + 映射表，移除 error.h 的 [SC] 标注，明确"6 个 [SC] 头文件"
 
 **备选**：若用户决策 error.h 属于 [SC]，则改为 7 头文件并更新所有引用文档（handbook/README/08-compliance-checklist/40-integration 等）。
 
@@ -818,8 +818,8 @@ target_include_directories(agentrt_common PUBLIC
 | ACC-RFRP-17 | glossary EINVAL=-1 | P0-06 | `grep 'AGENTRT_EINVAL' 06-glossary-index.md` 值=-1 |
 | ACC-RFRP-18 | protocol-contract 无 free() | P0-06 | `grep -rn '\bfree(' 03-protocol-contract.md` = 0 |
 | ACC-RFRP-19 | cupolas 无本地错误码重定义 | P0-06 | `grep -rn '#define.*ERROR' cupolas.h \| grep -v '#include'` ≤ 2 |
-| ACC-RFRP-20 | 文档无 GPL-3.0-only | P0-07 | `grep -rn 'GPL-3.0-only' docs/AirymaxRT/` = 0 |
-| ACC-RFRP-21 | SBOM 无 MIT 内部组件 | P0-07 | `grep -rn 'licenseConcluded.*"MIT"\|licenseDeclared.*"MIT"' docs/AirymaxRT/` = 0 |
+| ACC-RFRP-20 | 文档无 GPL-3.0-only | P0-07 | `grep -rn 'GPL-3.0-only' docs/docs-workload/` = 0 |
+| ACC-RFRP-21 | SBOM 无 MIT 内部组件 | P0-07 | `grep -rn 'licenseConcluded.*"MIT"\|licenseDeclared.*"MIT"' docs/docs-workload/` = 0 |
 | ACC-RFRP-22 | corekern.md 无 agentos_ | P0-08 | `grep -rn 'agentos_\|AGENTOS_API' 02-corekern.md` = 0 |
 | ACC-RFRP-23 | corekern.md 无"微内核"误用 | P0-08 | `grep -n '微内核' 02-corekern.md` = 0 |
 | ACC-RFRP-24 | 产物层无 agentos | P1-09~12 | `grep -rn 'agentos' agentrt/README_zh.md agentrt/CONTRIBUTING.md products/desktop/src-tauri/ products/docker/scripts/backup.sh` = 0（排除 E1 合法说明） |
@@ -829,7 +829,7 @@ target_include_directories(agentrt_common PUBLIC
 - ACC-RFRP-26: build/ 目录不存在（P1-13）
 - ACC-RFRP-27: heapstore migration 在 SQLite 执行成功（P1-15）
 - ACC-RFRP-28: protocols 测试文件数 ≥ 10（P1-16）
-- ACC-RFRP-29: 文档无禁止版本号（P1-17）：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/AirymaxRT/` = 0
+- ACC-RFRP-29: 文档无禁止版本号（P1-17）：`grep -rn 'v0\.1\.2\|v0\.2\.0\|v0\.3\.0\|v1\.0\.0' docs/docs-workload/` = 0
 - ACC-RFRP-30: taskflow partition 写入结果（P2-23）
 
 ---
@@ -859,7 +859,7 @@ target_include_directories(agentrt_common PUBLIC
 - [agentrt/commons/utils/ipc/include/ipc_common.h](file:///home/spharx/SpharxWorks/OpenAirymax/agentrt/commons/utils/ipc/include/ipc_common.h#L74) — IPC_MAGIC
 - [agentrt/commons/include/agentrt_types.h](file:///home/spharx/SpharxWorks/OpenAirymax/agentrt/commons/include/agentrt_types.h#L138) — AOSP magic 注释
 - [agentrt/heapstore/migrations/V001_initial_schema.sql](file:///home/spharx/SpharxWorks/OpenAirymax/agentrt/heapstore/migrations/V001_initial_schema.sql) — PostgreSQL 语法
-- [docs/AirymaxRT/10-architecture/06-iron9-shared-model.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/AirymaxRT/10-architecture/06-iron9-shared-model.md) — IRON-9 v2 权威契约基准
+- [docs/docs-workload/10-architecture/06-iron9-shared-model.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs/docs-workload/10-architecture/06-iron9-shared-model.md) — IRON-9 v2 权威契约基准
 - [docs-closed/agentrt/07-subsystem-specs/02-corekern.md](file:///home/spharx/SpharxWorks/OpenAirymax/docs-closed/agentrt/07-subsystem-specs/02-corekern.md) — agentos_ 残留
 
 **P1 修复目标**：
