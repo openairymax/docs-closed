@@ -2,18 +2,18 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # agent-linux（AirymaxOS）基本工程标准规范
 
-> **文档定位**: agent-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲——agentrt 工程标准的**执行细则**，对齐 `docs/AirymaxOS/50-engineering-standards/` 权威体系（00-handbook OS-IRON 16 条 + 04-philosophy + 05-development-process + 130-roadmap/06-acceptance-criteria 110 项 OS-ACC）
+> **文档定位**: agent-linux（AirymaxOS，极境智能体操作系统）闭源工程标准规范总纲——agentrt 工程标准的**执行细则**，对齐 `docs/docs-linux/50-engineering-standards/` 权威体系（00-handbook OS-IRON 16 条 + 04-philosophy + 05-development-process + 130-roadmap/06-acceptance-criteria 110 项 OS-ACC）
 > **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: v3.6（2026-08-01 三轮审查闭环全面重写版，登记 v3.6/v3.6b/v3.6c 三轮审查 68 项改进闭环状态）
 > **最后更新**: 2026-08-01
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组 + 8 子仓维护者
 > **审查状态**: v3.6 三轮深度审查完成（第一轮 v3.6 核心机制 29 项 = P0-1+P1-11+P2-17 / 第二轮 v3.6b 基础设施 22 项 = N1-N22 / 第三轮 v3.6c 工程标准 17 项 = E1-E17，三轮回合计 68 项改进，闭环状态登记见附录 A）
 > **核心约束**: IRON-9 v3 同源且部分代码共享——[SC] 共享契约层物理宿主于 `kernel/include/uapi/linux/airymax/`（H1 硬约束：magic 0x41524531 / capability_badge offset 40-47）
-> **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md`（OS-IRON 16 条）+ `09-ssot-registry.md`（规则编号 SSoT，v0.2.8）+ `130-roadmap/06-acceptance-criteria.md`（110 项 OS-ACC）
+> **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ `docs/docs-linux/50-engineering-standards/00-engineering-standards-handbook.md`（OS-IRON 16 条）+ `09-ssot-registry.md`（规则编号 SSoT，v0.2.8）+ `130-roadmap/06-acceptance-criteria.md`（110 项 OS-ACC）
 > **理论根基**: Linux 6.6 内核基线（vanilla 6.6.147 纯主线 + sw_64 架构导入）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
 > **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`、`01-openeuler-tech-reference/`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 Linux 6.6 内核基线（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
-> **关联研究**: v3.6 三轮审查报告（`00-reviews/_review_v3.6/`：07 第一轮改进建议 + 17 第二轮改进建议 v3.6b + 23 第三轮改进闭环 v3.6c + 08/18 闭环摘要）+ LAYER 方案可行性（`01-openeuler-tech-reference/11-layer-feasibility-study.md`）+ OBS 远程构建（`01-openeuler-tech-reference/13-obs-remote-build.md`）+ 形式化验证（`docs/AirymaxOS/80-testing/10-formal-verification.md`）
+> **关联研究**: v3.6 三轮审查报告（`00-reviews/_review_v3.6/`：07 第一轮改进建议 + 17 第二轮改进建议 v3.6b + 23 第三轮改进闭环 v3.6c + 08/18 闭环摘要）+ LAYER 方案可行性（`01-openeuler-tech-reference/11-layer-feasibility-study.md`）+ OBS 远程构建（`01-openeuler-tech-reference/13-obs-remote-build.md`）+ 形式化验证（`docs/docs-linux/80-testing/10-formal-verification.md`）
 
 ---
 
@@ -54,11 +54,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 权威源 | 路径 | 内容 |
 |--------|------|------|
-| 工程标准手册 | `docs/AirymaxOS/50-engineering-standards/00-engineering-standards-handbook.md` | OS-IRON 16 条铁律 + 7 层自动化验证 + 四层共享模型 |
-| 工程思想 | `docs/AirymaxOS/50-engineering-standards/04-engineering-philosophy.md` | 双层稳定性 / 策略机制分离 / regression 零容忍 |
-| 开发流程 | `docs/AirymaxOS/50-engineering-standards/05-development-process.md` | 6 阶段补丁生命周期 / 工具链 / 合规检查 / SPDX |
-| 验收标准 | `docs/AirymaxOS/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层门禁 + 里程碑门禁 |
-| 规则编号 SSoT | `docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md` + `agent-linux/ssot-registry.yaml`（v0.2.8） | 全部规则编号唯一登记（26 类规则前缀） |
+| 工程标准手册 | `docs/docs-linux/50-engineering-standards/00-engineering-standards-handbook.md` | OS-IRON 16 条铁律 + 7 层自动化验证 + 四层共享模型 |
+| 工程思想 | `docs/docs-linux/50-engineering-standards/04-engineering-philosophy.md` | 双层稳定性 / 策略机制分离 / regression 零容忍 |
+| 开发流程 | `docs/docs-linux/50-engineering-standards/05-development-process.md` | 6 阶段补丁生命周期 / 工具链 / 合规检查 / SPDX |
+| 验收标准 | `docs/docs-linux/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层门禁 + 里程碑门禁 |
+| 规则编号 SSoT | `docs/docs-linux/50-engineering-standards/09-ssot-registry.md` + `agent-linux/ssot-registry.yaml`（v0.2.8） | 全部规则编号唯一登记（26 类规则前缀） |
 
 本文档与权威体系冲突时，以权威体系（SSoT）为准；本文档负责权威体系未覆盖的**闭源执行细则**：版本库卫生、模块化开发流水线、CI 完整性、文档-实现一致性义务、LAYER 双轨制、OBS 远程构建、E1-E17 落地登记等。
 
@@ -1018,7 +1018,7 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 
 ### 11.1 禁词清单
 
-以下词汇在**开源文档**（`docs/AirymaxOS/`）中**严禁出现**。闭源文档（`docs-closed/agent-linux/`）中允许引用，但应避免不必要的泄露。
+以下词汇在**开源文档**（`docs/docs-linux/`）中**严禁出现**。闭源文档（`docs-closed/agent-linux/`）中允许引用，但应避免不必要的泄露。
 
 > **OS-BAN-010**: 开源文档中严禁出现以下禁词。
 
@@ -1118,7 +1118,7 @@ seL4 的工程思想在架构层被选择性借鉴（ES-SEL4-1~5）：极简原�
 
 > **OS-TEST-010**: tests-linux 子仓必须包含 formal-verification/ 目录，采用 seL4 三段式结构（spec/proof/capdl）。
 
-**v3.6 更新**：第三轮审查（E1-E3，报告 22）将"seL4 为鉴"从架构层延伸到**工程方法层**，形成四件套映射（引用 `docs/AirymaxOS/80-testing/10-formal-verification.md`）：
+**v3.6 更新**：第三轮审查（E1-E3，报告 22）将"seL4 为鉴"从架构层延伸到**工程方法层**，形成四件套映射（引用 `docs/docs-linux/80-testing/10-formal-verification.md`）：
 
 | 件 | seL4 参考 | AirymaxOS 落地 | 状态 |
 |----|----------|---------------|------|

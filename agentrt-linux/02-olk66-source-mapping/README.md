@@ -64,7 +64,7 @@ OLK-6.6: kernel/sched/ext.c:1234  — sched_bpf_dispatch()
 ## 4. 与开源文档的关系
 
 - 映射文档是**闭源参考**，不对外发布
-- 开源设计文档（`docs/AirymaxOS/`）引用映射结论时，必须用 AirymaxOS 自身语言表述（BAN-INTERNAL-005）
+- 开源设计文档（`docs/docs-linux/`）引用映射结论时，必须用 AirymaxOS 自身语言表述（BAN-INTERNAL-005）
 - 开源文档中**严禁**出现 OLK-6.6 源码路径、行号、函数名等直接引用
 
 ---

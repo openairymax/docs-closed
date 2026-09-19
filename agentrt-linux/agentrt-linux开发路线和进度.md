@@ -2,15 +2,15 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # agent-linux（AirymaxOS）开发路线与进度
 
-> **文档定位**: agent-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**。本文档是 **v3.6 审查后的全面开发执行视图**——`docs/AirymaxOS/130-roadmap/`（docs 仓，权威）定义"做什么/为什么/验收什么"，本文档给出"按什么顺序做、每步测什么、何时可推进"的可执行节奏，首次补齐**内核代码模块级实施顺序**（Phase 0-6 总表）。
+> **文档定位**: agent-linux（AirymaxOS）开发路线图与进度跟踪，**闭源不公开**。本文档是 **v3.6 审查后的全面开发执行视图**——`docs/docs-linux/130-roadmap/`（docs 仓，权威）定义"做什么/为什么/验收什么"，本文档给出"按什么顺序做、每步测什么、何时可推进"的可执行节奏，首次补齐**内核代码模块级实施顺序**（Phase 0-6 总表）。
 > **保密级别**: SPHARX Ltd 内部参考
 > **版本**: v2.1（v3.6 三份审查结论基线 + Phase 0-6 模块化开发总表 + **Phase 0 已完成**）
 > **最后更新**: 2026-08-01（v3.6 三轮深度对比审查闭环：kernel 框架 60% / docs 93% / 叶子仓结构完整；**Phase 0 已完成并验证，Phase 1 系统调用面已规划**）
 > **适用范围**: AirymaxOS 架构委员会 + 内核开发组
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——基于 Linux 6.6 内核基线（v1.2 M0 框架编译验证 39 .o 零错误零警告 + arm64+airy 完整构建 EXIT_CODE=0）+ seL4 形式化微内核思想；ALK"只新增文件不改主线"策略规避 KABI 债务；IRON-9 v3 同源且部分代码共享
-> **权威依据**: docs 仓 `docs/AirymaxOS/130-roadmap/`（02-milestones-and-timeline.md / 04-dependency-graph.md / 06-acceptance-criteria.md）为路线图权威口径，本文件为其执行视图
+> **权威依据**: docs 仓 `docs/docs-linux/130-roadmap/`（02-milestones-and-timeline.md / 04-dependency-graph.md / 06-acceptance-criteria.md）为路线图权威口径，本文件为其执行视图
 > **审查基线**: v3.6 三轮深度对比研究（`00-reviews/_review_v3.6/`，23 份报告）——第一轮 6 子域核心机制 29 项改进（89.5/A-）+ 第二轮 8 维度基础设施 22 项（N1-N22，86.0/B+）+ 第三轮工程标准 17 项（E1-E17，82.0/B），去重累计 68 项（1 P0 + 29 P1 + 37 P2 + 1 P3），三轮加权整体成熟度 86.3（B+）
-> **关联研究**: 闭源 `00-reviews/_research_0.2.1/`（489+235 行）+ `_design_0.2.4/`（1903 行）+ `_review_0.9.0/`（7 份）+ `_review_v2.2/`（37 份）+ `_review_v3.5/` + `_review_v3.6/`（23 份）；开源 SSoT `docs/AirymaxOS/`（10-architecture / 20-modules / 30-interfaces / 40-dataflows / 50-engineering-standards / 80-testing / 110-security / 130-roadmap）
+> **关联研究**: 闭源 `00-reviews/_research_0.2.1/`（489+235 行）+ `_design_0.2.4/`（1903 行）+ `_review_0.9.0/`（7 份）+ `_review_v2.2/`（37 份）+ `_review_v3.5/` + `_review_v3.6/`（23 份）；开源 SSoT `docs/docs-linux/`（10-architecture / 20-modules / 30-interfaces / 40-dataflows / 50-engineering-standards / 80-testing / 110-security / 130-roadmap）
 
 ---
 
@@ -54,12 +54,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 权威文档 | 路径 | 本文件引用方式 |
 |---------|------|---------------|
-| 里程碑与时间线 | `docs/AirymaxOS/130-roadmap/02-milestones-and-timeline.md` | M0-M8 定义与时间线，§6 重映射 |
-| 依赖关系图 | `docs/AirymaxOS/130-roadmap/04-dependency-graph.md` | Part/模块依赖 + OS-ACC 里程碑门禁（§7.2），§4 前置依赖列引用 |
-| 验收标准与质量门禁 | `docs/AirymaxOS/130-roadmap/06-acceptance-criteria.md` | **110 项 OS-ACC**（OS-ACC-001~110）+ 三层质量门禁（PR/里程碑/版本），§4 各模块"验收"列引用 |
-| 开发策略 | `docs/AirymaxOS/130-roadmap/01-development-strategy.md` | 三大支柱与开发原则 |
-| 资源估算 | `docs/AirymaxOS/130-roadmap/03-resource-estimation.md` | 人力/工时口径 |
-| 风险缓解 | `docs/AirymaxOS/130-roadmap/05-risk-mitigation.md` | 风险编号引用 |
+| 里程碑与时间线 | `docs/docs-linux/130-roadmap/02-milestones-and-timeline.md` | M0-M8 定义与时间线，§6 重映射 |
+| 依赖关系图 | `docs/docs-linux/130-roadmap/04-dependency-graph.md` | Part/模块依赖 + OS-ACC 里程碑门禁（§7.2），§4 前置依赖列引用 |
+| 验收标准与质量门禁 | `docs/docs-linux/130-roadmap/06-acceptance-criteria.md` | **110 项 OS-ACC**（OS-ACC-001~110）+ 三层质量门禁（PR/里程碑/版本），§4 各模块"验收"列引用 |
+| 开发策略 | `docs/docs-linux/130-roadmap/01-development-strategy.md` | 三大支柱与开发原则 |
+| 资源估算 | `docs/docs-linux/130-roadmap/03-resource-estimation.md` | 人力/工时口径 |
+| 风险缓解 | `docs/docs-linux/130-roadmap/05-risk-mitigation.md` | 风险编号引用 |
 
 > **权威关系**：docs 仓定义"做什么/为什么/验收什么"，本文档定义"按什么顺序做、每步测什么、何时可推进"。两仓冲突时以 docs 仓为准，本文档同步更新。
 
@@ -764,12 +764,12 @@ timeline
 | v3.5 系统审计 | `docs-closed/agent-linux/00-reviews/_review_v3.5/` | SSoT/IRON 合规性审计（27-systematic-audit-v9.0.md） |
 | 构建与烧录策略 | `docs-closed/agent-linux/01-openeuler-tech-reference/12-build-and-flash-strategy.md` | sw_64 导入 + LAYER 双轨制 + 三架构配置（§11） |
 | OBS 远程构建 | `docs-closed/agent-linux/01-openeuler-tech-reference/13-obs-remote-build.md` | sw_64 OBS 构建方案（P6-3 落地依据） |
-| 里程碑与时间线（权威） | `docs/AirymaxOS/130-roadmap/02-milestones-and-timeline.md` | M0-M8 + Gantt + 关键路径 |
-| 依赖关系图（权威） | `docs/AirymaxOS/130-roadmap/04-dependency-graph.md` | Part/模块依赖 + OS-ACC 里程碑门禁（§7.2） |
-| 验收标准与质量门禁（权威） | `docs/AirymaxOS/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层质量门禁 |
-| 开发策略（权威） | `docs/AirymaxOS/130-roadmap/01-development-strategy.md` | 三大支柱与开发原则 |
-| 风险缓解（权威） | `docs/AirymaxOS/130-roadmap/05-risk-mitigation.md` | 风险编号引用 |
-| 开源目录结构 SSoT | `docs/AirymaxOS/10-architecture/07-directory-structure.md` | 8 子仓目录结构 SSoT（~1800 行 v2.0） |
+| 里程碑与时间线（权威） | `docs/docs-linux/130-roadmap/02-milestones-and-timeline.md` | M0-M8 + Gantt + 关键路径 |
+| 依赖关系图（权威） | `docs/docs-linux/130-roadmap/04-dependency-graph.md` | Part/模块依赖 + OS-ACC 里程碑门禁（§7.2） |
+| 验收标准与质量门禁（权威） | `docs/docs-linux/130-roadmap/06-acceptance-criteria.md` | 110 项 OS-ACC + 三层质量门禁 |
+| 开发策略（权威） | `docs/docs-linux/130-roadmap/01-development-strategy.md` | 三大支柱与开发原则 |
+| 风险缓解（权威） | `docs/docs-linux/130-roadmap/05-risk-mitigation.md` | 风险编号引用 |
+| 开源目录结构 SSoT | `docs/docs-linux/10-architecture/07-directory-structure.md` | 8 子仓目录结构 SSoT（~1800 行 v2.0） |
 | 内核代码位置 | `airymaxhub/agent-linux/kernel/` | kernel 子仓（分支 ALK-6.6-dev） |
 | 构建定义 | `airymaxhub/agent-linux/build/` | airy-kernel.spec（5 包）+ ks-airymax.cfg + meta-airymax |
 

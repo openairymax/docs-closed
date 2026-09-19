@@ -37,7 +37,7 @@
 
 当前 `agentrt` 项目的前缀规范以 SSoT 为准：
 
-- **SSoT**: `docs/AirymaxRT/10-architecture/06-iron9-shared-model.md` §3.12
+- **SSoT**: `docs/docs-workload/10-architecture/06-iron9-shared-model.md` §3.12
 - **正确前缀**: `airy_*`（源码 1788 处使用）
 - **不使用**: `agentrt_*`（源码 0 处使用）
 - **已废弃**: `agentos_*`（源码 0 处使用）

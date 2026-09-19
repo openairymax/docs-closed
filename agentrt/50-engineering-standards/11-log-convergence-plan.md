@@ -6,7 +6,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **文档版本**：v2.0\
 > **最后更新**：2026-08-14\
 > **上级文档**：[agentrt 工程标准规范手册](agentrt工程标准规范手册.md)\
-> **设计依据**：[09-sc-log-types-contract.md](../../docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md)（[SC] `log_types.h` 契约）+ [10-unify-design.md](../../docs/AirymaxOS/10-architecture/10-unify-design.md) §5（A-ULP 模块）+ C-06 冲突点消解
+> **设计依据**：[09-sc-log-types-contract.md](../../docs/docs-linux/30-interfaces/09-sc-log-types-contract.md)（[SC] `log_types.h` 契约）+ [10-unify-design.md](../../docs/docs-linux/10-architecture/10-unify-design.md) §5（A-ULP 模块）+ C-06 冲突点消解
 
 ---
 
@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **单一权威源声明**：本文件是 **agentrt 日志统一收敛为 `AIRY_LOG_*` 单一轨** 的唯一权威源。收敛目标、迁移执行记录、CI 强制校验门槛均以本文件为唯一权威定义。
 >
-> `AIRY_LOG_*` 5 级日志枚举与 128B 记录格式的权威源为 AirymaxOS [09-sc-log-types-contract.md](../../docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md)（[SC] `log_types.h` 共享契约，agentrt 与 agent-linux 逐字节一致）。本收敛计划是 agentrt 侧对齐 A-ULP 模块（见 [10-unify-design.md](../../docs/AirymaxOS/10-architecture/10-unify-design.md) §5）C-06 冲突点消解的工程落地。
+> `AIRY_LOG_*` 5 级日志枚举与 128B 记录格式的权威源为 AirymaxOS [09-sc-log-types-contract.md](../../docs/docs-linux/30-interfaces/09-sc-log-types-contract.md)（[SC] `log_types.h` 共享契约，agentrt 与 agent-linux 逐字节一致）。本收敛计划是 agentrt 侧对齐 A-ULP 模块（见 [10-unify-design.md](../../docs/docs-linux/10-architecture/10-unify-design.md) §5）C-06 冲突点消解的工程落地。
 
 ---
 
@@ -24,9 +24,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 v1.0 版计划曾主张将 `AIRY_LOG_*` 收敛为 `LOG_*`，该方向经三重验证为**错误**：
 
-1. **[SC] 契约**：[09-sc-log-types-contract.md](../../docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md) L16 明文规定"日志级别统一使用 `AIRY_LOG_*` 前缀（对齐 SSoT `log_types.h` L37-44）"，facility 统一使用 `AIRY_LOG_FAC_*` 前缀
-2. **A-ULP 设计**：[10-unify-design.md](../../docs/AirymaxOS/10-architecture/10-unify-design.md) L229-230 定义 `AIRY_LOG_MAGIC` 与级别字段（`AIRY_LOG_DEBUG` ~ `AIRY_LOG_FATAL`）；L483 降级表明确 5 级为 `AIRY_LOG_*`
-3. **agent-linux 设计方案**：`logger_d` 模块设计（[12-logger-daemon-module.md](../../docs/AirymaxOS/20-modules/12-logger-daemon-module.md)）错误码记录、facility 过滤、[DSL] 降级块全部使用 `AIRY_LOG_*`/`AIRY_LOG_FAC_*`
+1. **[SC] 契约**：[09-sc-log-types-contract.md](../../docs/docs-linux/30-interfaces/09-sc-log-types-contract.md) L16 明文规定"日志级别统一使用 `AIRY_LOG_*` 前缀（对齐 SSoT `log_types.h` L37-44）"，facility 统一使用 `AIRY_LOG_FAC_*` 前缀
+2. **A-ULP 设计**：[10-unify-design.md](../../docs/docs-linux/10-architecture/10-unify-design.md) L229-230 定义 `AIRY_LOG_MAGIC` 与级别字段（`AIRY_LOG_DEBUG` ~ `AIRY_LOG_FATAL`）；L483 降级表明确 5 级为 `AIRY_LOG_*`
+3. **agent-linux 设计方案**：`logger_d` 模块设计（[12-logger-daemon-module.md](../../docs/docs-linux/20-modules/12-logger-daemon-module.md)）错误码记录、facility 过滤、[DSL] 降级块全部使用 `AIRY_LOG_*`/`AIRY_LOG_FAC_*`
 
 **结论（用户决策，2026-08-14）**：`AIRY_LOG_*` 是 agentrt 与 agent-linux（AirymaxOS）共享的权威日志命名，日志统一为 `AIRY_LOG_*`，设计冲突一律与 AirymaxOS 设计方案对齐。本计划 v2.0 起方向反转。
 
@@ -34,9 +34,9 @@ v1.0 版计划曾主张将 `AIRY_LOG_*` 收敛为 `LOG_*`，该方向经三重�
 
 随方向反转同步修正的文档残留表述（A-ULP 文档侧，保证单一权威源一致）：
 
-- [10-unify-design.md](../../docs/AirymaxOS/10-architecture/10-unify-design.md) C-06 冲突点："统一为 `LOG_*` 枚举" → "统一为 `AIRY_LOG_*` 枚举（对齐 [SC] log_types.h L37-44）"
-- [12-logger-daemon-module.md](../../docs/AirymaxOS/20-modules/12-logger-daemon-module.md) §7.3 伪代码：`rec->level = LOG_ERROR/LOG_FATAL` → `AIRY_LOG_ERROR/AIRY_LOG_FATAL`
-- [09-sc-log-types-contract.md](../../docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md) §7 版本历史 v1.0 条目：`LOG_DEBUG~LOG_FATAL` → `AIRY_LOG_DEBUG~AIRY_LOG_FATAL`
+- [10-unify-design.md](../../docs/docs-linux/10-architecture/10-unify-design.md) C-06 冲突点："统一为 `LOG_*` 枚举" → "统一为 `AIRY_LOG_*` 枚举（对齐 [SC] log_types.h L37-44）"
+- [12-logger-daemon-module.md](../../docs/docs-linux/20-modules/12-logger-daemon-module.md) §7.3 伪代码：`rec->level = LOG_ERROR/LOG_FATAL` → `AIRY_LOG_ERROR/AIRY_LOG_FATAL`
+- [09-sc-log-types-contract.md](../../docs/docs-linux/30-interfaces/09-sc-log-types-contract.md) §7 版本历史 v1.0 条目：`LOG_DEBUG~LOG_FATAL` → `AIRY_LOG_DEBUG~AIRY_LOG_FATAL`
 
 ---
 
@@ -54,7 +54,7 @@ agentrt 仓库在历史演进中累积了三套并存的日志宏体系：
 
 两套级别宏语义同构（`LOG_DEBUG` ↔ `AIRY_LOG_DEBUG`），但前缀割裂导致：
 
-1. **跨端日志割裂**：agentrt（用户态）输出 `LOG_*`，AirymaxOS（内核态）输出 `AIRY_LOG_*`，Logger Daemon（见 [12-logger-daemon-module.md](../../docs/AirymaxOS/20-modules/12-logger-daemon-module.md)）需识别两套级别，归档检索复杂
+1. **跨端日志割裂**：agentrt（用户态）输出 `LOG_*`，AirymaxOS（内核态）输出 `AIRY_LOG_*`，Logger Daemon（见 [12-logger-daemon-module.md](../../docs/docs-linux/20-modules/12-logger-daemon-module.md)）需识别两套级别，归档检索复杂
 2. **[SC] 契约违反**：`AIRY_LOG_*` 是 [SC] `log_types.h` 共享契约命名，agentrt 单独使用 `LOG_*` 等于绕过 [SC]，违反共享契约层双向 CI 验证
 3. **认知负担**：开发者需记忆多套宏的等价关系，新增日志时随机选用，加剧双轨扩散
 
@@ -122,10 +122,10 @@ agentrt 仓库在历史演进中累积了三套并存的日志宏体系：
 ## §5 相关文档
 
 - [agentrt 工程标准规范手册](agentrt工程标准规范手册.md) —— agentrt 工程标准上级文档
-- [10-unify-design.md](../../docs/AirymaxOS/10-architecture/10-unify-design.md) —— Airymax Unify Design 总纲（A-ULP 模块 + C-06 冲突点）
-- [09-sc-log-types-contract.md](../../docs/AirymaxOS/30-interfaces/09-sc-log-types-contract.md) —— `AIRY_LOG_*` 枚举与 128B 记录格式 [SC] 契约（唯一权威源）
-- [05-ring-buffer-logging.md](../../docs/AirymaxOS/40-dataflows/05-ring-buffer-logging.md) —— Ring Buffer 日志数据流（消费侧）
-- [12-logger-daemon-module.md](../../docs/AirymaxOS/20-modules/12-logger-daemon-module.md) —— Logger Daemon 模块设计
+- [10-unify-design.md](../../docs/docs-linux/10-architecture/10-unify-design.md) —— Airymax Unify Design 总纲（A-ULP 模块 + C-06 冲突点）
+- [09-sc-log-types-contract.md](../../docs/docs-linux/30-interfaces/09-sc-log-types-contract.md) —— `AIRY_LOG_*` 枚举与 128B 记录格式 [SC] 契约（唯一权威源）
+- [05-ring-buffer-logging.md](../../docs/docs-linux/40-dataflows/05-ring-buffer-logging.md) —— Ring Buffer 日志数据流（消费侧）
+- [12-logger-daemon-module.md](../../docs/docs-linux/20-modules/12-logger-daemon-module.md) —— Logger Daemon 模块设计
 - [12-error-code-migration-plan.md](12-error-code-migration-plan.md) —— 错误码迁移计划（与本计划并行推进）
 
 ---

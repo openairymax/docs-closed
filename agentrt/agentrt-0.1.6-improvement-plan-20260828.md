@@ -2,7 +2,7 @@
 
 > **方案编号**：PLAN-AGENTRT-0.1.6-20260828-R2
 > **方案类型**：SSoT 大规模瘦身精炼 + 生态收敛 + 发布落地
-> **决策依据**：`_review_v4.3`（12 份历史审查）+ `_review_v4.4`（4 份本周期研究 + 插件/五叶仓实测）+ `docs/AirymaxRT/10-architecture`（五维正交原则）+ agent-linux `Unify Design`（SSoT 单一权威源）
+> **决策依据**：`_review_v4.3`（12 份历史审查）+ `_review_v4.4`（4 份本周期研究 + 插件/五叶仓实测）+ `docs/docs-workload/10-architecture`（五维正交原则）+ agent-linux `Unify Design`（SSoT 单一权威源）
 > **本版变更**：R2 修订版——在 R1（证伪修订）基础上，按 2026-08-29 评审意见完成 **3 处范围性修正**：
 >   1. **范围收敛**：0.1.6 只做「减法收敛 + 生态 SSoT 收敛 + 发布链路落地」；五认知机制 vtable 策略化拆出为 0.1.7 独立方案，不与减法同版本；
 >   2. **DAG 收敛加实证门**：两套 DAG 收敛前先 diff 证伪，确认重复实现才删；

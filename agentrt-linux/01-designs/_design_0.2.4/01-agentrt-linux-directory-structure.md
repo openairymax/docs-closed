@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # agent-linux 8 子仓完整项目目录结构设计（v0.2.4 生产级修正版）
 
-> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构的穷尽式直接测绘**，对 [v0.2.3 目录结构设计](../_design_0.2.3/01-agent-linux-directory-structure.md) 进行生产级修正。v0.2.4 吸收 [v0.2.3 最佳实践审查报告](../../00-reviews/_review_0.2.3/01-directory-structure-best-practices-review.md) 的 12 项发现（3 P0 + 5 P1 + 4 P2），并落实**用户三项架构裁决**：(1) kernel/ 采用**模型 A（完整 Linux 6.6 fork）**——以生产级 Linux 发行版为标准；(2) security/ 采用**方案 A（扁平对齐 OLK-6.6）**；(3) memory/ 明确**三方边界声明**。本设计是 agent-linux 1.0.1 开发阶段目录骨架的**技术阐述载体**（规则编号 SSoT 为 [`docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md`](../../../../../airymaxhub/docs/AirymaxOS/50-engineering-standards/09-ssot-registry.md)），亦是未来十年项目演进的目录结构根基。
+> **文档定位**: 基于 OLK-6.6 与 seL4 **实际源代码目录结构的穷尽式直接测绘**，对 [v0.2.3 目录结构设计](../_design_0.2.3/01-agent-linux-directory-structure.md) 进行生产级修正。v0.2.4 吸收 [v0.2.3 最佳实践审查报告](../../00-reviews/_review_0.2.3/01-directory-structure-best-practices-review.md) 的 12 项发现（3 P0 + 5 P1 + 4 P2），并落实**用户三项架构裁决**：(1) kernel/ 采用**模型 A（完整 Linux 6.6 fork）**——以生产级 Linux 发行版为标准；(2) security/ 采用**方案 A（扁平对齐 OLK-6.6）**；(3) memory/ 明确**三方边界声明**。本设计是 agent-linux 1.0.1 开发阶段目录骨架的**技术阐述载体**（规则编号 SSoT 为 [`docs/docs-linux/50-engineering-standards/09-ssot-registry.md`](../../../../../airymaxhub/docs/docs-linux/50-engineering-standards/09-ssot-registry.md)），亦是未来十年项目演进的目录结构根基。
 > **版本**: 0.2.4（生产级修正版目录结构设计）
 > **最后更新**: 2026-07-09
 > **质量要求**: 绝对严谨、严格、严肃——每一处目录设计决策均附直接源代码证据引用，经得起第三方独立推敲

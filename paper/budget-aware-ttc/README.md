@@ -629,17 +629,17 @@ Token Budget Management:
    - kfifo 事件流（含 trace_id, phase, think_mode, timestamp_ns）
    - 128 字节上下文结构（airy_cog_context_t）
 
-2. Thinkdual [SC] 枚举 (docs/OpenStandards/05-airy-cognition-loop-standard.md)
+2. Thinkdual [SC] 枚举 (docs/openstandards/05-airy-cognition-loop-standard.md)
    - AIRY_THINK_SYSTEM1_FAST = 0
    - AIRY_THINK_SYSTEM2_SLOW = 1
    - 模式选择规则（基于意图复杂度、上下文长度、Token 预算）
 
-3. Token Budget Manager (docs/AirymaxOS/140-application-development/04-token-budget.md)
+3. Token Budget Manager (docs/docs-linux/140-application-development/04-token-budget.md)
    - 令牌桶算法（refill_rate, max_tokens, current_tokens）
    - 三级阈值（normal >50%, warning ≤20%, critical ≤5%）
    - 三级预算层级（租户/Agent/任务）
 
-4. Token Efficiency Monitoring (docs/AirymaxOS/90-observability/07-token-efficiency.md)
+4. Token Efficiency Monitoring (docs/docs-linux/90-observability/07-token-efficiency.md)
    - airy_token_stats 数据结构（四类 Token 计数 + 效率指标）
    - cache_hit_ratio_ppm（缓存命中率）
    - /proc/airy/agents/[id]/token_stats procfs 接口

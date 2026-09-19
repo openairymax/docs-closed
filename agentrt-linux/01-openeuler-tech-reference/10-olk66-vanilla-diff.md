@@ -207,5 +207,5 @@ openEuler 版本系统（OPENEULER_LTS/MAJOR/MINOR/RELEASE），注入 `OPENEULE
 
 1. **权威源**：本文档差异数据以 `openeuler/OLK-6.6`（atomgit.com/openeuler/kernel）与 `linux-stable/linux-6.6.y` 的 git diff 为唯一权威。工程师参考目录已重新 clone 自 atomgit 官方源，可供源码查阅。
 2. **sched_ext 事实**：OLK-6.6 与 vanilla 6.6.144 均不含 sched_ext（6.12 合入主线）。既有文档相关表述已在 P1-6 修正。
-3. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）；驱动层提取的逐文件差异数据仍属内部参考，不进入开源文档。
+3. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/docs-linux/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）；驱动层提取的逐文件差异数据仍属内部参考，不进入开源文档。
 4. **IRON-7**：vanilla linux-stable 6.6.144 为唯一基线（v1.0.1），Euler 驱动层为硬件适配附加层，不改变核心子系统基线纯净性。

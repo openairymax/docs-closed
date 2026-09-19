@@ -616,13 +616,13 @@ agentrt 专属（AirymaxOS 不涉及）：
 - [openEuler 调度器技术规范](../01-openeuler-tech-reference/01-scheduler-spec.md)：Euler 调度器规范参考
 - [微内核设计参考](../03-microkernel-design-ref/README.md)：seL4/Zircon/Minix3 参考
 
-### 14.2 开源设计文档（`docs/AirymaxOS/`）
+### 14.2 开源设计文档（`docs/docs-linux/`）
 
-- [调度数据流](../../docs/AirymaxOS/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
-- [内核模块设计](../../docs/AirymaxOS/20-modules/01-kernel.md)：kernel 子仓
-- [系统调用接口](../../docs/AirymaxOS/30-interfaces/01-syscalls.md)：agentrt_sys_task_submit
-- [工程基线](../../docs/AirymaxOS/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
-- [IRON-9 v2 定义](../../docs/AirymaxOS/50-engineering-standards/README.md)：三层共享模型
+- [调度数据流](../../docs/docs-linux/40-dataflows/04-scheduling-flow.md)：SCHED_AGENT 数据流（开源版）
+- [内核模块设计](../../docs/docs-linux/20-modules/01-kernel.md)：kernel 子仓
+- [系统调用接口](../../docs/docs-linux/30-interfaces/01-syscalls.md)：agentrt_sys_task_submit
+- [工程基线](../../docs/docs-linux/10-architecture/04-engineering-baseline.md)：Linux 6.6 内核基线
+- [IRON-9 v2 定义](../../docs/docs-linux/50-engineering-standards/README.md)：三层共享模型
 
 ### 14.3 OLK-6.6 源码（参考，不公开引用）
 

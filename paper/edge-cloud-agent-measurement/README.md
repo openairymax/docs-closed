@@ -403,7 +403,7 @@ Agent 工作负载测量:
 已有代码（可直接使用）：
   - agent-linux/cognition/coreloopthree/clt_main.c
     → kfifo 事件流，含 trace_id, phase, think_mode, timestamp_ns
-  - docs/AirymaxOS/90-observability/07-token-efficiency.md
+  - docs/docs-linux/90-observability/07-token-efficiency.md
     → airy_token_stats 数据结构定义
     → cogn_d_on_llm_complete() 上报函数
     → /proc/airy/agents/[id]/token_stats procfs 接口

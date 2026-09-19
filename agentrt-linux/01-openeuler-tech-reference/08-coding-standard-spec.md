@@ -59,7 +59,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 |------|------|------|
 | **第一段** | 参考发行版编码规范（本文档） | 闭源 `docs-closed/agent-linux/01-openeuler-tech-reference/08-coding-standard-spec.md` |
 | **第二段** | 参考行业最新编码规范 | MISRA C、Rust 安全编码指南、Google C++ Style Guide、SEI CERT C Coding Standard |
-| **第三段** | 形成 agent-linux 技术方案 | 开源 `docs/AirymaxOS/50-engineering-standards/` + agent-linux 基本工程标准规范 |
+| **第三段** | 形成 agent-linux 技术方案 | 开源 `docs/docs-linux/50-engineering-standards/` + agent-linux 基本工程标准规范 |
 
 ### 1.4 IRON-9 v2 三层共享模型标注
 
@@ -1081,7 +1081,7 @@ agent-linux 与参考发行版编码规范的核心差异可以归纳为"三个�
 - [闭源 参考发行版安全规范](05-security-spec.md)
 - [闭源 参考发行版 IPC 规范](06-ipc-spec.md)
 - [闭源 参考发行版 Rust 支持规范](07-rust-support-spec.md)
-- [开源 工程标准文档](../../docs/AirymaxOS/50-engineering-standards/)
+- [开源 工程标准文档](../../docs/docs-linux/50-engineering-standards/)
 - [开源 五维正交 24 原则](../../docs/00-architectural-principles.md)
 
 ### 17.2 版本与维护

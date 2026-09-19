@@ -421,7 +421,7 @@ dnf install @ukui-desktop     # 麒麟桌面
 1. **不 fork 原则**：AirymaxOS 全面复用 openEuler 构建工具链（imageTailor/Yocto/isocut/Anaconda/OBS/dnf），不 fork 任何工具代码，仅通过配置覆盖（`custom/cfg_airymax/`、`meta-airymax/`、`ks-airymax.cfg`、`airy-kernel.spec`）实现定制
 2. **版本对齐**：openEuler `kernel-6.6.0-144.0.8.135` 与 AirymaxOS vanilla 6.6.144 在 `6.6.0-144` 段完全对齐（详见 [11-layer-feasibility-study.md §1.3](11-layer-feasibility-study.md)），构建工具链无需版本迁移
 3. **IRON-7 不变**：复用 openEuler 构建体系不改变 vanilla 6.6.144 为唯一核心基线的事实——openeuler_defconfig 中的核心子系统 CONFIG 由 `configs/defconfig-agent` 覆盖回 vanilla 默认值
-4. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/AirymaxOS/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）
+4. **BAN-INTERNAL-002（硬件适配语境豁免）**：本文档为闭源参考，不进入开源 `docs/docs-linux/`。硬件适配语境下允许在开源文档中明确表述"复用openEuler的硬件适配能力"（详见 `00-alk-kernel-overview.md` §3.1 等式与 §3.5.1 定位）
 5. **GPL-2.0 合规**：复用 openEuler 构建工具链满足 GPL-2.0 许可证要求（工具链本身开源，AirymaxOS 产物源码公开）
 
 ---
