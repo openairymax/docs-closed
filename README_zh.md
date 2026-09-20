@@ -1,9 +1,9 @@
-# Airymax 0.1.1 项目管理文档中心 (DocsClosed)
+# docs-closed — 技术参考与评审归档
 
 **语言:** [English](README.md) | 简体中文
 
 > Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
-> **最后更新**: 2026-07-06
+> **最后更新**: 2026-09-19
 > **当前版本**: Airymax 0.1.1（唯一奠基版本）
 > **文档体系**: v4.0（奠基 + 38 仓拆分 + 生产就绪三大支柱）
 
@@ -24,27 +24,27 @@
 
 ## 📚 核心文档（7 篇）
 
-### 1. [0.1.1技术全面改进方案v3.0.md](./0.1.1技术全面改进方案v3.0.md) — v4.0
+### 1. [技术全面改进方案 v3.0](./agentrt/01-designs/_design_0.1.1/02-tech-improvement-plan-v3.0.md) — v4.0
 
-0.1.1 版本技术改进总方案（1796 行，133KB）。包含：
+0.1.1 版本技术改进总方案（约 1,989 行）。包含：
 - 第二十章：38 项已确认缺陷完整清单（A-H 类）
 - 第二十五章：W01-W30 奠基工作清单（~1,620h）
 - 第二十六章：38 仓拆分方案（SP01-SP31）
 - 第二十七章：生产就绪方案（SP32-SP37）
 - 附录 A：79 项任务总表（~964.5h）
 
-### 2. [0.1.1详细任务清单.md](./0.1.1详细任务清单.md) — v2.0
+### 2. [详细任务清单](./agentrt/01-designs/_design_0.1.1/03-detailed-task-list.md) — v2.0
 
-0.1.1 版本详细任务清单（3712 行，146 项主任务）。包含：
+0.1.1 版本详细任务清单（3,811 行，146 项主任务）。包含：
 - 第一部分：W01-W30 奠基任务
 - 第二部分：Phase 0-4 修复任务（79 项）
 - 第三~六部分：38 项缺陷修复任务
 - 第七部分：SP01-SP31 38 仓拆分任务
 - 第八部分：SP32-SP37 生产就绪任务
 
-### 3. [0.1.1工程标准规范手册.md](./0.1.1工程标准规范手册.md) — v26.0
+### 3. [agentrt 工程标准规范手册](./agentrt/agentrt工程标准规范手册.md) — v26.0
 
-0.1.1 版本工程标准规范（4333 行，232KB，356 项 BAN 规则）。包含：
+0.1.1 版本工程标准规范（4,584 行，356 项 BAN 规则）。包含：
 - §11.5 独立子仓库路径引用安全规范
 - §11.6 agentos_ → agentrt_ 彻底改名规范（七层面改名矩阵）
 - §11.7 38 仓 git submodule 拆分规范
@@ -53,21 +53,21 @@
 - 第三十七章 PROD-01~06（6 项生产就绪规范）
 - IRON-1~8（8 项工程铁律）
 
-### 4. [0.1.1AgentRT仓库拆分方案.md](./0.1.1AgentRT仓库拆分方案.md)
+### 4. [AgentRT 仓库拆分方案](./agentrt/01-designs/_design_0.1.1/01-repo-split-proposal.md)
 
-38 仓拆分方案详述。1 伞仓(airymaxhub) + 5 管理仓(agentrt/sdk/ecosystem/products/agent-linux) + 29 叶子仓 + 4 顶层仓(tools/docs/closed-docs/closed-dev-build)。
+38 仓拆分方案详述。1 伞仓(airymaxhub) + 5 管理仓(agentrt/sdk/ecosystem/products/agent-linux) + 29 叶子仓 + 3 顶层仓。
 
-### 5. [0.1.1AgentRT仓库拆分方案可行性分析报告.md](./0.1.1AgentRT仓库拆分方案可行性分析报告.md)
+### 5. [仓库拆分方案可行性分析报告](./agentrt/00-reviews/_analysis_0.1.1/02-repo-split-feasibility-analysis.md)
 
 38 仓拆分方案可行性分析报告。
 
-### 6. [0.1.1_taskflow_vs_corekern_scheduler_对比报告.md](./0.1.1_taskflow_vs_corekern_scheduler_对比报告.md)
+### 6. [taskflow 与 corekern 调度器对比报告](./agentrt/00-reviews/_analysis_0.1.1/01-taskflow-vs-corekern-scheduler-comparison.md)
 
 taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方案（graph_engine 留 A 类微核心原语 + taskflow_advanced 作为 B 类 DAG 工作流编排 + pregel_engine 0.1.1 强制 max_workers=1 降级）。
 
-### 7. [0.1.1许可证全面审计报告.md](./0.1.1许可证全面审计报告.md)
+### 7. [许可证全面审计报告](./agentrt/00-reviews/_review_0.1.1/01-license-audit-report.md)
 
-0.1.1 版本许可证全面审计报告。OpenAirymax 内所有 5 个 LICENSE 文件 + 3 个 NOTICE 文件统一为 AGPL v3 + Apache 2.0 双许可证；MemoryRovol 独立闭源（SPHARX Ltd. 商业 EULA v1.0）。
+0.1.1 版本许可证全面审计报告。OpenAirymax 内所有 5 个 LICENSE 文件 + 3 个 NOTICE 文件统一为 AGPL v3 + Apache 2.0 双许可证；MemoryRovol 的独立许可策略详见审计报告原文。
 
 ---
 
@@ -77,51 +77,46 @@ taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方
 docs-closed/
 ├── README.md                                    # 英文版
 ├── README_zh.md                                 # 本文档（中文版）
-├── 0.1.1技术全面改进方案v3.0.md                  # v4.0 核心方案
-├── 0.1.1详细任务清单.md                          # v2.0 任务清单
-├── 0.1.1工程标准规范手册.md                      # v26.0 工程规范
-├── 0.1.1AgentRT仓库拆分方案.md                  # 38 仓拆分方案
-├── 0.1.1AgentRT仓库拆分方案可行性分析报告.md     # 拆分可行性分析
-├── 0.1.1_taskflow_vs_corekern_scheduler_对比报告.md  # 双引擎对比
-├── 0.1.1许可证全面审计报告.md                    # 许可证审计
-├── contracts/                                   # 三权分立契约
-│   ├── README.md
-│   ├── CMakeLists.txt
-│   ├── contract_A_B.h                           # A-B 团队契约
-│   ├── contract_A_C.h                           # A-C 团队契约
-│   ├── contract_B_C.h                           # B-C 团队契约
-│   └── contract_test.c                          # 契约测试
-├── subsystems/                                  # 子系统设计文档
-│   ├── SUBSYSTEM_corekern.md                    # 微核心 MicroCoreRT
-│   ├── SUBSYSTEM_coreloopthree.md               # 三层认知循环
-│   ├── SUBSYSTEM_cupolas.md                     # 安全穹顶
-│   ├── SUBSYSTEM_memory.md                      # 记忆卷载
-│   ├── SUBSYSTEM_checkpoint.md                  # 检查点
-│   ├── SUBSYSTEM_gateway_d.md                   # 网关 daemon
-│   ├── SUBSYSTEM_llm_d.md                       # LLM daemon
-│   ├── SUBSYSTEM_tool_d.md                      # 工具 daemon
-│   ├── SUBSYSTEM_market_d.md                    # 市场 daemon
-│   ├── SUBSYSTEM_manager.md                     # 管理器
-│   ├── SUBSYSTEM_orchestrator.md                # 编排器
-│   └── SUBSYSTEM_openlab.md                     # 开放实验室
-├── TOC材料/                                     # 技术 Oversight 委员会材料
-│   ├── 01_SystemicLLM.html
-│   ├── 02_Foundation.html
-│   ├── 03_Intelligence.html
-│   ├── 04_LongEngineering.html
-│   ├── docs/
-│   └── 《AgentOS开源项目准入申请》2(1).pptx
-├── 修复工作历史档案/                            # 历史归档
-│   ├── 各轮次归档/                              # 各轮次文档归档
-│   ├── 改进计划/                                # 14 份历史改进计划
-│   ├── 方案归档/                                # 方案归档
-│   ├── 旧版文档/                                # 3 份早期版本文档
-│   └── 检查报告/                                # 18 份审计检查报告
-├── 历史对话/                                    # 长任务历史对话记录
-└── 技术借鉴与改进/                              # 技术分析与原型设计
-    ├── 分析报告/                                # 6 份技术分析报告
-    ├── 历史原型设计/                            # 4 份早期原型设计
-    └── 核心模块设计方案/                        # 5 份模块实现方案
+├── agentrt/                                     # AgentRT 运行时技术文档（索引：agentrt/README.md）
+│   ├── agentrt工程标准规范手册.md               # 工程标准规范手册（4,584 行）
+│   ├── agentrt开发路线和进度1.0.1版本.md        # 开发路线与进度跟踪
+│   ├── repo-topology.md                         # 仓库拓扑
+│   ├── 0.1.x / 0.2.x 改进方案与审查系列.md      # 0.1.1–0.2.x 历轮改进与审查文档
+│   ├── 00-reviews/                              # 审查 / 分析 / 归档
+│   │   ├── _analysis_0.1.1/                     #   双引擎对比、拆分可行性分析
+│   │   ├── _review_0.1.1/                       #   许可证全面审计报告
+│   │   ├── _review_v1.0 … _review_v4.4/         #   历轮审查归档
+│   │   ├── _archive_0.1.6/                      #   0.1.6 快照归档
+│   │   ├── _archive_conversations/              #   长任务历史对话记录
+│   │   └── _archive_fix_history/                #   修复工作历史档案（各轮次/改进计划/
+│   │                                            #   方案归档/旧版文档/检查报告）
+│   ├── 01-designs/                              # 设计方案
+│   │   └── _design_0.1.1/                       #   0.1.1 奠基文档（拆分方案/改进方案/任务清单）
+│   ├── 05-tech-reference-and-improvement/       # 技术借鉴与改进（历史归档）
+│   ├── 06-contracts/                            # 模块间契约头文件（A/B/C）+ 契约测试
+│   ├── 07-subsystem-specs/                      # 13 篇子系统规格（checkpoint … module-boundaries）
+│   └── 50-engineering-standards/                # 日志收敛、错误码迁移专项计划
+├── agentrt-linux/                               # AirymaxOS 技术参考（索引：agentrt-linux/README.md）
+│   ├── 00-reviews/                              # 版本审查/研究系列（0.1.1 → v3.6）
+│   ├── 01-designs/                              # _design_0.2.1 … _design_0.2.4
+│   ├── 01-openeuler-tech-reference/             # openEuler 技术规范参考
+│   ├── 02-olk66-source-mapping/                 # OLK-6.6 源码映射
+│   ├── 03-microkernel-design-ref/               # seL4 / Zircon / Minix3 微内核设计参考
+│   ├── 04-industry-best-practices/              # 行业最新理论与最佳实践
+│   ├── agentrt-linux基本工程标准规范.md         # agentrt-linux 工程标准规范
+│   └── agentrt-linux开发路线和进度.md           # agentrt-linux 开发路线与进度
+├── openstandards/                               # 开放标准研究稿
+│   ├── _research_v1.0/                          #   重构建议书
+│   ├── _research_v2.0/                          #   优化稿 v2
+│   └── _research_v2.1/                          #   评审稿 v2.1
+├── paper/                                       # 学术论文材料
+│   ├── 01-hot-os-2027-*.md … 16-*.md            #   HotOS 2027、IPC 与 capability-folding 研究
+│   ├── budget-aware-ttc/                        #   预算感知 TTC 研究
+│   └── edge-cloud-agent-measurement/            #   端云智能体测量研究
+└── TOC材料/                                     # 技术 Oversight 委员会材料
+    ├── 00_…07_*.html                            #   演示页（HTML）
+    ├── PNG_HD/  docs/                           #   高清图导出与支撑文档
+    └── 《AgentOS开源项目准入申请》2(1).pptx      #   开源项目准入申请材料
 ```
 
 ---
@@ -162,11 +157,11 @@ docs-closed/
 
 ## 📜 归档原则
 
-1. **当前版本文档**（0.1.1）保留在 docs-closed 根目录
-2. **历史轮次文档**归档至 `修复工作历史档案/各轮次归档/`
-3. **方案/计划/报告**归档至对应的类型子目录
-4. **历史对话**独立存放，按需查阅
-5. **0.1.1 发布后**，本文档中心将归档至 `修复工作历史档案/各轮次归档/第10轮/`
+1. **当前版本文档**（0.1.1）存放于 `agentrt/01-designs/_design_0.1.1/`、`agentrt/00-reviews/_analysis_0.1.1/` 与 `agentrt/00-reviews/_review_0.1.1/`
+2. **历史轮次文档**归档至 `agentrt/00-reviews/_archive_fix_history/round-archives/`
+3. **方案/计划/报告**归档至 `_archive_fix_history/` 下对应的类型子目录
+4. **历史对话**独立存放于 `agentrt/00-reviews/_archive_conversations/`，按需查阅
+5. **归档材料只追加不改写**：历史结论原样保留以便溯源，不在原地修订
 
 ---
 

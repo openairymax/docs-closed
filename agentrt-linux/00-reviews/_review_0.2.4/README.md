@@ -7,7 +7,6 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **审查性质**: v0.2.4 完成后的新一轮完整审查（阶段 G），寻找 v0.2.4 自身引入的新问题、不一致、证据失效、逻辑漏洞
 > **审查方法**: 全文逐章精读 + 关键源代码证据独立复核（对照 OLK-6.6 / seL4-master 实际源代码）+ 交叉引用一致性检查
 > **审查标准**: 用户核心质量要求——"绝对严谨、严格、严肃，不计时间和成本进行不停的验证、求证、寻找问题"
-> **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 
 ---
 
@@ -40,7 +39,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ## 审查方法论
 
 1. **全文逐章精读**：完整读取 v0.2.4 文档 1810 行，逐章分析
-2. **关键源代码证据独立复核**：对照 `/home/spharx/SpharxWorks/01Reference/kernel-OLK-6.6/` 与 `/home/spharx/SpharxWorks/01Reference/seL4-master/` 实际源代码，逐一验证 EV-R01~R07 + EV-01~11 共 18 项证据
+2. **关键源代码证据独立复核**：对照 OLK-6.6 内核与 seL4 master 实际源代码，逐一验证 EV-R01~R07 + EV-01~11 共 18 项证据
 3. **交叉引用一致性检查**：验证章节间术语统一、引用正确、依赖层次自洽
 4. **模型 A 完整性验证**：核查 kernel/ 子仓是否真正"完整 fork"（含全部上游目录）
 5. **三方边界严密性**：核查 memory/security/services 边界声明是否自洽

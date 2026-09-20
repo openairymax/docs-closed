@@ -2,7 +2,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # 行业最新理论与最佳实践
 
-> **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
+> **主要读者**: AirymaxOS 设计者与开源社区技术研究者
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-07
 
@@ -38,7 +38,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 ├─────────────────────────────────────────────────────────────┤
 │ 第 3 段：形成 AirymaxOS 技术方案                              │
 │   输出：03-airymaxos-synthesis.md（综合）                     │
-│         → 转化为开源设计文档 docs/docs-linux/             │
+│         → 沉淀为正式设计文档 docs/docs-linux/             │
 │   原则：用 AirymaxOS 自身语言，非直接翻译                     │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -68,12 +68,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
-## 5. 与开源文档的关系
+## 5. 与正式设计文档的关系
 
-- `03-airymaxos-synthesis.md` 是闭源综合文档，不对外发布
-- 开源设计文档引用行业理论时，必须标注理论来源（学术论文/公开标准），不可引用闭源参考
+- `03-airymaxos-synthesis.md` 是综合参考稿，用于汇总 Euler 参考与行业理论，向正式设计文档沉淀
+- 正式设计文档引用行业理论时，必须标注理论来源（学术论文/公开标准），不直接照搬本目录的参考表述
 - AirymaxOS 技术方案的最终表述必须用自身语言（BAN-INTERNAL-005）
 
 ---
 
-> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开
+> **文档结束** | AgentRT 开源维护团队

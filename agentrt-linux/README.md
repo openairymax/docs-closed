@@ -1,22 +1,21 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agent-linux（AirymaxOS）闭源技术参考文档
+# agent-linux（AirymaxOS）技术参考文档
 
-> **文档定位**: agent-linux 内部技术参考文档索引，**闭源不公开**
-> **保密级别**: SPHARX Ltd 内部参考
+> **文档定位**: agent-linux 技术参考文档索引
 > **版本**: v1.0.1（M0 设计阶段 100% 就绪）
 > **最后更新**: 2026-07-27（v7.2 同步：M0 100% 就绪）
-> **适用范围**: agent-linux 架构委员会 + 内核开发组
+> **主要读者**: agent-linux 架构委员会 + 内核开发组
 
 ---
 
-## 1. 文档定位与保密声明
+## 1. 文档定位与说明
 
-本目录存放 agent-linux（AirymaxOS）的**内部技术参考文档**，这些文档：
+本目录存放 agent-linux（AirymaxOS）的**技术参考文档**，用于梳理设计来源与工程依据：
 
-1. **全面参考 Euler 技术规范**：Euler 社区的技术规范、内核改动、工程实践对 agent-linux 设计具有重要参考价值，但参考文档不能公开
-2. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
-3. **开源文档隔离**：开源文档（`docs/docs-linux/`）中**严禁**出现对 Euler 参考发行版的相关描述；所有参考内容仅限本目录
+1. **梳理 Euler 技术规范来源**：Euler 社区的技术规范、内核改动、工程实践对 agent-linux 设计具有重要参考价值，本目录集中记录这些参考依据，便于溯源。
+2. **消化吸收后再落地**：对 Euler 的参考必须经过消化吸收，转化为 AirymaxOS 自身的设计表达，不在正式设计文档中直接照搬。
+3. **正式设计文档分层**：面向用户的正式设计文档位于 `docs/docs-linux/`，使用 AirymaxOS 自身语言表述；本目录作为参考依据与规范溯源，两者保持分层。
 
 ---
 
@@ -24,7 +23,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ```
 docs-closed/agent-linux/
-├── README.md                          # 本文件 — 闭源参考文档索引
+├── README.md                          # 本文件 — 技术参考文档索引
 ├── 01-openeuler-tech-reference/       # openEuler 技术规范参考
 │   ├── README.md                      # 索引
 │   ├── 01-scheduler-spec.md           # 调度器技术规范（EEVDF + sched_ext）
@@ -68,17 +67,17 @@ AirymaxOS 开源设计文档（`docs/docs-linux/`）的编写和修订流程：
 1. **先参考 Euler**：查阅本目录 `01-openeuler-tech-reference/` 中对应子系统的 openEuler 技术规范
 2. **再参考行业最新理论**：查阅 `04-industry-best-practices/` 中的最新理论和最佳实践
 3. **最后形成 AirymaxOS 技术方案**：综合 Euler 参考 + 行业最新理论，形成 AirymaxOS 自己的技术方案
-4. **开源文档输出**：在 `docs/docs-linux/` 中编写开源文档，**严禁引用 openEuler**
+4. **正式设计文档输出**：在 `docs/docs-linux/` 中编写正式设计文档，使用 AirymaxOS 自身语言，不直接引用 openEuler
 
-### 3.2 开源/闭源隔离铁律
+### 3.2 参考文档与正式设计文档分层规范
 
 | 规则 | 说明 |
 |------|------|
-| **BAN-INTERNAL-001** | openEuler 技术规范参考内容**只能**存在于 `docs-closed/agent-linux/` 目录 |
-| **BAN-INTERNAL-002** | 开源文档 `docs/docs-linux/` 中**严禁**出现 "openEuler"、"open Euler"、"openeuler" 等描述 |
-| **BAN-INTERNAL-003** | 闭源参考文档中的 openEuler 内容必须经过**消化吸收**后才能体现在开源设计文档中 |
-| **BAN-INTERNAL-004** | 闭源参考文档**不对外发布**，不包含在任何开源 LICENSE 范围内 |
-| **BAN-INTERNAL-005** | 开源文档中的技术方案表述必须用 **AirymaxOS 自身语言**，不能是 openEuler 的直接翻译 |
+| **BAN-INTERNAL-001** | openEuler 技术规范的直接参考与溯源记录集中在 `docs-closed/agent-linux/` 目录维护 |
+| **BAN-INTERNAL-002** | 正式设计文档 `docs/docs-linux/` 以 AirymaxOS 自身语言表述，不直接照搬 "openEuler" 等来源描述 |
+| **BAN-INTERNAL-003** | 参考文档中的 openEuler 内容必须经过**消化吸收**后，才能体现在正式设计文档中 |
+| **BAN-INTERNAL-004** | 本目录定位为设计溯源与规范依据，面向用户的对外交付以 `docs/docs-linux/` 正式设计文档为准 |
+| **BAN-INTERNAL-005** | 正式设计文档中的技术方案表述必须用 **AirymaxOS 自身语言**，不能是 openEuler 的直接翻译 |
 
 ### 3.3 IRON-9 v2 代码共享原则下的参考方式
 
@@ -90,21 +89,21 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 ---
 
-## 4. 与开源文档的关系
+## 4. 与正式设计文档的关系
 
-| 维度 | 闭源参考文档（本目录） | 开源设计文档（`docs/docs-linux/`） |
+| 维度 | 技术参考文档（本目录） | 正式设计文档（`docs/docs-linux/`） |
 |------|----------------------|--------------------------------------|
-| 保密级别 | SPHARX Ltd 内部 | 开源（AGPL v3 + Apache 2.0） |
-| openEuler 引用 | ✅ 允许，全面参考 | ❌ 严禁 |
+| 定位 | 设计溯源与规范依据 | 面向用户的交付（AGPL v3 + Apache 2.0） |
+| openEuler 引用 | 直接参考与溯源记录 | 消化吸收后以 AirymaxOS 自身语言表述 |
 | 技术深度 | 深度技术规范（源码级） | 设计方案级（架构 + 接口 + 数据流） |
 | 编写语言 | 中文为主 | 中文为主 |
-| 版本同步 | 与开源文档同步更新 | 与闭源参考文档同步更新 |
+| 版本同步 | 与正式设计文档同步更新 | 与技术参考文档同步更新 |
 
 ---
 
 ## 5. 文档清单（0.1.1 文档体系完成）
 
-0.1.1 版本已完成全部闭源参考文档（26 个文件，~14,131 行）：
+0.1.1 版本已完成全部技术参考文档（26 个文件，~14,131 行）：
 
 | 目录 | 文件数 | 行数 | 状态 |
 |------|--------|------|------|
@@ -115,7 +114,7 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 | 根级文档 | 3 | 2,032 | ✅ 完成（README+工程标准+开发路线） |
 | **合计** | **26** | **14,131** | **✅ 全部完成** |
 
-后续 1.0.1 开发阶段将随代码实施同步更新闭源参考文档。
+后续 1.0.1 开发阶段将随代码实施同步更新技术参考文档。
 
 ---
 
@@ -128,4 +127,4 @@ IRON-9 v2（同源且部分代码共享）下，openEuler 技术规范参考方�
 
 ---
 
-> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开
+> **文档结束** | AgentRT 开源维护团队
