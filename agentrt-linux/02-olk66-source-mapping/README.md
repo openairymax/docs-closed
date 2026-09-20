@@ -2,7 +2,6 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # OLK-6.6 源码映射
 
-> **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-07
 > **源码基线**: Linux 6.6 内核源码
@@ -61,12 +60,12 @@ OLK-6.6: kernel/sched/ext.c:1234  — sched_bpf_dispatch()
 
 ---
 
-## 4. 与开源文档的关系
+## 4. 与正式设计文档的关系
 
-- 映射文档是**闭源参考**，不对外发布
-- 开源设计文档（`docs/docs-linux/`）引用映射结论时，必须用 AirymaxOS 自身语言表述（BAN-INTERNAL-005）
-- 开源文档中**严禁**出现 OLK-6.6 源码路径、行号、函数名等直接引用
+- 映射文档定位为 OLK-6.6 源码 → AirymaxOS 设计概念的**溯源参考**，用于梳理设计来源
+- 正式设计文档（`docs/docs-linux/`）引用映射结论时，必须用 AirymaxOS 自身语言表述（BAN-INTERNAL-005）
+- 正式设计文档中不直接照搬 OLK-6.6 源码路径、行号、函数名等引用，须转化为 AirymaxOS 自身表述
 
 ---
 
-> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开
+> **文档结束** | AgentRT 开源维护团队

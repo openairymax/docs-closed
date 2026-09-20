@@ -1,8 +1,6 @@
 # 05-tech-reference-and-improvement/ 历史归档说明
 
-> **归档声明**: 本目录为**历史归档目录**，内含 Airymax 运行时（agentrt）早期阶段的技术借鉴、分析报告与原型设计文档。
->
-> **保密级别**: SPHARX Ltd 内部参考（闭源不公开）
+> **归档声明**: 本目录为**历史归档目录**，内含 Airymax 运行时（agentrt）早期阶段的技术借鉴、分析报告与原型设计文档，随仓库公开，供项目历史研究参考。
 
 ---
 
@@ -72,5 +70,5 @@
 
 **文档版本**: 0.1.1
 **生成时间**: 2026-07-14
-**维护者**: SPHARX Ltd. - Airymax Team
+**维护者**: AgentRT 开源维护团队
 **关联决策**: v3.0-综合-P2-14（05-tech-reference-and-improvement/ 历史归档 1738 处 agentos_ 残留）

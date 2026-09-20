@@ -1,21 +1,20 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# agentrt（Airymax 运行时）闭源文档
+# agentrt（Airymax 运行时）技术文档
 
-> **文档定位**: agentrt 内部技术文档索引，**闭源不公开**
-> **保密级别**: SPHARX Ltd 内部参考
+> **文档定位**: agentrt 技术文档索引
 > **版本**: 0.1.1
 > **最后更新**: 2026-07-10
-> **适用范围**: Airymax 核心开发组
+> **主要读者**: Airymax 核心开发组
 
 ---
 
-## 1. 文档定位与保密声明
+## 1. 文档定位与说明
 
-本目录存放 AgentRT（Airymax 运行时）的**内部技术文档**，这些文档：
+本目录存放 AgentRT（Airymax 运行时）的**技术文档**，梳理运行时本身的设计与工程依据：
 
-1. **闭源不公开**：本目录所有文档归 SPHARX Ltd 所有，仅供内部使用
-2. **与 agent-linux 互补**：agent-linux 侧重 Linux 内核技术参考，本目录侧重 Airymax 运行时本身的设计与工程文档
+1. **设计与工程参考**：集中记录 AgentRT 的技术借鉴、改进方案、模块契约、子系统规格与评审记录，便于设计溯源。
+2. **与 agent-linux 互补**：agent-linux 侧重 Linux 内核技术参考，本目录侧重 Airymax 运行时本身的设计与工程文档。
 
 ---
 
@@ -23,7 +22,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ```
 docs-closed/agentrt/
-├── README.md                              # 本文件 — 闭源文档索引
+├── README.md                              # 本文件 — 技术文档索引
 ├── agentrt工程标准规范手册.md               # 工程标准规范手册（顶级规范文档）
 │
 ├── 05-tech-reference-and-improvement/     # 技术借鉴与改进参考
@@ -99,4 +98,4 @@ docs-closed/agentrt/
 
 **文档版本**: 0.1.1
 **生成时间**: 2026-07-10
-**维护者**: SPHARX Ltd. - Airymax Team
+**维护者**: AgentRT 开源维护团队

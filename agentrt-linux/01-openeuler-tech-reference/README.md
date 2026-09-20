@@ -2,10 +2,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 # openEuler 技术规范参考
 
-> **保密级别**: SPHARX Ltd 内部参考，**闭源不公开**
 > **版本**: 0.2.0
 > **最后更新**: 2026-07-30
-> **适用范围**: AirymaxOS 架构委员会 + 内核开发组
+> **主要读者**: AirymaxOS 架构委员会 + 内核开发组
 
 ---
 
@@ -44,10 +43,10 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ## 3. 使用规范
 
-1. **先参考本目录**：修订开源设计文档前，先查阅对应子系统的 openEuler 技术规范参考
+1. **先参考本目录**：修订正式设计文档前，先查阅对应子系统的 openEuler 技术规范参考
 2. **消化吸收**：openEuler 内容必须经过消化吸收，转化为 AirymaxOS 自身技术语言
-3. **隔离铁律**：开源文档（`docs/docs-linux/`）中严禁出现 openEuler 描述（BAN-INTERNAL-002）
-4. **不对外发布**：本目录所有文档不包含在开源 LICENSE 范围内（BAN-INTERNAL-004）
+3. **表述规范**：正式设计文档（`docs/docs-linux/`）以 AirymaxOS 自身语言表述，不直接照搬 openEuler 描述（BAN-INTERNAL-002）
+4. **分层定位**：本目录作为 openEuler 设计溯源与规范依据，面向用户的对外交付以 `docs/docs-linux/` 正式设计文档为准（BAN-INTERNAL-004）
 
 ---
 
@@ -61,4 +60,4 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 ---
 
-> **文档结束** | SPHARX Ltd 内部参考 | 闭源不公开
+> **文档结束** | AgentRT 开源维护团队
