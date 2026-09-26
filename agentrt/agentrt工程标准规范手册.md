@@ -95,7 +95,7 @@ Layer 7: 发布验证    149 项 ACC 验收标准            → 全量发布就
 
 ### 1.6 术语强制规范
 
-本手册所有术语以 [10-terminology.md](../Docs/10-terminology.md) v4.0 为唯一权威源。以下为高频易错术语的强制对照：
+本手册所有术语以 [10-terminology.md](../../docs-workload/00-requirements/10-terminology.md) v4.0 为唯一权威源，0.1.19 起增补能力格（Slot）/ 原子件（Atom）/ 组合件（Composite）/ 形态面（Facade）四术语。以下为高频易错术语的强制对照：
 
 | 标准名称 | 标准英文 | 代码前缀 | 禁止使用的旧称 |
 |---------|---------|---------|---------------|
@@ -113,6 +113,18 @@ Layer 7: 发布验证    149 项 ACC 验收标准            → 全量发布就
 | 记忆交换算法 | MemorySwap | `airy_*` | — |
 | 协议适配层 | Protocols | — | — |
 | 统一错误码体系 | ErrorCodeSystem | `AIRY_E*` | — |
+| 能力格 | Slot | 随宿主模块 | "能力网格"、"能力槽"、"capability lattice" |
+| 原子件 | Atom | 随所属能力格 | "原子原语"、"原子组件"、"Atomic"（名词用法） |
+| 组合件 | Composite | 随装配结果 | "复合件"、"合成体"、"composition" |
+| 形态面 | Facade | 随所属服务进程 | "aspect"、"面化"、"功能面"、"形态层" |
+
+> **Slot / Atom / Composite / Facade 释义（0.1.19 用户定稿）**：
+>
+> **能力格（Slot）** 是能力的最小归类槽位，**固定不变**，是「格」；**原子件（Atom）** 是填入某个格、不可再分的最小实现单元，是「件」；**组合件（Composite）** 是原子件按 `⊗` 装配得到的组件；**形态面（Facade）** 是按职责面（ingress / execute / state / governance）对外暴露的组合件集合，是「面」。
+>
+> **关系式**：面 = 声明 + 生成 + **组合件装配**（组合一律经组合件（Composite）承载，**禁薄胶水串联**）。**固定的是格，变化的是件。** 自检例句：`Taskflow is an atom in the flow slot, exposed by the sched_d facade.`
+>
+> **禁止**：以 `Atomic` 作可数名词使用（形容词不作名词，且与 C11 `<stdatomic.h>` 符号冲突）；旧称「capability lattice / aspect / 面化 / 功能面 / 原子原语」一律不得再新增使用。
 
 ### 1.7 架构原则→章节映射
 
