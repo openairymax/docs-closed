@@ -6,13 +6,7 @@
 !.gitignore
 !README_zh.md
 # 文档资产目录（全部须入库）
-!TOC材料/
-!TOC材料/**
-!agentrt/
-!agentrt/**
-!agentrt-linux/
-!agentrt-linux/**
-!openstandards/
-!openstandards/**
-!paper/
-!paper/**
+!agent-workload-dev/
+!agent-workload-dev/**
+!agent-linux-dev/
+!agent-linux-dev/**
