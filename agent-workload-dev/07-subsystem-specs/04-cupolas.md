@@ -43,13 +43,12 @@ Cupolas 是 AgentRT 的安全穹顶模块，为所有 Agent 操作提供统一�
 | **错误处理** | 统一错误码定义（含模块级错误码），错误码转换函数，向后兼容别名 | `src/security/cupolas_error.c`, `cupolas_error.h` |
 | **监控与指标** | 安全事件监控、性能指标收集、统计上报 | `src/cupolas_monitoring.c`, `src/cupolas_metrics.c` |
 | **配置管理** | 安全策略配置解析（平台路径系统解析 permission_rules.yaml/审计目录） | `src/cupolas.c`（内部配置），`commons/platform/include/platform_paths.h` |
-| **内存池/Slab** | Cupolas 内部高性能内存管理（独立于 corekern） | `src/mempool.c`, `src/slab.c` |
 
 ### 非职责（明确排除）
 
 - 不负责 AI/LLM 推理逻辑（属于 CoreLoopThree）
 - 不负责任务调度与执行（属于 CoreLoopThree 的 execution 引擎）
-- 不负责底层内存分配框架（属于 corekern + commons/memory）
+- 不负责内存分配机制（内存池/Slab 的权威实现归 corekern 的 `airy_mempool_*` / `airy_slab_*`，通用分配归 commons/memory）
 - 不负责网络协议处理（属于 gateway_d）
 - 不负责工具调用具体实现（属于 tool_d）
 - 不负责持久化存储（属于 HeapStore）
