@@ -7,16 +7,17 @@
 
 ## 1. 职责边界
 
-Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释放、内存池管理、内存调试和统计追踪等基础设施。它是 AgentRT 中所有内存操作的基础，旨在消除项目中分散的内存管理代码，提供一致的内存管理策略。
+Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释放、内存调试和统计追踪等基础设施。它是 AgentRT 中所有内存操作的基础，旨在消除项目中分散的内存管理代码，提供一致的内存管理策略。
 
 > **归属说明（2026-09-11）**：Arena 线性分配器（`airy_arena_*`）、per-thread cache（`airy_tcache_*`）与引用计数（`refcounted_t`）的权威实现已统一到 corekern（`atoms/corekern/include/arena.h`、`include/tcache.h`、`include/refcount.h`），commons 侧的平行实现已删除。
+>
+> **归属说明（2026-10-06）**：内存池与 Slab（`airy_mempool_*` / `airy_slab_*`）的权威实现统一归 corekern（`atoms/corekern/include/mempool.h`、`include/slab.h`）；commons 侧 `memory_pool_*` 平行实现与 cupolas 内部 mempool/slab 副本已删除，避免同名符号重复定义。
 
 ### 核心职责
 
 | 模块 | 职责 | 源文件 |
 |------|------|--------|
 | **核心分配层** | 安全的内存分配/释放/重分配，支持对齐分配、零初始化、失败策略、标签追踪 | `src/memory.c` (`airy_memory.h`) |
-| **内存池** | 固定大小块的内存池管理，支持预分配、动态扩展/收缩、遍历验证 | `src/memory_pool.c` (`memory_pool.h`) |
 | **兼容层** | 与标准 C 库兼容的 `AIRY_MALLOC`/`AIRY_FREE` 等宏，安全缓冲区操作，溢出检查 | `memory_compat.h` |
 | **内存调试** | 泄漏检测、边界检查、释放后使用检查、双重释放检查、堆栈跟踪、检查点比较 | `src/memory_debug.c` (`memory_debug.h`) |
 | **统计追踪** | 全局内存统计、按类别跟踪（ALLOC_SHORT_LIVED/LONG_LIVED/CRITICAL）、水位监控、OOM 响应 | `src/memory_common.c` (`memory_common.h`) |
@@ -40,8 +41,7 @@ Memory 是 AgentRT 的统一内存管理框架，提供安全的内存分配/释
 | 头文件 | 用途 | 公开 API 数量 |
 |--------|------|:---:|
 | `airy_memory.h` | 核心层 API：分配/释放/统计/调试 | 16+ |
-| `memory_common.h` | 内存池配置 + 安全分配接口 + 全局策略 | 10+ |
-| `memory_pool.h` | 内存池管理：创建/分配/释放/统计/扩展 | 16+ |
+| `memory_common.h` | 安全分配接口 + 全局策略 | 10+ |
 | `memory_compat.h` | 向后兼容层：安全宏 + OOM 水位监控 + 分配追踪 | 20+ |
 | `memory_debug.h` | 内存调试：泄漏检测/边界检查/堆栈跟踪/检查点 | 17+ |
 | `memory_prealloc.h` | 预分配应急池：init/shutdown/acquire/release | 6 |
@@ -71,19 +71,6 @@ void memory_dump_debug_info(const char *file);
 bool memory_validate(void *ptr);
 bool memory_debug_enable(bool enable);
 void memory_set_fail_callback(void (*callback)(size_t, const char*, void*), void *user_data);
-
-// 内存池
-memory_pool_t *memory_pool_create(const memory_pool_options_t *options);
-void memory_pool_destroy(memory_pool_t *pool);
-void *memory_pool_alloc(memory_pool_t *pool);
-void *memory_pool_calloc(memory_pool_t *pool);
-void memory_pool_free(memory_pool_t *pool, void *ptr);
-bool memory_pool_get_stats(memory_pool_t *pool, memory_pool_stats_t *stats);
-bool memory_pool_prealloc(memory_pool_t *pool, size_t count);
-bool memory_pool_expand(memory_pool_t *pool, size_t additional_blocks);
-size_t memory_pool_shrink(memory_pool_t *pool, size_t blocks_to_keep);
-bool memory_pool_validate(memory_pool_t *pool);
-memory_pool_t *memory_pool_create_default(size_t block_size);
 
 // Arena 分配器（权威实现已归 corekern：atoms/corekern/include/arena.h，airy_arena_*）
 airy_arena_t *airy_arena_create(size_t block_size);
@@ -158,7 +145,7 @@ commons/utils/memory/
 
 | 依赖 | 类型 | 说明 |
 |------|------|------|
-| POSIX 线程 (libpthread) | 系统 | 线程安全互斥锁（memory_pool 线程安全模式） |
+| POSIX 线程 (libpthread) | 系统 | 线程安全互斥锁（全局统计与调试表加锁） |
 | 系统时钟 | 系统 | 分配时间戳（`airy_time_ms()`） |
 
 ### 3.3 被依赖方
@@ -166,10 +153,10 @@ commons/utils/memory/
 | 消费者 | 使用接口 | 说明 |
 |--------|---------|------|
 | corekern | `AIRY_MALLOC`/`AIRY_FREE`、`memory_compat.h` | 所有内存操作的基础设施 |
-| CoreLoopThree | 内存分配、内存池 | 认知循环中的临时分配 |
+| CoreLoopThree | 内存分配 | 认知循环中的临时分配 |
 | Cupolas | 内存分配 | 安全守卫运行 |
 | 所有 daemon | `AIRY_MALLOC`/`AIRY_FREE` | 通用内存分配 |
-| llm_d | 内存池、OOM 水位回调 | LLM 推理内存管理 |
+| llm_d | OOM 水位回调 | LLM 推理内存管理 |
 | tool_d | 内存分配 | 工具执行 |
 
 ---
@@ -187,18 +174,7 @@ commons/utils/memory/
 | `fail_callback` | 函数指针 | NULL | 分配失败回调 |
 | `fail_callback_user_data` | void* | NULL | 失败回调用户数据 |
 
-### 4.2 内存池配置 (`memory_pool_options_t`)
-
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|:---:|------|
-| `block_size` | size_t | — | 内存块大小（字节） |
-| `initial_blocks` | size_t | 16 | 初始预分配块数 |
-| `max_blocks` | size_t | 0（无限制） | 最大块数 |
-| `expansion_size` | size_t | 8 | 池满时扩展的块数 |
-| `thread_safe` | bool | true | 是否线程安全 |
-| `name` | const char* | NULL | 内存池名称（调试用） |
-
-### 4.3 Arena / tcache 配置（权威实现已归 corekern）
+### 4.2 Arena / tcache 配置（权威实现已归 corekern）
 
 Arena 与 tcache 不再有全局配置常量；参数在创建时传入（corekern `atoms/corekern/include/arena.h`、`include/tcache.h`）：
 
@@ -208,7 +184,7 @@ Arena 与 tcache 不再有全局配置常量；参数在创建时传入（coreke
 | arena 对齐 | 默认 `sizeof(void*)`；自定义用 `airy_arena_alloc_aligned(…, alignment)` | alignment 须为 2 的幂 |
 | tcache 参数 | `airy_tcache_create(const airy_tcache_config_t *config, …)` | 批量/缓存上限等经 config 结构传入 |
 
-### 4.5 预分配池 (`memory_prealloc.h`)
+### 4.3 预分配池 (`memory_prealloc.h`)
 
 | 参数 | 值 | 说明 |
 |------|:---:|------|
@@ -217,7 +193,7 @@ Arena 与 tcache 不再有全局配置常量；参数在创建时传入（coreke
 | `AIRY_PREALLOC_AUDIT_BUF_SIZE` | 16384 | 审计日志应急缓冲区 |
 | `AIRY_PREALLOC_SHUTDOWN_BUF_SIZE` | 8192 | 应急关闭缓冲区 |
 
-### 4.6 内存调试配置 (`memory_debug_options_t`)
+### 4.4 内存调试配置 (`memory_debug_options_t`)
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|:---:|------|
@@ -258,8 +234,6 @@ Arena 与 tcache 不再有全局配置常量；参数在创建时传入（coreke
 | `memory_debug_validate_all(error_count, dump)` | 全量内存块验证 | 测试 |
 | `memory_debug_checkpoint(name)` | 创建内存状态检查点 | 测试 |
 | `memory_debug_compare_checkpoints(cp1, cp2, report)` | 比较检查点差异 | 测试 |
-| `memory_pool_get_stats(pool, stats)` | 获取内存池统计 | 测试/监控 |
-| `memory_pool_validate(pool)` | 验证内存池完整性 | 测试 |
 | `airy_arena_used(arena)` / `airy_arena_capacity(arena)` | 获取 Arena 用量/容量（corekern） | 测试/监控 |
 | `airy_tcache_get_stats(tc, stats)` | 获取 tcache 统计（corekern） | 测试/监控 |
 | `airy_mem_stats_get(stats)` | 获取运行时统计快照 | 测试/监控 |
