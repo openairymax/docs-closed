@@ -42,7 +42,7 @@ Cupolas 是 AgentRT 的安全穹顶模块，为所有 Agent 操作提供统一�
 | **熔断器** | 服务熔断模式（CLOSED→OPEN→HALF_OPEN），失败快速拒绝，自动恢复，熔断器注册表 | `src/circuit_breaker.c`, `circuit_breaker.h` |
 | **错误处理** | 统一错误码定义（含模块级错误码），错误码转换函数，向后兼容别名 | `src/security/cupolas_error.c`, `cupolas_error.h` |
 | **监控与指标** | 安全事件监控、性能指标收集、统计上报 | `src/cupolas_monitoring.c`, `src/cupolas_metrics.c` |
-| **配置管理** | 安全策略配置加载、动态更新 | `src/cupolas_config.c`, `cupolas_config.h` |
+| **配置管理** | 安全策略配置解析（平台路径系统解析 permission_rules.yaml/审计目录） | `src/cupolas.c`（内部配置），`commons/platform/include/platform_paths.h` |
 | **内存池/Slab** | Cupolas 内部高性能内存管理（独立于 corekern） | `src/mempool.c`, `src/slab.c` |
 
 ### 非职责（明确排除）
@@ -89,7 +89,6 @@ Cupolas 是 AgentRT 的安全穹顶模块，为所有 Agent 操作提供统一�
 | `src/workbench/workbench_limits.h` | 工位资源限制 | 5+ |
 | `src/workbench/workbench_container.h` | 工位容器化 | 5+ |
 | `src/workbench/workbench_process.h` | 工位进程管理 | 5+ |
-| `src/cupolas_config.h` | Cupolas 配置管理 | 5+ |
 | `src/cupolas_metrics.h` | 安全指标收集 | 5+ |
 | `src/cupolas_monitoring.h` | 安全事件监控 | 5+ |
 
