@@ -34,17 +34,17 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 | 仓类 | 开发分支 | main 语义 |
 |---|---|---|
 | 聚合/上层仓（spharxworks、airymaxhub、agent-workload、agentrt、sdk、products、ecosystem、tools、docs、docs-closed、developbuild、agent-linux） | **main** 直开 | 持续集成主线 |
-| 叶子仓（atoms、commons、cupolas、daemons、gateway、heapstore、protocols、tui、cli、sdk-rust、sdk-python、sdk-go、sdk-typescript） | **develop/hubs-01**（标准开发分支） | **发布快照**：每次 release 时快进/合并同步一次，日常不更新 |
+| 叶子仓（atoms、commons、cupolas、daemons、gateway、heapstore、protocols、tui、cli、sdk-rust、sdk-python、sdk-go、sdk-typescript） | **dev/hubs-01**（标准开发分支） | **发布快照**：每次 release 时快进/合并同步一次，日常不更新 |
 
 - 叶子仓禁止直接在 main 上提交；main 只接受发布期同步（快进优先，分叉用 merge）。
 - 历史上 atoms/cli 的 main 曾含 atomgit MR 自动合并提交（`!N merge develop into main`），
-  已于 2026-09-03 调和：merge 并入 develop/hubs-01 后 main 快进同 tip，main=发布快照单点一致。
+  已于 2026-09-03 调和：merge 并入 dev/hubs-01 后 main 快进同 tip，main=发布快照单点一致。
 
 ## 3. 发布快照同步操作（每次 release 执行一次）
 
-1. 叶子仓（11 仓纯落后）：`git push origin develop/hubs-01:main`（快进，零新提交）。
-2. 叶子仓（分叉时）：`git merge origin/main` 于 develop/hubs-01（merge-tree 预检冲突 →
-   零冲突方可），推送 develop + main；若 tip 变化须同步升级 gitlink 钉住 hash。
+1. 叶子仓（11 仓纯落后）：`git push origin dev/hubs-01:main`（快进，零新提交）。
+2. 叶子仓（分叉时）：`git merge origin/main` 于 dev/hubs-01（merge-tree 预检冲突 →
+   零冲突方可），推送 dev/hubs-01 + main；若 tip 变化须同步升级 gitlink 钉住 hash。
 3. gitlink 逐级 bump：叶子 → agentrt/sdk → agent-workload → airymaxhub → spharxworks。
 4. 验证：`git submodule status` 全空间前缀、各仓 `origin/main..HEAD` 为空。
 
@@ -64,11 +64,30 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 
 ## 5. 2026-09-03 收口记录
 
-- 叶子仓 origin/main 曾全面滞后 develop/hubs-01（daemons 183、atoms 114、commons
-  101、tui 98…）：11 仓快进同步至 develop tip（哈希不变，gitlink 不动）。
+- 叶子仓 origin/main 曾全面滞后 dev/hubs-01（daemons 183、atoms 114、commons
+  101、tui 98…）：11 仓快进同步至 dev/hubs-01 tip（哈希不变，gitlink 不动）。
 - atoms（`6bb49e7`，merge main 独有 6 个 MR 提交）、cli（`9c018a2`，1 个 MR 提交）
   零冲突调和，gitlink 随 agentrt `acd22cfce` / sdk `3bba94b` 升级，链至伞仓 `45471b2`。
 - 父仓 spharxworks gitlink bump 至伞仓最新并推送（`fa0790a`）；works-engineering/
   README.md 明确不入父仓（.gitignore）。
 - 伞仓 6 子模块全部正式注册（agent-linux/agent-workload/developbuild/docs/docs-closed/
   tools，`submodule status` 无 `-`/`+` 异常）。
+
+## 6. 2026-10-07 分支命名收口记录
+
+- **事实**：§2 原记「叶子仓标准开发分支 = `develop/hubs-01`」，但实测全部叶子仓
+  （`agentrt` 的 atoms/commons/cupolas/daemons/gateway/protocols/heapstore；`sdk` 的
+  sdk-python/sdk-go/sdk-rust/sdk-typescript/console/tui；`products` 的 desktop/docker/
+  memoryrovol；`ecosystem` 的 manager/prompts/markets/skills/agents；`agent-linux` 的
+  memory/security/cognition/services/system/cloudnative/tests-linux/distro）远端**仅存在**
+  `dev/hubs-01` 与 `main`，**不存在** `develop/hubs-01`（`distro` 例外：两分支并存，
+  `origin/HEAD → develop/hubs-01`）。
+- **影响**：`.gitmodules` 声明的 `develop/hubs-01` 为不存在分支，`git submodule
+  update --remote` 必然失败；违反 `agentrt-linux基本工程标准规范.md` VCS-03
+  「`.gitmodules` 声明分支须与实际检出分支一致」。
+- **裁定**：**以实际为准**，全部统一为 `dev/hubs-01`（含 `ecosystem/agents` 由 `main`
+  改 `dev/hubs-01`；`agent-linux/kernel` 声明 `ALK-6.6-dev` 与实际一致，不动）。
+- **落点**：`agentrt 4beebb84e`、`sdk c241a71`、`products 5a75759`、`ecosystem 4fb7f46`、
+  `agent-linux f55229f` 五仓 `.gitmodules` 收口；gitlink 逐级 bump 至 `agent-workload
+  ab7eba6` → `airymaxhub 2abcf98`。
+- **零构建影响**：§1 明确「构建/CI 取钉住 hash，与分支名无关」，故本次为纯元数据订正。
