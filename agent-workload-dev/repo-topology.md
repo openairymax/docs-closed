@@ -10,12 +10,13 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 ├── airymaxhub/               ← 伞仓（remote: openairymax/airymaxhub；聚合全部开源仓）
 │   ├── agent-linux/          ← 内核/驱动仓
 │   ├── agent-workload/       ← 运行时工作负载聚合仓
-│   │   ├── agentrt/          ← AgentRT 单仓（内含 atoms/commons/cupolas/daemons/
-│   │   │                        gateway/heapstore/protocols 七个叶子仓）
-│   │   ├── products/         ← 产品仓（memoryrovol/desktop/docker…）
+│   │   ├── agentrt/          ← AgentRT 机制核单仓（内含 atoms/commons/daemons/
+│   │   │                        gateway/heapstore/protocols 六个叶子仓）
+│   │   ├── products/         ← 策略模块聚合仓（memoryrovol/cupolas 子模块 +
+│   │   │                        lang_gateway 内联模块）
 │   │   ├── ecosystem/        ← 生态仓（manager/skills/markets…）
-│   │   └── sdk/              ← SDK 聚合仓（tui/cli/sdk-rust/sdk-python/
-│   │                            sdk-go/sdk-typescript 六个叶子仓）
+│   │   └── sdk/              ← SDK 聚合仓（console/tui/desktop/docker/
+│   │                            sdk-rust/sdk-python/sdk-go/sdk-typescript 八个叶子仓）
 │   ├── tools/                ← CI/质量门禁/发布脚本仓
 │   ├── docs/                 ← 公开文档仓（docs/AirymaxRT 等）
 │   ├── docs-closed/          ← 闭源工程文档仓（本文件所在，sync-mirror SKIP）
@@ -34,7 +35,7 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 | 仓类 | 开发分支 | main 语义 |
 |---|---|---|
 | 聚合/上层仓（spharxworks、airymaxhub、agent-workload、agentrt、sdk、products、ecosystem、tools、docs、docs-closed、developbuild、agent-linux） | **main** 直开 | 持续集成主线 |
-| 叶子仓（atoms、commons、cupolas、daemons、gateway、heapstore、protocols、tui、cli、sdk-rust、sdk-python、sdk-go、sdk-typescript） | **dev/hubs-01**（标准开发分支） | **发布快照**：每次 release 时快进/合并同步一次，日常不更新 |
+| 叶子仓（atoms、commons、cupolas、daemons、gateway、heapstore、protocols、console、tui、desktop、docker、sdk-rust、sdk-python、sdk-go、sdk-typescript） | **dev/hubs-01**（标准开发分支） | **发布快照**：每次 release 时快进/合并同步一次，日常不更新 |
 
 - 叶子仓禁止直接在 main 上提交；main 只接受发布期同步（快进优先，分叉用 merge）。
 - 历史上 atoms/cli 的 main 曾含 atomgit MR 自动合并提交（`!N merge develop into main`），
@@ -76,10 +77,7 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 ## 6. 2026-10-07 分支命名收口记录
 
 - **事实**：§2 原记「叶子仓标准开发分支 = `develop/hubs-01`」，但实测全部叶子仓
-  （`agentrt` 的 atoms/commons/cupolas/daemons/gateway/protocols/heapstore；`sdk` 的
-  sdk-python/sdk-go/sdk-rust/sdk-typescript/console/tui；`products` 的 desktop/docker/
-  memoryrovol；`ecosystem` 的 manager/prompts/markets/skills/agents；`agent-linux` 的
-  memory/security/cognition/services/system/cloudnative/tests-linux/distro）远端**仅存在**
+  （分组清单见 §2）远端**仅存在**
   `dev/hubs-01` 与 `main`，**不存在** `develop/hubs-01`（`distro` 例外：两分支并存，
   `origin/HEAD → develop/hubs-01`）。
 - **影响**：`.gitmodules` 声明的 `develop/hubs-01` 为不存在分支，`git submodule
@@ -91,3 +89,17 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
   `agent-linux f55229f` 五仓 `.gitmodules` 收口；gitlink 逐级 bump 至 `agent-workload
   ab7eba6` → `airymaxhub 2abcf98`。
 - **零构建影响**：§1 明确「构建/CI 取钉住 hash，与分支名无关」，故本次为纯元数据订正。
+
+## 7. 2026-10-09 机制/策略分离收口记录
+
+- **背景**：贯彻「机制/策略分离」，`products` 由「产品交付聚合」重定位为
+  **策略模块聚合路径**：`memoryrovol`（submodule，L5 专有） + `cupolas`
+  （submodule，L3 开源安全框架） + `lang_gateway`（in-tree 内联模块，非 submodule）。
+- **迁移**：两个客户端——`desktop`（Tauri 桌面客户端）与 `docker`（容器交付资产）
+  ——由 `products/` 移出，落于 `sdk/`（面向用户的交互组件与交付载体归 SDK 聚合）。
+- **metadata 变更**：`products/.gitmodules` 4 条 → **2 条**（memoryrovol、cupolas）；
+  `sdk/.gitmodules` 6 条 → **8 条**（新增 desktop、docker）。两 leaf 的 gitlink 逐字
+  沿用原值（`desktop df7c14c7…`、`docker 9dd8fc17…`），零内容改动。
+- **同步面**：`sync-mirror.sh` 以 `.gitmodules` 动态 BFS 解析（种子含 sdk/products），
+  `init-submodules.sh` 以 `clone_sibling` 定向检出——二者逻辑均不受迁移影响。
+- **零构建影响**：迁移仅改聚合层级与元数据；构建/CI 取钉住 hash，不受影响。
