@@ -100289,15 +100289,15 @@ def test_airy_l33_rollback_basic() -> None:
 | TM-17-09 | 首启 bootstrap：实现段（9/11，主逻辑与错误路径） | 脚本函数实现段（本段逻辑 + 错误处理，source 前片） | 131 | DIST2 | 245 | 2027-10-14 | TM-17-08 | TM-17-10 | ⬜ |
 | TM-17-10 | 首启 bootstrap：实现段（10/11，主逻辑与错误路径） | 脚本函数实现段（本段逻辑 + 错误处理，source 前片） | 131 | DIST2 | 246 | 2027-10-15 | TM-17-09 | TM-17-11 | ⬜ |
 | TM-17-11 | 首启 bootstrap：单元测试与文档（11/11） | shell 自测用例 + shellcheck 校验 + DoD 收口 | 131 | DIST2 | 247 | 2027-10-18 | TM-17-10 | TM-19-01 | ⬜ |
-| TM-18-01 | systemd 兼容单元：接口与类型（1/9） | unit [Unit] 元数据段（禁写 [Service] 实现） | 129 | DIST1 | 260 | 2027-11-05 | TH-04-19, TK-01-14, TM-01-09, TM-16-13 | TM-18-02 | ⬜ |
-| TM-18-02 | systemd 兼容单元：实现段（2/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 261 | 2027-11-09 | TM-18-01 | TM-18-03 | ⬜ |
-| TM-18-03 | systemd 兼容单元：实现段（3/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 262 | 2027-11-10 | TM-18-02 | TM-18-04 | ⬜ |
-| TM-18-04 | systemd 兼容单元：实现段（4/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 263 | 2027-11-11 | TM-18-03 | TM-18-05 | ⬜ |
-| TM-18-05 | systemd 兼容单元：实现段（5/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 264 | 2027-11-12 | TM-18-04 | TM-18-06 | ⬜ |
-| TM-18-06 | systemd 兼容单元：实现段（6/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 265 | 2027-11-15 | TM-18-05 | TM-18-07 | ⬜ |
-| TM-18-07 | systemd 兼容单元：实现段（7/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 266 | 2027-11-16 | TM-18-06 | TM-18-08 | ⬜ |
-| TM-18-08 | systemd 兼容单元：实现段（8/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 267 | 2027-11-17 | TM-18-07 | TM-18-09 | ⬜ |
-| TM-18-09 | systemd 兼容单元：单元测试与文档（9/9） | unit [Install] + systemd-analyze verify 用例 | 128 | DIST1 | 268 | 2027-11-18 | TM-18-08 | TM-22-01, TM-24-01 | ⬜ |
+| TM-18-01 | systemd 兼容单元：接口与类型（1/9） | unit [Unit] 元数据段（禁写 [Service] 实现） | 129 | DIST1 | 260 | 2027-11-05 | TH-04-19, TK-01-14, TM-01-09, TM-16-13 | TM-18-02 | ✅ |
+| TM-18-02 | systemd 兼容单元：实现段（2/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 261 | 2027-11-09 | TM-18-01 | TM-18-03 | ✅ |
+| TM-18-03 | systemd 兼容单元：实现段（3/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 262 | 2027-11-10 | TM-18-02 | TM-18-04 | ✅ |
+| TM-18-04 | systemd 兼容单元：实现段（4/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 129 | DIST1 | 263 | 2027-11-11 | TM-18-03 | TM-18-05 | ✅ |
+| TM-18-05 | systemd 兼容单元：实现段（5/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 264 | 2027-11-12 | TM-18-04 | TM-18-06 | ✅ |
+| TM-18-06 | systemd 兼容单元：实现段（6/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 265 | 2027-11-15 | TM-18-05 | TM-18-07 | ✅ |
+| TM-18-07 | systemd 兼容单元：实现段（7/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 266 | 2027-11-16 | TM-18-06 | TM-18-08 | ✅ |
+| TM-18-08 | systemd 兼容单元：实现段（8/9，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 267 | 2027-11-17 | TM-18-07 | TM-18-09 | ✅ |
+| TM-18-09 | systemd 兼容单元：单元测试与文档（9/9） | unit [Install] + systemd-analyze verify 用例 | 128 | DIST1 | 268 | 2027-11-18 | TM-18-08 | TM-22-01, TM-24-01 | ✅ |
 | TM-19-01 | PXE 网络安装：接口与类型（1/3） | 脚本骨架：set -euo + 函数签名（不含实现） | 129 | DIST2 | 248 | 2027-10-19 | TM-03-11, TM-17-11 | TM-19-02 | ⬜ |
 | TM-19-02 | PXE 网络安装：实现段（2/3，主逻辑与错误路径） | 脚本函数实现段（本段逻辑 + 错误处理，source 前片） | 128 | DIST2 | 249 | 2027-10-20 | TM-19-01 | TM-19-03 | ⬜ |
 | TM-19-03 | PXE 网络安装：单元测试与文档（3/3） | shell 自测用例 + shellcheck 校验 + DoD 收口 | 128 | DIST2 | 250 | 2027-10-21 | TM-19-02 | TM-20-01 | ⬜ |
@@ -100308,9 +100308,9 @@ def test_airy_l33_rollback_basic() -> None:
 | TM-21-02 | 迁移工具（旧系统）：单元测试与文档（2/2） | shell 自测用例 + shellcheck 校验 + DoD 收口 | 144 | DIST2 | 255 | 2027-10-29 | TM-21-01 | —（链尾） | ⬜ |
 | TM-22-01 | journald 兼容/双实例：接口与类型（1/2） | unit [Unit] 元数据段（禁写 [Service] 实现） | 145 | DIST1 | 269 | 2027-11-19 | TD-06-16, TM-18-09 | TM-22-02 | ⬜ |
 | TM-22-02 | journald 兼容/双实例：单元测试与文档（2/2） | unit [Install] + systemd-analyze verify 用例 | 144 | DIST1 | 270 | 2027-11-22 | TM-22-01 | TM-24-01 | ⬜ |
-| TM-24-01 | agentrt-health-check 启动自检服务：接口与类型（1/3） | unit [Unit] 元数据段（禁写 [Service] 实现） | 129 | DIST1 | 271 | 2027-11-24 | TM-18-09, TM-22-02 | TM-24-02 | ⬜ |
-| TM-24-02 | agentrt-health-check 启动自检服务：实现段（2/3，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 272 | 2027-11-25 | TM-24-01 | TM-24-03 | ⬜ |
-| TM-24-03 | agentrt-health-check 启动自检服务：单元测试与文档（3/3） | unit [Install] + systemd-analyze verify 用例 | 128 | DIST1 | 273 | 2027-11-26 | TM-24-02 | —（链尾） | ⬜ |
+| TM-24-01 | agentrt-health-check 启动自检服务：接口与类型（1/3） | unit [Unit] 元数据段（禁写 [Service] 实现） | 129 | DIST1 | 271 | 2027-11-24 | TM-18-09, TM-22-02 | TM-24-02 | ✅ |
+| TM-24-02 | agentrt-health-check 启动自检服务：实现段（2/3，主逻辑与错误路径） | unit [Service] 实现段：ExecStart/沙箱/切片指令 | 128 | DIST1 | 272 | 2027-11-25 | TM-24-01 | TM-24-03 | ✅ |
+| TM-24-03 | agentrt-health-check 启动自检服务：单元测试与文档（3/3） | unit [Install] + systemd-analyze verify 用例 | 128 | DIST1 | 273 | 2027-11-26 | TM-24-02 | —（链尾） | ✅ |
 
 #### 6.13.1 任务示例代码（227 个任务，遵循 50-engineering-standards）
 
