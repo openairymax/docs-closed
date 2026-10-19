@@ -146,6 +146,21 @@ evidence/
 
 manifest.json 必填字段：`exp_id`、`date`、`host`、`image_sha256`、`thresholds[]`（逐条引 source）、`evidences[]`（path+sha256）、`verdict`、`waiver_sig?`（双签邮箱对）、`blocked_reason?`、`prev_chain_head`（链接前日链头，全项目成单链）。目录 append-only：任何回写需新开日期目录并在 manifest 声明 supersedes。
 
+### 3.5 规程定稿（模块 V 首批实现）
+
+六步规程各只有一个代码入口，实验不得绕过：
+
+| 步骤 | 代码入口 | 固化约束 |
+|------|----------|----------|
+| 准备 | `osaccrt_spec.load_spec`、`Runner._step` | 阈值逐条引 source；BLOCKED 仅允许 `blocked.record(entry)` 作准备记录 |
+| 执行 | `Runner.run` / `Runner.run_all` | 只接受 PREPARE→RUN→CAPTURE 有序前缀；已有证据跳过，部分采集拒绝续跑 |
+| 取证 | `Store.write`、`Manifest` | append-only 原子新建；路径限定六步槽位；逐条登记 sha256 |
+| 判定 | `PackJudge.decide` | 只读证据包；阈值缺产物即 FAIL；声明与证据不符降为 FAIL |
+| 复核 | `Runner.run(..., review)`、`waiver.apply`、`blocked.apply` | 仅 FAIL 可双签转 WAIVED；BLOCKED 仅准备步可达；复核不得丢弃既有证据 |
+| 归档 | `Store.seal`、`repro.render`、`blocked.ledger` | 前链头必须衔接；封口后只读；复现脚本离线复核摘要与链头 |
+
+四条路径的验收基线由 `tests/test_v01_judge.py` 固定：PASS 首包前链头为空、FAIL→PASS 单链续接、FAIL→WAIVED 双签与复核记录随包封口、准备步→BLOCKED 不入通过率。
+
 ---
 
 ## 4. 模块 V 定义与 WP 台账
