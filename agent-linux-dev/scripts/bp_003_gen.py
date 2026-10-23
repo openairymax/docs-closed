@@ -260,95 +260,45 @@ _M_art_lang = lambda w: "python" if w.mod == "V" else _orig_art_lang(w)
 bpg._art_lang = _M_art_lang
 
 # 2.3 存量抵扣 ASSET_OFFSET：证据仓已落地的实现抵扣对应 WP 的主图纸 LOC
-#     口径：桶实测（文件/行数）→ 按消费 WP 的 w.loc 比例 Hamilton 最大余数法分摊
+#     口径：基线快照的桶规模（文件/行数）→ 按消费 WP 的 w.loc 比例 Hamilton 最大余数法分摊
 #     → WP 级配额 cap → 前缀任务剔除（仅剔除被 cap 完整覆盖的前导任务片）。
 #     恒等式：off + keep == w.loc；SATISFIED 定义 off == w.loc。
-ASSET_REPO = os.environ.get("AIRYMAX_REPO", os.path.normpath(
-    os.path.join(_here, "..", "..", "..", "..", "agent-linux")))
-assert os.path.isdir(ASSET_REPO), (
-    f"存量证据仓不存在: {ASSET_REPO}（可用环境变量 AIRYMAX_REPO 覆盖）")
+#     桶规模取自 bp_003_assets.py 的基线快照（TD-06）：生成器不读工作树，账本可确定性重放。
+asset = _load("bp_003_assets_view", os.path.join(_here, "bp_003_assets.py"))
 
-_ASSET_SKIP_DIR = {".git", "node_modules", "__pycache__"}
-
-
-def _walk(root):
-    """递归枚举 root 下全部文件，跳过版本库/依赖/缓存目录。"""
-    out = []
-    for dp, dns, fs in os.walk(root):
-        dns[:] = [d for d in dns if d not in _ASSET_SKIP_DIR]
-        for f in fs:
-            out.append(os.path.join(dp, f))
-    return out
-
-
-def _selector(sub, suffix=None, name=None, namepfx=None, exclude_sub=None):
-    """按子路径 + 后缀/文件名/文件名前缀/排除子路径选择证据文件。"""
-    r = os.path.join(ASSET_REPO, sub)
-    ps = _walk(r) if os.path.isdir(r) else []
-    if exclude_sub:
-        ex = os.path.join(ASSET_REPO, exclude_sub)
-        ps = [p for p in ps if not p.startswith(ex)]
-    if suffix:
-        ps = [p for p in ps if p.endswith(suffix)]
-    if name:
-        ps = [p for p in ps if os.path.basename(p) == name]
-    if namepfx:
-        ps = [p for p in ps if os.path.basename(p).startswith(namepfx)]
-    return ps
-
-
-def _count_lines(paths):
-    """按换行符计数（与 wc -l 同口径）。"""
-    n = 0
-    for p in paths:
-        with open(p, "rb") as fh:
-            n += fh.read().count(b"\n")
-    return n
-
-
-# 14 个已映射桶： (桶 id, 选择器参数, 消费 WP)。消费 WP 必须在 SCOPE_SET 内。
+# 14 个已映射桶： (桶 id, 消费 WP)。消费 WP 必须在 SCOPE_SET 内；规模取自基线快照。
 ASSET_BUCKET_SPEC = [
-    ("K-syscalls", dict(sub="kernel/kernel/syscalls", suffix=(".c", ".h")),
-     ["A-01", "A-02", "A-03", "A-04"]),
-    ("K-superv", dict(sub="kernel/kernel/superv", suffix=(".c", ".h")), ["C-03"]),
-    ("K-corekern", dict(sub="kernel/kernel/corekern", suffix=(".c", ".h"),
-                        exclude_sub="kernel/kernel/corekern/ipc"), ["A-33"]),
-    ("K-corekern-ipc", dict(sub="kernel/kernel/corekern/ipc", suffix=(".c", ".h")), ["A-06"]),
-    ("K-ipc", dict(sub="kernel/kernel/ipc", suffix=(".c", ".h")), ["A-06"]),
-    ("K-sec", dict(sub="kernel/security/airy", suffix=(".c", ".h")),
-     ["A-05", "A-20", "B-01", "B-02", "B-03", "B-05"]),
-    ("K-init", dict(sub="kernel/init", suffix=(".c",), namepfx="airy"), ["A-33"]),
-    ("K-uapi", dict(sub="kernel/include/uapi/linux/airymax"),
-     ["L-04", "A-26", "A-38", "A-39", "A-40"]),
-    ("T-codegen", dict(sub="tools/codegen", suffix=(".py",)), ["L-01", "L-09", "L-22"]),
-    ("T-dsl", dict(sub="tools/dsl", suffix=(".py",)), ["L-03"]),
-    ("T-tricomp", dict(sub="tools/sc-tri-compile", suffix=(".py",)), ["L-04"]),
-    ("T-abi", dict(sub="tools/abi-check", suffix=(".py",)), ["L-05"]),
-    ("T-workflow", dict(sub=".github/workflows"), ["L-07"]),
-    ("T-defconfig", dict(sub="kernel/arch", name="airy_defconfig"), ["L-12"]),
+    ("K-syscalls", ["A-01", "A-02", "A-03", "A-04"]),
+    ("K-superv", ["C-03"]),
+    ("K-corekern", ["A-33"]),
+    ("K-corekern-ipc", ["A-06"]),
+    ("K-ipc", ["A-06"]),
+    ("K-sec", ["A-05", "A-20", "B-01", "B-02", "B-03", "B-05"]),
+    ("K-init", ["A-33"]),
+    ("K-uapi", ["L-04", "A-26", "A-38", "A-39", "A-40"]),
+    ("T-codegen", ["L-01", "L-09", "L-22"]),
+    ("T-dsl", ["L-03"]),
+    ("T-tricomp", ["L-04"]),
+    ("T-abi", ["L-05"]),
+    ("T-workflow", ["L-07"]),
+    ("T-defconfig", ["L-12"]),
 ]
 # 未映射桶（诚实列出，不产生任何抵扣）。
-ASSET_UNMAPPED_SPEC = [
-    ("K-AIRYHDR", dict(sub="kernel/include/airymax")),
-    ("K-LOG", dict(sub="kernel/kernel/log", suffix=(".c", ".h"))),
-    ("T-TOOLSROOT", dict(sub="tools", suffix=(".py",))),
-    ("K-VENDORCFG", dict(sub="kernel/configs")),
-]
+ASSET_UNMAPPED_SPEC = ["K-AIRYHDR", "K-LOG", "T-TOOLSROOT", "K-VENDORCFG"]
 
-# 桶实测： (桶 id, 文件数, 行数, 消费 WP)
-ASSET_BUCKET = []
-for _bid, _kw, _cons in ASSET_BUCKET_SPEC:
+for _bid, _cons in ASSET_BUCKET_SPEC:
     for _c in _cons:
         assert _c in SCOPE_SET, f"存量桶 {_bid} 消费 WP 不在范围: {_c}"
-    _ps = _selector(**_kw)
-    _nl = _count_lines(_ps)
-    assert _nl > 0, f"存量桶 {_bid} 实测为空，证据仓结构可能漂移"
-    ASSET_BUCKET.append((_bid, len(_ps), _nl, list(_cons)))
+assert set(asset.MAPPED) == {b for b, _c in ASSET_BUCKET_SPEC}, "已映射桶与基线快照不一致"
+assert set(asset.UNMAPPED) == set(ASSET_UNMAPPED_SPEC), "未映射桶与基线快照不一致"
+assert (sum(x[0] for x in asset.MAPPED.values()),
+        sum(x[1] for x in asset.MAPPED.values())) == asset.MAPPED_TOTAL, "已映射桶合计与快照不符"
+assert (sum(x[0] for x in asset.UNMAPPED.values()),
+        sum(x[1] for x in asset.UNMAPPED.values())) == asset.UNMAPPED_TOTAL, "未映射桶合计与快照不符"
 
-ASSET_UNMAPPED_STAT = []
-for _bid, _kw in ASSET_UNMAPPED_SPEC:
-    _ps = _selector(**_kw)
-    ASSET_UNMAPPED_STAT.append((_bid, len(_ps), _count_lines(_ps)))
+# 桶规模： (桶 id, 文件数, 行数, 消费 WP)
+ASSET_BUCKET = [(b, *asset.MAPPED[b], list(c)) for b, c in ASSET_BUCKET_SPEC]
+ASSET_UNMAPPED_STAT = [(b, *asset.UNMAPPED[b]) for b in ASSET_UNMAPPED_SPEC]
 
 # Hamilton 最大余数法：逐桶按消费 WP 的 w.loc 占比分摊桶行数。
 ASSET_CAP = defaultdict(int)
@@ -850,13 +800,15 @@ P("### 2.6 存量抵扣台账（D-01 收口）")
 P("")
 P("证伪复核记录 D-01 判定 FAIL：主图纸把证据仓 `agent-linux` **已落地**的实现（如 `kernel/security/airy/`、")
 P("`tools/codegen/`、`kernel/include/uapi/linux/airymax/` 等）再次列为待建 WP，造成约 7 万行重复计量。")
-P("0.0.3 引入 **存量抵扣（ASSET_OFFSET）**：以证据仓真实文件为唯一事实源——桶实测行数 → 按消费 WP 的")
-P("主图纸 LOC 比例（Hamilton 最大余数法）分摊 → WP 级配额 `cap` → 仅剔除被 `cap` **完整覆盖的前导任务片**，")
+P("0.0.3 引入 **存量抵扣（ASSET_OFFSET）**：以证据仓真实文件为事实源——桶规模冻结为基线快照")
+P(f"`scripts/bp_003_assets.py`（`agent-linux` `{asset.BASELINE_AGENT_LINUX[:12]}` + `kernel` `{asset.BASELINE_KERNEL[:12]}`，")
+P(f"采集于 {asset.BASELINE_DATE}；TD-06）——桶行数 → 按消费 WP 的主图纸 LOC 比例（Hamilton 最大余数法）分摊")
+P("→ WP 级配额 `cap` → 仅剔除被 `cap` **完整覆盖的前导任务片**，")
 P("保留后缀任务片。恒等式 **`off + keep == w.loc`** 由脚本逐 WP 断言；`off == w.loc` 判为 **SATISFIED**（整包满足，全量剔除）。")
 P("此外设**集成类整包满足**（`INTEGRATION_SATISFIED`）：其真实语义已由证据仓内其它在范围 WP 的存量实现")
 P("完整覆盖并接线闭合，**不产生 LOC 抵扣**（`off` 恒为 0），仅整包剔除并穿透其前驱（恒等式扩展为 **`off + keep + integ == w.loc`**）。")
 P("")
-P(f"**存量桶实测（{len(ASSET_BUCKET)} 个已映射桶，行数按 `wc -l` 口径）**：")
+P(f"**存量桶（{len(ASSET_BUCKET)} 个已映射桶，冻结基线实测，行数按 `wc -l` 口径）**：")
 P("")
 P("| 桶 ID | 文件数 | 行数 | 消费 WP |")
 P("|---|---|---|---|")
@@ -1268,14 +1220,14 @@ P("通过 MCP 与本地 key 驱动上述流水线。镜像方向单向（atomgit
 P("")
 P("## 11. 技术债登记与消除清单")
 P("")
-P("| 编号 | 技术债 | 位置 | 现状（2026-10-14） | 消除任务 | 消除版本 |")
+P("| 编号 | 技术债 | 位置 | 现状（2026-10-23） | 消除任务 | 消除版本 |")
 P("|---|---|---|---|---|---|")
 P("| TD-01 | `run-smoke.sh` 四函数 skeleton 桩 | `distro/ci/run-smoke.sh` | **已消除（`a60a8e9`）**：四探针替换为冻结点真实栈——T1 UKUI X11 会话链、T2 fcitx 4、T3 PulseAudio、T4 `airymax-desktop.slice`；24 条契约回归测试（含旧口径词表门禁）接入 `run-lint.sh` | 已由 R1 桌面链任务完成替换并接入 `distro/ci` | 0.0.3 ✅ |")
 P("| TD-02 | `distro` 子模块 dirty | `agent-linux` `git status` | 仅 ` M distro` 未提交 | M-15 收口时一并提交并打 tag | 0.0.3 |")
-P("| TD-03 | 账本版本与登记版本未对齐 | `ssot-registry.yaml` v0.2.8 | 未登记 0.0.3 方案 | L-31 收口时追加 `airymaxos_002_plan` 段 | 0.0.3 |")
+P("| TD-03 | 账本版本与登记版本未对齐 | `ssot-registry.yaml` | **已消除（`266f0c3`）**：注册表升至 v0.3.0，新增 Part 4 `plan_registry` 登记 `airymaxos_002_plan`（账本版本/里程碑集/生成器/范围模块/阻断门禁），`tools/validate-ssot.py` 0 error | L-31 收口 | 0.0.3 ✅ |")
 P("| TD-04 | arm64/riscv/loongarch CI 仅编译不阻断 | `ci-airy.yml` 矩阵 | 0.0.3 只放行 x86_64 | A-31/A-36 接线任务（0.1.x）转阻断 | 0.1.x |")
 P("| TD-05 | 无 Gateway 单入口 | 桌面链 | 0.0.3 直连后端 | G-09 + R1-06 全链 | 0.1.x |")
-P("| TD-06 | 账本生成器不可重放 | `scripts/bp_003_gen.py` §2.3 存量抵扣 | 抵扣按证据仓**工作树实测行数**计算，随证据仓增长而漂移：`B0` 锚点 `L-05`/`A-11` 已被整包剔除，脚本在 `bp_003_gen.py:635` 断言失败；重新生成仅 11,949 行（已发布账本 13,344 行），任务集与里程碑均失真 | 引入 `ASSET_BASELINE`：将证据仓基线提交与桶实测快照固化进种子，生成器只按快照重放、禁止隐式依赖工作树；随后重跑账本并复核 B0~B5 锚点 | 0.0.3 |")
+P("| TD-06 | 账本生成器不可重放 | `scripts/bp_003_gen.py` §2.3 存量抵扣 | **已消除**：桶规模冻结于 `scripts/bp_003_assets.py`（`agent-linux` `db9a9fc` + `kernel` `52bf9cf`，已映射 114 文件/19,725 行、未映射 55/31,053），生成器不再读工作树 | 生成器只按快照重放，`B0` 锚点 `L-05`/`A-11` 保留、里程碑断言通过 | 0.0.3 ✅ |")
 P("")
 P("## 12. 风险与进度跟踪")
 P("")
@@ -1299,7 +1251,8 @@ P(f"缩放沿用、拓扑排程、示例代码模板均经脚本断言校验；p
 P(f"旁路边 {len(bypass_edges)} 条全部在 §2.2 登记）｜ 0.0.3 净新增 {TOT_LOC:,} 行（纳入主图纸 {_inc_total:,} + V 模块 {_vloc:,}）")
 P(f"｜ 每个任务示例代码遵循 50-engineering-standards（§3.1）。*")
 
-out = os.path.normpath(os.path.join(_here, "..", "0.0.3-极境OS任务方案.md"))
+out = os.environ.get("AIRYMAX_LEDGER_OUT") or os.path.normpath(
+    os.path.join(_here, "..", "0.0.3-极境OS任务方案.md"))
 with open(out, "w", encoding="utf-8") as fh:
     fh.write("\n".join(L) + "\n")
 
