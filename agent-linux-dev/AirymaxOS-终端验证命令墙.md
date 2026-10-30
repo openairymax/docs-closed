@@ -44,7 +44,7 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 | 7 | `cat /proc/cmdline` | 引导参数 | 含 `BOOT_IMAGE=/vmlinuz-<ver>-alk`、`root=UUID=…`、`resume=UUID=…` |
 | 8 | `sudo grubby --default-kernel` / `sudo grep -m1 '^menuentry' /boot/efi/EFI/airymaxos/grub.cfg` | 引导项与菜单名 | 默认内核为 `-alk`；菜单名首词为 `AirymaxOS`（本机实测 `menuentry 'AirymaxOS (6.6.157-alk) 0.0.3 (OpenAirymax)'`）。两条都要 `sudo`：`grubby` 读 `/etc/grub2-efi.cfg` 需 root；本产品的 grub.cfg 生成在 ESP，`/boot/grub2/` 只有 `grubenv`，按旧路径查会得到 `No such file or directory` |
 | 9 | `airy-kernel` | 内核身份一次成卷：20 行 `AIRYMAX-KERNEL key=value` | `kernel.release` 以 `-alk` 结尾；`image.path` 指向 `/boot/vmlinuz-$(uname -r)` 且 `image.sha256` 与同机 `sha256sum` 的结果逐字相同（证明读的就是运行中的那个镜像）；`image.owner` 为内核 RPM 名；`map.path`/`config.path` 均非 `absent`；`config.security_airy`、`config.airy_corekern`、`config.airy_ipc`、`config.airy_log`、`config.airy_syscall`、`config.airy_agent_tracing` 六项为 `y`，`config.airy_cap_table_size` 为数值；`ksym.airy` 为非零计数，`module.count` 与本机 `lsmod` 行数同量级。任何一项取不到都写 `absent` 而不是静默跳过，屏幕上看不出差别就是没采到 |
-| 10 | `airy-os` | 发行版/主机/包归属/仓库/硬件/免密一次成卷：18 行 `AIRYMAX-OS key=value` | `os.id=airymaxos`、`os.version_id=0.0.3`、`host.name=AIRYMAX_PC`；`pkg.release`/`pkg.system`/`pkg.kernel` 三段包名均为 `airymaxos-*`（底座 RPM 冒充不了）；`repo.path` 存在且 `repo.sections` ≥ 2；`cpu.count` 等于 `nproc`、`mem.total_kb` 等于 `/proc/meminfo` 的 `MemTotal`；`disk.root.source`/`disk.root.fstype` 取自 `/proc/mounts`；`session.autologin=yes`（第 18 条的免密依据） |
+| 10 | `airy-os` | 发行版/主机/包归属/仓库/硬件/免密一次成卷：18 行 `AIRYMAX-OS key=value` | `os.id=airymaxos`、`os.version_id=0.0.3`、`host.name=AIRYMAX_PC`；`pkg.release`/`pkg.system`/`pkg.kernel` 三段包名均为 `airymaxos-*`（底座 RPM 冒充不了）；`repo.path` 存在且 `repo.sections` ≥ 2；`cpu.count` 等于 `nproc`、`mem.total_kb` 等于 `/proc/meminfo` 的 `MemTotal`；`disk.root.source`/`disk.root.fstype` 取自 `/proc/mounts`；`session.autologin=Airymax`（该字段取 `lightdm.conf.d/50-airymax.conf` 的 `autologin-user`，非空即免密，是第 18 条的免密依据） |
 
 第 5、6 条是「内核归属」的硬证据：前者说明文件来自本项目 RPM，后者说明运行中的内核
 与安装时刻逐字节一致。二者缺一，品牌就可能只是改了个字符串。
@@ -59,7 +59,7 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 |---|---|---|---|
 | 11 | `cat /sys/kernel/security/lsm` | 已启用的 LSM 链 | 链中含 `airy` 与 `airy_lockdown`（本机实测 `airy_lockdown,lockdown,capability,yama,airy,selinux`） |
 | 12 | `cat /proc/sys/agentrt/present` | Agent 运行时是否在内核侧就位 | `1` |
-| 13 | `sysctl kernel.airy.` | 能力折叠的四个旋钮 | `cap_epoch_bits`、`cap_max_agents`、`cap_randtag_bits`、`cap_used` 四项齐全（本机为 16 / 1024 / 32） |
+| 13 | `sysctl -a 2>/dev/null \| grep '^kernel\.airy\.'` | 能力折叠的四个旋钮 | `cap_epoch_bits`、`cap_max_agents`、`cap_randtag_bits`、`cap_used` 四项齐全（本机为 16 / 1024 / 32；`cap_used` 恒为 0，原因见第 8 节）。直接写 `sysctl kernel.airy.` 也能列全，但每行会带一条 `separators should not be repeated` 告警，演示时用上面的写法更干净 |
 | 14 | `ls /sys/kernel/security/airy/` | 执法面出口 | 存在 `policy` 与 `lockdown` |
 | 15 | `sudo cat /sys/kernel/security/airy/policy` | 策略表 | 表头 `# name hook rows evals allow deny audit complain fault` 与当前条目。必须 `sudo`：普通用户读该文件返回 `Permission denied`，与「策略为空」在屏幕上都是空结果，容易误判 |
 | 16 | `sudo dmesg \| grep -E 'airy\|Airymax'` | 启动期自检结论 | 含 `airy contract: 59 [SC] invariants verified (ABI v4)`、`registered 5 Micro-Supervisor hooks`、`Airymax ALK-0.1.1` |
