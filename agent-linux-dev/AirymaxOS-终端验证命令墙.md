@@ -28,7 +28,7 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 
 | # | 命令 | 看什么 | 判定 |
 |---|---|---|---|
-| 1 | `hostnamectl` | `Operating System` / `Kernel` / `Architecture` 三行 | 版本行含 `AirymaxOS` 与版本号（如 `AirymaxOS 0.0.3 (OpenAirymax)`）；主机名为 `airymaxos` |
+| 1 | `hostnamectl` | `Operating System` / `Kernel` / `Architecture` 三行 | 版本行含 `AirymaxOS` 与版本号（如 `AirymaxOS 0.0.3 (OpenAirymax)`）；主机名为 `AIRYMAX_PC`（`/etc/hostname` 与内核名一致；systemd 会按 RFC 1123 去掉下划线，运行期名由 `sysctl.d/99-airymax-hostname.conf` 写回） |
 | 2 | `cat /etc/os-release` | `PRETTY_NAME`、`ID`、`VERSION_ID` | `ID=airymaxos`，非 openEuler 的投影 |
 | 3 | `uname -srm` | 内核名、版本、架构 | 形如 `Linux 6.6.157-alk x86_64`；`-alk` 后缀是自有内核标识 |
 | 4 | `cat /proc/version` | 编译者与编译器 | `(airymax@build)` 与 `gcc 13.3.0`，证明内核由本项目构建 |
