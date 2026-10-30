@@ -62,8 +62,8 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 | 13 | `sysctl -a 2>/dev/null \| grep '^kernel\.airy\.'` | 能力折叠的四个旋钮 | `cap_epoch_bits`、`cap_max_agents`、`cap_randtag_bits`、`cap_used` 四项齐全（本机为 16 / 1024 / 32；`cap_used` 恒为 0，原因见第 8 节）。直接写 `sysctl kernel.airy.` 也能列全，但每行会带一条 `separators should not be repeated` 告警，演示时用上面的写法更干净 |
 | 14 | `ls /sys/kernel/security/airy/` | 执法面出口 | 存在 `policy` 与 `lockdown` |
 | 15 | `sudo cat /sys/kernel/security/airy/policy` | 策略表 | 表头 `# name hook rows evals allow deny audit complain fault` 与当前条目。必须 `sudo`：普通用户读该文件返回 `Permission denied`，与「策略为空」在屏幕上都是空结果，容易误判 |
-| 16 | `sudo dmesg \| grep -E 'airy\|Airymax'` | 启动期自检结论 | 含 `airy contract: 59 [SC] invariants verified (ABI v4)`、`registered 5 Micro-Supervisor hooks`、`Airymax ALK-0.1.1` |
-| 17 | `sudo ls /sys/kernel/tracing/events/airy/`（或 `/sys/kernel/debug/tracing/events/airy/`） | 事件面注册情况 | 10 个事件：`airy_ipc_send`/`airy_ipc_recv`/`airy_sched_switch`/`airy_sched_latency`/`airy_agent_state_change`/`airy_policy_decision`/`airy_superv_enforce`/`airy_ring_buffer_write`/`airy_lockdown_change`/`airy_lockdown_reject`。须 `sudo`：tracefs 的 `events/` 对非 root 关闭，非 root 执行得到 `Permission denied`，与「事件未注册」不可区分 |
+| 16 | `sudo dmesg \| grep -E 'airy\|Airymax'` | 启动期自检结论 | 含 `LSM: initializing lsm=airy_lockdown,lockdown,capability,yama,airy,selinux,integrity`、`airy contract: 59 [SC] invariants verified (ABI v4)`、`airy_superv: registered 5 Micro-Supervisor hooks`、`airy: capability table published under /proc/sys/kernel/airy` 四行（B50 实测，内核 6.6.157-alk） |
+| 17 | `sudo ls /sys/kernel/tracing/events/airy/airy_*`（或 `/sys/kernel/debug/tracing/…`） | 事件面注册情况 | 10 个事件：`airy_ipc_send`/`airy_ipc_recv`/`airy_sched_switch`/`airy_sched_latency`/`airy_agent_state_change`/`airy_policy_decision`/`airy_superv_enforce`/`airy_ring_buffer_write`/`airy_lockdown_change`/`airy_lockdown_reject`。必须带 `airy_*` 通配：直接 `ls` 该目录会多出 `enable` 与 `filter` 两个 tracefs 控制文件，按行计数会得到 12 而非 10。须 `sudo`：tracefs 的 `events/` 对非 root 关闭，非 root 执行得到 `Permission denied`，与「事件未注册」不可区分 |
 
 第 17 条**只证明事件已注册，不证明事件被触发**。这些 tracepoint 的调用点位于
 corekern 的 agent IPC 路径，普通进程的 `pipe()`/`socketpair()` 不经过，因此终端里
