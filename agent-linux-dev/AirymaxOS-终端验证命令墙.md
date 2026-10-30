@@ -24,6 +24,13 @@
 p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次结果**逐位相同**，反而是
 测量被缓存或被伪造的信号。这一点本身就是可复现性的证据。
 
+**关于执行位置**：第 16–20 条与 `airy-observe` / `airy-demo` 的会话类字段读的是
+「本地图形会话」（`loginctl` 的 `seat0`、`DISPLAY`、`xrandr`）。在 SSH 会话里这些
+来源不存在，`airy-observe` 会给出 `status=partial`、`airy-demo` 给出
+`status=degraded`——那是采集面缺失，不是系统故障。内核态条目（第 3–15 条）、
+网络（第 21–24 条）、启动（第 25–29 条）、IPC（第 30–34 条）在 SSH 下与本地一致，
+可放心远程取证。
+
 ## 1. 身份与归属（系统是什么）
 
 | # | 命令 | 看什么 | 判定 |
@@ -35,7 +42,7 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 | 5 | `rpm -qf /boot/vmlinuz-$(uname -r)` | 内核文件归属 | 输出 `airymaxos-kernel-core-<版本>-<release>.x86_64` |
 | 6 | `rpm -V airymaxos-kernel-core; echo rc=$?` | 已安装文件与 RPM 数据库比对 | `rc=0` 且无输出，说明运行中的内核未被替换 |
 | 7 | `cat /proc/cmdline` | 引导参数 | 含 `BOOT_IMAGE=/vmlinuz-<ver>-alk`、`root=UUID=…`、`resume=UUID=…` |
-| 8 | `grubby --default-kernel` / `grep -m1 '^menuentry' /boot/grub2/grub.cfg` | 引导项与菜单名 | 默认内核为 `-alk`；菜单名首词为 `AirymaxOS` |
+| 8 | `sudo grubby --default-kernel` / `sudo grep -m1 '^menuentry' /boot/efi/EFI/airymaxos/grub.cfg` | 引导项与菜单名 | 默认内核为 `-alk`；菜单名首词为 `AirymaxOS`（本机实测 `menuentry 'AirymaxOS (6.6.157-alk) 0.0.3 (OpenAirymax)'`）。两条都要 `sudo`：`grubby` 读 `/etc/grub2-efi.cfg` 需 root；本产品的 grub.cfg 生成在 ESP，`/boot/grub2/` 只有 `grubenv`，按旧路径查会得到 `No such file or directory` |
 
 第 5、6 条是「内核归属」的硬证据：前者说明文件来自本项目 RPM，后者说明运行中的内核
 与安装时刻逐字节一致。二者缺一，品牌就可能只是改了个字符串。
@@ -48,9 +55,9 @@ p50 波动在 ±5% 以内、p99 波动在 ±15% 以内属正常；如果两次�
 | 10 | `cat /proc/sys/agentrt/present` | Agent 运行时是否在内核侧就位 | `1` |
 | 11 | `sysctl kernel.airy.` | 能力折叠的四个旋钮 | `cap_epoch_bits`、`cap_max_agents`、`cap_randtag_bits`、`cap_used` 四项齐全（本机为 16 / 1024 / 32） |
 | 12 | `ls /sys/kernel/security/airy/` | 执法面出口 | 存在 `policy` 与 `lockdown` |
-| 13 | `cat /sys/kernel/security/airy/policy` | 策略表 | 表头 `# name hook rows evals allow deny audit complain fault` 与当前条目 |
+| 13 | `sudo cat /sys/kernel/security/airy/policy` | 策略表 | 表头 `# name hook rows evals allow deny audit complain fault` 与当前条目。必须 `sudo`：普通用户读该文件返回 `Permission denied`，与「策略为空」在屏幕上都是空结果，容易误判 |
 | 14 | `sudo dmesg \| grep -E 'airy\|Airymax'` | 启动期自检结论 | 含 `airy contract: 59 [SC] invariants verified (ABI v4)`、`registered 5 Micro-Supervisor hooks`、`Airymax ALK-0.1.1` |
-| 15 | `ls /sys/kernel/tracing/events/airy/`（或 `/sys/kernel/debug/tracing/events/airy/`） | 事件面注册情况 | 10 个事件：`airy_ipc_send`/`airy_ipc_recv`/`airy_sched_switch`/`airy_sched_latency`/`airy_agent_state_change`/`airy_policy_decision`/`airy_superv_enforce`/`airy_ring_buffer_write`/`airy_lockdown_change`/`airy_lockdown_reject` |
+| 15 | `sudo ls /sys/kernel/tracing/events/airy/`（或 `/sys/kernel/debug/tracing/events/airy/`） | 事件面注册情况 | 10 个事件：`airy_ipc_send`/`airy_ipc_recv`/`airy_sched_switch`/`airy_sched_latency`/`airy_agent_state_change`/`airy_policy_decision`/`airy_superv_enforce`/`airy_ring_buffer_write`/`airy_lockdown_change`/`airy_lockdown_reject`。须 `sudo`：tracefs 的 `events/` 对非 root 关闭，非 root 执行得到 `Permission denied`，与「事件未注册」不可区分 |
 
 第 15 条**只证明事件已注册，不证明事件被触发**。这些 tracepoint 的调用点位于
 corekern 的 agent IPC 路径，普通进程的 `pipe()`/`socketpair()` 不经过，因此终端里
@@ -63,8 +70,8 @@ corekern 的 agent IPC 路径，普通进程的 `pipe()`/`socketpair()` 不经�
 |---|---|---|---|
 | 16 | `loginctl show-session $(loginctl \| awk '/seat0/{print $1; exit}') -p Type -p Remote -p Seat` | 会话类型 | `Type=x11`、`Remote=no`、`Seat=seat0`，说明本地图形会话已建立 |
 | 17 | `systemctl --user is-system-running` | 用户会话管理器 | `running` |
-| 18 | `ps -e --no-headers \| wc -l` / `pgrep -c ukui` | 进程规模与桌面组件 | UKUI 组件在列；进程总数与版本基线同量级（0.0.3 桌面基线为 23 个 UKUI 进程） |
-| 19 | `xrandr --current \| head -3` | 生效分辨率与驱动 | 首选模式与面板一致；`Screen 0: minimum … current WxH` 行给出实际值 |
+| 18 | `ps -e --no-headers \| wc -l` / `pgrep -c ukui` | 进程规模与桌面组件 | UKUI 组件在列；进程总数与版本基线同量级（0.0.3 实测 22 个 UKUI 进程、总进程数 313，判据取 `pgrep -c ukui >= 20`：进程数随会话与实际加载的面板项浮动，逐位比对会把正常波动当成故障） |
+| 19 | `xrandr --current \| head -3` | 生效分辨率与驱动 | 首选模式与面板一致；`Screen 0: minimum … current WxH` 行给出实际值。必须在桌面会话内执行（本地终端，或 `DISPLAY=:0`）：SSH 会话没有 `DISPLAY`，输出 `Can't open display` 是环境问题而非桌面故障 |
 | 20 | `ls /run/airymaxos/ && head -20 /run/airymaxos/xserver-*.conf` | 启动期生成的 X 配置 | 存在 `xserver-*.conf`，内容为 modesetting/fbdev 选择结果 |
 
 第 19 条的口径边界：Xorg 1.20.11 在部分新平台上不接管 `simpledrm`，此时分辨率由
