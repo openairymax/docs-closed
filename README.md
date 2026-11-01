@@ -136,15 +136,22 @@ docs-closed/
 │   ├── 06-contracts/                         # Inter-module contract headers (A/B/C) + tests
 │   ├── 07-subsystem-specs/                   # 13 subsystem specs (checkpoint … module-boundaries)
 │   └── 50-engineering-standards/             # Log & error-code convergence plans
-├── agentrt-linux/            # AirymaxOS technical reference (index: agentrt-linux/README.md)
-│   ├── 00-reviews/                           # Version review & research series (0.1.1 → v3.6)
-│   ├── 01-designs/                           # _design_0.2.1 … _design_0.2.4
-│   ├── 01-openeuler-tech-reference/          # openEuler technical-spec references
-│   ├── 02-olk66-source-mapping/              # OLK-6.6 source-to-design mapping
-│   ├── 03-microkernel-design-ref/            # seL4 / Zircon / Minix3 references
-│   ├── 04-industry-best-practices/           # Industry theory & AirymaxOS synthesis
+├── agent-linux-dev/          # AirymaxOS technical reference & archive (index: agent-linux-dev/README.md)
+│   ├── 10-references/                        # Design sources (references + task-ledger generators)
+│   │   ├── openeuler-tech-reference/         #   openEuler technical-spec references (14 docs)
+│   │   ├── olk66-source-mapping/             #   OLK-6.6 source-to-design mapping (8 docs)
+│   │   ├── microkernel-design-ref/           #   seL4 / Zircon / Minix3 references (6 docs)
+│   │   ├── industry-best-practices/          #   Industry theory & AirymaxOS synthesis (4 docs)
+│   │   └── generators/                       #   Task-ledger generators (5 Python scripts)
+│   ├── 20-archive/                           # Historical archive (read-only)
+│   │   ├── reviews/                          #   Version review & research series (36 rounds, 157 docs)
+│   │   └── designs/                          #   Directory-structure designs (_design_0.2.1 … _design_0.2.4)
+│   ├── 0.0.x-极境OS任务方案.md               # Per-version task ledgers (0.0.2 / 0.0.3 / 0.0.4)
+│   ├── 0.0.4-*.md                            # 0.0.4 input list / firmware / build / pipeline plans
+│   ├── AirymaxOS-终端验证命令墙.md           # Terminal verification command wall
 │   ├── agentrt-linux基本工程标准规范.md       # agentrt-linux engineering standards
-│   └── agentrt-linux开发路线和进度.md         # agentrt-linux roadmap & progress
+│   ├── agentrt-linux开发路线和进度.md         # agentrt-linux roadmap & progress
+│   └── agentrt-linux验收实验任务卡草案.md     # Acceptance experiment task cards
 ├── openstandards/            # Open-standard research drafts
 │   ├── _research_v1.0/                       #   Rebuild proposal
 │   ├── _research_v2.0/                       #   Optimization v2
@@ -160,7 +167,7 @@ docs-closed/
 ```
 
 Directory-level indexes: [agentrt/README.md](agentrt/README.md) ·
-[agentrt-linux/README.md](agentrt-linux/README.md)
+[agent-linux-dev/README.md](agent-linux-dev/README.md)
 
 ---
 

@@ -96,15 +96,22 @@ docs-closed/
 │   ├── 06-contracts/                            # 模块间契约头文件（A/B/C）+ 契约测试
 │   ├── 07-subsystem-specs/                      # 13 篇子系统规格（checkpoint … module-boundaries）
 │   └── 50-engineering-standards/                # 日志收敛、错误码迁移专项计划
-├── agentrt-linux/                               # AirymaxOS 技术参考（索引：agentrt-linux/README.md）
-│   ├── 00-reviews/                              # 版本审查/研究系列（0.1.1 → v3.6）
-│   ├── 01-designs/                              # _design_0.2.1 … _design_0.2.4
-│   ├── 01-openeuler-tech-reference/             # openEuler 技术规范参考
-│   ├── 02-olk66-source-mapping/                 # OLK-6.6 源码映射
-│   ├── 03-microkernel-design-ref/               # seL4 / Zircon / Minix3 微内核设计参考
-│   ├── 04-industry-best-practices/              # 行业最新理论与最佳实践
+├── agent-linux-dev/                             # AirymaxOS 技术参考与历史归档（索引：agent-linux-dev/README.md）
+│   ├── 10-references/                           # 设计依据（参考来源 + 任务账本生成器）
+│   │   ├── openeuler-tech-reference/            #   openEuler 技术规范参考（14 篇）
+│   │   ├── olk66-source-mapping/                #   OLK-6.6 源码映射（8 篇）
+│   │   ├── microkernel-design-ref/              #   seL4 / Zircon / Minix3 微内核设计参考（6 篇）
+│   │   ├── industry-best-practices/             #   行业最新理论与最佳实践（4 篇）
+│   │   └── generators/                          #   任务账本生成器（5 个 Python 脚本）
+│   ├── 20-archive/                              # 历史归档（只读）
+│   │   ├── reviews/                             #   版本审查/研究系列（36 轮次，157 篇）
+│   │   └── designs/                             #   目录结构设计（_design_0.2.1 … _design_0.2.4）
+│   ├── 0.0.x-极境OS任务方案.md                  # 逐版本施工账本（0.0.2 / 0.0.3 / 0.0.4）
+│   ├── 0.0.4-*.md                               # 0.0.4 输入清单 / 固件与硬件使能 / 构建提速 / 流水线治理
+│   ├── AirymaxOS-终端验证命令墙.md              # 终端验证命令速查
 │   ├── agentrt-linux基本工程标准规范.md         # agentrt-linux 工程标准规范
-│   └── agentrt-linux开发路线和进度.md           # agentrt-linux 开发路线与进度
+│   ├── agentrt-linux开发路线和进度.md           # agentrt-linux 开发路线与进度
+│   └── agentrt-linux验收实验任务卡草案.md       # 验收实验任务卡
 ├── openstandards/                               # 开放标准研究稿
 │   ├── _research_v1.0/                          #   重构建议书
 │   ├── _research_v2.0/                          #   优化稿 v2

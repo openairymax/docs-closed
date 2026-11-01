@@ -123133,7 +123133,7 @@ QTEST_MAIN(AiryR210Gplv3Test)
 | R-A5 桌面依赖 | UKUI 上游变更 | R2 全部走适配层新文件（ALK），不动 UKUI 主线 |
 
 **跟踪机制**：任务表逐行勾状态 → 每周对账「✅ 任务 LOC 和 vs 计划曲线」→ 每验收日出里程碑偏差报告；
-排程重算入口：`docs/docs-closed/agent-linux-dev/scripts/bp_seed.py`（改 WP/LOC/依赖）+ 同目录 `bp_gen.py`（重新生成本文件），账本永远由脚本产出、人工只改种子。
+排程重算入口：`docs/docs-closed/agent-linux-dev/10-references/generators/bp_seed.py`（改 WP/LOC/依赖）+ 同目录 `bp_gen.py`（重新生成本文件），账本永远由脚本产出、人工只改种子。
 
 ---
 
