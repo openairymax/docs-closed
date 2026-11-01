@@ -11,9 +11,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 > **核心约束**: IRON-9 v3 同源且部分代码共享——[SC] 共享契约层物理宿主于 `kernel/include/uapi/linux/airymax/`（H1 硬约束：magic 0x41524531 / capability_badge offset 40-47）
 > **同源映射**: agentrt `docs/00-architectural-principles.md`（五维正交 24 原则）+ `docs/docs-linux/50-engineering-standards/00-engineering-standards-handbook.md`（OS-IRON 16 条）+ `09-ssot-registry.md`（规则编号 SSoT，v0.2.8）+ `130-roadmap/06-acceptance-criteria.md`（110 项 OS-ACC）
 > **理论根基**: Linux 6.6 内核基线（vanilla 6.6.147 纯主线 + sw_64 架构导入）内核工程思想 + seL4 微内核工程思想（架构层选择性借鉴）+ Airymax 体系并行论（Multibody Cybernetic Intelligent System）
-> **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`、`01-openeuler-tech-reference/`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
+> **术语说明**: 本文档中保留的 "OLK-6.6" 均为 openEuler 官方分支名称或路径引用（如 `01Reference/kernel-OLK-6.6`、`10-references/openeuler-tech-reference/`），非概念引用。所有概念引用已统一为 "Linux 6.6 内核基线"。
 > **工程取向**: "Linux 6.6 为基、seL4 为鉴"——编码风格层完全采纳 Linux 6.6 内核基线（Tab 8 / snake_case / 最小 typedef / K&R / 80 列 / errno+goto / kernel-doc），seL4 影响仅在架构层（capability / 消息传递 / 服务用户态化 / 形式化验证）被选择性借鉴
-> **关联研究**: v3.6 三轮审查报告（`00-reviews/_review_v3.6/`：07 第一轮改进建议 + 17 第二轮改进建议 v3.6b + 23 第三轮改进闭环 v3.6c + 08/18 闭环摘要）+ LAYER 方案可行性（`01-openeuler-tech-reference/11-layer-feasibility-study.md`）+ OBS 远程构建（`01-openeuler-tech-reference/13-obs-remote-build.md`）+ 形式化验证（`docs/docs-linux/80-testing/10-formal-verification.md`）
+> **关联研究**: v3.6 三轮审查报告（`20-archive/reviews/_review_v3.6/`：07 第一轮改进建议 + 17 第二轮改进建议 v3.6b + 23 第三轮改进闭环 v3.6c + 08/18 闭环摘要）+ LAYER 方案可行性（`10-references/openeuler-tech-reference/11-layer-feasibility-study.md`）+ OBS 远程构建（`10-references/openeuler-tech-reference/13-obs-remote-build.md`）+ 形式化验证（`docs/docs-linux/80-testing/10-formal-verification.md`）
 
 ---
 
@@ -904,7 +904,7 @@ IRON-9 v3（2026-07 用户决策）确立了 agentrt 与 AirymaxOS **同源且�
 
 ### 10.1 兼容性声明与 LAYER 双轨制
 
-AirymaxOS（agent-linux）的工程思想与实现方式与 Euler 保持一致性，以便未来兼容 Euler 标准的发行版工具链。**v3.6 更新**：兼容性实现方式从"四层参考"升级为 **LAYER 双轨制**——以 vanilla 6.6.147 为唯一核心基线（IRON-7），在其上叠加 openEuler 硬件适配能力（引用 `01-openeuler-tech-reference/11-layer-feasibility-study.md` §2.3）。
+AirymaxOS（agent-linux）的工程思想与实现方式与 Euler 保持一致性，以便未来兼容 Euler 标准的发行版工具链。**v3.6 更新**：兼容性实现方式从"四层参考"升级为 **LAYER 双轨制**——以 vanilla 6.6.147 为唯一核心基线（IRON-7），在其上叠加 openEuler 硬件适配能力（引用 `10-references/openeuler-tech-reference/11-layer-feasibility-study.md` §2.3）。
 
 ```
 ALK-6.6 = vanilla 6.6.147（IRON-7 基线）
@@ -975,7 +975,7 @@ AirymaxOS 借鉴 openEuler 的以下构建工程机制（引用报告 21 openEul
 
 ### 10.8 OBS 远程构建（v3.6 新增）
 
-> **OS-BUILD-020（OBS 远程构建）**: sw_64 架构构建采用 OBS（Open Build Service）远程构建通道（引用 `01-openeuler-tech-reference/13-obs-remote-build.md`）。
+> **OS-BUILD-020（OBS 远程构建）**: sw_64 架构构建采用 OBS（Open Build Service）远程构建通道（引用 `10-references/openeuler-tech-reference/13-obs-remote-build.md`）。
 
 **背景**：本机无 sw_64 工具链（无原生 gcc / 无交叉 gcc / 无 qemu 仿真 / docker.io 不可达），OBS 远程构建是 sw_64 进入可验证构建通道的当前唯一可行方案。
 
@@ -1018,7 +1018,7 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 
 ### 11.1 禁词清单
 
-以下词汇在**开源文档**（`docs/docs-linux/`）中**严禁出现**。闭源文档（`docs-closed/agent-linux/`）中允许引用，但应避免不必要的泄露。
+以下词汇在**开源文档**（`docs/docs-linux/`）中**严禁出现**。闭源文档（`docs-closed/agent-linux-dev/`）中允许引用，但应避免不必要的泄露。
 
 > **OS-BAN-010**: 开源文档中严禁出现以下禁词。
 
@@ -1029,7 +1029,7 @@ AirymaxOS ←→ Euler:    仅技术参考（LAYER 硬件适配层 + 工程标�
 | KADC | kadc, KADC | — | 内部代号 |
 | 智慧中枢 | 智慧中心, 智能中枢 | "认知循环" / "CoreLoopThree" | 旧术语 |
 
-> **完整禁词清单**维护于 `docs-closed/agent-linux/forbidden-words.conf`，检查脚本从该文件读取正则表达式进行匹配。
+> **完整禁词清单**维护于 `docs-closed/agent-linux-dev/forbidden-words.conf`，检查脚本从该文件读取正则表达式进行匹配。
 
 ### 11.2 违规等级
 
@@ -1189,7 +1189,7 @@ kernel/
 
 ### 13.4 其他 7 子仓目录结构概要
 
-> **OS-STD-062**: 其余 7 子仓完整目录结构见 `01-designs/_design_0.2.4/01-agent-linux-directory-structure.md`。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
+> **OS-STD-062**: 其余 7 子仓完整目录结构见 `20-archive/designs/_design_0.2.4/01-agent-linux-directory-structure.md`。每个子仓必须包含 MAINTAINERS 文件（R-03）和 Documentation/ 目录（ES-OLK-13）。
 
 ### 13.5 构建系统工程标准与 build/ 目录规范
 
@@ -1340,7 +1340,7 @@ agent-linux 的 SSoT 权威源体系由五大权威源构成：规则编号 SSoT
 
 ## 附录 A v3.6 审查 68 项改进闭环总表
 
-> **数据来源**：`00-reviews/_review_v3.6/`（07 第一轮 / 17 第二轮 / 23 第三轮 + 08/18 闭环摘要）。三轮回合计 68 项（去重后 66 项：E18-E22 并入 E1-E3，E1 与第一轮 R-01/R-02 同源）。
+> **数据来源**：`20-archive/reviews/_review_v3.6/`（07 第一轮 / 17 第二轮 / 23 第三轮 + 08/18 闭环摘要）。三轮回合计 68 项（去重后 66 项：E18-E22 并入 E1-E3，E1 与第一轮 R-01/R-02 同源）。
 > **状态口径**：✅ 已修复（有源码证据）/ 📄 文档类已完成 / ⏳ 待 M2 / 🕐 待 M3-M5 / ⚠️ 待核验。
 
 ### A.1 第一轮 v3.6（核心机制，29 项：P0-1 + P1-11 + P2-17）
@@ -1385,7 +1385,7 @@ agent-linux 的 SSoT 权威源体系由五大权威源构成：规则编号 SSoT
 | P2-12 | ALK vs KABI 权衡决策未文档化 | P2 | 🕐 待 M3（文档） | 对标 openEuler sched.h L722 |
 | P2-13 | _reserved 字段命名不统一 | P2 | 📄 已统一（`_reserved[N]`） | lsm_types.h L53 vs sched.h L70 |
 | P2-14 | MemoryRovol（549）M5 实现规划 | P2 | 🕐 待 M5 | airy_syscalls.c L143-151 |
-| P2-15~17 | 第一轮 P2 段剩余 3 项（内存/版本治理维度，见第一轮子域报告 06） | P2 | ⚠️ 待核验 | 以 00-reviews/_review_v3.6/06 报告为准 |
+| P2-15~17 | 第一轮 P2 段剩余 3 项（内存/版本治理维度，见第一轮子域报告 06） | P2 | ⚠️ 待核验 | 以 20-archive/reviews/_review_v3.6/06 报告为准 |
 
 ### A.2 第二轮 v3.6b（基础设施，22 项：N1-N22）
 
