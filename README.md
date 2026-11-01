@@ -54,7 +54,7 @@ quality and ecosystem work is anchored inside 0.1.1.
 
 ## 📚 Key 0.1.1 Documents (7)
 
-### 1. [Comprehensive Technical Improvement Plan v3.0](agentrt/01-designs/_design_0.1.1/02-tech-improvement-plan-v3.0.md) — v4.0
+### 1. [Comprehensive Technical Improvement Plan v3.0](agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/02-tech-improvement-plan-v3.0.md) — v4.0
 
 Master technical improvement plan for 0.1.1 (~1,989 lines):
 
@@ -64,7 +64,7 @@ Master technical improvement plan for 0.1.1 (~1,989 lines):
 - Chapter 27: production-readiness plan (SP32–SP37)
 - Appendix A: 79-task master table (~964.5 h)
 
-### 2. [Detailed Task List](agentrt/01-designs/_design_0.1.1/03-detailed-task-list.md) — v2.0
+### 2. [Detailed Task List](agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/03-detailed-task-list.md) — v2.0
 
 Detailed task breakdown for 0.1.1 (3,811 lines, 146 main tasks):
 
@@ -74,7 +74,7 @@ Detailed task breakdown for 0.1.1 (3,811 lines, 146 main tasks):
 - Part 7: SP01–SP31 repo-split tasks
 - Part 8: SP32–SP37 production-readiness tasks
 
-### 3. [Engineering Standards Handbook](agentrt/agentrt工程标准规范手册.md) — v26.0
+### 3. [Engineering Standards Handbook](agent-workload-dev/agentrt工程标准规范手册.md) — v26.0
 
 Engineering standards for 0.1.1 (4,584 lines, 356 BAN rules):
 
@@ -86,24 +86,24 @@ Engineering standards for 0.1.1 (4,584 lines, 356 BAN rules):
 - Chapter 37: PROD-01~06 (6 production-readiness rules)
 - IRON-1~8 (8 engineering iron rules)
 
-### 4. [Repository Split Proposal](agentrt/01-designs/_design_0.1.1/01-repo-split-proposal.md)
+### 4. [Repository Split Proposal](agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/01-repo-split-proposal.md)
 
 The 38-repo split plan in detail: 1 umbrella repo (airymaxhub) + 5 management
 repos (agentrt/sdk/ecosystem/products/agent-linux) + 29 leaf repos +
 3 top-level repos.
 
-### 5. [Split Feasibility Analysis](agentrt/00-reviews/_analysis_0.1.1/02-repo-split-feasibility-analysis.md)
+### 5. [Split Feasibility Analysis](agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/02-repo-split-feasibility-analysis.md)
 
 Feasibility analysis report for the 38-repo split plan.
 
-### 6. [TaskFlow vs CoreKern Scheduler Comparison](agentrt/00-reviews/_analysis_0.1.1/01-taskflow-vs-corekern-scheduler-comparison.md)
+### 6. [TaskFlow vs CoreKern Scheduler Comparison](agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/01-taskflow-vs-corekern-scheduler-comparison.md)
 
 Dual-engine comparison report that settled the co-existence design:
 `graph_engine` keeps Class-A micro-core primitives, `taskflow_advanced`
 serves as the Class-B DAG workflow orchestrator, and `pregel_engine` is
 force-degraded to `max_workers=1` in 0.1.1.
 
-### 7. [License Audit Report](agentrt/00-reviews/_review_0.1.1/01-license-audit-report.md)
+### 7. [License Audit Report](agent-workload-dev/90-reviews-and-archive/reviews/_review_0.1.1/01-license-audit-report.md)
 
 Comprehensive license audit for 0.1.1: all 5 LICENSE and 3 NOTICE files in
 OpenAirymax unified under the AGPL-3.0-or-later + Apache-2.0 dual license;
@@ -117,25 +117,22 @@ MemoryRovol's separate licensing policy is covered in the audit report itself.
 docs-closed/
 ├── README.md                 # This file (English)
 ├── README_zh.md              # Chinese version
-├── agentrt/                  # AgentRT runtime technical docs (index: agentrt/README.md)
+├── agent-workload-dev/       # AgentRT runtime technical docs (index: agent-workload-dev/README.md)
 │   ├── agentrt工程标准规范手册.md            # Engineering standards handbook
 │   ├── agentrt开发路线和进度1.0.1版本.md       # Roadmap & progress tracking (1.0.1)
 │   ├── repo-topology.md                      # Repository topology
-│   ├── 0.1.x / 0.2.x 改进方案与审查系列.md    # 0.1.1–0.2.x improvement & review series
-│   ├── 00-reviews/                           # Reviews, analyses and archives
-│   │   ├── _analysis_0.1.1/                  #   Dual-engine comparison, split feasibility
-│   │   ├── _review_0.1.1/                    #   License audit report
-│   │   ├── _review_v1.0 … _review_v4.4/      #   Historical review rounds
-│   │   ├── _archive_0.1.6/                   #   0.1.6 snapshot archive
-│   │   ├── _archive_conversations/           #   Long-task conversation records
-│   │   └── _archive_fix_history/             #   Fix-work history (rounds/plans/proposals/
-│   │                                         #   legacy docs/inspection reports)
-│   ├── 01-designs/                           # Design proposals
-│   │   └── _design_0.1.1/                    #   0.1.1 founding documents
-│   ├── 05-tech-reference-and-improvement/    # Early tech-reference & prototype archive
-│   ├── 06-contracts/                         # Inter-module contract headers (A/B/C) + tests
-│   ├── 07-subsystem-specs/                   # 13 subsystem specs (checkpoint … module-boundaries)
-│   └── 50-engineering-standards/             # Log & error-code convergence plans
+│   ├── 0.1.9 … 0.2.x 架构改进方案.md         # Per-version improvement plans (one entry each)
+│   ├── 10-designs-and-contracts/             # LIVE: designs, specs, contracts, plans
+│   │   ├── designs/                          #   Design proposals (+ _design_0.1.1/ snapshot)
+│   │   ├── subsystem-specs/                  #   13 subsystem specs (01 … 13-module-boundaries)
+│   │   ├── contracts/                        #   Contract headers A/B/C + tests — Gate 4/5 SSoT host
+│   │   └── engineering-plans/                #   Log & error-code convergence plans
+│   └── 90-reviews-and-archive/               # READ-ONLY: reviews, references, snapshots
+│       ├── reviews/                          #   _review_v1.0 … _review_v4.4, _analysis_0.1.1,
+│       │                                     #   _review_0.1.1, _archive_0.1.6,
+│       │                                     #   _archive_conversations, _archive_fix_history
+│       ├── tech-reference/                   #   Early tech-reference & prototype archive
+│       └── snapshots/                        #   Single-file snapshots (0.1.20 r63)
 ├── agent-linux-dev/          # AirymaxOS technical reference & archive (index: agent-linux-dev/README.md)
 │   ├── 10-references/                        # Design sources (references + task-ledger generators)
 │   │   ├── openeuler-tech-reference/         #   openEuler technical-spec references (14 docs)
@@ -166,7 +163,7 @@ docs-closed/
     └── 《AgentOS开源项目准入申请》2(1).pptx    # Open-source project admission deck
 ```
 
-Directory-level indexes: [agentrt/README.md](agentrt/README.md) ·
+Directory-level indexes: [agent-workload-dev/README.md](agent-workload-dev/README.md) ·
 [agent-linux-dev/README.md](agent-linux-dev/README.md)
 
 ---
@@ -208,14 +205,14 @@ Directory-level indexes: [agentrt/README.md](agentrt/README.md) ·
 ## 📜 Archive Principles
 
 1. **Current (0.1.1) founding documents** live under
-   `agentrt/01-designs/_design_0.1.1/`, `agentrt/00-reviews/_analysis_0.1.1/`
-   and `agentrt/00-reviews/_review_0.1.1/`
+   `agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/`, `agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/`
+   and `agent-workload-dev/90-reviews-and-archive/reviews/_review_0.1.1/`
 2. **Historical round documents** are archived under
-   `agentrt/00-reviews/_archive_fix_history/round-archives/`
+   `agent-workload-dev/90-reviews-and-archive/reviews/_archive_fix_history/round-archives/`
 3. **Proposals / improvement plans / inspection reports** go to the matching
    type-specific subdirectory under `_archive_fix_history/`
 4. **Long-task conversation records** are kept separately in
-   `agentrt/00-reviews/_archive_conversations/`
+   `agent-workload-dev/90-reviews-and-archive/reviews/_archive_conversations/`
 5. Archive material is **append-only**: historical conclusions are preserved
    as-is for traceability and are not rewritten in place
 

@@ -1,7 +1,7 @@
 # Market Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（Agent 能力市场）
-> **代码路径**: `agentrt/daemon/market_d/`
+> **代码路径**: `agentrt/daemons/market_d/`
 
 ---
 
@@ -309,7 +309,7 @@ market_d
 @owner: team-A
 ```
 
-所有 `agentrt/daemon/market_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemons/market_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ### 通信方式
 

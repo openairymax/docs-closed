@@ -1,7 +1,7 @@
 # Gateway Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-17 | **团队**: A（核心引擎）
-> **代码路径**: `agentrt/daemon/gateway_d/`
+> **代码路径**: `agentrt/daemons/gateway_d/`
 
 ---
 
@@ -302,7 +302,7 @@ daemon/gateway_d/
 ### 5.1 合约文件
 
 - `contracts/contract_A_C_gateway_d.h` — 团队A（Gateway Daemon）与团队C（测试/质量）的接口合约
-- `agentrt/daemon/gateway_d/tests/` — 网关守护进程单元测试
+- `agentrt/daemons/gateway_d/tests/` — 网关守护进程单元测试
 
 ### 5.2 测试接口
 
@@ -328,7 +328,7 @@ daemon/gateway_d/
 @owner: team-A
 ```
 
-所有 `agentrt/daemon/gateway_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemons/gateway_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

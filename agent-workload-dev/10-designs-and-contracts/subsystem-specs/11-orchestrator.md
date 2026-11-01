@@ -1,7 +1,7 @@
 # Orchestrator 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（流程编排）
-> **代码路径**: `agentrt/daemon/common/`（`orchestrator.h` / `orchestrator.c`）
+> **代码路径**: `agentrt/daemons/common/`（`orchestrator.h` / `orchestrator.c`）
 
 ---
 
@@ -330,7 +330,7 @@ orchestrator (svc_common 静态库)
 @owner: team-A
 ```
 
-所有 `agentrt/daemon/common/include/orchestrator.h` 和 `agentrt/daemon/common/src/orchestrator.c` 归属于团队A。编排器作为 `svc_common` 静态库的一部分编译，被所有守护进程链接使用。
+所有 `agentrt/daemons/common/include/orchestrator.h` 和 `agentrt/daemons/common/src/orchestrator.c` 归属于团队A。编排器作为 `svc_common` 静态库的一部分编译，被所有守护进程链接使用。
 
 ### 执行管线
 
