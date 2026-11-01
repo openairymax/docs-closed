@@ -18,9 +18,9 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
 │   │   └── sdk/              ← SDK 聚合仓（console/tui/desktop/docker/
 │   │                            sdk-rust/sdk-python/sdk-go/sdk-typescript 八个叶子仓）
 │   ├── tools/                ← CI/质量门禁/发布脚本仓
-│   ├── docs/                 ← 公开文档仓（docs/AirymaxRT 等）
-│   ├── docs-closed/          ← 闭源工程文档仓（本文件所在，sync-mirror SKIP）
-│   └── developbuild/         ← 闭源发布工作区（build.sh 默认产物台，sync-mirror SKIP）
+│   └── docs/                 ← 公开文档仓（docs/AirymaxRT 等）
+│       └── docs-closed/      ← 闭源工程文档仓（**docs 的子模块**，不是伞仓直接
+│                                子模块；本文件所在；sync-mirror SKIP）
 ├── spharxtools/              ← 独立工具仓（模块名历史为 SpharxTools）
 ├── works-engineering/        ← 构建打包台（源码区外，不入仓；流程 SSoT 在
 │                                airymaxhub/tools/scripts/ci/release）
@@ -71,8 +71,9 @@ spharxworks/                  ← 顶层父仓（remote: openairymax/spharxworks
   零冲突调和，gitlink 随 agentrt `acd22cfce` / sdk `3bba94b` 升级，链至伞仓 `45471b2`。
 - 父仓 spharxworks gitlink bump 至伞仓最新并推送（`fa0790a`）；works-engineering/
   README.md 明确不入父仓（.gitignore）。
-- 伞仓 6 子模块全部正式注册（agent-linux/agent-workload/developbuild/docs/docs-closed/
-  tools，`submodule status` 无 `-`/`+` 异常）。
+- 伞仓 4 子模块（agent-linux/agent-workload/docs/tools）全部正式注册，`submodule
+  status` 无 `-`/`+` 异常；`docs-closed` 是 **`docs` 仓的子模块**（不是伞仓直接子
+  模块），随 `docs` gitlink 一起升级。
 
 ## 6. 2026-10-07 分支命名收口记录
 

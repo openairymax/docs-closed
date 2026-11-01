@@ -5,7 +5,7 @@
 > **登记日期**：2026-08-30
 > **登记人**：Decheng Li（lidecheng@spharx.cn）
 > **状态**：登记待评（提前规划稿——0.1.6y 系列完成后实施）
-> **依据**：PLAN-AGENTRT-0.1.6-20260828-R2（范围声明 0.1.7 拆出项）+ 0.1.6 实证/裁决报告（P0-2a / P0-4 / P0-5）+ 插件研究 14 条清单（`00-reviews/_review_v4.4/agentrt-plugin-system-critical-devprep-20260828.md`）+ 依赖精简量化研究（已归档 `_archive_0.1.6/`，结论：不执行）
+> **依据**：PLAN-AGENTRT-0.1.6-20260828-R2（范围声明 0.1.7 拆出项）+ 0.1.6 实证/裁决报告（P0-2a / P0-4 / P0-5）+ 插件研究 14 条清单（`90-reviews-and-archive/reviews/_review_v4.4/agentrt-plugin-system-critical-devprep-20260828.md`）+ 依赖精简量化研究（已归档 `_archive_0.1.6/`，结论：不执行）
 
 ---
 
@@ -163,7 +163,7 @@ loop_dag `airy_loop_dag_status` 的状态串映射并入 taskflow 状态枚举�
 | `_archive_0.1.6/agentrt-0.1.6-P0-2a-dag-empirical-gate-20260829.md` | 遗留观察 V-6（taskflow 状态序列化） |
 | `_archive_0.1.6/agentrt-0.1.6-P0-5-allocator-verdict-20260830.md` | 遗留 V-5（分配器统一接口收敛） |
 | `_archive_0.1.6/agentrt-dependency-slimming-list-20260828.md` | 用户决定不执行（构建时间收益≈0 的量化结论），0.1.7 不纳入 |
-| `00-reviews/_review_v4.4/agentrt-plugin-system-critical-devprep-20260828.md` | V-3 完整插件机制依据（14 条清单） |
+| `90-reviews-and-archive/reviews/_review_v4.4/agentrt-plugin-system-critical-devprep-20260828.md` | V-3 完整插件机制依据（14 条清单） |
 
 ---
 

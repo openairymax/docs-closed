@@ -255,7 +255,7 @@ agentrt/atoms/coreloopthree/
   ├── agentrt/atoms/corekern/     — airy_rt.h, error.h, 任务调度, 内存分配, IPC
   ├── agentrt/commons/            — airy_types.h, types.h, 基础类型定义
   ├── agentrt/cupolas/src/        — yaml_minimal.h（YAML 解析共享）
-  ├── agentrt/daemon/common/      — checkpoint.h, orchestrator.h（检查点、编排器接口）
+  ├── agentrt/daemons/common/      — checkpoint.h, orchestrator.h（检查点、编排器接口）
   ├── agentrt/atoms/memory/       — memory_provider 接口（MemoryRovol 桥接）
   ├── include/llm_service.h        — LLM 服务接口（llm_d 注入）
   ├── include/tool_service.h       — 工具服务接口（tool_d 注入）

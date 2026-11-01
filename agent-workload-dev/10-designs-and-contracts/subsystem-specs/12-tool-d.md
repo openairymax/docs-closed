@@ -1,7 +1,7 @@
 # Tool Daemon 子系统边界文档
 
 > **版本**: v1.0.0 | **日期**: 2026-06-18 | **团队**: A（核心引擎）
-> **代码路径**: `agentrt/daemon/tool_d/`
+> **代码路径**: `agentrt/daemons/tool_d/`
 
 ---
 
@@ -358,7 +358,7 @@ tool_d
 @owner: team-A
 ```
 
-所有 `agentrt/daemon/tool_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
+所有 `agentrt/daemons/tool_d/` 下的文件归属于团队A。团队C 仅可修改 `tests/` 目录下的测试文件。
 
 ---
 

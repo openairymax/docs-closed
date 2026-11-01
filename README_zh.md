@@ -24,7 +24,7 @@
 
 ## 📚 核心文档（7 篇）
 
-### 1. [技术全面改进方案 v3.0](./agentrt/01-designs/_design_0.1.1/02-tech-improvement-plan-v3.0.md) — v4.0
+### 1. [技术全面改进方案 v3.0](./agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/02-tech-improvement-plan-v3.0.md) — v4.0
 
 0.1.1 版本技术改进总方案（约 1,989 行）。包含：
 - 第二十章：38 项已确认缺陷完整清单（A-H 类）
@@ -33,7 +33,7 @@
 - 第二十七章：生产就绪方案（SP32-SP37）
 - 附录 A：79 项任务总表（~964.5h）
 
-### 2. [详细任务清单](./agentrt/01-designs/_design_0.1.1/03-detailed-task-list.md) — v2.0
+### 2. [详细任务清单](./agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/03-detailed-task-list.md) — v2.0
 
 0.1.1 版本详细任务清单（3,811 行，146 项主任务）。包含：
 - 第一部分：W01-W30 奠基任务
@@ -42,7 +42,7 @@
 - 第七部分：SP01-SP31 38 仓拆分任务
 - 第八部分：SP32-SP37 生产就绪任务
 
-### 3. [agentrt 工程标准规范手册](./agentrt/agentrt工程标准规范手册.md) — v26.0
+### 3. [agentrt 工程标准规范手册](./agent-workload-dev/agentrt工程标准规范手册.md) — v26.0
 
 0.1.1 版本工程标准规范（4,584 行，356 项 BAN 规则）。包含：
 - §11.5 独立子仓库路径引用安全规范
@@ -53,19 +53,19 @@
 - 第三十七章 PROD-01~06（6 项生产就绪规范）
 - IRON-1~8（8 项工程铁律）
 
-### 4. [AgentRT 仓库拆分方案](./agentrt/01-designs/_design_0.1.1/01-repo-split-proposal.md)
+### 4. [AgentRT 仓库拆分方案](./agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/01-repo-split-proposal.md)
 
 38 仓拆分方案详述。1 伞仓(airymaxhub) + 5 管理仓(agentrt/sdk/ecosystem/products/agent-linux) + 29 叶子仓 + 3 顶层仓。
 
-### 5. [仓库拆分方案可行性分析报告](./agentrt/00-reviews/_analysis_0.1.1/02-repo-split-feasibility-analysis.md)
+### 5. [仓库拆分方案可行性分析报告](./agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/02-repo-split-feasibility-analysis.md)
 
 38 仓拆分方案可行性分析报告。
 
-### 6. [taskflow 与 corekern 调度器对比报告](./agentrt/00-reviews/_analysis_0.1.1/01-taskflow-vs-corekern-scheduler-comparison.md)
+### 6. [taskflow 与 corekern 调度器对比报告](./agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/01-taskflow-vs-corekern-scheduler-comparison.md)
 
 taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方案（graph_engine 留 A 类微核心原语 + taskflow_advanced 作为 B 类 DAG 工作流编排 + pregel_engine 0.1.1 强制 max_workers=1 降级）。
 
-### 7. [许可证全面审计报告](./agentrt/00-reviews/_review_0.1.1/01-license-audit-report.md)
+### 7. [许可证全面审计报告](./agent-workload-dev/90-reviews-and-archive/reviews/_review_0.1.1/01-license-audit-report.md)
 
 0.1.1 版本许可证全面审计报告。OpenAirymax 内所有 5 个 LICENSE 文件 + 3 个 NOTICE 文件统一为 AGPL v3 + Apache 2.0 双许可证；MemoryRovol 的独立许可策略详见审计报告原文。
 
@@ -77,25 +77,22 @@ taskflow 与 corekern scheduler 双引擎对比报告，确定双引擎协同方
 docs-closed/
 ├── README.md                                    # 英文版
 ├── README_zh.md                                 # 本文档（中文版）
-├── agentrt/                                     # AgentRT 运行时技术文档（索引：agentrt/README.md）
+├── agent-workload-dev/                          # AgentRT 运行时技术文档（索引：agent-workload-dev/README.md）
 │   ├── agentrt工程标准规范手册.md               # 工程标准规范手册（4,584 行）
 │   ├── agentrt开发路线和进度1.0.1版本.md        # 开发路线与进度跟踪
 │   ├── repo-topology.md                         # 仓库拓扑
-│   ├── 0.1.x / 0.2.x 改进方案与审查系列.md      # 0.1.1–0.2.x 历轮改进与审查文档
-│   ├── 00-reviews/                              # 审查 / 分析 / 归档
-│   │   ├── _analysis_0.1.1/                     #   双引擎对比、拆分可行性分析
-│   │   ├── _review_0.1.1/                       #   许可证全面审计报告
-│   │   ├── _review_v1.0 … _review_v4.4/         #   历轮审查归档
-│   │   ├── _archive_0.1.6/                      #   0.1.6 快照归档
-│   │   ├── _archive_conversations/              #   长任务历史对话记录
-│   │   └── _archive_fix_history/                #   修复工作历史档案（各轮次/改进计划/
-│   │                                            #   方案归档/旧版文档/检查报告）
-│   ├── 01-designs/                              # 设计方案
-│   │   └── _design_0.1.1/                       #   0.1.1 奠基文档（拆分方案/改进方案/任务清单）
-│   ├── 05-tech-reference-and-improvement/       # 技术借鉴与改进（历史归档）
-│   ├── 06-contracts/                            # 模块间契约头文件（A/B/C）+ 契约测试
-│   ├── 07-subsystem-specs/                      # 13 篇子系统规格（checkpoint … module-boundaries）
-│   └── 50-engineering-standards/                # 日志收敛、错误码迁移专项计划
+│   ├── 0.1.9 … 0.2.x 架构改进方案.md            # 各版本方案（每版单一入口）
+│   ├── 10-designs-and-contracts/                # 活文档：设计·规格·合约·计划
+│   │   ├── designs/                             #   设计稿（+ _design_0.1.1/ 版本化快照）
+│   │   ├── subsystem-specs/                     #   13 篇子系统规格（01 … 13-module-boundaries）
+│   │   ├── contracts/                           #   合约头文件（A/B/C）+ 契约测试；Gate 4/5 的 SSoT 宿主
+│   │   └── engineering-plans/                   #   日志收敛、错误码迁移专项计划
+│   └── 90-reviews-and-archive/                  # 只读封存：评审·参考·快照
+│       ├── reviews/                             #   _review_v1.0 … _review_v4.4、_analysis_0.1.1、
+│       │                                        #   _review_0.1.1、_archive_0.1.6、
+│       │                                        #   _archive_conversations、_archive_fix_history
+│       ├── tech-reference/                      #   技术借鉴与改进（历史归档）
+│       └── snapshots/                           #   单文件快照（0.1.20 r63）
 ├── agent-linux-dev/                             # AirymaxOS 技术参考与历史归档（索引：agent-linux-dev/README.md）
 │   ├── 10-references/                           # 设计依据（参考来源 + 任务账本生成器）
 │   │   ├── openeuler-tech-reference/            #   openEuler 技术规范参考（14 篇）
@@ -164,10 +161,10 @@ docs-closed/
 
 ## 📜 归档原则
 
-1. **当前版本文档**（0.1.1）存放于 `agentrt/01-designs/_design_0.1.1/`、`agentrt/00-reviews/_analysis_0.1.1/` 与 `agentrt/00-reviews/_review_0.1.1/`
-2. **历史轮次文档**归档至 `agentrt/00-reviews/_archive_fix_history/round-archives/`
+1. **当前版本文档**（0.1.1）存放于 `agent-workload-dev/10-designs-and-contracts/designs/_design_0.1.1/`、`agent-workload-dev/90-reviews-and-archive/reviews/_analysis_0.1.1/` 与 `agent-workload-dev/90-reviews-and-archive/reviews/_review_0.1.1/`
+2. **历史轮次文档**归档至 `agent-workload-dev/90-reviews-and-archive/reviews/_archive_fix_history/round-archives/`
 3. **方案/计划/报告**归档至 `_archive_fix_history/` 下对应的类型子目录
-4. **历史对话**独立存放于 `agentrt/00-reviews/_archive_conversations/`，按需查阅
+4. **历史对话**独立存放于 `agent-workload-dev/90-reviews-and-archive/reviews/_archive_conversations/`，按需查阅
 5. **归档材料只追加不改写**：历史结论原样保留以便溯源，不在原地修订
 
 ---

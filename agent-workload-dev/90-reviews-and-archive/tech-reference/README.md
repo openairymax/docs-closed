@@ -1,6 +1,9 @@
-# 05-tech-reference-and-improvement/ 历史归档说明
+# tech-reference/ 历史归档说明
 
-> **归档声明**: 本目录为**历史归档目录**，内含 Airymax 运行时（agentrt）早期阶段的技术借鉴、分析报告与原型设计文档，随仓库公开，供项目历史研究参考。
+> **归档声明**: 本目录为**历史归档目录**（2026-11-01 由
+> `05-tech-reference-and-improvement/` 迁入 `90-reviews-and-archive/`），
+> 内含 Airymax 运行时（agentrt）早期阶段的技术借鉴、分析报告与原型设计
+> 文档，随仓库公开，供项目历史研究参考。
 
 ---
 
@@ -43,9 +46,8 @@
 ## 5. 目录结构
 
 ```
-05-tech-reference-and-improvement/
+tech-reference/（原 05-tech-reference-and-improvement/）
 ├── README.md                              # 本文件 — 归档说明
-├── 01-cicd-restructure-v11.14.md          # CI/CD 系统化重构方案
 ├── analysis-reports/                      # 分析报告（历史归档）
 │   ├── AgentOS原型与现状对比分析及五个目标实现策略.md
 │   ├── 前期多投入后期少消耗策略可行性分析01.md
@@ -68,7 +70,10 @@
 
 ---
 
-**文档版本**: 0.1.1
+**文档版本**: 0.1.20
 **生成时间**: 2026-07-14
+**最后更新**: 2026-11-01（迁入 `90-reviews-and-archive/`，删除已失效的
+CI/CD 方案迁移存根——真文在
+`90-reviews-and-archive/reviews/_archive_fix_history/improvement-plans/CICD系统化重构方案_v11.14.md`）
 **维护者**: AgentRT 开源维护团队
-**关联决策**: v3.0-综合-P2-14（05-tech-reference-and-improvement/ 历史归档 1738 处 agentos_ 残留）
+**关联决策**: v3.0-综合-P2-14（原 05-tech-reference-and-improvement/ 历史归档 1738 处 agentos_ 残留）
