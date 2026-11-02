@@ -74,9 +74,12 @@ EPOL/update/main、everything 四段为零条。
 | `ukui-system-monitor` | `ukui-system-monitor-0:3.1.2-5.oe2403sp2.x86_64` |
 | `ukui-window-switch` | `ukui-window-switch-0:3.1.0-2.oe2403sp2.x86_64` |
 | `ukui-biometric-manager` | `ukui-biometric-manager-0:3.1.2-5.oe2403sp2.x86_64` |
-| `ukui-biometric-auth` | `ukui-biometric-auth-0:1.2.4-2.oe2403sp2.x86_64` |
+| `libpam-biometric` | `libpam-biometric-0:1.2.4-2.oe2403sp2.x86_64` |
 | `ukui-polkit` | `ukui-polkit-0:1.2.4-2.oe2403sp2.x86_64` |
 | `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp2.x86_64` |
+
+`ukui-biometric-auth` 只是源包名：该源码构建出的二进制是 `ukui-polkit`
+与 `libpam-biometric`，五段 repodata 中没有同名二进制，闭包只能登记后者。
 
 `ukui-wallpapers-0:20.04.4-4.oe2403sp2` 只作媒体资产来源，按 R1-15 的
 `ukui-wallpapers.yaml` 排除在安装闭包之外，不计入组件台账。
