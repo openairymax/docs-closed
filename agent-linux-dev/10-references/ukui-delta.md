@@ -14,17 +14,21 @@
 everything 五段 repodata 中，UKUI 二进制包仅存在于 EPOL/main；OS、update、
 EPOL/update/main、everything 四段为零条。
 
-同时确认三条否定事实，均按五段逐一扫描：
+包名存在性与选型分三态登记（`distro/lockfile/ukui-components.yaml`）：
 
-| 包名 | 结论 | 影响 |
+| 包名 | 实测 | 本版处置 |
 |---|---|---|
-| `ukui` | 不存在 | 元包不可作为 comps 必装项 |
-| `ukui-desktop-environment` | 不存在 | 发行套件元包从未在基底构建 |
-| `ukui-shell` | 不存在 | 壳层能力由 `ukui-kwin` 承担 |
+| `ukui` | EPOL/main 有 `0:2.0.2-20.oe2403sp2` | available，不选 |
+| `ukui-desktop-environment` | EPOL/main 有 `0:2.0.2-20.oe2403sp2` | available，不选 |
+| `ukui-shell` | 五段均无 | absent，壳层由 `ukui-kwin` 承担 |
 
-禁止用上游发布公告替代上述实测值（J-35）。历史文档中的
-`ukui 2.0.2-20`、`ukui-desktop-environment 2.0.2-20` 两处记载与实测不符，
-以本文件与台账为准。
+两个元包拉的是整代闭包，与本版逐组件钉版的口径冲突：选元包等于把版本
+决定权交回仓库，NVRA 台账随即失效。故二者只作存在性取证，不进 comps，
+也不进冻结输入。
+
+历史记载勘误：早期文档把 `ukui`、`ukui-desktop-environment` 记作
+「基底不存在」，与 2026-11-02 的 repodata 实测不符；以本文件与台账为准。
+禁止用上游发布公告替代实测（J-35）。
 
 ---
 
@@ -38,7 +42,8 @@ EPOL/update/main、everything 四段为零条。
 | `EPOL/update/main` | 0 | 勘误段不含 |
 | `everything` | 0 | 兜底仓库不含 |
 
-74 条中可安装的组件级包 23 个（台账 `components` 段的 present 项），
+74 条中组件级包 25 个：台账 23 个 present 项，
+另有 `ukui`、`ukui-desktop-environment` 两个 available 元包。
 其余为 `debuginfo`、`debugsource` 与 `-common`、`-data`、`-devel`、
 `-wayland`、`-x11`、`-systemdbus`、`-tcp-search-plugin` 等子包。
 子包版本随主包，不单独钉。
@@ -134,8 +139,8 @@ dnf -q repoquery \
 
 | 对象 | 修正 |
 |---|---|
-| `distro/comps/airymaxos-comps.xml` | 删去不存在的 `ukui`，按台账逐组件声明 |
-| `distro/lockfile/rpms.in.yaml` | 同上；冻结输入不得包含不可解析包名 |
+| `distro/comps/airymaxos-comps.xml` | 不列 `ukui` 元包，按台账逐组件声明 |
+| `distro/lockfile/rpms.in.yaml` | 同上；冻结输入不得包含元包 |
 | `distro/lockfile/README.md` | 桌面组口径由「UKUI 4.x」改为实测 3.1 组件代 |
 | `distro/desktop/README.md` | 冻结点核对表删去 `ukui 2.0.2-20` |
 | `docs-linux/190-distribution/03-installer-design.md` | 同步组件代表述 |
