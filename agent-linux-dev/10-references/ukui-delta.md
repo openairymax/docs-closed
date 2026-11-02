@@ -38,7 +38,7 @@ EPOL/update/main、everything 四段为零条。
 | `EPOL/update/main` | 0 | 勘误段不含 |
 | `everything` | 0 | 兜底仓库不含 |
 
-74 条中可安装的组件级包 24 个（台账 `components` 段的 present 项），
+74 条中可安装的组件级包 23 个（台账 `components` 段的 present 项），
 其余为 `debuginfo`、`debugsource` 与 `-common`、`-data`、`-devel`、
 `-wayland`、`-x11`、`-systemdbus`、`-tcp-search-plugin` 等子包。
 子包版本随主包，不单独钉。
