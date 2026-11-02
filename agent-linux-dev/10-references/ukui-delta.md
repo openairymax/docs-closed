@@ -9,7 +9,7 @@
 
 ## 1. 结论
 
-0.0.4 的 UKUI 取 **openEuler 24.03 LTS-SP2 EPOL/main 的 3.1 组件代**。
+0.0.4 的 UKUI 取 **openEuler 24.03 LTS-SP3 EPOL/main 的 3.1 组件代**。
 该结论只由仓库解析结果支撑：OS、update、EPOL/main、EPOL/update/main、
 everything 五段 repodata 中，UKUI 二进制包仅存在于 EPOL/main；OS、update、
 EPOL/update/main、everything 四段为零条。
@@ -18,8 +18,8 @@ EPOL/update/main、everything 四段为零条。
 
 | 包名 | 实测 | 本版处置 |
 |---|---|---|
-| `ukui` | EPOL/main 有 `0:2.0.2-20.oe2403sp2` | available，不选 |
-| `ukui-desktop-environment` | EPOL/main 有 `0:2.0.2-20.oe2403sp2` | available，不选 |
+| `ukui` | EPOL/main 有 `0:2.0.2-20.oe2403sp3` | available，不选 |
+| `ukui-desktop-environment` | EPOL/main 有 `0:2.0.2-20.oe2403sp3` | available，不选 |
 | `ukui-shell` | 五段均无 | absent，壳层由 `ukui-kwin` 承担 |
 
 两个元包拉的是整代闭包，与本版逐组件钉版的口径冲突：选元包等于把版本
@@ -32,7 +32,7 @@ EPOL/update/main、everything 四段为零条。
 
 ---
 
-## 2. 段位分布（24.03 LTS-SP2，x86_64）
+## 2. 段位分布（24.03 LTS-SP3，x86_64）
 
 | 段 | `ukui*` 条数 | 说明 |
 |---|---|---|
@@ -50,38 +50,38 @@ EPOL/update/main、everything 四段为零条。
 
 ---
 
-## 3. 组件 NVRA（24.03 LTS-SP2，逐字）
+## 3. 组件 NVRA（24.03 LTS-SP3，逐字）
 
 | 组件 | NVRA |
 |---|---|
-| `ukui-kwin` | `ukui-kwin-0:1.0.5-8.oe2403sp2.x86_64` |
-| `ukui-panel` | `ukui-panel-0:3.1.0-14.oe2403sp2.x86_64` |
-| `ukui-session-manager` | `ukui-session-manager-0:3.1.0-7.oe2403sp2.x86_64` |
-| `ukui-control-center` | `ukui-control-center-0:3.1.2-33.oe2403sp2.x86_64` |
-| `ukui-settings-daemon` | `ukui-settings-daemon-0:3.1.2-9.oe2403sp2.x86_64` |
-| `ukui-greeter` | `ukui-greeter-0:3.1.2-12.oe2403sp2.x86_64` |
-| `ukui-themes` | `ukui-themes-0:3.0.2-2.oe2403sp2.x86_64` |
-| `ukui-screensaver` | `ukui-screensaver-0:3.1.1-8.oe2403sp2.x86_64` |
-| `ukui-menu` | `ukui-menu-0:3.1.1-14.oe2403sp2.x86_64` |
-| `ukui-sidebar` | `ukui-sidebar-0:3.3.0-5.oe2403sp2.x86_64` |
-| `ukui-notification-daemon` | `ukui-notification-daemon-0:3.3.1-7.oe2403sp2.x86_64` |
-| `ukui-search` | `ukui-search-0:3.1-5.oe2403sp2.x86_64` |
-| `ukui-media` | `ukui-media-0:3.1.0-5.oe2403sp2.x86_64` |
-| `ukui-power-manager` | `ukui-power-manager-0:3.1.2-6.oe2403sp2.x86_64` |
-| `ukui-bluetooth` | `ukui-bluetooth-0:1.0.3-5.oe2403sp2.x86_64` |
-| `ukui-clock` | `ukui-clock-0:3.1.3-3.oe2403sp2.x86_64` |
-| `ukui-notebook` | `ukui-notebook-0:3.1.1-1.oe2403sp2.x86_64` |
-| `ukui-system-monitor` | `ukui-system-monitor-0:3.1.2-5.oe2403sp2.x86_64` |
-| `ukui-window-switch` | `ukui-window-switch-0:3.1.0-2.oe2403sp2.x86_64` |
-| `ukui-biometric-manager` | `ukui-biometric-manager-0:3.1.2-5.oe2403sp2.x86_64` |
-| `libpam-biometric` | `libpam-biometric-0:1.2.4-2.oe2403sp2.x86_64` |
-| `ukui-polkit` | `ukui-polkit-0:1.2.4-2.oe2403sp2.x86_64` |
-| `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp2.x86_64` |
+| `ukui-kwin` | `ukui-kwin-0:1.0.5-8.oe2403sp3.x86_64` |
+| `ukui-panel` | `ukui-panel-0:3.1.0-14.oe2403sp3.x86_64` |
+| `ukui-session-manager` | `ukui-session-manager-0:3.1.0-7.oe2403sp3.x86_64` |
+| `ukui-control-center` | `ukui-control-center-0:3.1.2-33.oe2403sp3.x86_64` |
+| `ukui-settings-daemon` | `ukui-settings-daemon-0:3.1.2-9.oe2403sp3.x86_64` |
+| `ukui-greeter` | `ukui-greeter-0:3.1.2-12.oe2403sp3.x86_64` |
+| `ukui-themes` | `ukui-themes-0:3.0.2-2.oe2403sp3.x86_64` |
+| `ukui-screensaver` | `ukui-screensaver-0:3.1.1-8.oe2403sp3.x86_64` |
+| `ukui-menu` | `ukui-menu-0:3.1.1-14.oe2403sp3.x86_64` |
+| `ukui-sidebar` | `ukui-sidebar-0:3.3.0-5.oe2403sp3.x86_64` |
+| `ukui-notification-daemon` | `ukui-notification-daemon-0:3.3.1-7.oe2403sp3.x86_64` |
+| `ukui-search` | `ukui-search-0:3.1-5.oe2403sp3.x86_64` |
+| `ukui-media` | `ukui-media-0:3.1.0-5.oe2403sp3.x86_64` |
+| `ukui-power-manager` | `ukui-power-manager-0:3.1.2-6.oe2403sp3.x86_64` |
+| `ukui-bluetooth` | `ukui-bluetooth-0:1.0.3-5.oe2403sp3.x86_64` |
+| `ukui-clock` | `ukui-clock-0:3.1.3-3.oe2403sp3.x86_64` |
+| `ukui-notebook` | `ukui-notebook-0:3.1.1-1.oe2403sp3.x86_64` |
+| `ukui-system-monitor` | `ukui-system-monitor-0:3.1.2-5.oe2403sp3.x86_64` |
+| `ukui-window-switch` | `ukui-window-switch-0:3.1.0-2.oe2403sp3.x86_64` |
+| `ukui-biometric-manager` | `ukui-biometric-manager-0:3.1.2-5.oe2403sp3.x86_64` |
+| `libpam-biometric` | `libpam-biometric-0:1.2.4-2.oe2403sp3.x86_64` |
+| `ukui-polkit` | `ukui-polkit-0:1.2.4-2.oe2403sp3.x86_64` |
+| `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp3.x86_64` |
 
 `ukui-biometric-auth` 只是源包名：该源码构建出的二进制是 `ukui-polkit`
 与 `libpam-biometric`，五段 repodata 中没有同名二进制，闭包只能登记后者。
 
-`ukui-wallpapers-0:20.04.4-4.oe2403sp2` 只作媒体资产来源，按 R1-15 的
+`ukui-wallpapers-0:20.04.4-4.oe2403sp3` 只作媒体资产来源，按 R1-15 的
 `ukui-wallpapers.yaml` 排除在安装闭包之外，不计入组件台账。
 
 ---
@@ -115,7 +115,7 @@ EPOL/update/main、everything 四段为零条。
 ### 5.1 dnf（有 dnf 的构建环境）
 
 ```sh
-base=https://repo.openeuler.org/openEuler-24.03-LTS-SP2
+base=https://repo.openeuler.org/openEuler-24.03-LTS-SP3
 dnf -q repoquery \
     --repofrompath=epol,${base}/EPOL/main/x86_64/ \
     --repo=epol --disablerepo='*' \
@@ -124,7 +124,7 @@ dnf -q repoquery \
 ```
 
 对 `OS`、`update`、`EPOL/update/main`、`everything` 四段重复同一命令，
-应得到零行。版本线矩阵把 `24.03-LTS-SP2` 换成对应目录名即可。
+应得到零行。版本线矩阵把 `${base}` 换成对应版本的目录名即可。
 
 ### 5.2 repodata 直读（无 dnf 的取证机）
 
@@ -134,7 +134,10 @@ dnf -q repoquery \
 3. 取 `name` 以 `ukui` 开头、`arch=x86_64` 的条目，按
    `name-epoch:version-release.arch` 输出。
 
-2026-11-02 的取证即按此路径执行，SP2/EPOL/main 得到 74 条，与台账一致。
+2026-11-02 的取证即按此路径执行：SP3/EPOL/main 得到 74 条 `ukui*`
+x86_64 条目（另有 5 个 noarch 元包及其子包、`libpam-biometric`
+一条），与台账一致；其余四段零条。SP2 到 SP3 的包名集合与版本全部相同，
+只有发行标记 `oe2403sp2` → `oe2403sp3` 变化，故换基底不改变组件选型。
 
 ---
 
