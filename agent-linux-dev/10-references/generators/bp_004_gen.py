@@ -52,8 +52,10 @@ DEBT = {
     "CI-05": "workflow 内联 `run:` 块计数为 0（QG-06）",
     "CI-07": "同 tag 仅一个 in_progress；遗留 run 被显式取消并留有日志",
     "CI-08": "预算漂移超阈值即告警，台账可由种子复算",
-    "CI-09": "分支保留策略成文且可脚本校验，不按名字删分支",
-    "CI-10": "分支引用计数脚本可复算（`git grep` 计数 + 消费方 pin）",
+    "CI-09": "`ci/check-workflows.py` 断言每个 `runs-on:` 逐字等于 "
+              "`tools/nightly/manifest.yaml` 的 `runner.label`，清单缺该键同样判红",
+    "CI-10": "门禁不得由字符串形状推语义（`-latest`、路径后缀、包名前缀），一律读显式字段；"
+              "`ci/check-workflows.py` 有对应禁用模式",
     "CI-11": "内容寻址层命中/未命中均打印，tag 前缀区分 `build-`/`install-`/`seed-`",
     "CI-12": "治理规则与 `ci/check-workflows.py` 的规则一一对应",
     "CI-13": "全部 `uses:` 钉 40 位 SHA",
