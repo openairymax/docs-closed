@@ -734,7 +734,7 @@ def sec16():
 | D-08 | 目标机无 `/dev/dri/card0`，Xorg 退到 fbdev，运行期无 KMS 模式枚举与缩放 | 报告 §11.3 D-08、§11.4：基线 `CONFIG_SYSFB_SIMPLEFB is not set` / `CONFIG_DRM_SIMPLEDRM is not set`，EFI 帧缓冲从未被登记为 `simple-framebuffer` 平台设备 | `arch/x86/configs/airy_defconfig` 与 spec `%check` 双处加 `CONFIG_SYSFB_SIMPLEFB=y`、`CONFIG_DRM_SIMPLEDRM=y` 并断言行存在；**必须 `=y`**：6.6 的 `simpledrm.c` 只声明 of 匹配表、无 `platform:simple-framebuffer` modalias，`=m` 时 udev 不会自动加载 |
 | D-01~D-04 | 无线用户态四件套（`NetworkManager-wifi` / `wpa_supplicant` / `wireless-regdb` / `iw`）已入 comps 与 `rpms.in.yaml`，但 0.0.3 已发布 ISO 不含 | 报告 §11.3（`7f2975f` 入 comps）、§11.6 P1 | 重造 ISO 后真机复验「开箱 `nmcli device wifi list` 得 30 AP、`GENERAL.DRIVER=rtw89_8852be`」；该复验并入 0.0.4 装机腿，不得再以手工补装代替 |
 | D-06 | 6.6 基线不含 Battlemage（`8086:e212`）：`i915` 无该 PCI ID 因而不 probe、`xe` 在 6.6 树内不存在，图形只能软渲染 | 报告 §11.4、ADR-016 | 1.x 接受软渲染（分辨率/缩放受限，桌面由 UKUI + llvmpipe 保证）；2.x 随 6.12/6.18 LTS 原生解决。本卡同时作为 `OS-ACC-104 硬件兼容矩阵`（docs-linux `160-compatibility/`，现为空白）的首条登记 |
-| D-30 | `kickstart/airymaxos-minimal.ks` 仍只有 `bootloader --append=…`，没有对应的启动参数落码步骤，装出的系统同样会在下次重建 grub.cfg 后丢参数 | `distro` `880adfe` 为 workstation 补了 `boot/grub_args.sh` 与 `step()` 执行器，minimal 未纳入 | minimal 也调用 `grub_args.sh`（脚本已通用，只需在配方收尾加一行 `step`）；T15 对 minimal 剖面同判 |
+| D-30 | `kickstart/airymaxos-minimal.ks` 仍只有 `bootloader --append=…`，没有对应的启动参数落码步骤，装出的系统同样会在下次重建 grub.cfg 后丢参数 | `distro` `880adfe` 为 workstation 补了 `boot/grub_args.sh` 与 `step()` 执行器，minimal 未纳入 | **0.0.4 已收口**（distro `a672e31`，agent-linux `bafccbd`）：minimal `%post` 末尾以 `grub_args.sh --append ''` 把双控制台集合与 `GRUB_DISABLE_OS_PROBER=true` 写进 `/etc/default/grub` 并重建 grub.cfg，日志逐行打印 `AIRYMAX-GRUB`；剖面差异只体现在 `--append` 取值上——最小剖面不装图形，故不追加 `rhgb quiet`，避免把唯一可用的串口日志藏进 splash。T15 改为按显示管理器是否在位分剖面判定（桌面需 `rhgb quiet`，最小不得有），新增 `test_boot_args_minimal_profile` 覆盖，`distro-lint` 860 例全绿 |
 | RT-01 | `CONFIG_RT_GROUP_SCHED=y` 且 cgroup v1 下，新建 cgroup 的 `cpu.rt_runtime_us` 默认 0（语义是「禁止」而非「不限」），组内 RT 申请一律 EPERM；0.0.3 只在 distro 层按 slice 逐个补写预算 | 本章 §16.3 第 53 条；B50 实测 `sched_rt_runtime_us=950000`、四 slice 默认 0、写入后 `chrt -r 10 true` rc=0 | 内核侧给出结论并落码：或按发行版场景重估该配置，或在开机早期把「不限」语义显式写入（不再依赖每个 slice 定时补写）；断言「新建 slice 内 `chrt -r 10 true` 直接成功」，不以告警消失为判据。285H 复现（2026-11-01）：`cpu.rt_runtime_us=950000`、四个桌面 slice 均 190000（distro 补写生效，非默认 0）、`user@1000.service` 无该属性（`CPUAccounting=no`）、交付账户下 `chrt -r 10 true` EPERM 而 root 下 rc=0——失败面已定位到「用户会话 slice 未开记账」，不是「预算没写」 |
 | REL-03 | ISO 不能自证来源：`distro/release/os-release` 无 `BUILD_ID`，也无 `/etc/airymaxos-build` 之类的来源文件，装机后无法回答「这个系统是哪个 commit、哪次 run 产出的」 | 本轮核查 `distro/release/os-release`（只有 `NAME`/`VERSION`/`ID`/`ID_LIKE`/`VERSION_ID`/`PRETTY_NAME`/`VARIANT`/`HOME_URL`/`BUG_REPORT_URL`）与 `distro/specs/airymaxos-release.spec` 的 `%check`（只断言 `ID`/`VERSION_ID`/`ID_LIKE` 与符号链接） | 组装时把 `AIRYMAX_BUILD_ID`（run id + 短 sha）写入 `/etc/airymaxos-build` 并在 `os-release` 里加 `BUILD_ID=`；`%check` 增断言二者一致；`run-smoke.sh` 增一条「本机 `BUILD_ID` 与发布清单一致」的 TAP。改动横跨组装链、spec 与测试，故本版不动，登记 0.0.4 |
 | CI-07 | `workflow_dispatch` 前不核对 github HEAD 与 atomgit HEAD 是否一致，曾在陈旧 HEAD（`1ddc0d23`）上出过一次镜像，只能取消重跑 | run `40834119367`（head `1ddc0d23`，缺 dis1 修复）被 cancel，改在 `6a515e1` 重派 | `image-build` / `release` 增加前置 gate：比对 dispatch 时的 `head_sha` 与 `git@atomgit.com:openairymax/agent-linux.git` 的 `refs/heads/dev/hubs-01`，不一致直接 fail 并打印两侧 sha；同时把「双推后确认三个远程 sha 相同」写进发布手册 |
@@ -746,8 +746,9 @@ def sec16():
 | D-32 | 分辨率策略的候选集（`LADDER`）缺四个常用档：1920x1200、1680x1050、1280x1024、1280x800；恰好是本轮验证机面板与多数 16:10 笔记本的原生档，策略因此只能落到 1920x1080 或更低 | `distro/desktop/display_mode.sh` 的 `LADDER="1920x1080 1600x900 1440x900 1366x768 1280x720 1024x768"` 全为 16:9 / 老 4:3 低档；`tools/tests/test_display.py::test_ladder_absent_keeps_preferred` 把「2880x1800 超 `CAP` 后仍保留」写成预期，掩盖了「档位缺失」与「上限裁剪」两种情形的混淆 | **0.0.3 已收口**（`5da2152`，distro `0aad525`）：`LADDER` 补齐四档，用例拆成 `test_width_over_cap_uses_ladder`、`test_16x10_ladder_honored`、`test_4x3_ladder_honored` 三条独立断言。0.0.4 只剩下半层能力缺失的语义：检测不到 DRM 输出时策略报「不适用」并退出，不参与收敛统计（见本章第 42 条） |
 | D-33 | 装机存储作用域失控：`clearpart --all --initlabel` 配 `autopart` 而无 `ignoredisk`，自动布局把每一块可用磁盘都纳入。B50（2026-10-30）因此把 ESP 与 `/boot` 放到可插拔 U 盘、根与 `/home` 放到 NVMe，拔盘即不可引导，且 `--all` 清空了全部接入磁盘 | 0.0.3 装机腿 run `40587295652` 与 B50 实机分区表 | **0.0.3 已收口**（distro `da0348a`）：产品配方改为 `%pre` 动态选盘 + `%include` 片段（anaconda `preScriptPass` 的官方通道），磁盘判据为 TYPE=disk、RM=0、TRAN≠usb、非安装介质自身所在盘、取容量最大；`ks_lint` 的 K004 增加动态布局判定，`gen_accept_ks` 与 `site_ks` 按 `%pre`/`%include` 段定位，三组单测覆盖（`test_storage_dynamic`、`test_include_is_not_section`、`test_recipe_without_disk_select`）。0.0.4 只剩取证：多盘机装机后 `lsblk` 仅出现目标盘 |
 | D-34 | 装机在 `update rtc with system clock` 处长时间停住，历史多次装机均复现；现场无法判断是死锁还是慢，只能等 | B50 多次装机串口日志（该步是 anaconda 把系统时钟写回硬件 RTC；无 RTC 电池或 RTC 走 SMBus 的平台上会退化为秒级到分钟级重试） | 装机关键路径不依赖 RTC 写入：串口打 `AIRYMAX-RTC-BEGIN/END ms=` 记录该步耗时，真机验收设上限（超 60 s 记 `AIRYMAX-RTC-SLOW` 告警而非失败）；根因需在 0.0.4 用 `strace -T` 取 anaconda 侧 `clock_settime`/`hwclock` 的调用与耗时，不得以「反正是慢」结案 |
-| CI-12 | 本地与 CI 两套 lint 口径分叉：根仓 `ci/lint.sh` 只跑 workflow 规则与仓库级检查，不含 distro 的 567 条工具单测，于是「本地全绿、CI 红」在提交前无法被发现 | run `40938020614`（`os-chk-verify`）失败步骤 `Distro submodule static gates`，根因是 `test_install_scriptlet_fast` 断言旧语义；本地只跑过 `ci/lint.sh` 与 `check-workflows.py`，漏跑 `distro/ci/run-lint.sh` | 根仓 `ci/lint.sh` 末段增加一次 `distro/ci/run-lint.sh` 调用（或提供 `ci/ci.sh distro-lint` 的等价本地入口），并在提交前检查清单里写死「两个入口都必须绿」；禁止两套口径长期并存 |
+| CI-12 | 本地与 CI 两套 lint 口径分叉：根仓 `ci/lint.sh` 只跑 workflow 规则与仓库级检查，不含 distro 的 567 条工具单测，于是「本地全绿、CI 红」在提交前无法被发现 | run `40938020614`（`os-chk-verify`）失败步骤 `Distro submodule static gates`，根因是 `test_install_scriptlet_fast` 断言旧语义；本地只跑过 `ci/lint.sh` 与 `check-workflows.py`，漏跑 `distro/ci/run-lint.sh` | **0.0.4 已收口**（agent-linux `e90fcc0`）：根仓 `ci/lint.sh` 末段经 `ci/ci.sh distro-lint` 转调子仓门禁，一条命令覆盖两侧；`os-chk-verify` 删掉单列的 distro 步骤，同一份工作在单个 job 里只跑一遍（此前后者会让每轮多花一倍时间）；`--no-distro` 留给快速迭代。本地实跑：23 个回归脚本 + 868 条 distro 单测 + shellcheck 全绿 |
 | D-35 | 品牌与主机名只在构建期可查，运行期查不到：`airy-observe` 的 `os.pretty`/`os.version`/`os.id`/`host.name`/`brand.*` 只由 `--static` 分支产出，`live` 分支的 13 个字段里没有任何身份项，于是 `airy-demo` 在品牌完全正确的机器上把它们打印成 `absent` 并判 `status=degraded` | B50（2026-10-30）实测：`airy-observe` 活体输出 13 字段、无身份项；`airy-demo` 打出 `os.pretty absent`/`host.name absent` 与 `status=degraded`；而同一台机器 `/etc/os-release` 的 `PRETTY_NAME="AirymaxOS 0.0.3 (OpenAirymax)"`、`hostname` 为 `airymaxos`。`--static` 是 buildroot 上的构建期核对通道，装机后没有人再跑它 | 活体分支补身份项，来源与静态分支同一权威（`/etc/os-release`、`/etc/hostname`、`rpm -q`），不新增推断；两种模式的字段集必须同语义，差集写在 `fields=` 之外的显式 `mode=` 语义里，禁止让「本模式没有这一项」与「这一项取不到」在 `absent` 上合流。`airy-demo` 的 `degraded` 判据随之收紧：只允许真实缺口触发，缺字段不再是判据。用例三条：活体报告含身份项、静态与活体字段名交集不变、`demo` 在品牌正确时不得因缺字段判降级。**2026-11-01 已在 285H 验证闭合**：活体 `airy-observe` 输出 26 行，含 `os.id`/`os.version`/`os.pretty`/`brand.*`/`host.name`/`kernel.owner`/`desktop.ready`/`boot.health`/`rt.budget`；`airy-demo` 末行 `AIRYMAX-DEMO status=ok`。0.0.4 只保留用例三条作回归，不再改字段集 |
+| D-36 | 装机卡住时串口上看不到进度：anaconda 把每个脚本段的 stdout 收进 `--log` 指定的文件，无头验收与现场排障却只读串口，于是最后一行永远停在安装器自己的进度条上；失败只有记号没有「走到哪一段」，归因必须先复现 | run `40587295652` 装机串口日志：`%pre`/`%post` 的 `AIRYMAX-DISK-*` 与 `AIRYMAX-EFI-*` 标记全部缺席，只能事后到 `--log` 文件里翻；打印实现三份并存（两份 kickstart 各一份、`disk-select.sh` 一份），控制台列表各写一遍 | **0.0.4 已收口**（distro `9304c0e`）：打印、阶段与失败标记收口到 `kickstart/install-lib.sh`——`airy_out` 同时写 stdout 与首个可写控制台，`airy_step <n>/<m> <name>` 打 `AIRYMAX-INSTALL-STEP`，`airy_fail <family> <reason>` 打 `AIRYMAX-<family>-FAIL reason=… step=…`，`airy_trap` 在 `set -e` 中止时补发 `reason=rc`，避免空耗到超时；工作站剖面 9 段、最小剖面 7 段；`tools/ks_embed.py` 强制同段内 install-lib 先于 disk-select 展开；`test_install_lib.py` 覆盖阶段行、失败行与退出兜底三种行格式 |
 | D-31 | 内核强制 W^X，阻断所有声明 `PT_GNU_STACK=RWE` 的闭源库：`mprotect(RW→RX)` 返回 `EACCES`，而一次性 `mmap(PROT_WRITE\|PROT_EXEC)` 反而放行；glibc 的 `dl_make_stack_executable()` 正好走前者，于是库在 `dlopen` 阶段就被拒 | B50 实测 `6.6.157-alk`：`lsm=airy_lockdown,lockdown,capability,yama,airy,selinux`；`/sys/kernel/security/airy/policy` 只有表头、`/sys/kernel/security/airy/lockdown` 为 `none`、`/sys/kernel/security/lockdown` 为 `[none]`；SELinux 切 `Permissive` 后同样失败，`ausearch` 无 `execstack`/`execmem` AVC；`python3 -c 'ctypes.CDLL("/opt/wemeet/lib/libwemeet_base.so")'` 报 `cannot enable executable stack as shared object requires: Permission denied`；腾讯会议 `libwemeet_base`/`libxcast`/`libTencentSM`/`libxnn_core` 四库为 `GNU_STACK RWE`。0.0.3 验证机上以清除这四库 `PT_GNU_STACK` 执行位证伪「缺依赖」假设（原库备份 `/root/wemeet-execstack-backup`），「腾讯会议」377x669 出窗成功 | `airy` LSM 把 W^X 落成显式策略而非硬编码：默认仍拒绝「已写映射再加执行」，但开放受控白名单——按 `/sys/kernel/security/airy/policy` 规则表，仅对自身声明 `PT_GNU_STACK=RWE` 的库放行 `execstack`，并与 `selinuxuser_execstack` 语义对齐。验收三条：①腾讯会议 3.26 与微信 4.1 装完开箱出窗；②未授权进程的 W→X `mprotect` 仍返回 `EACCES`；③不以「整体关闭 W^X」实现兼容。用户态清位只作验证机取证手段，不得进发行版安装脚本。**回归器已与闭源软件解耦**（2026-11-01，285H）：`gcc -shared -fPIC -Wl,-z,execstack` 生成 `GNU_STACK ... RWE` 的 `.so`，`ctypes.CDLL` 即报 `cannot enable executable stack as shared object requires: Permission denied`；验收②③可用该合成库直接断言，不必等腾讯会议/微信到货 |
 | KRN-01 | 专有内核能力面只有「静态可查」，没有「可被驱动」：`airy` 的 10 个 tracepoint 与 `airy_stc/stats`、`kernel.airy.cap_used` 在终端里恒为 0，普通进程无法产生可观测事件，于是参赛与验收只能展示「注册了哪些钩子」，无法展示「钩子在工作」 | B50（2026-10-30）实测：`/sys/kernel/security/lsm`=`airy_lockdown,lockdown,capability,yama,airy,selinux`；`/proc/sys/agentrt/present`=`1`；`sysctl kernel.airy.*`=`cap_epoch_bits 16`/`cap_max_agents 1024`/`cap_randtag_bits 32`/`cap_used 0`；tracefs 有 `airy_ipc_send`/`airy_ipc_recv`/`airy_sched_switch`/`airy_sched_latency`/`airy_agent_state_change`/`airy_policy_decision`/`airy_superv_enforce`/`airy_ring_buffer_write`/`airy_lockdown_change`/`airy_lockdown_reject` 共 10 个事件（id 526–535）；`echo 1 > events/airy/enable` 后跑完整 `airy-bench`，trace 文件 `entries-in-buffer/entries-written: 0/0`，`airy_stc/stats` 的 `stc_realtime`/`stc_interactive`/`stc_agent`/`stc_batch` 全 0；`/sys/kernel/security/airy/policy` 只有表头与 `none`。**不是桩实现**：调用点真实存在于 `corekern/ipc/airy_ipc_trace.c:66`、`:75` 与 `corekern/sched/stc_trace.c:43`，`include/trace/events/airy.h:101` 有对应 `TRACE_EVENT`；缺口在于这些调用只在 corekern 的 agent IPC 路径上，用户态 `pipe()`/`socketpair()` 不经过 | 给出用户态出口，使上述能力可被普通进程驱动并在终端复现：①`/dev/airy` 字符设备或 `sysfs` 注入通道，至少支持「投递一个 agent IPC 帧」与「提交一条 policy 规则」两个动作；②随镜像交付一个示例客户端（`airy-probe`），能按参数触发并回读 tracepoint 计数与 `stc_*` 统计；③`cap_used` 与 `airy_stc/stats` 在示例运行后必须从 0 变为非 0，且同一动作重复 N 次后计数单调递增。三条缺一不可；在此之前，参赛材料只允许展示静态注册面（`lsm`、`/proc/sys/agentrt/present`、dmesg 不变量行），**不得**声称终端里能观察到事件流 |
 | UP-01 | 装完的系统没有版本发现能力：只有四段 openEuler 源，`VERSION_ID` 相同而 `%{RELEASE}` 不同的两次构建无法区分，用户只能自己盯发布页才知道有没有新版 | 用户 2026-10-29 指令；`docs-linux/190-distribution/04-update-mechanism.md` §2；B50 实测装机为 `airymaxos-release-0.0.3-19` 而仓库已是 `-22`，`/usr/lib/os-release` 的 `VERSION_ID` 两次构建完全相同 | 按 04-update-mechanism §2 落地：①`airy-update` 四子命令 `check`/`status`/`apply`/`notify`，退出码固定 0/10/1/20，版本身份取 `VERSION_ID` + `%{RELEASE}` + `uname -r` 三元组，不得从 `PRETTY_NAME` 等投影反解；②`airymax-update-check.timer`（`OnCalendar=daily` + `RandomizedDelaySec=6h` + `Persistent=true`）与会话 autostart 提醒，同一 `version/build` 只提醒一次；③`channel.json` 由发布流水线产出、托管为 Release 资产，客户端只接受白名单内 `schema_version`、64 位十六进制 `sha256` 与发行域 `notes_url`，任一字段越界即整份判不可信；④`apply` 只做基底勘误，事务计划跨 SP 段即返回 20 并给出介质摘要；⑤验收含单元三条与装机两条，`check` 在无网络时必须判失败，不得把「没连上」记成「已是最新」 |
@@ -1665,6 +1666,52 @@ payload cache: miss|unavailable <原因> — falling back to full harvest
 | `ci/gates/payload-seed.sh` | **新增**。探针（各段 `repomd.xml` 摘要）→ 判 tag 是否已存在 → 未命中才收割 → 回读断言 → GC |
 | `ci/workflow-budgets.txt` | 新增一行 `payload-seed.yml 0 2`；`image-build.yml` 预算不变 |
 
+#### 18.5.1 L1-a 实施记录（两处对表的偏离）
+
+落地时的实测改变了表中两条设计，理由记录在此，避免后人对不上表：
+
+**① `pc_seed` 不把清单包硬链接进 `--downloaddir`。** 表中原写「校验后硬链接进
+`--downloaddir`」，但本地无 dnf 可验证「`--downloaddir` 里已存在同名文件时 dnf 是否
+跳过下载」；若 dnf 并不跳过，链接进去的旧包会被当成本轮下载物一并进载荷，反而把
+过期字节带进镜像。改为三段式：**求解前**核对池内字节、丢弃污染项（`pc_seed`），
+**求解后**对下载目录做漂移判定（`pc_drift`：重下字节与清单不符即
+`AIRY-PAYLOAD-DRIFT` 硬失败），**审计后**把本轮已验证的包回填池（`pc_absorb`）。
+池只提供字节、不提供事实这条边界因此成立。
+
+**② 不新增 `ci/gates/payload-pool.sh`。** 任务卡里这个文件名承担的判据就是「池内字节
+与清单是否相符」，而该判据已被 `distro/tools/tests/test_payload_cache.py` 逐条覆盖
+（两种清单格式、污染丢弃、按字节计命中、硬链接回填、漂移硬失败、自建包不参与漂移
+判定）。再写一个门禁重复的是同一批断言，不是新证据；T-PAY-1/3 需要真实 dnf 参与，
+只能由带池的 `image-build` 实跑作证，单元用例替代不了，门禁也替代不了。故按 §2.5
+「判定只认观测」保留实跑，删除重复门禁。
+
+#### 18.5.2 L2 发布端实施记录（`ci/gates/payload-publish.sh`）
+
+落地时定下的五条判据，都是为了「tag 存在」这件事本身不足以下结论：
+
+**① 清单以固定名进制品。** `push` 把调用方给的 `--manifest` 复制成
+`payload-manifest.txt` 再推送，回取端只认这个名字。否则制品内布局取决于调用方
+传进来的路径名，同一份载荷换个调用点就变成取不到清单的制品。
+
+**② 推送前先审计，不是推完再校验。** 清单 `count=` 必须等于实际 `rpm` 行数，
+每行的 sha256 必须与目录内文件一致，任何一项不成立即拒推。半份载荷一旦带上
+tag，装机现场只表现为「缺依赖」，而错在数小时之前。
+
+**③ 回读分两层。** 层摘要相等即字节相等（内容寻址的定义），文件数与逐包
+sha256 相等证明清单与层是同一次产出（防推错件、防清单与 tar 来自不同轮次）。
+不一致即删 tag 并失败：留着它会让下一轮以「命中」的形态装进坏字节。
+
+**④ tag 形状由调用方给出，门禁只校验前缀。** `build-` 与 `seed-` 的语义不同
+（可反查产出它的清单 / 只提供字节），前缀由本 gate 校验；tag 的计算留给产出方，
+两处各算一次必然漂移。
+
+**⑤ 同 tag 幂等跳过，存在性不确定即失败。** 只在明确「未找到」时继续推送；
+鉴权或网络错误不得被当成「已存在」，否则一次网络故障会被记成「已发布」。
+
+回取端沿用 `payload_cache.sh` 的边界：制品不存在是正常状态（回落上游求解），
+制品存在而单包字节不符只丢该包、不升级为失败，并在池内留下 `.payload-source`
+记录来源 tag 与计数，使「这些字节从哪来」事后可查。
+
 ### 18.6 验收判据（可测，进 `ci/gates/`）
 
 | 编号 | 用例 | 判据 |
@@ -1722,7 +1769,7 @@ tag       = seed-<arch>-<input_key 前 16 位>
 
 目标 tag 已存在 → 直接退出，零下载。openEuler SP2 的 `update` 段以周为量级变动，实际推送约每月 4–8 次。**频率本身不是成本，无门控的频率才是。**
 
-触发口径用一手事实（各段 `repomd.xml` 的 `ETag` / `Last-Modified`），不用社区公告或邮件列表——那是二手信息，有滞后且不可解析。探针按小时跑（`cron: '7 * * * *'`），单次取不到 50 KB。
+触发口径用一手事实（各段 `repomd.xml` 的 `ETag` / `Last-Modified`），不用社区公告或邮件列表——那是二手信息，有滞后且不可解析。探针单次取不到 50 KB，原本按小时跑；落地时改为每日，理由见 §18.8.6 第 4 条（流量由上游变更率决定，探针频率不构成成本，真正要省的是整池恢复次数）。
 
 **预热只负责「让层提前存在」，构建侧不得依赖它先跑完。** `image-build` 的第一步自己算 `input_key` 并尝试拉对应 `seed-` 层，拉不到才回落 `actions/cache`，再回落全量收割。这样预热挂掉最多让构建多花一次取层时间，不会退回公网，也不会把「上游刚变更」这个窗口放大成数十分钟。
 
@@ -1737,7 +1784,7 @@ tag       = seed-<arch>-<input_key 前 16 位>
 
 #### 18.8.5 保留、预算与频率结论
 
-- 每个出 ISO 的架构保留最近 4 个 `seed-`，外加被最近 3 份发布清单引用的全部 `build-`，其余按 tag 删除；GC 放在同一 gate 尾部，不新增 workflow，也不靠人删。
+- 每个出 ISO 的架构保留最近 4 个 `seed-`，其余按 tag 删除；`build-` 本轮一个不删（理由见 §18.8.7）。GC 放在同一门禁里，不新增 workflow，也不靠人删。
 - 一条 `payload-seed.yml`，2 job 上限，内联 `run` 块 0，逻辑全在 `ci/gates/payload-seed.sh`；`ci/workflow-budgets.txt` 新增 `payload-seed.yml 0 2`。
 - 存储：4 × 2.5 GB ≈ 10 GB `seed-` 加若干 `build-`。ghcr 公共包不计费，但保留策略必须自动执行。
 
@@ -1746,9 +1793,99 @@ tag       = seed-<arch>-<input_key 前 16 位>
 | 每天全量 | 75 GB | 不做，绝大多数轮次上游没变 |
 | 每 2 天全量 | 37 GB | 不做，同理 |
 | 每 7 天全量 | 10 GB | 可行，但上游刚更新的那个窗口里构建仍会变慢 |
-| **每小时探针 + 变更才全量** | **≈10–20 GB** | **采用**（`cron: '7 * * * *'`，探针本身 <50 KB） |
+| **每小时探针 + 变更才全量** | **≈10–20 GB** | **采用**（探针本身 <50 KB；落地取每日，见 §18.8.6） |
 
-### 18.9 明确不做
+#### 18.8.6 预热端实施记录（`ci/gates/payload-seed.sh warm` + `payload-seed.yml`）
+
+落地时改了一处机制，理由是一手事实而不是省事：**托管 runner 上不存在「收割」这个动作**。同一份 2.5 GB 闭包，国内验证机 6–7 MB/s，托管 runner 到国内镜像 16–22 KiB/s（§17.6、run 41075519752），每小时起一次收割只会在每一轮超时。因此预热的字节来源改成**上一轮构建留在 actions 缓存里的闭包池**：缓存与 registry 都在 GitHub 内网，搬运不跨境，把池推成层很便宜，而收割并不便宜。代价是一个明确的上界——**只有当至少构建过一次，池才存在**；上游刚变更且无人构建时，本轮预热退 0 并说明原因，seed 层比上游晚一次构建出现，期间构建走原有的回落链。需要立刻补层时用 `closure-pool` 的快机器路径人工收割（§18.3），两条路径产出同一种层。
+
+其余六条判据：
+
+1. **不下载任何 RPM**：`warm` 只读池、只打包、只推送。预热因此不可能是「事实来源」，池里的字节仍要在消费端按实时求解或上一次成功事务的闭包清单逐包校验。
+2. **来源标签**：`fetch` 在算完指纹、动任何字节之前写 `.input-key`（`tag=` / `key=` / `arch=` / `at=`）。池被哪一段输入收割的，只有那一轮知道；定时任务重算实时指纹，两者相等才推。不等就是上游在两次之间变过——把旧字节挂到新 key 上，取层的构建会整层丢弃重下，比不预热更慢。
+3. **先查层再起预热**：`probe --check` 用 `oras manifest fetch` 判 tag 是否存在，输出 `missing=0|1`，`warm` 这一跳只在 `missing=1` 时才起跑。判不了（没有 oras、鉴权失败）一律记为缺失，退化成「多一次推送判断」，而不是漏掉一次真实需要的预热。
+4. **频率由层新鲜度决定，不由流量决定**：探针一次 <50 KB，跑多密都不值钱；值钱的是「指纹变了但没有新池」时要整池恢复一次。上游每周变 1–2 段，日更探针下每月 4–8 次恢复 ≈ 10–20 GB，与 §18.8.5 选定口径同量级。小时级探针只是把新层提前最多 23 小时出现，而构建取层失败本来就能回落，收益抵不上多出来的恢复次数，故取 `cron: '17 19 * * *'`（北京时间 03:17，紧跟镜像站深夜同步）。
+5. **不阻断任何一方**：上游不可达、无标签、标签陈旧、池内无 RPM 四种情况全部退 0 并打出定名的一行原因；这条流水线没有 `needs` 下游，也不进 release 门禁。
+6. **命名与预算**：`payload-seed` 加入 `ci/check-workflows.py` 的生命周期名集合（与 `image-build` / `nightly` / `release` 并列），理由写在规则 14 的注释里——它的触发面与失败语义都与测试流水线无关，混进 `nightly` 只会让两类日志互相淹没。`ci/workflow-budgets.txt` 登记 `payload-seed.yml 0 2`，即 0 内联 `run` 块、2 个作业。
+
+回归见 `ci/tests/test_payload_seed.sh`（20 条，含 `probe --check` 的两条、标签一致/陈旧、空池、无标签，以及五条回收断言）；发布端见 `ci/tests/test_payload_publish.sh`（13 条）；两侧共用一个假 registry：`ci/tests/lib/fake_oras.sh`。
+
+#### 18.8.7 回收端实施记录（`ci/gates/payload-seed.sh gc`）
+
+回收的判据只有一个：**这一层最近有没有被推上去**。tag 里装的是输入指纹，排不出先后，因此时间由发布端自己记——`payload-publish.sh push` 每次推送写一条 `org.openairymax.payload.created` 注解。注解随 manifest 走，并且因为推送幂等（同 tag 已存在即跳过），它保存的是**首次入库时间**而不是最后一次尝试时间，正是回收端要的那一列。
+
+1. **保留口径按架构分组**：架构从 tag 第二段读出（`seed-<arch>-<key>`），每架构按创建时间倒序留前 `--keep`（默认 4）个。不另立清单——清单会与 registry 上的 tag 分叉，而 tag 是唯一事实。
+2. **没有注解的层视为最早**：早于注解上线的层、registry 不回注解的层全部排在最后，先被删除。无法证明新鲜的层不该占配额，这个默认方向与「宁可多留」相反是有意的。
+3. **`build-` 一个不删**：它记的是「哪一轮真实产出过这份载荷」，能不能删取决于发布清单，而发布清单不在本仓库产出。删除需要另一份事实来源，缺失时宁可不删——删错一层会让已发布版本的载荷失去可追溯出处。`gc` 只打印数量与原因，等发布清单落地再补这一条。
+4. **删除失败即失败（退出 1）**：这条策略存在的唯一目的是让仓库体积有界，静默失败等于没有策略。列表取不到不算失败（链路或鉴权问题，下一轮还有机会），删除被拒则必须报出来。
+5. **`--dry-run` 先行**：同 §1.1 ③ 对破坏性操作的口径，回收也先打印待删清单而不动手。
+6. **位置**：挂在 `payload-seed.yml` 的 probe job 尾部（`if: always()`），不新增 workflow。它判的只有「registry 上现在有哪些层、各自何时推上去」，与预热是否起跑无关；`always()` 让它不因 probe 的链路失败被连带跳过。
+
+回归：`ci/tests/test_payload_seed.sh` 新增五条（dry-run 不动层、每架构留 4 个、架构互不牵连、`build-` 不删、无注解层优先回收、删除被拒不静默），假 registry 相应补出 `repo tags` 与 `FAKE_DELETE_FAIL`。
+
+### 18.9 构建来源证明：实施记录（CI-17，`ci/gates/attest.sh`）
+
+第 10 项的后半段是「镜像之外的那一份记录」。镜像带着 `BUILD_ID` 装到机器上，只能自述
+「我是哪次构建」，回答不了「这个值由哪个提交、哪条流水线产出，且对应的是不是这盘 ISO」。
+本节的实现把前者变成可复算的后者：生成 in-toto Statement（SLSA v1 谓词），与 ISO 同批
+发布到同一个制品仓库，标签固定为 `attest-<tag>`。
+
+**落点偏离一处，理由是对象不同**：L-48 的任务卡写的是 `release.yml` 证明步骤，实现落在
+`image-build.yml`。`release.yml` 只产基础镜像与发行包，装机不用它；用户拿到并烧进设备的
+是 image-build 产出的 ISO，只有对它出证才能支撑「装机可反查」。`attest-<tag>` 与 ISO 同仓
+同 tag 体系，因此发布页给出的 ISO 引用旁边就有证明，`oras manifest fetch` 一步可查。
+
+五条判据：
+
+1. **buildId 取自镜像自带清单**：优先读 `image-ci-manifest.txt`（随制品下载的那一份），
+   而不是在本 gate 里重新推导。重新推导得到的是「本 gate 认为应该是的值」，一旦与镜像内
+   `/etc/airymaxos-build` 分叉，证明就会替错误的镜像背书。清单缺失时才退回
+   `distro/scripts/lib/buildid.sh` 复算，且拒绝 `unset`。
+2. **subject 现算并与发行账本对账**：ISO 的 sha256 由本 gate 重算，写进 `subject`；若同目录
+   存在 `<iso>.sha256`，两者必须逐字相同。不一致说明 ISO 在账本写出之后被改过，此时拒绝
+   出证，而不是出一份「看起来对」的证明。
+3. **不写任何时间戳**：同一输入重跑必须得到同一份字节，否则幂等判断失效，每次重跑都会把
+   证明刷成「与上次不同」而要求 `--force`。提交、run、attempt 等量都来自环境，本身已可定位。
+4. **推后回读三件事**：manifest 注解里的 `sha256`、`build-id`，以及 `oras pull` 回来的字节。
+   任一处不符即失败。证明本身若不能被验证，它只是另一段自述。
+5. **异份必须显式替换**：同 tag 已存在且注解摘要相同则跳过（幂等）；不同则默认失败，只有
+   `--force` 才允许覆盖——与 `iso-publish` 的覆盖语义一致，重建同版本必然摘要不同。
+
+装机侧反查是一条命令：把证明从 `oras pull` 下来后，用
+`ci/ci.sh attest verify --file attest-v0.0.4.json --iso AirymaxOS.iso --build-id "$(cat /etc/airymaxos-build)"`
+复核摘要与指纹；`verify` 与生成后自检、发布前复核共用同一段校验器，不允许出现两种「有效」口径。
+
+回归见 `ci/tests/test_attest.sh`（24 条：确定性、清单优先、摘要/指纹/账本三种拒绝、
+推送回读、同份跳过、异份拒绝与 `--force` 替换；`--kind rel` 的集合计数、
+`oci-image` 排除、改字节、缺件、证明自身少一项，以及流水线内指纹取值）。假 registry
+在既有 `ci/tests/lib/fake_oras.sh` 上增加了注解与 manifest 存储，`payload` 两侧回归同步复跑。
+
+#### 18.9.1 发布资产出证（`--kind rel`）
+
+`release.yml` 的 `publish-release` 作业在对账之后为整套发布资产出证，落在同一个 registry
+仓库（`ghcr.io/openairymax/airymaxos`）的 `attest-<tag>` 上，与它描述的镜像并排。要点：
+
+1. **两类发行物共用一条 subject 路径**：生成与校验都只认「名字<TAB>摘要」这一中间形态，
+   差别只剩「名字从哪来」——iso 取装配目录里那唯一一盘，rel 取 `airy_assets_want`。
+   校验器因此不必按种类分支，也就不会出现「ISO 查得严、资产查得松」。
+2. **资产集不另立清单**：直接复用 `ci/lib/release-assets.sh` 的期望集，与剪枝、对账同一份
+   事实源。三处各算一遍，第一次新增资产时就会分叉；`oci-image-<tag>.tar` 只经 ghcr 交付，
+   即使登记在摘要清单里也不进集合。
+3. **集合比对双向**：缺项与多出都判失败。只查「清单里都对得上」等于默认少一项也算一致，
+   这正是剪掉一条 subject 仍能过验的那类漏洞。
+4. **多 subject 用集合摘要**：注解 `org.openairymax.attest.subjects` 记录条数，
+   `subject-sha256` 在单件时用该件摘要、多件时用排序后的集合摘要，因此在 registry 侧
+   就能看出集合是否被悄悄改小，不必先拉 JSON。
+5. **发布作业不检出 distro 子模块**：`buildid.sh` 会一路退到第 4 级配方摘要，而那里一个
+   spec 都读不到，结果是 `src-e3b0c44298fc` 这种与产物无关的空摘要。gate 在出证前用
+   runner 自带的 `GITHUB_RUN_ID` 与检出提交补齐环境，指纹停在 `r<run>-g<sha12>`。
+6. **出证与推送分两步**：推送失败可以对着同一份产物重试，不必重跑整轮构建。
+
+**仍未覆盖**：证明只描述「本次发布的字节是什么」，不描述「这些字节是怎么产出的」（构建
+环境、依赖闭包）。后者属于 SLSA L3 级要求，需要可复现构建与受控 runner，登记到 B-04
+收口后的评估项，不在 0.0.4 范围内。
+
+### 18.10 明确不做
 
 - **不做「每版一个 delta 层」**：§18.2 已论证，收益与候选池等价、复杂度高一个数量级。
 - **不做整站镜像上游仓库**：§18.8.1，体积与责任都不划算，收益为零。
@@ -2119,7 +2256,7 @@ config、或引入树外模块，一律不开工，登记为「内核依赖」�
 | D-04 | 「分辨率已按策略设好」在只有单一模式时误报 | 收敛脚本把单模式当成功 | 单模式/无 KMS 单独记账，退出码与 `policy` 区分 | `--check` 在 `single-mode` 下的退出码与 `policy` 不同 | — | 0.0.3 已修 |
 | D-05 | 控制台黑屏风险 + `systemd-vconsole-setup` 失败 | 内核命令行残留 ARM64 `console=ttyAMA0`，`console=` 出现三次 | 由架构推导 console 集合，删除非本架构条目；T15 增加「参数该在」负向断言 | `/proc/cmdline` 无 `ttyAMA0`；`console=` ≤2；unit 为 active | — | 0.0.4 |
 | D-06 | 内核沿用不了 GRUB 选定的模式 | 只设 `gfxmode` 不设 `gfxpayload` | 已在 `01_airymax_display` 与 `/etc/default/grub` 同时写入 | 两处逐字一致，门禁静态断言 | — | 0.0.4 已落 |
-| D-07 | 改了引导参数却完全不生效 | NVRAM 走 `\EFI\airymaxos\shimx64.efi`，活动配置是 `/boot/efi/EFI/airymaxos/grub.cfg`；`grub2-mkconfig` 只写 `EFI/openEuler/grub.cfg` 副本 | 由同一份模板生成两份，品牌副本用 `install -m 700` 同步；`%post` 与构建脚本都走同一个同步函数 | 两份 `grub.cfg` 的 `set gfxmode=` / `set gfxpayload=` 行逐字相同，且与 `/etc/default/grub` 同源 | — | 0.0.4 |
+| D-07 | 改了引导参数却完全不生效 | NVRAM 走 `\EFI\airymaxos\shimx64.efi`，活动配置是 `/boot/efi/EFI/airymaxos/grub.cfg`；`grub2-mkconfig` 只写 `EFI/openEuler/grub.cfg` 副本 | 由同一份模板生成两份，品牌副本用 `install -m 700` 同步；`%post` 与构建脚本都走同一个同步函数 | 两份 `grub.cfg` 的 `set gfxmode=` / `set gfxpayload=` 行逐字相同，且与 `/etc/default/grub` 同源；T15 对两份做 `cmp` 漂移判定 | — | 0.0.4 已落（285H 2026-11-03 重启复验：cmdline 以 `console=tty0` 收尾、`/proc/consoles` 的 `C` 在 tty0、无失败单元） |
 | S-01 | 空闲锁屏策略不生效 | 只有 `local.d` 源文件，`/etc/dconf/profile/user` 无 `system-db:local`，也无编译产物 | `%post` 补 profile + `dconf update`；两路径不登记 `%files`（避免双属主） | `grep -a lock-enabled /etc/dconf/db/local` 命中 | — | 0.0.4 已落 |
 | S-02 | 锁屏后输对口令也解不开 | `ukui-screensaver-checkpass` 为 0755，PAM account 阶段读不到 shadow | `%post` 对存在的二进制 `chmod 4755` 并回读 | `stat -c %a` 为 4755；`journalctl` 无 `setuid failed` | — | 0.0.4 已落 |
 | S-03 | 空口令账户在 PAM 里走 `pam_unix` 分支 | 服务文件没有免密组直通 | 首行插 `auth sufficient pam_succeed_if.so user ingroup nopasswdlogin`，与 greeter 同口径 | 该行早于第一条 `pam_unix.so`（awk 单遍） | — | 0.0.4 已落 |
