@@ -209,7 +209,7 @@ WPS = [
          name="Xorg 判据升级与不适用策略", art="distro/ci/xserver.sh、ci/gates/desktop-capability.sh",
          debt=["HW-06"]),
     dict(id="I-27", mod="I", lane="I3", loc=1500, deps=[],
-         name="W^X 受控白名单与回归器", art="distro/security/airy-policy.rules、tests/execstack-regress",
+         name="W^X 受控白名单与回归器", art="ci/tools/execstack_regress.py、ci/gates/wx-policy.sh",
          debt=["D-31"]),
     dict(id="I-28", mod="I", lane="I3", loc=600, deps=[],
          name="RTC 长停取证与告警", art="ci/gates/rtc-probe.sh、system/bin/airy-observe rtc",
@@ -291,8 +291,9 @@ EDGE_REG = [
                                               "/sys/kernel/security/airy/policy 路径触发与回读；"
                                               "不新增 syscall 号段，不改主图纸 A 模块契约"),
     dict(consumer="I-27", bypass="airy LSM 内核侧白名单改动",
-         repl="白名单规则经既有 /sys/kernel/security/airy/policy 接口下发；"
-              "接口不受理规则提交即登记顺延，不改内核"),
+         repl="实测 /sys/kernel/security/airy/policy 为 0400 只读、只输出统计表，"
+              "airy 未注册 file_mprotect 钩子，DSL 也无可执行栈字段——接口不受理"
+              "规则提交，按任务卡登记顺延（§2.3）；本版交付例外清单与绕过禁令门禁"),
 ]
 
 # 能力裁撤登记：本版不做，逐项登记理由与承接版本。
@@ -313,6 +314,11 @@ CUT_REASON = [
     dict(item="I2C_DESIGNWARE_PCI 使能与触控板原生支持", ver="顺延", why="属内核配置变更，不在本版边界内"),
     dict(item="D-06 Battlemage（8086:e212）i915/xe 绑定", ver="顺延", why="需新增内核驱动补丁；本版只登记进能力矩阵并报「不适用」"),
     dict(item="D-08 CONFIG_SYSFB_SIMPLEFB / CONFIG_DRM_SIMPLEDRM", ver="顺延", why="属内核配置变更；本版以固件候选串与 EDID 求交收敛显示"),
+    dict(item="W^X 可执行栈白名单（I-27 的内核侧受理面）", ver="0.0.5（需内核改动）",
+         why="受理面要求三项内核能力：airy 注册 file_mprotect 钩子、DSL 增加可执行栈"
+             "例外字段、policy 接口可写并受理规则提交；三者都在 kernel/ 下，与本版"
+             "「内核侧净新增 0 行」冲突。本版交付回归器与例外清单，装机后能定量回答"
+             "「哪些库会撞墙」，并禁止交付链用清位或重编可执行栈绕过"),
     dict(item="自有基底替换（B-02 的施工部分）", ver="0.1.x", why="本版只清点耦合点成册（L-50），不做替换实现"),
     dict(item="ostree / 分层 rootfs 产物层（L3）", ver="0.1.x", why="0.0.x 无自有基底，产物层无承载面"),
     dict(item="自建常驻 runner", ver="待评估", why="仅在 L1/L2 收口后 T-PAY-7 仍不达标时重开评估"),
