@@ -10,10 +10,16 @@
 0.0.3 的主图纸账本仍按原生成器对账。
 
 纪律：账本（§5~§8）的每一行数字都由本文件算出；散文不接受手写数字，只接受 c 字典里的值。
+
+用法:
+    python3 bp_004_gen.py            重写账本并打印总量
+    python3 bp_004_gen.py --check    只校验，不落盘：已提交账本与种子产物逐字节一致，
+                                     且 §11 债表的编号集合与顺序等于种子里的债号（DOC-01）
 """
 
 import math
 import os
+import re
 import sys
 from datetime import date, timedelta
 
@@ -591,9 +597,66 @@ def build():
     return "".join(parts)
 
 
-def main():
+def debt_ids(text):
+    """取 §11 债表的编号序列。
+
+    DOC-01 的第三段判据就是「重跑生成器后 §11 的 TD 编号集合不变」：编号由种子
+    DEBT 的键决定，重生成只能改判据文字、不能增删编号。这里从产物里把编号读回来，
+    是为了判「写出去的东西」而不是判「手里的字典」——后者永远自洽。
+    """
+    body = text.split("## 11.", 1)[1].split("## 12.", 1)[0]
+    return re.findall(r"^\| ([A-Z][A-Z0-9]*-[0-9]+) \|", body, re.M)
+
+
+def drift_at(old, new):
+    """返回首个差异的 (行号, 已提交行, 重生成行)；无差异返回 None。"""
+    a, b = old.splitlines(), new.splitlines()
+    for i in range(max(len(a), len(b))):
+        x = a[i] if i < len(a) else "（已提交账本到此结束）"
+        y = b[i] if i < len(b) else "（重生成产物到此结束）"
+        if x != y:
+            return i + 1, x, y
+    return None
+
+
+def verify_ids(text):
+    """§11 编号集合与顺序必须等于种子债号；不等就直接失败，不落盘。"""
+    got, want = debt_ids(text), sorted(DEBT)
+    if got == want:
+        return
+    miss = sorted(set(want) - set(got))
+    extra = sorted(set(got) - set(want))
+    sys.exit("§11 债号与种子不一致：缺 {}，多 {}，顺序{}".format(
+        miss or "无", extra or "无", "一致" if set(got) == set(want) else "不同"))
+
+
+def check_mode(text):
+    """只校验不落盘：已提交账本必须与种子产物逐字节一致。"""
+    if not os.path.exists(OUT):
+        print(f"账本缺失：{OUT}")
+        return 1
+    with open(OUT, encoding="utf-8") as f:
+        old = f.read()
+    if old == text:
+        print(f"账本可复现：{os.path.basename(OUT)} 与种子产物逐字节一致")
+        print(f"§11 债号 {len(DEBT)} 条，集合与顺序等于种子")
+        return 0
+    line, mine, fresh = drift_at(old, text)
+    print(f"账本漂移：第 {line} 行起不一致")
+    print(f"  已提交: {mine}")
+    print(f"  重生成: {fresh}")
+    return 1
+
+
+def main(argv):
     check()
     text = build()
+    verify_ids(text)
+    if argv == ["--check"]:
+        sys.exit(check_mode(text))
+    if argv:
+        print("用法: bp_004_gen.py [--check]", file=sys.stderr)
+        sys.exit(5)
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(text)
     print(f"写出 {OUT}")
@@ -602,4 +665,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
