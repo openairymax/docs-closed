@@ -42,8 +42,10 @@ EPOL/update/main、everything 四段为零条。
 | `EPOL/update/main` | 0 | 勘误段不含 |
 | `everything` | 0 | 兜底仓库不含 |
 
-74 条中组件级包 25 个：台账 23 个 present 项，
+74 条中组件级包 26 个：台账 24 个 present 项，
 另有 `ukui`、`ukui-desktop-environment` 两个 available 元包。
+present 项里 `libpam-biometric` 与 `libqt5-ukui-style1` 不带 `ukui` 前缀，
+故 74 条 `ukui*` 之外单列，见 §5.2。
 其余为 `debuginfo`、`debugsource` 与 `-common`、`-data`、`-devel`、
 `-wayland`、`-x11`、`-systemdbus`、`-tcp-search-plugin` 等子包。
 子包版本随主包，不单独钉。
@@ -77,9 +79,18 @@ EPOL/update/main、everything 四段为零条。
 | `libpam-biometric` | `libpam-biometric-0:1.2.4-2.oe2403sp3.x86_64` |
 | `ukui-polkit` | `ukui-polkit-0:1.2.4-2.oe2403sp3.x86_64` |
 | `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp3.x86_64` |
+| `libqt5-ukui-style1` | `libqt5-ukui-style1-0:3.1.4-2.oe2403sp3.x86_64` |
 
 `ukui-biometric-auth` 只是源包名：该源码构建出的二进制是 `ukui-polkit`
 与 `libpam-biometric`，五段 repodata 中没有同名二进制，闭包只能登记后者。
+
+`libqt5-ukui-style1` 由源包 `qt5-ukui-platformtheme` 构建，是 UKUI 的 Qt
+风格库。`ukui-panel`、`ukui-kwin`、`ukui-settings-daemon` 均在运行时按名
+加载它，却都没有声明这条依赖，闭包求解因此不会带入；`repoquery
+--whatrequires` 只回 `-dev`、`qt5-styles-ukui`、`qt5-ukui-platformtheme`
+三个同样不在本版闭包的子包。2026-11-05 在 285H 用同一 chroot 做加减对照
+闭环：装回此包面板存活，移除后立即在 `CustomStyle` 构造期 SIGSEGV。
+该包不带 `ukui` 前缀，闭包校验只看命名空间会漏判，故逐字登记。
 
 `ukui-wallpapers-0:20.04.4-4.oe2403sp3` 只作媒体资产来源，按 R1-15 的
 `ukui-wallpapers.yaml` 排除在安装闭包之外，不计入组件台账。
