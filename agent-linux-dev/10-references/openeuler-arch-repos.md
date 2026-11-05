@@ -79,19 +79,30 @@ RVA23 = 2024 年档位，后者要求向量扩展等强制特性）。二者包�
 
 ---
 
-## 4. 仍未取证的部分（不得当作已成立）
+## 4. 安装介质与引导链（二次取证，2026-11-05）
 
-仓库有包 ≠ 镜像能装能启动。下列四项尚缺 E1 证据，`check_arch()` 在补齐前
-**不得对 riscv64 放行**：
+仓库有包 ≠ 镜像能装能启动。上一版把四项全部记为「未取证」；本轮已对前三项
+取到 E1 证据，第四项仍未成立。
 
-1. **安装介质**：`ISO/` 下是否存在 riscv64 的 `netinst` / `boot.iso` 及其
-   `images/pxeboot` 内核与 initrd；
-2. **anaconda 可用性**：riscv64 的安装器是否随介质发布（若上游只发 rootfs
-   镜像而不发 anaconda，装机路径必须另设，不能假装 `build-iso.sh` 能产 ISO）；
-3. **引导链**：riscv64 的 `EFI/BOOT/` 引导文件名与 QEMU `virt` 机型的固件
-   （`edk2-riscv64` 或 `opensbi`）是否可用；
-4. **UKUI 运行期**：上述闭包在 riscv64 上的实际启动结果（本版只到「可解」，
-   未到「可跑」）。
+| # | 项目 | 结论 | 证据 |
+|---|------|------|------|
+| 1 | 安装介质 | **成立** | `ISO/riscv64/rva20/` 与 `ISO/riscv64/rva23/` 均发布 `netinst-riscv64-dvd.iso` 及 `.sha256sum`；`OS/riscv64/<profile>/riscv64/images/pxeboot/` 下有 `vmlinuz`、`initrd.img`，`images/` 下有 `efiboot.img`、`install.img` |
+| 2 | anaconda | **成立** | rva23 介质包清单（`ISO/riscv64/rva23/openEuler-24.03-LTS-SP3-riscv64.rpmlist`，2351 行）含 `anaconda-36.16.5-49.oe2403sp3.riscv64`、`anaconda-core`、`anaconda-tui`、`lorax-34.1-8`、`isomd5sum-1.2.3-9`，与 x86_64 同代 |
+| 3 | 引导链 | **成立（无 shim）** | 同清单含 `grub2-efi-riscv64-2.12-52.oe2403sp3`、`grub2-efi-riscv64-cdboot`、`grub2-efi-riscv64-modules`、`edk2-ovmf-riscv64-202308-29`；**无 `shim-*` 包**，riscv64 走 grub2-efi 直启，不经 shim 中转 |
+| 4 | UKUI 运行期 | **未成立** | 只证到「闭包可解」，未证「可跑」。需要一次真实装机 + 冷启动观测 |
+
+两条对工程有直接约束的差异：
+
+- **riscv64 没有 shim**。x86_64/aarch64 的 ESP 品牌布局是 `shim → grub2 → 内核`
+  三段签名链（验收 T11 断言的正是这份完整签名套件）；riscv64 只有 grub2-efi
+  一段。ESP 布局必须按架构分叉，用 x86_64 的布局去装 riscv64 会得到一个
+  `grubx64.efi` 指向不存在 shim 的空引导项。
+- **档位进 ISO 文件名**。rva23 的介质名多一段 `RVA23`（
+  `openEuler-24.03-LTS-SP3-RVA23-netinst-riscv64-dvd.iso`），rva20 则没有。
+  媒体摘要表若按「版本 + 架构」两键索引，两个档位会撞成同一个键。
+
+`check_arch()` 仍未放行 riscv64：前三项只说明「能造出安装介质」，第四项才决定
+「装了能不能用」。放行必须在 rva23 实机上完成一次装机 + 冷启动之后。
 
 ---
 
@@ -101,7 +112,9 @@ RVA23 = 2024 年档位，后者要求向量扩展等强制特性）。二者包�
 |------|------|-----------|
 | `distro/lockfile/rpms.in.yaml` | 五段 baseurl 全部 `$basearch` 扁平；`arches: [x86_64]` | 仓库地址改为「架构 → 路径模板」映射，riscv64 模板带 `<profile>`；`arches` 随取证结论逐架构追加 |
 | `distro/scripts/lib/arch.sh` | 只归一化 `x86_64`/`aarch64`（`amd64`/`arm64` 别名） | 增加 riscv64 归一化，并把「档位」作为独立维度返回，不与架构名混为一谈 |
-| `distro/scripts/build-iso.sh` `check_arch()` | `x86_64|aarch64`，其余 `die` | 保持 `die` 直到 §4 四项取证完成；届时按「架构 + 档位」双键放行 |
+| `distro/scripts/build-iso.sh` `check_arch()` | `x86_64|aarch64`，其余 `die` | 保持 `die`：§4 前三项已成立，第四项（UKUI 运行期）未成立，放行须以 rva23 实机装机 + 冷启动为前置 |
+| ESP 品牌布局（`distro/` 引导资产） | 单一路径假定 `shim → grub2` | 按架构分叉：riscv64 为 `grub2-efi` 直启，无 shim 段 |
+| 媒体摘要表（`ci/gates/media-fetch.sh`） | 「版本 + 架构」两键 | 增加档位维度，riscv64 用 `版本 + 架构 + rva20/rva23` 三键 |
 | `distro/lockfile/ukui_check.py` / `base_check.py` | `ARCH = "x86_64"` 硬编码 | 改为入参，按架构分别复算 NVRA |
 
 **未取证前不放开 `check_arch()`**：放行一个装不上的架构，等于把「不支持」伪装成
