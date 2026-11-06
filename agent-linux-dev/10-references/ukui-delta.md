@@ -42,10 +42,11 @@ EPOL/update/main、everything 四段为零条。
 | `EPOL/update/main` | 0 | 勘误段不含 |
 | `everything` | 0 | 兜底仓库不含 |
 
-74 条中组件级包 26 个：台账 24 个 present 项，
+74 条中组件级包 27 个：台账 25 个 present 项，
 另有 `ukui`、`ukui-desktop-environment` 两个 available 元包。
-present 项里 `libpam-biometric` 与 `libqt5-ukui-style1` 不带 `ukui` 前缀，
-故 74 条 `ukui*` 之外单列，见 §5.2。
+present 项里 `libpam-biometric`、`libqt5-ukui-style1` 与
+`qt5-ukui-platformtheme` 不带 `ukui` 前缀，故 74 条 `ukui*` 之外单列，
+见 §5.2。
 其余为 `debuginfo`、`debugsource` 与 `-common`、`-data`、`-devel`、
 `-wayland`、`-x11`、`-systemdbus`、`-tcp-search-plugin` 等子包。
 子包版本随主包，不单独钉。
@@ -80,6 +81,7 @@ present 项里 `libpam-biometric` 与 `libqt5-ukui-style1` 不带 `ukui` 前缀�
 | `ukui-polkit` | `ukui-polkit-0:1.2.4-2.oe2403sp3.x86_64` |
 | `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp3.x86_64` |
 | `libqt5-ukui-style1` | `libqt5-ukui-style1-0:3.1.4-2.oe2403sp3.x86_64` |
+| `qt5-ukui-platformtheme` | `qt5-ukui-platformtheme-0:3.1.4-2.oe2403sp3.x86_64` |
 
 `ukui-biometric-auth` 只是源包名：该源码构建出的二进制是 `ukui-polkit`
 与 `libpam-biometric`，五段 repodata 中没有同名二进制，闭包只能登记后者。
@@ -91,6 +93,19 @@ present 项里 `libpam-biometric` 与 `libqt5-ukui-style1` 不带 `ukui` 前缀�
 三个同样不在本版闭包的子包。2026-11-05 在 285H 用同一 chroot 做加减对照
 闭环：装回此包面板存活，移除后立即在 `CustomStyle` 构造期 SIGSEGV。
 该包不带 `ukui` 前缀，闭包校验只看命名空间会漏判，故逐字登记。
+
+同一源包 `qt5-ukui-platformtheme` 还打出同名二进制
+`qt5-ukui-platformtheme`，装入 `/usr/lib64/qt5/plugins/platformthemes/
+libqt5-ukui-platformtheme.so`，是 `QT_QPA_PLATFORMTHEME=ukui` 的落点。
+`ukui-session` 在启动会话时把该变量写死，却同样没有声明这条依赖。缺席时
+Qt 静默回退 `hicolor`：`QIcon::themeName()` 为 `hicolor`、
+`QIcon::fromTheme()` 对 `computer`/`user-trash`/`user-home`/
+`text-x-generic` 全返回空，桌面只剩文字标签，`peony` 每秒刷
+`QPainter::begin: Paint device returned engine == 0, type: 2`，控制中心
+侧栏成黑块。2026-11-06 在 285H 以装包前后对照闭环：装上后主题名变为
+`ukui`，四个标准图标全部可解析，重启 `peony-qt-desktop` 与控制中心后
+图标恢复。该包硬依赖 `qt5-styles-ukui`（补齐 `plugins/styles`）与
+`libqt5-ukui-style1`，二者由求解带入，不另登记。
 
 `ukui-wallpapers-0:20.04.4-4.oe2403sp3` 只作媒体资产来源，按 R1-15 的
 `ukui-wallpapers.yaml` 排除在安装闭包之外，不计入组件台账。
