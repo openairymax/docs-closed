@@ -123363,9 +123363,9 @@ ALK 体积与 `docs-linux` 遵循（用户逐字，2026-11-01）：**所有的�
 | M4-7 | 模型环境 | K-20, K-21, K-22, K-23 | D32 | 2027-06-25 | 完全断网 `airy-model selftest` 通过；降级路径显式 |
 | M4-8 | RT 适配 | X-01~X-05（5 包） | D27 | 2027-06-17 | `cpu.rt_runtime_us` 非 0；`airy-probe` 十点可读；验收不劣于基线 ×1.2 |
 | M4-9 | 烧录与回归 | T-04, V-11 | D52 | 2027-07-27 | 三段烧录回归均出 `AIRY-FLASH-PASS`；判负集分层可复算 |
-| M4-10 | 收口 | L-45, L-50, M-35, V-10, V-12, V-13, V-14, V-15, V-16 | D83 | 2027-09-13 | 发布自证齐备；升级通道可回滚；实机矩阵完成（QG-12）；基底经 `base-eol.sh` 判定为大 SP 且 Planned EOL 晚于收口日，装机 `dnf makecache` 四段成功；模块签名齐全且 tainted 8192 位为 0；完整性盘点 `systemctl --failed` 为 0、包闭包对账差 0、docs-linux 功能面缺口登记成册；**ALK 门禁绿**：`git diff --stat v0.0.3..v0.0.4 -- kernel/` 为空、无新增 `CONFIG_*`、`ci/gates/alk-size.sh` 同配置镜像体积差为 0、八模块锚点文件全部存在 |
+| M4-10 | 收口 | L-45, L-50, M-35, V-10, V-12, V-13, V-14, V-15, V-16 | D83 | 2027-09-13 | 发布自证齐备；升级通道可回滚；实机矩阵完成（QG-12）；基底经 `base-eol.sh` 判定为大 SP 且 Planned EOL 晚于收口日，装机 `dnf makecache` 四段成功；模块签名齐全且 tainted 8192 位为 0；完整性盘点 `systemctl --failed` 为 0、包闭包对账差 0、docs-linux 功能面缺口登记成册；**ALK 门禁绿**：`git diff --stat v0.0.3..v0.0.4 -- kernel/` 只含 `intel-lpss-pci.c` 的 ARL-H ID 表回移（HW-02，上游 `6112597f5ba8`）、无新增 `CONFIG_*`、`ci/gates/alk-size.sh` 同配置镜像体积差为 0、八模块锚点文件全部存在 |
 
-### 11.5 进度状态（截至 2026-11-01）
+### 11.5 进度状态（截至 2026-11-07）
 
 复核记录（2026-11-06，285H 真机取证）：本轮为 0.0.4 发行流水线盯守与 285H 实机
 复跑取证，**无 WP 状态变更**（未发生任何 WP 验收级证据）。取证结论已沉淀两处：
@@ -123376,6 +123376,17 @@ B50 首启无网同因），修复随 `distro 467d378`/`a34850f` 进入 v0.0.4 �
 （W-N5）。判据侧唯一 WP 级联动是 T21 已在 `distro 467d378` 改为正证据判据并在
 真机复跑通过（`ok 21 - T21 firmware api match`，固件 `gl-c0-fm-c0-83.ucode`
 载入、版本 83 与 `IWL_BZ_UCODE_API_MAX` 对齐），属冒烟判据修正而非 WP 验收。
+
+复核记录（2026-11-07，285H 真机取证）：本轮仍**无 WP 状态变更**，全部是现场缺陷
+的根因闭环，证据已进 0.0.4 台账 §19.4/§19.6：① HW-02 触控板——`I2C_DESIGNWARE_PCI`
+本来就在，缺的是 `intel-lpss-pci.c` 里 ARL-H 的 12 个 PCI ID，回移上游 `6112597f5ba8`
+后在 285H 以树外模块运行期验证：5 条 DesignWare 总线、`i2c-ELAN06FA:00`、
+`hid-multitouch` 绑定 `0018:04F3:3293`、X 侧 id=17 全部出现；② D-08 网络托盘图标——
+`kylin-nm` 从未进闭包（面板 statusnotifier 白名单按名等待、控制中心网络模块由它提供），
+装包前后 SNI 注册项 4 → 8；③ N-04 关于页版本名称改口径为 `OpenAirymax <VERSION_ID>`，
+N-05 桌面字段属二进制硬编码且实装 3.1.x，顺延 0.0.5；④ v0.0.4 发布失败定位：
+`publish-release` 作业的 checkout 未拉子模块，`channel-fetch` 取 `system/services/airyupdate`
+为空而退 5，修复 `a3d3d74` 已在 main——重指标签即可重发，不是产物缺陷。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
