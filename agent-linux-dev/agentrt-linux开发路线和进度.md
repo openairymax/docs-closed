@@ -123392,7 +123392,14 @@ N-05 桌面字段属二进制硬编码且实装 3.1.x，顺延 0.0.5；④ v0.0.
 文件判）与 T29（触控板按 ACPI 能力判，无硬件即不适用通过）。四组夹具三态复核
 后，在 285H 真实根上同判据得到 `net front: kylin-nm + 3 ukcc modules` / `t28=0`
 与 `touchpad: input device present` / `t29=0`；`build-provenance` 的 `chk_smoke`
-校验计划数与最大探针号一致。跨架构口径见 0.0.5 方案 §5。
+校验计划数与最大探针号一致。⑥ 托盘图标与 D-08 同族但不同层：面板图标来自
+`org.kde.StatusNotifierWatcher.RegisteredStatusNotifierItems`，每个条目由一个
+托盘进程注册。285H 活动会话上装包后逐条反解 `Id`，8 项中网络/电量/音量分别是
+`kylin-nm`、`ukui-power-manager-tray`、`ukui-volume-control-applet-qt`；三者的
+autostart 落点为 `kylin-nm.desktop`、`ukui-power-manager-tray.desktop`、
+`ukui-volume-control-applet.desktop`（音量那件去掉了 `-qt` 后缀，与二进制不同名）。
+包在而条目缺时进程不自启、图标消失且无任何日志，故新增 T30 按「可执行 + autostart」
+三对逐对判定，夹具覆盖齐备/缺条目/缺可执行三态。跨架构口径见 0.0.5 方案 §5。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
