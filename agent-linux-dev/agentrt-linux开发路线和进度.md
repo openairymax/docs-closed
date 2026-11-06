@@ -123387,6 +123387,12 @@ B50 首启无网同因），修复随 `distro 467d378`/`a34850f` 进入 v0.0.4 �
 N-05 桌面字段属二进制硬编码且实装 3.1.x，顺延 0.0.5；④ v0.0.4 发布失败定位：
 `publish-release` 作业的 checkout 未拉子模块，`channel-fetch` 取 `system/services/airyupdate`
 为空而退 5，修复 `a3d3d74` 已在 main——重指标签即可重发，不是产物缺陷。
+⑤ 判据补两层：D-08 与 HW-02 的失效形态是「功能缺席而日志无错」，原有判据
+（连通性、failed 单元、固件签名）全绿而问题仍在，故新增 T28（网络前端闭包按
+文件判）与 T29（触控板按 ACPI 能力判，无硬件即不适用通过）。四组夹具三态复核
+后，在 285H 真实根上同判据得到 `net front: kylin-nm + 3 ukcc modules` / `t28=0`
+与 `touchpad: input device present` / `t29=0`；`build-provenance` 的 `chk_smoke`
+校验计划数与最大探针号一致。跨架构口径见 0.0.5 方案 §5。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
