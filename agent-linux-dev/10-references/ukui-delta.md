@@ -46,7 +46,8 @@ EPOL/update/main、everything 四段为零条。
 另有 `ukui`、`ukui-desktop-environment` 两个 available 元包。
 present 项里 `libpam-biometric`、`libqt5-ukui-style1` 与
 `qt5-ukui-platformtheme` 不带 `ukui` 前缀，故 74 条 `ukui*` 之外单列，
-见 §5.2。
+见 §5.2。网络前端 `kylin-nm` 同样不带 `ukui` 前缀，且不在 EPOL/main
+（见下），它使 present 项增至 26、组件级包增至 28。
 其余为 `debuginfo`、`debugsource` 与 `-common`、`-data`、`-devel`、
 `-wayland`、`-x11`、`-systemdbus`、`-tcp-search-plugin` 等子包。
 子包版本随主包，不单独钉。
@@ -82,6 +83,7 @@ present 项里 `libpam-biometric`、`libqt5-ukui-style1` 与
 | `ukui-interface` | `ukui-interface-0:1.0.3-3.oe2403sp3.x86_64` |
 | `libqt5-ukui-style1` | `libqt5-ukui-style1-0:3.1.4-2.oe2403sp3.x86_64` |
 | `qt5-ukui-platformtheme` | `qt5-ukui-platformtheme-0:3.1.4-2.oe2403sp3.x86_64` |
+| `kylin-nm` | `kylin-nm-0:3.1.1-5.oe2403sp3.x86_64` |
 
 `ukui-biometric-auth` 只是源包名：该源码构建出的二进制是 `ukui-polkit`
 与 `libpam-biometric`，五段 repodata 中没有同名二进制，闭包只能登记后者。
