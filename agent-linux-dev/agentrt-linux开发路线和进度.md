@@ -123407,6 +123407,25 @@ out-of-tree `ilpss` 模块（`ilpss: loading out-of-tree module taints kernel`�
 `c93c57a28bc2` 已内建 `0x7750/0x7751/0x7778 → bxt_i2c_info`，故新 ISO 的首启绑定由
 T29 判定，不以外挂模块作为交付形态。跨架构口径见 0.0.5 方案 §5。
 
+复核记录（2026-11-07 深夜，发布链闭环）：本轮仍**无 WP 状态变更**，只动发布链
+时序与出处，判据一条未减。① 子模块缺席只是第一层，修掉它之后仍会撞结构环：
+`publish-release` 建页前要 `channel.json`，该文件只在 `image-build` 的
+`release_tag` 非空路径产出，而该路径又要从发布页取内核包与发行校验和——首版
+没有发布页，三条判据互相等待。② 解法是把「内核包从哪来」与「发布页何时建」
+解耦：`release-rpms --run-id` 改从发布 run 的 `release-artifacts-<ver>` 制品取件
+（`e4e51ed`，校验和按清单首项反查落盘目录后整批复验），`image-build` 增
+`rpms_run` 输入（`72eab46`），`release.yml` 增 `publish_run` 只重放制品
+（`4cf0292`）。③ 发布作业里残留的内联 `case` 收进版本门禁并新增 `pre_rel`
+输出（`6becb8a`），YAML 至此恢复为纯派遣形态，`ci/check-workflows.py` 的
+「内联 run 块合计 0」转绿；首版引导顺序写入 `.github/workflows/README.md` §5.6
+（`833b104`）。④ 标签重指：`distro`/`kernel`/`system` 三个 gitlink 中 `kernel`
+与 `system` 与旧标签完全一致，`distro` 只差一条冒烟夹具，故载荷字节不变；但
+`workflow_dispatch` 用的是被指 ref 上的工作流定义，旧标签树没有 `rpms_run`，
+两段引导无法在该 ref 上执行——`v0.0.4` 重指到 `833b104`（`045d794`），新的
+release run 为 `42308007253`，全部阶段从此同属一个提交，`BUILD_ID` 与源码
+tarball 同源。⑤ 285H 自 22:48Z 起持续 ping 不通（22:53Z、23:00Z 两次复核），
+触控板、托盘、关于页、U 盘引导盘的实机判据仍全部待跑。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
