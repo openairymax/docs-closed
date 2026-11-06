@@ -123399,7 +123399,13 @@ N-05 桌面字段属二进制硬编码且实装 3.1.x，顺延 0.0.5；④ v0.0.
 autostart 落点为 `kylin-nm.desktop`、`ukui-power-manager-tray.desktop`、
 `ukui-volume-control-applet.desktop`（音量那件去掉了 `-qt` 后缀，与二进制不同名）。
 包在而条目缺时进程不自启、图标消失且无任何日志，故新增 T30 按「可执行 + autostart」
-三对逐对判定，夹具覆盖齐备/缺条目/缺可执行三态。跨架构口径见 0.0.5 方案 §5。
+三对逐对判定，夹具覆盖齐备/缺条目/缺可执行三态。⑦ 触控板不绑定的根因由日志钉死：
+旧镜像的 `6.6.161-alk` 里 `intel-lpss-pci` 没有 ARL-H 的 PCI ID，boot 段只有
+`0000:00:15.0 [8086:7778]` 的枚举、没有任何 `enabling device`；现场外挂了手工构建的
+out-of-tree `ilpss` 模块（`ilpss: loading out-of-tree module taints kernel`）之后，
+`intel-lpss-arlh` 才在 20707s 绑定并枚举出 `ELAN06FA:00 04F3:3293 Touchpad`。内核树
+`c93c57a28bc2` 已内建 `0x7750/0x7751/0x7778 → bxt_i2c_info`，故新 ISO 的首启绑定由
+T29 判定，不以外挂模块作为交付形态。跨架构口径见 0.0.5 方案 §5。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
