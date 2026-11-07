@@ -311,7 +311,14 @@ CUT_REASON = [
          why="同上；agent IPC 帧注入在既有通道无承载面，X-02 只以既有 /proc 与 "
              "policy 通道触发与回读，注入动作不受理即如实降级并留证"),
     dict(item="285H GPU（8086:7d51）原生 KMS 驱动", ver="顺延", why="属上一条；本版只做交付面收敛与通用显示策略"),
-    dict(item="I2C_DESIGNWARE_PCI 使能与触控板原生支持", ver="顺延", why="属内核配置变更，不在本版边界内"),
+    dict(item="触控板（`intel-lpss` 补 ARL-H PCI ID）", ver="0.0.4（本版追加）",
+         why="原列「顺延」。实机复验后改为本版交付：根因是 `intel_lpss_pci_ids[]` 缺 "
+             "`8086:7750/7751/7778/777a/777b`，与内核配置无关——`MFD_INTEL_LPSS_PCI=y` 与 "
+             "`I2C_DESIGNWARE_PLATFORM=m` 基线已给，而 `i2_designware_pci_ids[]` 里没有任何 "
+             "`0x77xx` 条目，打开 `CONFIG_I2C_DESIGNWARE_PCI` 认领不到这些功能。补丁 "
+             "`c93c57a28bc2` 只加 ID 表。判据可数：`lspci -k` 五个 LPSS 功能出现驱动绑定、"
+             "`/sys/bus/i2c/devices` 出现 designware 适配器、`/proc/bus/input/devices` "
+             "出现触控板条目，不以「能用」作结论"),
     dict(item="D-06 Battlemage（8086:e212）i915/xe 绑定", ver="顺延", why="需新增内核驱动补丁；本版只登记进能力矩阵并报「不适用」"),
     dict(item="D-08 CONFIG_SYSFB_SIMPLEFB / CONFIG_DRM_SIMPLEDRM", ver="顺延", why="属内核配置变更；本版以固件候选串与 EDID 求交收敛显示"),
     dict(item="W^X 可执行栈白名单（I-27 的内核侧受理面）", ver="0.0.5（需内核改动）",

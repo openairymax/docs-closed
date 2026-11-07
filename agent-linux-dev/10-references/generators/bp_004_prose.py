@@ -51,8 +51,9 @@ def header(c):
 > 方案锚点（§4.1.1），锚点缺失或锚点文件不存在即该模块不得开工（J-34、ALK-01）。
 >
 > openEuler 基底核实结论（2026-11-01 取证，回答「目前用的到底是最新的 SP4 吗、LTS 官方具体到哪个版本」）：
-> ① 当前基底**不是 SP4**，实测 `distro/lockfile/rpms.in.yaml` 五段 baseurl 与 `airymax-os.repo`
-> 全部指向 `openEuler-24.03-LTS-SP2`；② 上游最新的 24.03 LTS SP 确为 **SP4**（2026-06-30 GA，
+> ① 当前基底**不是 SP4**：2026-11-01 取证时五段 baseurl 指向 `openEuler-24.03-LTS-SP2`，
+> 2026-11-07 复核已由 distro `0015a110aa32` 切到 `openEuler-24.03-LTS-SP3`（五段 baseurl 与
+> `airymax-os.repo` 同步）；② 上游最新的 24.03 LTS SP 确为 **SP4**（2026-06-30 GA，
 > 内核 6.6 线；SP5 计划 2026-12 未发布，26.03 LTS 未 GA），但官方生命周期页明确
 > 「小 SP（6 月 Release）9 个月，大 SP（12 月 Release）24 个月，**大规模使用建议选择大 SP**」，
 > 据此 **SP4 属小 SP、Planned EOL 2027/03**，反而早于大 SP 的 SP3（EOL 2027/12）；
@@ -82,7 +83,10 @@ def header(c):
 > 每一条被旁路的依赖边在 §2.2 逐条登记替换物，每一处能力裁撤在 §2.3 逐项登记理由。
 >
 > **本版的五条边界铁律**（全部来自 0.0.3 的实测返工，见 §12）：
-> ① 不改内核基线——凡需新增/回移内核补丁或改内核配置者一律不开工，登记顺延；
+> ① 不改内核基线——凡需新增/回移内核补丁或改内核配置者一律不开工，登记顺延
+> （唯一例外：触控板所需的 `intel-lpss-pci` ARL-H ID 表补丁 `c93c57a28bc2`，
+> 实机复验确认「五个 LPSS 功能无驱动绑定、`i2c_hid_acpi` 无适配器可挂」后，
+> 用户裁定本版交付，见 §2.3 与 §4.1(d)。不涉及任何内核配置项）；
 > ② 账本与文档分离——数字由脚本算，散文由人写，两者不互相覆盖；
 > ③ 判定只认观测——「已完成」「不适用」「未验证」三个状态必须有三个不同退出码；
 > ④ 每步单独 commit 且单独绿跑——不允许批量迁移后一次性验收；
@@ -202,7 +206,7 @@ def sec1(c):
 | ⑤ | 烧录系统系统性开发与整理 | FL-04 三条判据同时成立：①载荷以 digest 而非 `latest` 引用，装机后 `/etc/airymaxos-build` 记录该 digest；②断网可回落整包 ISO；③同 digest 两次装机字节相同。另：`airy-flash` 三段均带 `AIRY-FLASH-PASS/FAIL` 末行且 `--json` 覆盖全部三段 | T-01~T-04 |
 | ⑥ | 285H 类笔记本全硬件驱动（网络最高优先级） | 能力矩阵五类（显示 / 无线 / 音频 / 输入 / 背光）逐项给出 PASS、`不适用（顺延）` 或 FAIL；**不允许静默跳过**；「不适用」必须写明需要哪条内核能力与顺延到哪一版；**网络专项**：烧录后首启 60s 内 Wi-Fi 或有线至少一路 DHCP 成功且可达网关，`net-online.sh` 作为装机验收第一道门禁，网络 FAIL 即整机 FAIL，不得降级为警告 | I-20~I-29、V-10 |
 | ⑦ | AirymaxRT 全方位适配 | ①`cpu.rt_runtime_us` 默认非 0 且可被 `airy-rt-cap` 读出；②`airy-probe` 十个 tracepoint 全部可读；③实时性验收套件在目标机产出基线，且本轮结果不劣于基线 ×1.2 | X-01~X-05 |
-| ⑧ | openEuler 基底按「大 SP + EOL 覆盖交付窗口」规则追新（回答「是否已用最新 SP4」） | ①实测当前基底为 `openEuler-24.03-LTS-SP2`，**不是 SP4**；②`10-references/openeuler-sp-eol.md` 逐候选登记 GA 日期、大/小 SP 属性与 Planned EOL，并溯源到官方生命周期页；③`ci/gates/base-eol.sh` 断言所选基底为大 SP 且 Planned EOL 晚于本版收口日 2027-09-17——**小 SP 一律排除**（SP4 虽是最新 GA，但其 Planned EOL 为 2027/03，早于收口日，交付即失保，故不选）；④`%oe_base`、repo 五段 baseurl、lockfile、comps 四处同步切换且可由种子复算，无 `$releasever`；⑤装机 `dnf repolist` 四段可解析、`dnf -q makecache` rc=0、每段仍三镜像；⑥**同一内核 NEVRA 在切换前后两次构建 sha256 相同**（候选须仍在 6.6 线，内核基线不动）；⑦切换前后包级差异成册，凡 ABI 破坏项必须登记，不得静默吞掉 | M-35、V-13 |
+| ⑧ | openEuler 基底按「大 SP + EOL 覆盖交付窗口」规则追新（回答「是否已用最新 SP4」） | ①基底现为 `openEuler-24.03-LTS-SP3`（大 SP，Planned EOL 2027/12），由 distro `0015a110aa32`（`distro: switch the base release to openEuler 24.03 LTS SP3`）一次切齐；**不是 SP4**——SP4 是最新 GA 但属小 SP、Planned EOL 2027/03，早于收口日，按规则排除（2026-11-07 复核：`lockfile/rpms.in.yaml` 五段 baseurl 均为 `openEuler-24.03-LTS-SP3`）；②`10-references/openeuler-sp-eol.md` 逐候选登记 GA 日期、大/小 SP 属性与 Planned EOL，并溯源到官方生命周期页；③`ci/gates/base-eol.sh` 断言所选基底为大 SP 且 Planned EOL 晚于本版收口日 2027-09-17——**小 SP 一律排除**；④`%oe_base`、repo 五段 baseurl、lockfile、comps 四处同步切换且可由种子复算，无 `$releasever`；⑤装机 `dnf repolist` 四段可解析、`dnf -q makecache` rc=0、每段仍三镜像；⑥**同一内核 NEVRA 在切换前后两次构建 sha256 相同**（候选须仍在 6.6 线，内核基线不动）；⑦切换前后包级差异成册，凡 ABI 破坏项必须登记，不得静默吞掉 | M-35、V-13 |
 | ⑨ | 强化对 UKUI 的使用（含内置壁纸收敛） | ①**日常使用路径**逐步可观测：登录 → 中文输入可上屏 → 设置面板可打开且五类入口（显示/网络/电源/声音/用户）不空白 → 磁盘/网络/模型三项状态在桌面侧可见，任一步不可达即 BLOCKED；②`dconf` 默认值以 key 级清单钉住、可由种子复算，且每项都能对应到上述路径上的一个可观测差异（只改内部默认值、用户不可见者不计入，J-32）；③**内置壁纸集合恰为三张**：`clouds_moonlight_photo_from_lidecheng.jpg`、`hangzhouxihu_photo_from_lidecheng.jpg`、`qilian_photo_from_zhenyi.jpg`，上游其余内置壁纸在镜像内不存在（`wallpaper-set.sh` 断言集合与 digest 双吻合，三件 digest 以 §16.4.10 台账为准），默认背景指向三张之一 | R1-14、R1-15、V-12 |
 | ⑩ | 强化整个 AirymaxOS 的完整程度 | ①装机后 `systemctl --failed` 为 0 行、`journalctl -p err -b` 为 0 行；②镜像内包闭包与 comps/lockfile 对账差为 0 且无孤儿包；③`docs-linux` 功能面逐条登记「已实现 / 0.0.5 / 顺延（需内核能力）」，无「未归属」条目，登记册即 0.0.5 的选题输入（J-31） | V-15、V-10、V-12 |
 | — | TUI 全面建设 | **不在本版**，显式裁撤到 0.0.5（§2.3）；本版只要求服务面（磁盘、模型、RT）具备可被 TUI 消费的稳定输出契约 | — |
@@ -881,8 +885,8 @@ def sec16():
 
 | 编号 | 债 | 依据 | 完成判据 |
 |---|---|---|---|
-| HW-01 | 内核基线不含 Arrow Lake-H 的 GPU 支持，桌面只能落 `simpledrm` | `modinfo -F alias i915 \| grep -c 8086:7d51` 得 0；无 `xe` 模块；`00:02.0` 无驱动；`card0` 驱动为 `simple-framebuffer`。派生出去背光与软渲染两项 | `modinfo -F alias <gpu-driver>` 命中 `8086:7d51`；`/sys/class/drm` 出现具名连接器；GLX 不再是 `swrast` |
-| HW-02 | `CONFIG_I2C_DESIGNWARE_PCI` 未编，五个 PCI I2C 控制器全部无驱动，触控板在内核里不存在 | `# CONFIG_I2C_DESIGNWARE_PCI is not set`；`/lib/modules/.../i2c/busses/` 无该模块；`/sys/bus/i2c/devices` 只有 `i2c-0`；`/proc/bus/input/devices` 无触控板 | 配置打开后断言 `modinfo -F alias i2c-designware-pci \| grep -q 8086:7778`；装后出现触控板条目 |
+| HW-01 | 内核基线不含 Arrow Lake-H 的 GPU 支持，桌面只能落 `simpledrm` | `modinfo -F alias i915 \| grep -c 8086:7d51` 得 0；无 `xe` 模块；`00:02.0` 无驱动；`card0` 驱动为 `simple-framebuffer`。派生出去背光与软渲染两项 | `modinfo -F alias <gpu-driver>` 命中 `8086:7d51`；`/sys/class/drm` 出现具名连接器；GLX 不再是 `swrast`。0.0.4 实测过「只补 PCI ID」这条捷径：热绑后整机失联，故本版不做 i915 改动，理由与边界见 `0.0.5-极境OS任务方案.md` §5.6 |
+| HW-02 | 触控板在内核里根本不存在 | 不是配置缺项：五个 LPSS 功能（`8086:7750/7751/7778/777a/777b`）`lspci -k` 全部无驱动绑定，根因是 `intel-lpss-pci` 的 ID 表缺 ARL-H 条目；`i2_designware_pci_ids[]` 不含任何 `0x77xx`，故 `CONFIG_I2C_DESIGNWARE_PCI` 开关与否都认领不到这些功能 | `lspci -k` 五个功能出现驱动；`/sys/bus/i2c/devices` 出现 designware 适配器；`/proc/bus/input/devices` 出现触控板条目 |
 | HW-05 | 内核命令行残留 ARM64 的 `console=ttyAMA0,115200`，`console=` 出现三次 | `/proc/cmdline`、`/etc/default/grub` 同源；`systemd-vconsole-setup` 手工复现为 `Failed to lock /dev/console: Input/output error`，并把 `airymax-desktop-ready.service` 连带判负 | `/proc/cmdline` 无 `ttyAMA0`，`console=` ≤2 处；`systemd-vconsole-setup` 为 active；T15 增加「参数该在」的负向断言 |
 
 #### 16.4.2 交付面缺陷（不换内核也要修）
@@ -892,7 +896,7 @@ def sec16():
 | HW-03 | 背光与键盘背光都没有用户态入口 | `/sys/class/backlight` 为空（KMS 未起）；`platform::kbd_backlight` 存在且可写（max=2、写入 2 读回 2），但无 `brightnessctl`、无 Fn 映射、无控制中心项 | GPU 就位后 `intel_backlight/brightness` 可写；Fn 按键后 `platform::kbd_backlight/brightness` 改变 |
 | HW-04 | 锁屏后无法解锁：`ukui-screensaver-checkpass` 权限不足 | `pam_unix(ukui-screensaver-qt:account): setuid failed: Operation not permitted`；该二进制为 `0755 root:root`。0.0.3 的 T12 只覆盖 `sudo -n` | 锁屏后正确口令可解锁；`journalctl` 无该行；冒烟新增「锁屏→解锁」用例 |
 | HW-06 | Xorg 的显示驱动判据偏弱：只看 sysfs 驱动名，不看 KMS 模式枚举与 EDID，且「实际用了哪个 driver」没进冒烟 | **0.0.3 收尾已更正原判断**（`0.0.3-极境OS任务方案.md` §16 §11.4）：`distro/desktop/xserver.sh`（提交 `c786fca`、`3ce4bf0`）按 `/sys/class/drm/card*/device/driver` 判定，仅 `simple-framebuffer` 落 `xserver-fbdev.conf`，其余 `exec Xorg` 交给自动选择；285H 上出现的 `-config …xserver-fbdev.conf` 是该判定的结果，不是无条件强制 | 判据升级为「KMS 有可枚举模式且 EDID 非空」才走 modesetting，否则落 fbdev 并显式告警；冒烟新增「实际 driver 与 `/run/airymaxos/xserver.log` 的 `AIRYMAX-XSERVER` 标记一致」断言 |
-| HW-07 | 打包缺 USB 基础工具：`usbutils`、`wireplumber` 未装，`lsof`、亮度工具缺失 | `rpm -q usbutils wireplumber` 均 not installed；`command -v lsusb wpctl` 均缺失 | 这几个命令在交付镜像内命中；`pipewire` 有会话管理器接管 |
+| HW-07 | 打包缺 USB 基础工具：`usbutils`、`wireplumber` 未装，`lsof`、亮度工具缺失 | `rpm -q usbutils wireplumber` 均 not installed；`command -v lsusb wpctl` 均缺失 | `lsusb`/`lsof`/`pactl`/`airy-bright` 在交付镜像内命中。`wireplumber` 不再作为目标：音频守护进程是 PulseAudio 17.0，没有会话管理器的 `wpctl` 装了也只会报「找不到 socket」，为空壳；背光入口用自有 `airy-bright` |
 
 **双机同型证据（2026-11-01，285H）**：HW-04、HW-05、HW-07 在第二验证机上逐项复现，
 命令与输出见 `0.0.3-极境OS任务方案.md` §16 §11.3；HW-01/HW-02/HW-03 在 285H 同样成立
@@ -1061,6 +1065,46 @@ not permitted`；`ukui-screensaver-checkpass` 为 `0755 root:root`；空闲锁�
 
 承接 WP：**R1-15**（内置壁纸收敛为三张品牌默认集，泳道 R1X），门禁 `ci/gates/wallpaper-set.sh`；
 里程碑归属 M4-5「桌面追新与使用强化」的判据之一。
+
+#### 16.4.11 285H 上 `llm_d` 连续崩溃的根因与实机复验（2026-11-05）
+
+现象：285H 上 `llm_d` 于 2026-11-04 14:12–14:13 连续崩溃 7 次，全部 SIGSEGV，
+可执行文件为 `~/.airymaxrt/releases/0.1.20-2cb4d5eb/bin/llm_d`，uid 1000/gid 1001，
+Control Group 为 `session-315.scope`（root 会话拉起后降权）。
+
+取证链（不靠推测，逐条落到日志与现场）：
+
+1. `coredumpctl list` 给出七条同二进制、同分钟的 SIGSEGV 记录；
+2. `gdb` 解析 core（无符号）：`rip` 落在该二进制自身 text 段内，指令为 `repz cmpsb`，
+   即编入内联 `strcmp`/`memcmp` 的字符串比较路径——用野指针做比较，而非网络或模型侧失败；
+3. 崩溃时的配置备份 `config/model.yaml.bak3-crash-20261104` 中，「本地模型」这一模型行
+   的 `capabilities:` **出现两次**（各 5 个子键），该行键数恰为 **16**；
+4. 源码侧同一时期（`b96008d`）修复的正是映射装配写满容量后越过哨兵读堆残留的问题。
+
+根因：`yaml_minimal` 的映射容器把「首个 `key == NULL`」当作映射终点，`yaml_size()` 与
+`free_node()` 都按此扫描。装配路径原先只在「容量不足」时倍增，扩容后恰好把数组写满，
+末尾不再保留空槽；条目数正好等于容量时（本处即 16 键，重复的 `capabilities` 使该行条目数
+与扩容后的容量相等），终点判定越过分配块，把堆上前一段字符串残留当成 key 解引用，
+随即在 `strcmp` 处 SIGSEGV。**不是模型配置写错，而是解析器对「装满」这一合法状态不安全。**
+
+修复：扩容判据改为预留哨兵槽（`*count + 1 >= *cap` 即扩容），映射数组恒留末尾零槽；
+回归用例 `daemons/llm_d/tests/test_config_decl.c` 以 8 键行（初始容量）与 16 键行
+（扩容后容量且 `capabilities` 重复于中间）两种形态锁定该边界。
+
+实机复验（2026-11-05，285H，`root@192.168.3.19`）：以崩溃同一份配置
+`model.yaml.bak3-crash-20261104` 作对照实验，两枚二进制各跑一次：
+
+| 二进制 | 结果 | 现场 |
+|---|---|---|
+| 0.1.20（崩溃版本，`releases/0.1.20-2cb4d5eb/bin/llm_d`） | `rc=139`，core dumped | 停在 `svc.c` 的 `LLM service starting, manager=…` 之后，与七次崩溃同一落点 |
+| 本次 HEAD 构建（源码区外 out-of-source 构建） | `rc=124`（超时正常终止），无 core | 日志 `MODEL-CONFIG-OK YAML providers=3`、`loaded 3 provider(s)`、`pricing rules from YAML models=3`，随后进入探活重试 |
+
+结论：崩溃与模型、网络、权限无关，是 YAML 映射容器在「条目数填满容量」时的越界读；
+修复后同一份曾致崩的配置在 285H 上可完整装载三家 provider 并进入服务循环。
+
+教训（写入本版工程口径）：① 以哨兵终止的容器必须把「保留尾部空槽」作为构造不变量，
+不允许由调用方各自记住；② 容量边界一律由「恰好装满」用例锁定，而不是只测「未满」与「溢出」；
+③ 崩溃首查 `rip` 所在段与指令形态，先分清是数据被写坏还是解析器越界，再谈修配置。
 
 ### 16.5 与生成器的衔接
 
@@ -1917,8 +1961,10 @@ def sec19():
    - **主线 A：内核基线不认识 285H 的 GPU**（`8086:7d51`）。i915 模块虽被载入，
      但没有任何该 ID 的 alias，于是 `0000:00:02.0` 无驱动、DRM 只剩 `simpledrm`。
      显示（a）与亮度（c）都是它的派生结果。
-   - **主线 B：内核没编 I2C 控制器驱动**（`CONFIG_I2C_DESIGNWARE_PCI` 未开）。
-     Arrow Lake-H 的五个 PCI I2C 控制器全部裸奔，触控板（d）因此在内核里根本不存在。
+   - **主线 B：内核的 LPSS PCI ID 表不认识 Arrow Lake-H**（`intel-lpss-pci.c` 的
+     `pci_device_id` 缺 `8086:7750/7751/7778/777a/777b`）。LPSS 是 I2C 控制器的
+     父设备，父设备不被认领，`i2c-designware` 就永远没有设备可绑，触控板（d）
+     因此在内核里根本不存在。0.0.4 以回移上游 `6112597f5ba8` 闭合（§19.5）。
    - **主线 C：交付面缺陷**——内核命令行残留 `console=ttyAMA0`、Xorg 被强制
      `fbdev`、锁屏鉴权 helper 缺权限、`ukui-*` 在 `PATH` 缺 `/usr/sbin`、
      引导配置改在非活动副本上（D-07）。这一类不需要换内核，属 0.0.4 必修。
@@ -1948,7 +1994,7 @@ SELinux `Enforcing`；`taint=8192`；已装包 1278。
 | Xorg 启动参数 | `-config /run/airymaxos/xserver-fbdev.conf`（`Driver "fbdev"`）；该落点是 `xserver.sh` 按 `driver=simple-framebuffer` 判定的结果，不是无条件强制（见 `0.0.3-极境OS任务方案.md` §16 §11.4） |
 | Xorg GLX | `AIGLX: Screen 0 is not DRI2 capable`，仅 `swrast` |
 | 面板能力 | 机型为 2.8K OLED（2880×1800）；本节取证时为 1920×1080，§19.1.1 热修后为 2880×1800 |
-| `grep I2C_DESIGNWARE_PCI /boot/config-6.6.157-alk` | `# CONFIG_I2C_DESIGNWARE_PCI is not set` |
+| `grep I2C_DESIGNWARE_PCI /boot/config-6.6.157-alk` | `# CONFIG_I2C_DESIGNWARE_PCI is not set`（当时的观察；**不是根因**：该驱动的 PCI ID 表里没有任何 `0x77xx`，打开它也认领不到，见 §4.1(d)） |
 | `lspci \| grep 0c80` | 五个控制器 `8086:7778/777a/777b/7750/7751`，**均无绑定** |
 | `/sys/bus/i2c/devices` | 只有 `i2c-0`（SMBus/DMI），无 HID 设备 |
 | `/proc/bus/input/devices` | 无触控板条目；只有 AT 键盘与小米 USB 接收器 |
@@ -2005,7 +2051,7 @@ SELinux `Enforcing`；`taint=8192`；已装包 1278。
 
 **已作的部分修复**：本轮把「固件 GOP 给多少」这一段从 1920×1080 提到 2880×1800
 （热修细节与复验见 §19.1.1），因此 (a) 剩下的不可解部分是第 2、3 点——没有 EDID、
-软渲染——它们只能靠 KMS（§19.5 已决策不在 0.0.4 动内核）。由此得到一条判据：
+软渲染——它们只能靠 KMS（§19.5 已决策 0.0.4 不抬基线，HW-02 的定点回移除外）。由此得到一条判据：
 **引导期分辨率与内核显示栈必须分开验收**，前者可在 0.0.4 闭合，后者顺延。
 
 ### (b) 很多功能点不动
@@ -2038,23 +2084,30 @@ T12「免密提权」只验证了 `sudo -n`，没有覆盖「锁屏后能否解�
 
 ### (d) 触控板不能用
 
-**根因**：主线 B，且**与桌面无关**——触控板在内核里就没有被枚举出来。
+**根因**：内核里认领这五个 PCI 功能的驱动不存在，**与桌面无关**——触控板在内核里
+就没有被枚举出来。
 
-链条：触控板挂在 I2C-HID 上 → ACPI 的 `i2c_hid_acpi` 需要一个可用的 I2C adapter →
-adapter 来自五个 PCI 控制器（`8086:7778/777a/777b/7750/7751`）→ 这些控制器由
-`i2c-designware-pci` 驱动 → **该驱动在 6.6.157 的内核配置里被关掉**
-（`# CONFIG_I2C_DESIGNWARE_PCI is not set`，`/lib/modules/.../i2c/busses/` 里也没有
-`i2c-designware-pci.ko`）。
+链条：触控板 ELAN06FA 挂在 `\_SB.PC00.I2C0`（PCI `00:15.0`，`8086:7778`）→ 该 PCI
+功能由 `intel-lpss-pci` 认领并为其创建 platform 设备 → `i2c-designware-platform`
+绑定该 platform 设备得到 I2C adapter → `i2c_hid_acpi` 才有设备可挂。
 
-于是 `/sys/bus/i2c/devices` 只有一个 DMI/SMBus 的 `i2c-0`，`i2c_hid_acpi` 虽然载入
-却无设备可绑，`/proc/bus/input/devices` 里自然没有触控板。
+实测（285H，LENOVO 83JK，6.6.161-alk）：`MFD_INTEL_LPSS_PCI=y` 与
+`I2C_DESIGNWARE_PLATFORM=m` 基线都已给出，但 `lspci -k` 对 `00:15.x`/`00:19.x`
+五个功能全部「Kernel driver in use」为空——第一段就断了：`intel_lpss_pci_ids[]`
+缺 ARL-H 的 5 个 ID。于是 `/sys/bus/i2c/devices` 只剩一个 DMI/SMBus 的 `i2c-0`，
+`i2c_hid_acpi` 虽已载入却无设备可绑，`/proc/bus/input/devices` 里自然没有触控板。
 
-**修复分两步，都可独立验证**：
+**曾经的误判（已收回）**：一度把根因记成「`CONFIG_I2C_DESIGNWARE_PCI` 未编」。该驱动
+不在这条链上——`i2_designware_pci_ids[]` 只有 Medfield/Merrifield/Baytrail/
+Haswell/Braswell/Elkhart Lake 与 AMD NAVI，没有任何 `0x77xx` 条目，打开它也不会
+认领 ARL-H 的五个功能，只会在打包门禁上留下一条永远不会失败的断言。该配置项已从
+`configs/defconfig-agent` 移除，`%check` 改为断言真正决定成败的两项基线与源码 ID 表。
 
-1. 打开 `CONFIG_I2C_DESIGNWARE_PCI=m`（配置项现有 `CONFIG_I2C_DESIGNWARE_CORE=m`
-   与 `_PLATFORM=m`，只缺 PCI 这一支）。
-2. 断言 `modinfo -F alias i2c-designware-pci | grep -c 8086:7778` 非 0。若为 0，
-   说明基线驱动表的 PCI ID 也缺，需要补 ID（designware 是通用控制器，补 ID 风险低）。
+**修复**：回移上游 `6112597f5ba8`（本树 `c93c57a28bc2`），只加 ID 表，不改任何配置。
+
+**判据**（落在新 ISO 上，可数）：`lspci -k` 五个 LPSS 功能出现驱动绑定、
+`/sys/bus/i2c/devices` 出现 designware 适配器、`/proc/bus/input/devices` 出现触控板
+条目。不以「触控板能用」这句话作结论。
 
 **不要**把它当桌面问题去查 `libinput`：设备节点不存在时，`libinput list-devices`
 什么都看不到，容易被误读成「桌面没启用触控板」。
@@ -2196,7 +2249,7 @@ Fn 快捷键动作映射。
 | 编号 | 内容 | 判据 |
 |---|---|---|
 | HW-01 | 内核基线补齐 Arrow Lake-H GPU 支持（见 §19.5 决策） | `modinfo -F alias <gpu-driver> \| grep -q 8086:7d51` 非空；`/sys/class/drm` 出现真实连接器（非 `-Unknown-`） |
-| HW-02 | 打开 `CONFIG_I2C_DESIGNWARE_PCI`，缺 PCI ID 则补 | `modinfo -F alias i2c-designware-pci \| grep -q 8086:7778`；`/proc/bus/input/devices` 出现触控板 |
+| HW-02 | 回移上游 `6112597f5ba8`，给 `intel-lpss-pci.c` 补 ARL-H 的五个 PCI ID（不动 config、不改驱动逻辑，见 §19.5 唯一例外） | `grep -q 'PCI_VDEVICE(INTEL, 0x7778)' drivers/mfd/intel-lpss-pci.c`；`/sys/bus/i2c/devices` 出现 DesignWare 适配器；`/proc/bus/input/devices` 出现触控板且 `xinput list` 有 Touchpad |
 | HW-03 | 背光与键盘背光的用户态入口 | `/sys/class/backlight/intel_backlight/brightness` 可写；Fn 按键后 `platform::kbd_backlight/brightness` 改变 |
 | HW-04 | 锁屏鉴权修复 | 锁屏后输入正确口令可解锁；`journalctl` 无 `pam_unix … setuid failed` |
 | HW-05 | 内核命令行清理：去掉 `console=ttyAMA0`，`console=` 最多两处 | `/proc/cmdline` 无 `ttyAMA0`；`systemd-vconsole-setup` 为 active |
@@ -2204,13 +2257,27 @@ Fn 快捷键动作映射。
 | FW-01 | `ci/gates/fw-closure.sh` 与 `fw-manifest.txt` | 差集为空；清单随 ISO 发布并能回读 |
 | FW-02 | 关键驱动固件随内核包走（`airymaxos-firmware-<kernel-abi>`） | 内核包 `Requires` 该固件包；ISO 离线闭包含它 |
 | FW-03 | 冒烟增加固件三条断言（无缺失、无 API 越界告警、pnvm 成对） | 三条 TAP 全 ok |
-| HW-07 | 打包补齐 `usbutils`、`wireplumber`、亮度工具 | `command -v lsusb wpctl brightnessctl` 全部命中 |
+| HW-07 | 打包补齐 `usbutils`、`lsof`、`pactl`、`airy-bright` 四项现场工具 | `command -v lsusb lsof pactl airy-bright` 全部命中 |
+| SM-01 | 验收判据只采信本轮的、且不来自被判定一方的证据。285H 实测两处违反：报告在 runner 写出结果前 5 秒读到上一次开机的 TAP 并判负；上报单元随后成为下一轮 T23 的唯一失败项，真实根因（装机后多装 11 个包）被自指信号盖住 | TAP 头含 `# boot=<boot_id>` 且与当前一致（旧文件只能得到 `reason=timeout`）；T23 传 `--exclude airymax-smoke-report.service` 后单元面不再自指，其他失败单元照常判负 |
 
-### 19.5 已决策：0.0.4 不动内核
+**285H 现场证据（2026-11-07 12:41，`6.6.161-alk`，LENOVO 83JK）**——本版所有
+硬件判据都以此为基线，装新 ISO 后逐条复测：
+
+| 面 | 实测 | 归属 |
+|---|---|---|
+| 触控板 | `00:15.0 [8086:7778]` 的 `lspci -k` 只有 Subsystem、无 `Kernel driver in use`；`/sys/bus/i2c/devices` 只有 `i2c-0`；`/proc/bus/input/devices` 无触控板条目 | 当前 ISO 未含 HW-02 补丁，正是该行的「修前态」 |
+| 内核稳定性 | `tainted=0`；`dmesg` 中 `Call Trace`/`BUG:`/`Oops`/`WARNING:` 合计 0 条，MCE 0 条；当日 3 次开机，上一次为 `systemd-shutdown` 正常关机；本次已连续运行 41 分钟、load 0.37 | ALK 内核本时段无崩溃、无污染、无硬件错误 |
+| 固件层 | 32 条 `ACPI Error: AE_ALREADY_EXISTS`、34 条 `ACPI BIOS Error (bug)`（`_UPC`/`_PLD` 重复创建）、2 条 `\_SB.PC00.LPCB.MXTP` 解析失败、2 条 `\_TZ.TZ00._TMP` 连带失败 | 主板 DSDT 缺陷，固件层，不计入 T23 预算 |
+| 功耗/热预算 | `proc_thermal_pci 0000:00:04.0: failed to add RAPL MMIO interface`；`/sys/class/powercap/` 为空 | 内核依赖，HW-08 顺延 |
+| 温度传感器 | `thermal_zone5 (iwlwifi_1)` 开机期读失败一次（`-61`），网卡就绪后读到 41000 m°C | 瞬态，非缺陷 |
+| 无线 | 第 20 分 23 秒 4 条 `iwlwifi Unhandled alg: 0x703`，同期 NM 无 disconnect | 丢帧观测，判据口径见 0.0.5 §4.1 |
+| 开机时延 | firmware 7.95s + loader 3.77s + kernel 0.91s + userspace 2.96s = 16.7s | 内核段 0.91s 无优化空间；firmware/loader 归 BIOS |
+
+### 19.5 已决策：0.0.4 不抬内核基线（HW-02 定点回移除外）
 
 上一版列的三个方案（A 回移补丁 / B HWE 双内核 / C 抬基线）全部不采纳。0.0.4 的
 边界是：**不抬基线、不做 HWE、不改内核 spec 与 `kernel/` 树、不做 DKMS 或任何
-树外模块**。理由是这三条路都要在 0.0.x 阶段承担内核回归面，而当前版本的主要
+树外模块**（唯一例外见本节末：HW-02 只回移一张 PCI ID 表）。理由是这三条路都要在 0.0.x 阶段承担内核回归面，而当前版本的主要
 风险来自交付面（登录、锁屏、显示策略、固件闭包），不是内核能力。
 
 由此产生一条判定规则，贯穿全文与 §19.6：**凡修复需要新增/回移内核补丁、改内核
@@ -2218,7 +2285,35 @@ config、或引入树外模块，一律不开工，登记为「内核依赖」�
 发行版层闭合，且判据用能力探测（`modinfo` / sysfs / EDID / xrandr）而不是版本号。
 
 顺延项（0.0.4 不修，登记在目）：HW-01（i915 认 `8086:7d51`、`xe`、KMS、硬件
-加速）、HW-02（`CONFIG_I2C_DESIGNWARE_PCI`）、HW-03 中依赖 KMS 注册背光的那一半。
+加速）、HW-03 中依赖 KMS 注册背光的那一半、HW-08（功耗/热预算：本机
+`proc_thermal_pci` 报 `failed to add RAPL MMIO interface`，`/sys/class/powercap/`
+连一个域都没有；手工 `modprobe intel_rapl_msr` 后仍为空，即 6.6 的 MSR 路径
+也没认这台机器的型号。两条路径都要内核侧补型号表，按铁律①顺延；本版能力
+矩阵把它记为「FAIL（内核依赖）」，不写成「不适用」）。
+
+**唯一例外（2026-11-07 决策，覆盖上面的「不动内核树」）**：HW-02 收回本版做，
+方式是回移上游 `6112597f5ba84b70870fade5069ccc9c8b534a33`（"mfd: intel-lpss:
+Add Intel Arrow Lake-H LPSS PCI IDs"）。它与被顺延的 HW-01 性质不同：只往
+`intel-lpss-pci.c` 的 `pci_device_id` 表加 ID，不碰 config、不碰驱动逻辑、
+不引入树外模块，回归面是「多认几个 PCI 设备」。而触控板是整机可用性的
+前置条件，不能带病发版。判定依据仍用能力探测：
+`/proc/bus/input/devices` 出现触控板且 `xinput list` 有 Touchpad 设备。
+
+285H 运行期实证（2026-11-07，现网内核 6.6.161-alk）：把打过补丁的
+`intel-lpss-pci.c` 单独编成树外模块（仅测试期把 driver name 改为
+`intel-lpss-arlh` 以避开与内建同名驱动冲突，源树里没有这个改动），
+`insmod` 后：
+
+- `00:15.0/15.2/15.3/19.0/19.1` 全部绑定，日志逐条
+  `intel-lpss-arlh 0000:00:15.x: enabling device`；
+- 新增 5 条 `Synopsys DesignWare I2C adapter`（i2c-1…i2c-5），
+  `i2c-ELAN06FA:00` 客户端出现；
+- `hid-multitouch` 绑定 `0018:04F3:3293.0004`，
+  `/proc/bus/input/devices` 出现 Touchpad（event13），
+  `xinput list` 出现 `ELAN06FA:00 04F3:3293 Touchpad`，id=17。
+
+即：触控板不可用的唯一阻塞点就是这条 ID 表；pinctrl（`pinctrl_meteorlake`
+配 `\_SB.GPI0`/`INTC105E`）本来就正常。ISO 重建后按同一判据复验。
 
 ### 19.6 全量问题台账（0.0.4）
 
@@ -2251,26 +2346,29 @@ config、或引入树外模块，一律不开工，登记为「内核依赖」�
 | 编号 | 现象 | 根因 | 通用修复 | 判据 | 内核 | 版本 |
 |---|---|---|---|---|---|---|
 | D-01 | 引导期只到 1920x1080，2.8K 面板从未被使用 | `GRUB_GFXMODE` 从 1080 起选；缺 `gfxpayload=keep`，内核重挑模式 | 候选并集高分档前置 + `set gfxpayload=keep` + `GRUB_GFXPAYLOAD_LINUX=keep` | `grub.cfg` 含三者；`fb0 virtual_size` 等于固件在候选串里选中的首个模式 | — | 0.0.4 已落 |
-| D-02 | X 侧把原生面板压到 1080p，画面发虚 | 策略上限写死 `1920x1200`，阶梯从 1920 起 | 上限与阶梯改由能力推导（G-02），不再写死任何机型分辨率 | 无 KMS 时 `--report` 为 `single-mode`；有 KMS 时结果由 EDID 推导 | — | 0.0.4 待改 |
+| D-02 | X 侧把原生面板压到 1080p，画面发虚 | 策略上限写死 `1920x1200`，阶梯从 1920 起 | 上限与阶梯改由能力推导（G-02），不再写死任何机型分辨率 | 无 KMS 时 `--report` 为 `single-mode`；有 KMS 时结果由 EDID 推导 | — | 0.0.4 已落（2026-11-06 复核：`display_mode.sh` 已无机型上限常数，EDID 首选原样保留、缺 EDID 才走阶梯；G-02 三条负向断言在 `test_session_closure.sh`，单测全过） |
 | D-03 | 无 KMS 时 X 强制 `fbdev`；将来有 KMS 仍软渲染 | lightdm 无条件传 `-config xserver-fbdev.conf`，配置无 KMS 判定 | 已由 `xserver.sh` 按 `/sys/class/drm/*/device/driver` 判定，仅 `simple-framebuffer` 回落 fbdev | 有 KMS 时 X 进程命令行无 `xserver-fbdev.conf`；无 KMS 时状态文件有 `driver=fbdev` | — | 0.0.3 已修，0.0.4 补断言 |
 | D-04 | 「分辨率已按策略设好」在只有单一模式时误报 | 收敛脚本把单模式当成功 | 单模式/无 KMS 单独记账，退出码与 `policy` 区分 | `--check` 在 `single-mode` 下的退出码与 `policy` 不同 | — | 0.0.3 已修 |
-| D-05 | 控制台黑屏风险 + `systemd-vconsole-setup` 失败 | 内核命令行残留 ARM64 `console=ttyAMA0`，`console=` 出现三次 | 由架构推导 console 集合，删除非本架构条目；T15 增加「参数该在」负向断言 | `/proc/cmdline` 无 `ttyAMA0`；`console=` ≤2；unit 为 active | — | 0.0.4 |
+| D-05 | 控制台黑屏风险 + `systemd-vconsole-setup` 失败 | 内核命令行残留 ARM64 `console=ttyAMA0`，`console=` 出现三次 | 由架构推导 console 集合，删除非本架构条目；T15 增加「参数该在」负向断言 | `/proc/cmdline` 无 `ttyAMA0`；`console=` ≤2；unit 为 active | — | 0.0.4 已落（2026-11-06 复核：`session-closure` 门禁三条 `want_absent console=ttyAMA0` + `console_count=2`，`--source .` 本地跑通） |
 | D-06 | 内核沿用不了 GRUB 选定的模式 | 只设 `gfxmode` 不设 `gfxpayload` | 已在 `01_airymax_display` 与 `/etc/default/grub` 同时写入 | 两处逐字一致，门禁静态断言 | — | 0.0.4 已落 |
 | D-07 | 改了引导参数却完全不生效 | NVRAM 走 `\EFI\airymaxos\shimx64.efi`，活动配置是 `/boot/efi/EFI/airymaxos/grub.cfg`；`grub2-mkconfig` 只写 `EFI/openEuler/grub.cfg` 副本 | 由同一份模板生成两份，品牌副本用 `install -m 700` 同步；`%post` 与构建脚本都走同一个同步函数 | 两份 `grub.cfg` 的 `set gfxmode=` / `set gfxpayload=` 行逐字相同，且与 `/etc/default/grub` 同源；T15 对两份做 `cmp` 漂移判定 | — | 0.0.4 已落（285H 2026-11-03 重启复验：cmdline 以 `console=tty0` 收尾、`/proc/consoles` 的 `C` 在 tty0、无失败单元） |
+| D-08 | 右下角状态栏网络图标整块消失，控制中心没有网络配置入口，而无线本身可用 | 网络前端 `kylin-nm` 从未进闭包：`ukui-panel` 的 statusnotifier 白名单按名等待它，控制中心的 `libnetconnect`/`libwlanconnect`/`libmobilehotspot` 也由它提供。包名不带 `ukui` 前缀，桌面元包与依赖求解都不带入 | 台账登记为 present、comps 桌面核心组列必装、`rpms.in.yaml` 同步冻结，三者与取证册同源；两个硬依赖只在 `everything` 段，compose 期由该段补齐 | `RegisteredStatusNotifierItems` 含 kylin-nm；控制中心侧栏出现「网络」模块 | — | 0.0.4 已落（2026-11-07 285H 装包前后对照：SNI 注册项 4 → 8，`kylin-nm` 与 `ukui-panel` 同会话运行；`ukui_check.py` 四者同源校验通过） |
+| N-04 | 关于页「版本名称」不是产品口径 | 该字段直读 `/etc/os-release` 的 `VERSION`，此前写作 `0.0.4 (OpenAirymax)` | 改为 `OpenAirymax <VERSION_ID>`，与 `PRETTY_NAME` 同形，避免两处各写一套口径 | `grep ^VERSION= /etc/os-release` 为 `OpenAirymax 0.0.4` | — | 0.0.4 已落 |
+| N-05 | 关于页「桌面」只显示 `UKUI`，无版本号 | `ukui-control-center` 的关于页把该字段编译进二进制：`strings` 只见 `/etc/os-release` 与 `/etc/apt/ota_version`，改 `XDG_CURRENT_DESKTOP` 无效；而实装是 3.1.x（`ukui-control-center-3.1.2`），基底仓库无 4.x | 0.0.4 不虚报版本：维持 `UKUI`，随 0.0.5 的 UKUI 4.24 迁移一并落到 `UKUI 4.x.x` | 迁移后关于页显示 `UKUI 4.24.x` | — | 0.0.5 |
 | S-01 | 空闲锁屏策略不生效 | 只有 `local.d` 源文件，`/etc/dconf/profile/user` 无 `system-db:local`，也无编译产物 | `%post` 补 profile + `dconf update`；两路径不登记 `%files`（避免双属主） | `grep -a lock-enabled /etc/dconf/db/local` 命中 | — | 0.0.4 已落 |
 | S-02 | 锁屏后输对口令也解不开 | `ukui-screensaver-checkpass` 为 0755，PAM account 阶段读不到 shadow | `%post` 对存在的二进制 `chmod 4755` 并回读 | `stat -c %a` 为 4755；`journalctl` 无 `setuid failed` | — | 0.0.4 已落 |
 | S-03 | 空口令账户在 PAM 里走 `pam_unix` 分支 | 服务文件没有免密组直通 | 首行插 `auth sufficient pam_succeed_if.so user ingroup nopasswdlogin`，与 greeter 同口径 | 该行早于第一条 `pam_unix.so`（awk 单遍） | — | 0.0.4 已落 |
-| N-01 | 展示名与产品口径不一致 | `NAME`/`PRETTY_NAME` 仍是 `AirymaxOS` | 改为 `OpenAirymax <VERSION_ID>`；ISO 文件名仍取 `VERSION_ID` | `/etc/os-release` 与 `/etc/issue` 首行逐字为 `OpenAirymax 0.0.4` | — | 0.0.4 |
-| N-02 | 主机名被 systemd 静默改写 | `AIRYMAX_PC` 含下划线，违反 RFC 1123，剩 `airymaxos`，再靠 sysctl 写回 | 改名 `airymax-pc`；删除 `99-airymax-hostname.conf` 与内核层回写 | `/etc/hostname`、`hostname`、`hostnamectl --static` 三者一致 | — | 0.0.4 |
-| N-03 | 账户名大小写带来的文件系统与策略分歧 | 默认用户为 `Airymax` | 改名 `amuser`，连同 lightdm、sudoers、冒烟、测试夹具一次改齐 | `id amuser` 在 `wheel` 与 `nopasswdlogin`；sudoers 唯一规则 0440 | — | 0.0.4 |
-| P-01 | 现场无 `lsusb`、`wpctl`、`lsof`、`brightnessctl` | 包清单缺 `usbutils`、`wireplumber` 与工具包 | 显式加入配方，并由门禁回读 `command -v` | 四个命令在交付镜像内命中 | — | 0.0.4 |
-| P-02 | 系统设置里的搜索类功能静默失败 | `ukui-search` 调 `sysctl`，`/usr/sbin` 不在其 PATH | 由桌面会话的 PATH 定义补齐 `/usr/sbin` | 会话内 `command -v sysctl` 命中 | — | 0.0.4 |
-| F-01 | 镜像固件与驱动 API 集合无交集 | 固件包版本与内核驱动设备表不同步 | `ci/gates/fw-closure.sh`：`modinfo -F firmware` 与固件包内容求差集为空 | 差集为空；`fw-manifest.txt` 随 ISO 发布 | — | 0.0.4 |
-| F-02 | 固件靠现场补文件 | 基底 `linux-firmware` 版本漂移 | 内核包 `Requires` 同源固件包，随内核走 | ISO 离线闭包含该固件包 | 构建期包 | 0.0.4 |
-| F-03 | 网卡失败在运行期无指向性 | 只有 dmesg 一行模糊告警 | 冒烟三条断言 + `airy-observe firmware` 输出期望 vs 实际 | 三条 TAP 全 ok | — | 0.0.4 |
+| N-01 | 展示名与产品口径不一致 | `NAME`/`PRETTY_NAME` 仍是 `AirymaxOS` | 改为 `OpenAirymax <VERSION_ID>`；ISO 文件名仍取 `VERSION_ID` | `/etc/os-release` 与 `/etc/issue` 首行逐字为 `OpenAirymax 0.0.4` | — | 0.0.4 已落（2026-11-06 复核：`airymaxos-release.spec` 172–186 行由 `PRETTY_NAME` 派生 `airy_pretty` 写 `/etc/issue`，`%check` 断言 PRETTY_NAME 格式不变式） |
+| N-02 | 主机名被 systemd 静默改写 | `AIRYMAX_PC` 含下划线，违反 RFC 1123，剩 `airymaxos`，再靠 sysctl 写回 | 改名 `airymax-pc`；删除 `99-airymax-hostname.conf` 与内核层回写 | `/etc/hostname`、`hostname`、`hostnamectl --static` 三者一致 | — | 0.0.4 已落（2026-11-06 复核：workstation ks 96 行 `--hostname=airymax-pc`、563 行安装期回读校验，回写链已删除） |
+| N-03 | 账户名大小写带来的文件系统与策略分歧 | 默认用户为 `Airymax` | 改名 `amuser`，连同 lightdm、sudoers、冒烟、测试夹具一次改齐 | `id amuser` 在 `wheel` 与 `nopasswdlogin`；sudoers 唯一规则 0440 | — | 0.0.4 已落（2026-11-06 复核：ks 74 行 `user --name=amuser`，`run-smoke.sh:694` 断言 nopasswdlogin 组） |
+| P-01 | 现场无 `lsusb`、`lsof`，音频与背光也没有命令行入口 | 包清单缺 `usbutils`、`lsof`；音频守护进程是 PulseAudio 17.0，`pipewire` 只以库的形式随闭包进入、无会话管理器，故音频诊断用 `pactl` 而非 `wpctl`；背光由自有 `airy-bright` 读 sysfs，不引入 `brightnessctl` | 显式加入配方，并由 T27 回读 `command -v` | 四个命令（`lsusb`/`lsof`/`pactl`/`airy-bright`）在交付镜像内命中 | — | 0.0.4 已落（2026-11-07 复核：`comps/airymaxos-comps.xml` 73/74 行 `lsof`/`usbutils` 为 mandatory、209 行 `pulseaudio` 提供 `pactl`；`run-smoke.sh` T27 逐项回读，285H 实机 `wpctl`/`brightnessctl` 均不存在，与「没有对应守护进程」一致，不加空壳） |
+| P-02 | 系统设置里的搜索类功能静默失败 | 记为 `ukui-search` 调 `sysctl` 时 `/usr/sbin` 不在 PATH | 不新增 PATH 钩子；记录的根因不成立 | 会话进程的 PATH 含 `/usr/sbin` 且 `sysctl` 命中 | — | 0.0.4 已落（2026-11-06 复核：285H 实机 `ukui-search` 的 `/proc/<pid>/environ` 的 PATH 为 `/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin`，`which sysctl` 命中 `/usr/sbin/sysctl`；`journalctl _COMM=ukui-search -b` 无记录。补齐 PATH 会在会话里加一条永远不生效的脚本，故不改代码；搜索功能若再复现，另按新证据立案） |
+| F-01 | 镜像固件与驱动 API 集合无交集 | 固件包版本与内核驱动设备表不同步 | `ci/gates/fw-closure.sh`：`modinfo -F firmware` 与固件包内容求差集为空 | 差集为空；`fw-manifest.txt` 随 ISO 发布 | — | 0.0.4 已落（2026-11-06 复核：`ci/gates/fw-closure.sh` 以 `comm -23` 双向求差集判空，排序钉死 C 保证跨机同判据） |
+| F-02 | 固件靠现场补文件 | 基底 `linux-firmware` 版本漂移 | 内核包 `Requires` 同源固件包，随内核走 | ISO 离线闭包含该固件包 | 构建期包 | 0.0.4 已落（2026-11-07 复核：`specs/kernel/airymaxos-kernel.spec` 168 行 `Requires: airymaxos-firmware-%{kernel_abi}`，`specs/airymaxos-firmware.spec` 50 行再 `Requires: linux-firmware`，comps 121 行 `linux-firmware` 为 default；事务阶段即不可能出现「内核在、固件半套」，ISO 实物闭包随本轮重发复验） |
+| F-03 | 网卡失败在运行期无指向性 | 只有 dmesg 一行模糊告警 | 冒烟三条断言 + `airy-observe firmware` 输出期望 vs 实际 | 三条 TAP 全 ok | — | 0.0.4 已落（2026-11-06 复核：`run-smoke.sh` probe 19/20/21 = T19 固件 blob、T20 微码、T21 固件 API 匹配，`airy_observe.sh firmware` 输出期望 vs 实际） |
 | HW-01 | 无 KMS、无硬件加速、无背光 | 内核不含 ARL-H 显示支持（`i915` 无该 ID、无 `xe`） | 顺延，0.0.4 不以任何形式绕过（不做 DKMS） | 顺延期内不参与验收 | 是 | 0.0.x 之后 |
-| HW-02 | 触控板不存在 | `CONFIG_I2C_DESIGNWARE_PCI` 未编 | 顺延 | 同上 | 是 | 0.0.x 之后 |
-| HW-03 | 亮度滑条无效 | 背光设备由 KMS 注册，无 KMS 即无设备 | 依赖 KMS 的一半顺延；用户态入口（Fn/工具）仍做 | `brightnessctl` 存在；键背光可写可回读 | 部分 | 0.0.4 部分 |
+| HW-02 | 触控板不存在 | 不是 config 缺项（`CONFIG_I2C_DESIGNWARE_PCI=y` 已在）：`intel-lpss-pci.c` 的 ID 表缺 ARL-H 的 `8086:7778` 等 12 个 ID，`\_SB.PC00.I2C0` 无驱动绑定，`i2c-hid` 无总线可枚举 | 回移上游 `6112597f5ba8`，只加 ID 表 | `/proc/bus/input/devices` 出现 Touchpad 且 `xinput list` 有 Touchpad 设备 | 是（已收回本版） | 0.0.4 已落（2026-11-07 285H 运行期实证：树外模块 insmod 后 5 条 DesignWare 总线 + `i2c-ELAN06FA:00` + `hid-multitouch` 绑定 `0018:04F3:3293`，X 侧 id=17；见 §19.5） |
+| HW-03 | 亮度滑条无效 | 背光设备由 KMS 注册，无 KMS 即无设备 | 依赖 KMS 的一半顺延；用户态入口（Fn/工具）仍做 | `airy-bright` 存在且可读回当前值；键背光可写可回读 | 部分 | 0.0.4 部分（用户态入口已落：`system/bin/airy-bright` + I-25 的 sysfs 读回；`/sys/class/backlight` 仍为空属 HW-01 的 KMS 依赖，顺延） |
 
 #### 19.6.3 与通用性冲突的已落改动（必须在 0.0.4 内改掉）
 
