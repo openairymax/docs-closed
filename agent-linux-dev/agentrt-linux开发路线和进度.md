@@ -123451,6 +123451,37 @@ FW-01 的实测复现。④ 托盘闭环取证：`kylin-nm` 已注册 SNI（`:1.
 matrix 并行），其后 17~22 步全 pending；tag 重指到含触控板覆盖文件的
 `981db8e` 与 `image-build` 派发均须等该轮结束。
 
+复核记录（2026-11-08/09，关于页与软件入口取证）：本轮仍**无 WP 状态变更**，
+把四条用户点名项逐条钉到「数据来自哪里」这一层，其中两条判定为已在树内
+闭合、两条归 0.0.5。① 关于页「版本名称」的唯一数据源是 `/etc/os-release`
+的 `VERSION=`：`ukui-control-center-3.1.2` 的 `libabout.so` 用
+`KYLIN_RELEASE_ID=`/`VERSION_ID=`/`VERSION=`/`VERSION_US=` 四条正则直读该文件，
+285H 上把旧值 `VERSION="0.0.4 (OpenAirymax)"` 改为 `VERSION="OpenAirymax 0.0.4"`
+并重启 `ukui-control-ce` 后，页面版本行即显示 `OpenAirymax 0.0.4`——**该格式已在
+树内**（`distro/release/os-release`，release 51 携带），285H 实测差异只是它跑的
+release 47 早于该修复，重装即闭合，不需另加代码。② 关于页「桌面」行没有第二
+数据源：`ukui-session` 在 `0x1f9dc` 处构造 `QByteArray("UKUI")` 后无条件
+`qputenv("XDG_CURRENT_DESKTOP", ...)`，无 getenv 分支，故不重编该二进制无法
+让页面出现 `UKUI 4.x.x`；且镜像实际桌面栈为 UKUI 3.1.x 而非 4.x，写 4.x.x 会
+变成新的失真。**本版不动这一行**，口径与跨架构处置登记在 0.0.5 方案 §5.8 N-05。
+③ 托盘：`org.ukui.panel.settings:statusnotifierbutton` 的 schema 默认为 `true`，
+`ukui-panel` 无任何写入该键的代码路径，`/etc/skel/.config` 不存在即镜像没有
+预置落点；285H 用户库里该键为 `false` 属装机后被改，`gsettings reset` 复位后
+图标立即出现，逐项 `pkill -x kylin-nm` 后再 `pkill -x ukui-control-ce` 也不会被
+翻回 `false`。与既有 D-08 结论合并后的口径是：release 47 缺 `kylin-nm` 包是
+主因，键值是被改的次因，两条都靠重装 release 51 归零，故本版不加新代码。
+④ 软件入口：`.deb` 与 `.rpm` 双击都落到 `engrampa`（归档管理器，只解包不安装），
+`alien`/`flatpak` 均未安装，`/etc/yum.repos.d/` 只有在线四段、无离线介质源；
+`airy-deb`（`info`/`install`/`convert`）已在树内并由 `airymaxos-system` 打包
+（release 51），285H（release 47）无此命令——缺的是**注册入口**而非能力，
+0.0.5 方案已覆盖 `application/vnd.debian.binary-package` 的 MIME 关联。
+⑤ 浏览器：285H 已装 `firefox-153.6.0` 且 `firefox.desktop` 在位，release 47 的
+comps 未含 firefox、release 51 的 comps 已含（`distro/comps/airymaxos-comps.xml`），
+riscv64 无 firefox 的跨架构分流见 0.0.5 方案 §5.11。⑥ 发布链：tag 重指后的
+`release` run `42492765463`（`523ecad`）自 15:02:38Z 起跑，截至 16:22:13Z 仍停在
+第 16 步「Build kernel RPM (4 architectures)」，17~22 步 pending；`/dev/sda` 为
+59G USB 盘（`RM=1`、`TRAN=usb`），现载旧 AirymaxOS ISO 且未挂载，可整盘覆盖。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
