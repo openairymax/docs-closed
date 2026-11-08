@@ -11,5 +11,7 @@
 !agent-workload-dev/**
 !agent-linux-dev/
 !agent-linux-dev/**
+!amax-compute-dev/
+!amax-compute-dev/**
 # Python 字节码缓存不入库（bp_gen/bp_seed 运行产物）
 __pycache__/
