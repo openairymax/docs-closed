@@ -123365,7 +123365,7 @@ ALK 体积与 `docs-linux` 遵循（用户逐字，2026-11-01）：**所有的�
 | M4-9 | 烧录与回归 | T-04, V-11 | D52 | 2027-07-27 | 三段烧录回归均出 `AIRY-FLASH-PASS`；判负集分层可复算 |
 | M4-10 | 收口 | L-45, L-50, M-35, V-10, V-12, V-13, V-14, V-15, V-16 | D83 | 2027-09-13 | 发布自证齐备；升级通道可回滚；实机矩阵完成（QG-12）；基底经 `base-eol.sh` 判定为大 SP 且 Planned EOL 晚于收口日，装机 `dnf makecache` 四段成功；模块签名齐全且 tainted 8192 位为 0；完整性盘点 `systemctl --failed` 为 0、包闭包对账差 0、docs-linux 功能面缺口登记成册；**ALK 门禁绿**：`git diff --stat v0.0.3..v0.0.4 -- kernel/` 只含 `intel-lpss-pci.c` 的 ARL-H ID 表回移（HW-02，上游 `6112597f5ba8`）、无新增 `CONFIG_*`、`ci/gates/alk-size.sh` 同配置镜像体积差为 0、八模块锚点文件全部存在 |
 
-### 11.5 进度状态（截至 2026-11-07）
+### 11.5 进度状态（截至 2026-11-08）
 
 复核记录（2026-11-06，285H 真机取证）：本轮为 0.0.4 发行流水线盯守与 285H 实机
 复跑取证，**无 WP 状态变更**（未发生任何 WP 验收级证据）。取证结论已沉淀两处：
@@ -123425,6 +123425,31 @@ T29 判定，不以外挂模块作为交付形态。跨架构口径见 0.0.5 方
 release run 为 `42308007253`，全部阶段从此同属一个提交，`BUILD_ID` 与源码
 tarball 同源。⑤ 285H 自 22:48Z 起持续 ping 不通（22:53Z、23:00Z 两次复核），
 触控板、托盘、关于页、U 盘引导盘的实机判据仍全部待跑。
+
+复核记录（2026-11-08，285H 硬件矩阵与 ALK 稳定性）：本轮仍**无 WP 状态变更**，
+产出两册证据（0.0.4 方案 §2.3 第 300 行、§16.4.14）与一项交付面缺口登记。
+① 显示：`00:02.0 [8086:7d51]` 无驱动绑定，`card0` 为 `simple-framebuffer`，
+`/dev/dri` 无 `renderD128`，`/sys/class/backlight/` 为空，i915 的 347 条 alias
+含 `7D55/7D40/7D45/7DD5` 而 `7D51` 为 0，`modinfo xe` 不存在——根因是
+ALK 6.6.161 的 i915 PCI ID 表缺 ARL-H `0x7D51` 且未编 `xe`，显示退化到
+simpledrm（2880x1800 全软渲染，拖累开机与桌面流畅度；无背光入口，亮度键失效）。
+按铁律①本版不动内核，顺延 0.0.5；该证据同时是 I-25「无 backlight 设备必须
+如实报 degraded」的观测依据。② ALK 稳定性：`tainted=0`，0 条
+`WARNING/BUG/Oops/panic/UBSAN`，0 条 hung task / LOCKUP，0 条 MCE，AER 仅
+`_OSC: platform does not support [AER]`（固件未暴露能力，非错误），50 分钟运行
+load 0.24——**无内核级故障证据**；全部 `error` 级日志来自 BIOS 的
+`AE_ALREADY_EXISTS`（xHCI `_UPC`/`_PLD` 重复声明）与 `AE_NOT_FOUND`
+（`TZ00._TMP` 引用不存在的 `MXTP`，其余 7 个热区读数正常）。③ 两项交付面缺口：
+`/sys/class/powercap/` 为空且 `proc_thermal_pci 0000:00:04.0` 未绑定
+（`failed to add RAPL MMIO interface`），能耗观测须如实降级、不得填 0；
+Wi-Fi 固件新于驱动（`api flags index 2 larger than supported by driver`）即
+FW-01 的实测复现。④ 托盘闭环取证：`kylin-nm` 已注册 SNI（`:1.181`），
+`ukui-panel` 无 icon-not-found——缺图标确由旧镜像未装包造成，非主题损坏。
+⑤ 冒烟 `pass=25 fail=1`，唯一失败项 T23（`extra=27`）由取证期手工装包造成，
+干净镜像重装后应转绿，不以手工补齐冒充。⑥ 发布链：`release` run `42452193851`
+于 05:58:52Z 进入四架构内核构建（实测预算 210 分钟，管理仓 2 job 铁律禁止
+matrix 并行），其后 17~22 步全 pending；tag 重指到含触控板覆盖文件的
+`981db8e` 与 `image-build` 派发均须等该轮结束。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
