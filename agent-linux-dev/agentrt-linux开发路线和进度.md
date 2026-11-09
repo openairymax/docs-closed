@@ -123521,7 +123521,28 @@ release 14 装入该文件（`UKUI 3.1.2`，与台账 ukui-control-center 的 Ve
 维持既有债号，不改变判定。另记两处低优先现场：`pulseaudio: Daemon already
 running` 每次登录各一次（会话内自启与单元自启重叠，未影响出声）、`dhclient`
 对路由器下发的 option 15 报 `Invalid domain name`（对端缺省值不规范，不影响取
-址）。本轮无 WP 状态变更。
+址）。
+
+复核记录（2026-11-09，285H 空闲屏保根因与面板钉住）：本轮仍**无 WP 状态变更**，
+产出一项根因修复与三处取证口径收敛。① 空闲屏保：285H 上每 5 分钟盖住桌面的
+不是 greeter，而是 `ukui-screensaver-dialog --session-idle`（`loginctl`/`ps`
+证实 `ukui-session` 以 amuser 运行在 tty1/:0）；此前只关了
+`idle-lock-enabled`/`lock-enabled`/`sleep-activation-enabled` 三键，
+`org.ukui.screensaver idle-activation-enabled` 仍为 true，空闲激活本身就会拉起
+该对话框。release 15 将其置 false（`distro 3afeeab`），285H 实测 kill 进程后
+`pgrep` 无 `--session-idle` 复活、桌面保持可见，DPMS 未动；门禁同步加该键的
+`want_line` 与 spec 的 `want_text`，本地 `--source .` 通过（`agent-linux
+b0994c1`）。② 面板钉住：285H 现役 `~/.config/ukui/panel.conf` 只钉 peony，
+故左侧面板无浏览器与终端入口；树内 release 14 起把 `airymax-panel.conf`
+落 `/etc/skel`，新用户首登即带 firefox 与 terminal，属旧镜像落后而非缺包
+（`firefox-153.6.0` 与 `firefox.desktop` 均在位、无 NoDisplay）。③ 触控板：
+`ELAN06FA:00 04F3:3293` 枚举为 input16/event11，PROP=5（BUTTONPAD|POINTER），
+KEY 含 BTN_LEFT，libinput 接管且 Tapping/DWT/滚动均开；用户「不爽滑」归因于
+X 走 fbdev、GLX 为 llvmpipe 的全程软渲染（`kscreen_backend_launcher` 与
+`kglobalaccel5` 的 SIGSEGV 同源），与 0.0.5 内核基线同议题，驱动归属无缺陷，
+物理复验待 release 15 装机。④ 取证污染口径：本轮为复验 HDA 停顿换入的未签名
+`snd-hda-core.ko` 使 `taint=12288`（bit12+13）并致冒烟 T6 转红，干净重装后
+归零，不计入镜像缺陷。本轮无 WP 状态变更。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
