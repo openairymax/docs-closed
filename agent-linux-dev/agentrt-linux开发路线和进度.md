@@ -123482,6 +123482,36 @@ riscv64 无 firefox 的跨架构分流见 0.0.5 方案 §5.11。⑥ 发布链：
 第 16 步「Build kernel RPM (4 architectures)」，17~22 步 pending；`/dev/sda` 为
 59G USB 盘（`RM=1`、`TRAN=usb`），现载旧 AirymaxOS ISO 且未挂载，可整盘覆盖。
 
+复核记录（2026-11-09，控制台可读性与镜像新鲜度）：本轮仍**无 WP 状态变更**
+（无一条实机验收级证据产生），产出两项树内修正与一条取证前提的澄清。
+① 控制台字体：285H 的 VT 为 360x112（tty1）与 180x56（tty2），即 8x16 字体在
+2880x1800 屏上的铺法，字形高度不足 6 像素，中文与阶段行都读不出形状——用户
+报的「开机打印乱码」在机上就是这一层。`/etc/vconsole.conf` 归 `systemd-udev`
+所有，发行包只能在 `%post` 里按行改 `FONT=`，故 release 14 收敛为
+`FONT="latarcyrheb-sun32"`（16x32，落在 kbd 自带的 512 字形集内），机上复验
+两路几何分别为 180x56 与 90x28，机制成立但字号仍偏小，随 release 14 装机后
+按新几何重判。② 判据：冒烟新增 T22 的字体几何断言（读 PSF2 头偏移 24/28，
+低于 12x24 判负），并给 `test_run_smoke` 补上 `/etc/vconsole.conf` 与 PSF2
+头夹具，另加 PSF1、8x16、字体缺席三个负例（`distro 6424597`、`7e9bc53`）；
+此前 os-chk-verify 在 `f917840` 上五项转红，根因是该断言在沙箱里读不到配置
+文件，不是产品缺陷。③ N-05 改判：11-08 记录判「关于页桌面行无第二数据源、
+本版不动」，其后改为由本地控制中心补丁读 `/etc/airymaxos/desktop-version`，
+release 14 装入该文件（`UKUI 3.1.2`，与台账 ukui-control-center 的 Version
+同值，`ukui_check.py` 已按此校验），`ukui-session` 的硬编码一处不再影响该行；
+实机未验，0.0.5 §5.8 的顺延条目相应收窄。④ 取证前提：285H 现役镜像为
+`airymaxos-release-0.0.4-7`/`airymaxos-system-0.0.4-47`，`/etc/airymaxos/`
+目录不存在、`/usr/lib/airymaxos/scripts/ui.sh` 为中文阶段名旧版、
+`airymaxos-net-doctor.service` 为 `not-found`，持久 journal 只剩本次两次开机
+（30M，`/var/log/journal` 已存在）——B50 与 285H 首烧无网的现场证据在本机已
+不可回溯，只能由干净重装后的首启取证，`net-online.sh` 门禁与 `net_doctor.sh`
+的 `AIRYMAX-NET` 单行结论均已在树内，重装即可判。⑤ 触控板口径修正：用户
+实测「轻点、滚动有效，就是不爽滑」，即归属与手势已正确，剩余观感归因于
+`00:02.0 [8086:7d51]` 无驱动、X 走 fbdev、GLX 为 llvmpipe 的全程软渲染，
+不再按驱动归属缺陷追。⑥ 流水线：`0cf8016` 上的 image-build（`42590114302`）
+缺内核 `d558cf7fec30` 的 i915 等待修复与 release 14，已取消；新 build 派发在
+`129a233`（含三项：内核等待修复、16x32 字体、desktop-version），完成前不做
+实机结论。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
