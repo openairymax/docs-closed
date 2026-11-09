@@ -123510,7 +123510,18 @@ release 14 装入该文件（`UKUI 3.1.2`，与台账 ukui-control-center 的 Ve
 不再按驱动归属缺陷追。⑥ 流水线：`0cf8016` 上的 image-build（`42590114302`）
 缺内核 `d558cf7fec30` 的 i915 等待修复与 release 14，已取消；新 build 派发在
 `129a233`（含三项：内核等待修复、16x32 字体、desktop-version），完成前不做
-实机结论。
+实机结论。⑦ 验收冒烟复核：285H 的 `airymax-smoke-report.service` 为
+`failed`、系统 `degraded`，`/var/log/airymax/smoke.tap` 两条 `not ok` 逐条定性
+——T6「kernel identity」命中的是上一轮为复验 HDA 停顿而换入的**未签名**
+`snd-hda-core.ko`（`taint=12288`），属取证手段污染，不计入镜像缺陷，重装后自
+消失；T23「system inventory」命中的 `failed airymax-smoke-report.service` 是
+自指信号，树内 `T23_EXCLUDE` 已排除该单元（`run-smoke.sh:114`），285H 现役
+`airymax-system-47` 尚未带上，属旧镜像行为。同轮 T23 记下的
+`packages drift ... extra=27` 与 `errors=40 owned=1 foreign=4`（ACPI BIOS 表）
+维持既有债号，不改变判定。另记两处低优先现场：`pulseaudio: Daemon already
+running` 每次登录各一次（会话内自启与单元自启重叠，未影响出声）、`dhclient`
+对路由器下发的 option 15 报 `Invalid domain name`（对端缺省值不规范，不影响取
+址）。本轮无 WP 状态变更。
 
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
