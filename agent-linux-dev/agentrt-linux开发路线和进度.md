@@ -123557,6 +123557,26 @@ X 走 fbdev、GLX 为 llvmpipe 的全程软渲染（`kscreen_backend_launcher` �
 `os-chk-verify` 在 `b50921e`/`492c192` 两轮为绿；v0.0.4 发布页仍 held 未
 promote，promote 的前置仍是 285H 实机 `AIRYMAX-SMOKE-PASS` 证据。
 
+复核记录（2026-11-12，代码度量棘轮）：本轮仍**无 WP 状态变更**，把 QG-01
+（重复率 <3%）与 QG-02（圈复杂度 <2.5）从「只有文字目标」变成有判据的棘轮
+（`agent-linux 89f7bab`）。① 先测量再定规则：全树实测圈复杂度均值 3.70、重复率
+6.17%、cc>10 的函数 116 个、连续 6 行重复窗口 380 个——直接按目标值硬判全树，
+唯一过关方式是机械拆函数，与「稳定性优先」冲突，故采用「存量登记 + 只降不增 +
+新代码判红」：现状逐项写入 `ci/quality-baseline.json`（116 个函数名、380 个窗口），
+新增超标函数与新增重复片段当场判红，`--update` 拒绝抬高任何一项数量（改名换登记
+放行，首次建档放行），目标差额每轮打印。② 口径边界写死在 `ci/quality_metrics.py`
+文件头：只量 shell 与 python（`kernel/` 属上游、ALK-01 要求内核零改动；tests 与
+fixture 不量）；重复按连续 6 行规范化窗口的 sha1 计，只数出现 ≥2 次的窗口；python
+圈复杂度走 AST（嵌套 `def` 的判定点不摊给外层），shell 走行内关键字与 `&&`/`||`。
+③ 门禁自身也过门禁：初版 `ci/gates/quality-metrics.sh` 与 `base-eol.sh` 的参数解析
+在规范化后完全相同，被判重复；改为不含 `--source` 的薄包装（度量根由实装位置决定，
+根只在一处定义），重复随之消除。④ 挂进 `ci/lint.sh` 第 4 项（八件事→九件事），
+复用函数名门禁的 `roots` 数组，`--no-distro` 时两侧同口径跳过。⑤ 验证：
+`ci/tests/test_quality_metrics.sh` 10 条负例驱动断言全过（首次建档、基线内通过、
+新增超标判拒、`--update` 拒登新超标、去超标后通过、tests/fixture 不计量、新增重复
+判拒、`--update` 拒登新重复、python 建档、python AST 登记后通过）；`bash ci/lint.sh`
+全绿（含 distro 1085 个单测）；发布页状态与 promote 前置不变。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
