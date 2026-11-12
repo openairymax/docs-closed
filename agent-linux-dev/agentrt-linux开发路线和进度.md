@@ -123544,6 +123544,19 @@ X 走 fbdev、GLX 为 llvmpipe 的全程软渲染（`kscreen_backend_launcher` �
 `snd-hda-core.ko` 使 `taint=12288`（bit12+13）并致冒烟 T6 转红，干净重装后
 归零，不计入镜像缺陷。本轮无 WP 状态变更。
 
+复核记录（2026-11-12，离线代码质量收口）：本轮仍**无 WP 状态变更**，全部是提交期
+判据补强，不依赖 285H 在场。① 函数名门禁由 shell 扩到 python：`ci/name_lint.py`
+改用 AST 取材，注释、文档串与字符串里的 `def` 不再被当成定义，类方法与嵌套函数
+按解释器名字表计入；不可解析的文件记 `E001` 并计为缺陷，不静默跳过。全仓 334 个
+文件 0 超标（shell 138、python 196），此前分四批压掉的 118 个 python 长名自此有
+判据兜住。② G-03 落地：`ci/gates/session-closure.sh` 增 `model_free`，扫交付面
+（kickstart、桌面/登录/引导/构建脚本、spec scriptlet、运行时工具）里的 DMI 探测、
+机型名与 PCI ID 字面量，命中按 `文件:行` 逐条报出；`ci/`、测试夹具与文档不在扫描
+面，行首注释白名单保证「此处故意不认某机型」的解释能写进交付面。回归 46 项，
+真实树 `--source .` 无命中。③ 两条判据均已挂进 `./ci/ci.sh lint`（八件事），
+`os-chk-verify` 在 `b50921e`/`492c192` 两轮为绿；v0.0.4 发布页仍 held 未
+promote，promote 的前置仍是 285H 实机 `AIRYMAX-SMOKE-PASS` 证据。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
