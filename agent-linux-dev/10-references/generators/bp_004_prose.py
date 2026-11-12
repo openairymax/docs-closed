@@ -1917,7 +1917,7 @@ tag       = seed-<arch>-<input_key 前 16 位>
 仓库（`ghcr.io/openairymax/airymaxos`）的 `attest-<tag>` 上，与它描述的镜像并排。要点：
 
 1. **两类发行物共用一条 subject 路径**：生成与校验都只认「名字<TAB>摘要」这一中间形态，
-   差别只剩「名字从哪来」——iso 取装配目录里那唯一一盘，rel 取 `airy_assets_want`。
+   差别只剩「名字从哪来」——iso 取装配目录里那唯一一盘，rel 取 `airy_asset_want`。
    校验器因此不必按种类分支，也就不会出现「ISO 查得严、资产查得松」。
 2. **资产集不另立清单**：直接复用 `ci/lib/release-assets.sh` 的期望集，与剪枝、对账同一份
    事实源。三处各算一遍，第一次新增资产时就会分叉；`oci-image-<tag>.tar` 只经 ghcr 交付，
