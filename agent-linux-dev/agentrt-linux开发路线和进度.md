@@ -123577,6 +123577,36 @@ fixture 不量）；重复按连续 6 行规范化窗口的 sha1 计，只数出
 判拒、`--update` 拒登新重复、python 建档、python AST 登记后通过）；`bash ci/lint.sh`
 全绿（含 distro 1085 个单测）；发布页状态与 promote 前置不变。
 
+复核记录（2026-11-12，复杂度与重复治理第一批）：本轮仍**无 WP 状态变更**，按
+「找根因系统性修复、不打补丁」的口径把 QG-01/QG-02 从登记转入实降，逐函数拆解并
+逐笔 `commit` 推送。① 判据不动、口径不动：每笔只改实现结构，判据顺序、报错文案与
+退出码逐字保留，验证方式是「同一批输入跑旧实现与新实现，逐字节比对 stdout/stderr/
+退出码」。② shell 侧两处最重的内嵌程序移出：`ci/gates/attest.sh:att_check`（20）
+抽成 `ci/lib/attest_check.py`，判据只剩一份实现，供生成后自检、发布前复核与装机侧
+反查共用；`ci/gates/llm-offline.sh` 的三份对外契约（JSON 判定/行式输出/状态文件）
+合并为 `ci/lib/llm_contract.py`，差分 29 例（含非法 JSON）一致，唯一差异是 traceback
+帧文件名。③ python 侧按判据语义拆：`abi_check.py:print_report` 18→3、
+`defconfig_matrix.py:_arch_schema` 18→1、`ci/check-workflows.py:check_doc` 16→3、
+`sc_tri_compile.py:parse_sc_xml` 17→1、`farm_preflight.py:Preflight.__post_init__`
+19→1；`farm_types.py` 的四个 frozen dataclass 与 `farm_runner.py:RawRun` 共用的
+套件元组与机型集合校验合并为一份实现（`_need_suites`/`_need_machines` 复用
+`_need_suite_mem`/`_need_tup`），两处 `__post_init__` 由 17/16/13/16 降到分派。
+④ 选择器与渲染器按模式拆：`airy_rollback.py:pick_snap` 16→3（按 `--snapshot`/
+`--to`/默认三路）、`ci/lib/hwcap.py:emit` 15→3（行式与 JSON 两种形态各自成渲染
+函数，真实根上两种形态差分逐字节一致）。⑤ 组处理去重：`tools/repo/validate-ssot.py`
+的两个规则域各写一遍相同的四段循环，合并为 `_collect`/`_record`/`_expand`，对
+`ssot-registry.yaml` 的 2297 条规则与一份含区间/废弃/离散条目的人工样本做新旧差分，
+登记表逐键相等——这一笔同时把自重复窗口 17 个清零。⑥ 门禁自身的判据也按失败面拆：
+`session-closure.sh:check_root` 17→1（dconf 链/sudoers/座位/锁屏鉴权/PAM 顺序，
+回归 46 项全过）、`wallpaper-set.sh:chk_src` 17→1（实物与摘要/spec 落点/注册表/
+旧别名）。⑦ 度量演进：圈复杂度均值 3.70 → 3.57，超 10 的函数名 116 → 94（目标
+2.5 与 0）；重复率 6.17% → 2.00%，重复窗口 380 → 134（均已越过 3% 目标，棘轮
+仍只降不增）。`ci/name_lint.py` 344 文件 0 超标；`ci/lint.sh` 全量通过（含 distro
+1085 项单测）。⑧ 剩余高点集中在子模块：`distro/scripts/lib/closure.sh:cl_args`
+（19）、`system/tools/units_lint.py:check_dir`（19）/`_body_bad`（18）、
+`distro/tools/ks_embed.py:audit`（18）、`distro/lockfile/base_check.py:check_repo`
+（18），须在子仓提交后父仓 bump。发布页状态与 promote 前置不变。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
