@@ -123607,6 +123607,33 @@ fixture 不量）；重复按连续 6 行规范化窗口的 sha1 计，只数出
 `distro/tools/ks_embed.py:audit`（18）、`distro/lockfile/base_check.py:check_repo`
 （18），须在子仓提交后父仓 bump。发布页状态与 promote 前置不变。
 
+复核记录（2026-11-13，复杂度与重复治理第二批）：本轮仍**无 WP 状态变更**，接续
+第一批把 `tools/` 侧最高圈复杂度从 9 降到 8，六笔提交只改实现结构、不动判据。① 手
+法固定为「装配器 + 单项谓词」：外层只留遍历与聚合，逐项校验移入具名私有函数，报错
+文案、判据顺序与退出码逐字保留；每笔均以对应目录的既有用例回归（`tools/*/tests`
+全绿）。② 发布链：`release_manifest.py` 的 `produce` 条目校验抽 `_argv_errs`，
+`recipe` 校验抽 `_recipe_one`，`replay` 按「头判定 / 命令重放 / 证据核验」拆三段；
+`nightly.py` 的 helper 字段校验做成 `HELPER_FIELDS` 表驱动，trigger 规则拆
+`_cron_list` 与 `_forbid_probs`，门禁 job 校验抽 `_helper_job`。③ 契约与仓库工具：
+`sc_tri_compile.py` 的 XML 号段解析抽 `_xml_sys`，`fallback_check` 的开启/关闭失败
+面各成收集器；`validate-ssot.py` 的文档扫描拆 `_mark`/`_text_of`/`_scan_text`；
+`aggregate-subrepo-ci.py` 把 CI 运行判定抽 `_runs_hit`；`lib/manifest_io.py` 的环
+境前置校验抽 `_env_bad`。④ 构建与镜像工具：`airy_flash.py` 的校验和解析拆
+`_bare_name`/`_sum_pair`，写盘拆 `_write_all`/`_copy_stream`——拷贝异常的偏移量改
+由内层真实计数上报，修掉外层恒报 0 的隐患；`repo_scaffold.py` 拆 `_cmake_skip` 与
+`_cmake_token`；`kunit-tap-diff.py` 拆 `_ktap_rows`/`_ktap_fails`；`farm_types.py`
+与 `farm_tapagg.py` 的 `__post_init__` 分别按可选字段表、套件与汇总两段拆。
+⑤ 发行与配置检查：`os_chk.py` 拆 `_need_version`/`_need_gates` 与 `_setup`/`_exec`，
+`osaccrt_store.py` 抽 `_day_packs`，`osaccrt_img.py` 抽 `_need_runs`/`_need_img`，
+`defconfig_matrix.py` 抽 `_arch_key`/`_arch_flags`、`_fmt_line`/`_fmt_file` 与
+`_lsm_value`/`_lsm_names`，`abi_check.py` 抽 `_range_dups`/`_range_oob`、`_xref_one`
+与 `_sw_core`。⑥ 度量演进（`tools/` 口径，最新提交 `714422a`）：函数 1396→1445，
+有效行 15823；圈复杂度均值 3.20→3.13，超 10 的函数 116→0；重复率 0.69%→0.68%，
+重复窗口 156→18（棘轮只降不增）；`ci/name_lint.py` 0 超标，棘轮通过。⑦ 剩余高点
+均为 cc=8：`abi_check.py:_bl_calls`、`abi_check.py:main`、
+`ci_matrix.py:_excl_problems`、`release_manifest.py:_active_errs`、
+`merge_sbom.py:_collect_lists`。发布页状态与 promote 前置不变。
+
 | 模块 | WP | 任务 | WP 待启动 | WP 进行中 | WP 已验收 |
 |---|---|---|---|---|---|
 | L | 12 | 462 | 12 | 0 | 0 |
