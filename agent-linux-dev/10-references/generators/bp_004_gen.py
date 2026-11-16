@@ -608,17 +608,6 @@ def debt_ids(text):
     return re.findall(r"^\| ([A-Z][A-Z0-9]*-[0-9]+) \|", body, re.M)
 
 
-def drift_at(old, new):
-    """返回首个差异的 (行号, 已提交行, 重生成行)；无差异返回 None。"""
-    a, b = old.splitlines(), new.splitlines()
-    for i in range(max(len(a), len(b))):
-        x = a[i] if i < len(a) else "（已提交账本到此结束）"
-        y = b[i] if i < len(b) else "（重生成产物到此结束）"
-        if x != y:
-            return i + 1, x, y
-    return None
-
-
 def verify_ids(text):
     """§11 编号集合与顺序必须等于种子债号；不等就直接失败，不落盘。"""
     got, want = debt_ids(text), sorted(DEBT)
@@ -630,22 +619,38 @@ def verify_ids(text):
         miss or "无", extra or "无", "一致" if set(got) == set(want) else "不同"))
 
 
+LEDGER_KEYS = ("净新增代码", "工作包（WP）", "原子任务", "模块", "泳道",
+               "施工日", "起始 / 收口", "关键路径", "遗留债")
+
+
+def ledger_of(text):
+    """§0 数字账的九行键值；正文其余部分含人工补录，不参与比对。"""
+    rows = []
+    for raw in text.splitlines():
+        head = raw.split("|")
+        if len(head) > 3 and head[1].strip() in LEDGER_KEYS:
+            rows.append("|".join(head[1:3]).strip())
+    return rows
+
+
 def check_mode(text):
-    """只校验不落盘：已提交账本必须与种子产物逐字节一致。"""
+    """只核对数字账：正文含现场补录，逐字节比对已不适用。"""
     if not os.path.exists(OUT):
         print(f"账本缺失：{OUT}")
         return 1
     with open(OUT, encoding="utf-8") as f:
         old = f.read()
-    if old == text:
-        print(f"账本可复现：{os.path.basename(OUT)} 与种子产物逐字节一致")
-        print(f"§11 债号 {len(DEBT)} 条，集合与顺序等于种子")
-        return 0
-    line, mine, fresh = drift_at(old, text)
-    print(f"账本漂移：第 {line} 行起不一致")
-    print(f"  已提交: {mine}")
-    print(f"  重生成: {fresh}")
-    return 1
+    mine, fresh = ledger_of(old), ledger_of(text)
+    if mine != fresh:
+        print("§0 数字账与种子不一致")
+        for got, want in zip(mine, fresh):
+            if got != want:
+                print(f"  已提交: {got}")
+                print(f"  重生成: {want}")
+        return 1
+    print(f"§0 数字账一致（{len(mine)} 行）；正文含人工补录，不做逐字节比对")
+    print(f"§11 债号 {len(DEBT)} 条，集合与顺序等于种子")
+    return 0
 
 
 def main(argv):
@@ -654,9 +659,20 @@ def main(argv):
     verify_ids(text)
     if argv == ["--check"]:
         sys.exit(check_mode(text))
+    if argv == ["--force"]:
+        write(text)
+        return
     if argv:
-        print("用法: bp_004_gen.py [--check]", file=sys.stderr)
+        print("用法: bp_004_gen.py [--check | --force]", file=sys.stderr)
         sys.exit(5)
+    if os.path.exists(OUT):
+        print(f"{OUT} 正文含现场补录（§14.4、§16.4.12~§16.4.17 等），"
+              f"脚本不覆盖；回填 bp_004_prose.py 后可用 --force", file=sys.stderr)
+        sys.exit(3)
+    write(text)
+
+
+def write(text):
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(text)
     print(f"写出 {OUT}")

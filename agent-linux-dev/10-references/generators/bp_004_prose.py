@@ -2275,7 +2275,7 @@ Fn 快捷键动作映射。
 | 触控板 | `00:15.0 [8086:7778]` 的 `lspci -k` 只有 Subsystem、无 `Kernel driver in use`；`/sys/bus/i2c/devices` 只有 `i2c-0`；`/proc/bus/input/devices` 无触控板条目 | 当前 ISO 未含 HW-02 补丁，正是该行的「修前态」 |
 | 内核稳定性 | `tainted=0`；`dmesg` 中 `Call Trace`/`BUG:`/`Oops`/`WARNING:` 合计 0 条，MCE 0 条；当日 3 次开机，上一次为 `systemd-shutdown` 正常关机；本次已连续运行 41 分钟、load 0.37 | ALK 内核本时段无崩溃、无污染、无硬件错误 |
 | 固件层 | 32 条 `ACPI Error: AE_ALREADY_EXISTS`、34 条 `ACPI BIOS Error (bug)`（`_UPC`/`_PLD` 重复创建）、2 条 `\_SB.PC00.LPCB.MXTP` 解析失败、2 条 `\_TZ.TZ00._TMP` 连带失败 | 主板 DSDT 缺陷，固件层，不计入 T23 预算 |
-| 功耗/热预算 | `proc_thermal_pci 0000:00:04.0: failed to add RAPL MMIO interface`；`/sys/class/powercap/` 为空 | 内核依赖，HW-08 顺延 |
+| 功耗/热预算 | `proc_thermal_pci 0000:00:04.0: failed to add RAPL MMIO interface`；`/sys/class/powercap/` 为空 | 内核依赖，HW-09 顺延 |
 | 温度传感器 | `thermal_zone5 (iwlwifi_1)` 开机期读失败一次（`-61`），网卡就绪后读到 41000 m°C | 瞬态，非缺陷 |
 | 无线 | 第 20 分 23 秒 4 条 `iwlwifi Unhandled alg: 0x703`，同期 NM 无 disconnect | 丢帧观测，判据口径见 0.0.5 §4.1 |
 | 开机时延 | firmware 7.95s + loader 3.77s + kernel 0.91s + userspace 2.96s = 16.7s | 内核段 0.91s 无优化空间；firmware/loader 归 BIOS |
@@ -2378,6 +2378,7 @@ Add Intel Arrow Lake-H LPSS PCI IDs"）。它与被顺延的 HW-01 性质不同�
 | HW-01 | 无 KMS、无硬件加速、无背光 | 内核不含 ARL-H 显示支持（`i915` 无该 ID、无 `xe`） | 顺延，0.0.4 不以任何形式绕过（不做 DKMS） | 顺延期内不参与验收 | 是 | 0.0.x 之后 |
 | HW-02 | 触控板不存在 | 不是 config 缺项（`CONFIG_I2C_DESIGNWARE_PCI=y` 已在）：`intel-lpss-pci.c` 的 ID 表缺 ARL-H 的 `8086:7778` 等 12 个 ID，`\_SB.PC00.I2C0` 无驱动绑定，`i2c-hid` 无总线可枚举 | 回移上游 `6112597f5ba8`，只加 ID 表 | `/proc/bus/input/devices` 出现 Touchpad 且 `xinput list` 有 Touchpad 设备 | 是（已收回本版） | 0.0.4 已落（2026-11-07 285H 运行期实证：树外模块 insmod 后 5 条 DesignWare 总线 + `i2c-ELAN06FA:00` + `hid-multitouch` 绑定 `0018:04F3:3293`，X 侧 id=17；见 §19.5） |
 | HW-03 | 亮度滑条无效 | 背光设备由 KMS 注册，无 KMS 即无设备 | 依赖 KMS 的一半顺延；用户态入口（Fn/工具）仍做 | `airy-bright` 存在且可读回当前值；键背光可写可回读 | 部分 | 0.0.4 部分（用户态入口已落：`system/bin/airy-bright` + I-25 的 sysfs 读回；`/sys/class/backlight` 仍为空属 HW-01 的 KMS 依赖，顺延） |
+| HW-09 | 285H 无任何 RAPL 能量计数器，`/sys/class/powercap` 只有 `AC`/`BAT`，整机功耗无法按域读回 | 两条通路各断一处：MMIO 侧 `proc_thermal_pci` 不接受固件 BAR（`failed to add RAPL MMIO interface`）；MSR 侧 `intel_rapl_common.c` 的 `rapl_ids[]` 只到 `METEORLAKE_L`，ARL-H（`model 197` = `0xC5`）不命中，`intel_rapl_msr` 无平台设备可绑 | 按上游把 `ARROWLAKE_H/S/U`、`LUNARLAKE_M` 补进 `rapl_ids[]`（`rapl_defaults_core`），重建内核包；不在用户态造替代计数器 | `/sys/class/powercap/intel-rapl:0/energy_uj` 可读，且两次读数之差随时间递增 | 是 | 0.0.5 |
 
 #### 19.6.3 与通用性冲突的已落改动（必须在 0.0.4 内改掉）
 

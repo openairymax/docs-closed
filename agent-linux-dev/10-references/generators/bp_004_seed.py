@@ -310,7 +310,15 @@ CUT_REASON = [
     dict(item="内核侧注入通道（/dev/airy 字符设备或新 sysfs 注入节点）", ver="顺延",
          why="同上；agent IPC 帧注入在既有通道无承载面，X-02 只以既有 /proc 与 "
              "policy 通道触发与回读，注入动作不受理即如实降级并留证"),
-    dict(item="285H GPU（8086:7d51）原生 KMS 驱动", ver="顺延", why="属上一条；本版只做交付面收敛与通用显示策略"),
+    dict(item="285H GPU（8086:7d51）原生 KMS 驱动", ver="0.0.4（ID 入表，默认不绑定）",
+         why="属上一条；本版只做交付面收敛与通用显示策略。2026-11-10 曾改判为「去掉 "
+             "mtl_info 的 require_force_probe、默认绑定」，285H 实测该内核重启后不再回来"
+             "（无网络、无 ARP 应答，只能断电恢复），失败启动日志尚未捕获，显示初始化"
+             "路径是首要嫌疑而非确诊；内核侧据此回退为保留门控（`af06521d24a0`），ID 表"
+             "（`4eea4aa6141a`）保留：`INTEL_MTL_IDS` 展开 10 个 ID，`0x7D51` 唯一映射到 "
+             "`mtl_info`，`mtl_info` 带 require_force_probe。故本版默认仍回落 simpledrm，"
+             "与 0.0.4-7 行为一致；KMS、背光与硬件加速随内核基线抬升顺延 0.0.5。"
+             "`i915.force_probe=7d51` 只作实验入口，不进默认 cmdline"),
     dict(item="触控板（`intel-lpss` 补 ARL-H PCI ID）", ver="0.0.4（本版追加）",
          why="原列「顺延」。实机复验后改为本版交付：根因是 `intel_lpss_pci_ids[]` 缺 "
              "`8086:7750/7751/7778/777a/777b`，与内核配置无关——`MFD_INTEL_LPSS_PCI=y` 与 "
