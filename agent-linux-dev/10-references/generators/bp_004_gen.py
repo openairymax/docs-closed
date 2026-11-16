@@ -12,9 +12,11 @@
 纪律：账本（§5~§8）的每一行数字都由本文件算出；散文不接受手写数字，只接受 c 字典里的值。
 
 用法:
-    python3 bp_004_gen.py            重写账本并打印总量
-    python3 bp_004_gen.py --check    只校验，不落盘：已提交账本与种子产物逐字节一致，
-                                     且 §11 债表的编号集合与顺序等于种子里的债号（DOC-01）
+    python3 bp_004_gen.py                  重写账本并打印总量
+    python3 bp_004_gen.py --apply-status   只回填 §5/§6（保留 §14.4 等现场补录）
+    python3 bp_004_gen.py --check          只校验，不落盘：已提交账本与种子产物逐字节一致，
+                                           §11 债表的编号集合与顺序等于种子里的债号（DOC-01），
+                                           §6 每张任务卡的状态等于其 WP 的声明
 """
 
 import math
@@ -200,6 +202,26 @@ SUCC = {w["id"]: [] for w in WPS}
 for _w in WPS:
     for _d in _w["deps"]:
         SUCC[_d].append(_w["id"])
+
+# ---------------------------------------------------------------- 推进状态
+
+ST_OK = "已验收"
+ST_DEFER = "顺延（§2.3）"
+
+WP_STATE = S.WP_STATE
+assert set(WP_STATE) == set(BYID), "WP_STATE 必须逐 WP 声明，且不得多出"
+for _k, (_st, _ev) in WP_STATE.items():
+    assert _st in (ST_OK, ST_DEFER), f"{_k} 的推进状态非法：{_st}"
+    assert _ev.strip(), f"{_k} 缺证据锚"
+
+DEFER = [k for k in ORDER if WP_STATE[k][0] == ST_DEFER]
+DEF_N = sum(NT[k] for k in DEFER)
+DEF_L = sum(BYID[k]["loc"] for k in DEFER)
+
+
+def st_cell(k):
+    """§6.0 的推进状态列：状态 + 证据锚。正文与断言共用同一算式。"""
+    return f"{WP_STATE[k][0]}：{WP_STATE[k][1]}"
 
 # 排程：泳道内串行，WP 间按依赖；每施工日每泳道推进 LANE_LOC_PER_DAY 行当量。
 # 施工日按「产能」而非「任务条数」计——细化任务粒度只增加检查点，不拉长日历。
@@ -416,12 +438,14 @@ def t_recon():
 
 
 def t_adj():
-    out = ["| WP | 名称 | 严格前驱 | 直接后继 | 片数 | 起 / 止施工日 |", "|---|---|---|---|---|---|"]
+    out = ["| WP | 名称 | 严格前驱 | 直接后继 | 片数 | 起 / 止施工日 | 推进状态（证据） |",
+           "|---|---|---|---|---|---|---|"]
     for k in ORDER:
         w = BYID[k]
-        out.append("| {} | {} | {} | {} | {} | D{} / D{} |".format(
+        out.append("| {} | {} | {} | {} | {} | D{} / D{} | {} |".format(
             k, w["name"], ", ".join(w["deps"]) if w["deps"] else "—",
-            ", ".join(SUCC[k]) if SUCC[k] else "—", NT[k], WP_START[k], WP_FIN[k]))
+            ", ".join(SUCC[k]) if SUCC[k] else "—", NT[k], WP_START[k], WP_FIN[k],
+            st_cell(k)))
     return "\n".join(out) + "\n"
 
 
@@ -455,11 +479,12 @@ def t_tasks(mod):
         out.append("| 任务 | 描述 | 产出物 | 净新增 LOC | 泳道 | 施工日 / 日历日 | 严格前驱 | 直接后继 | 状态 |")
         out.append("|---|---|---|---|---|---|---|---|---|")
         for t in [x for x in TASKS if x["wp"] == k]:
-            out.append("| {} | {}（{}） | {} | {} | {} | D{} / {} | {} | {} | 待启动 |".format(
+            out.append("| {} | {}（{}） | {} | {} | {} | D{} / {} | {} | {} | {} |".format(
                 t["id"], w["name"], role(t["idx"], n), art(w, t["idx"], n), PER_TASK,
                 t["lane"], t["day"], cal(t["day"]),
                 ", ".join(t["prev"]) if t["prev"] else "—",
-                ", ".join(t["next"]) if t["next"] else "—"))
+                ", ".join(t["next"]) if t["next"] else "—",
+                WP_STATE[k][0]))
         out.append("")
     return "\n".join(out)
 
@@ -488,6 +513,66 @@ def t_debt():
         owners = [w["id"] for w in WPS if d in w["debt"]]
         out.append(f"| {d} | {', '.join(owners)} | {DEBT[d]} |")
     return "\n".join(out) + "\n"
+
+
+def sec5():
+    """§5 全段：对账表 + 推进口径。与 build() 共用，回填时才能只换本节。"""
+    ok = len(WPS) - len(DEFER)
+    return "".join([
+        P.sec5_head(),
+        t_recon(),
+        "\n> 断言结果：总 LOC {:,} = Σ WP LOC；总任务 {} = Σ 片数；WP 总数 {}；三项差均为 0。"
+        "生成器在写出前执行，任一不等即不落盘。\n\n".format(TLOC, TTASK, len(WPS)),
+        "> 推进口径：{} 个 WP 中 **{} 个已验收**、**{} 个按图纸顺延**（{}，合计 {} 个任务 / {:,} 行，"
+        "承接版本见 §2.3）。全版 {} 张任务卡的状态逐卡等于其所属 WP 的声明，"
+        "由 `--check` 断言，不在 §6 逐卡手写。\n\n".format(
+            len(WPS), ok, len(DEFER), "、".join(DEFER) or "无", DEF_N, DEF_L, TTASK),
+    ])
+
+
+def sec6():
+    """§6 全段：邻接反查（含推进状态）+ 分模块任务卡。"""
+    parts = [
+        P.sec6_head(),
+        t_adj(),
+        "\n### 6.1~6.8 分模块任务卡\n\n"
+        "> 任务编号规则 `T<WP>-<序号>`；「状态」由所属 WP 的声明派生"
+        "（`bp_004_seed.py` 的 `WP_STATE`）：`已验收` 的证据锚见 §6.0，"
+        "`顺延（§2.3）` 的承接版本见 §2.3；逐卡不手写状态。\n\n",
+    ]
+    for i, m in enumerate(MODS, 1):
+        parts.append(f"### 6.{i} {m['id']} {m['name']}"
+                     f"（{len(m['wps'])} WP / {m['loc']:,} 行 / {m['nt']} 任务）\n\n")
+        parts.append(t_tasks(m["id"]))
+        parts.append("\n")
+    return "".join(parts)
+
+
+def apply_status():
+    """只把 §5、§6 两段换成生成结果。
+
+    §14.4 等现场补录必须原地保留，因此按章节标记切片替换，不做全文重写；
+    替换后立刻用 status_probs 自检，不合格不落盘。
+    """
+    if not os.path.exists(OUT):
+        print(f"账本缺失：{OUT}", file=sys.stderr)
+        return 1
+    with open(OUT, encoding="utf-8") as f:
+        old = f.read()
+    for mark in ("## 5. ", "## 6. ", "## 7. "):
+        if old.count(mark) != 1:
+            print(f"章节标记 {mark!r} 出现 {old.count(mark)} 次，无法定位", file=sys.stderr)
+            return 1
+    text = old[:old.index("## 5. ")] + sec5() + sec6() + old[old.index("## 7. "):]
+    probs, ok, df = status_probs(text)
+    if probs:
+        for p in probs[:20]:
+            print(p, file=sys.stderr)
+        return 1
+    with open(OUT, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"回填 §5/§6：任务卡 {TTASK} 张（已验收 {ok} / 顺延 {df}）")
+    return 0
 
 
 # ---------------------------------------------------------------- 正文拼装
@@ -539,20 +624,9 @@ def build():
             len(CP), c["cp_days"], c["cp_n"]),
         t_cp(),
         "\n",
-        P.sec5_head(),
-        t_recon(),
-        "\n> 断言结果：总 LOC {:,} = Σ WP LOC；总任务 {} = Σ 片数；WP 总数 {}；三项差均为 0。"
-        "生成器在写出前执行，任一不等即不落盘。\n\n".format(TLOC, TTASK, len(WPS)),
-        P.sec6_head(),
-        t_adj(),
-        "\n### 6.1~6.8 分模块任务卡\n\n"
-        "> 任务编号规则 `T<WP>-<序号>`；「状态」只有 `待启动`/`进行中`/`已验收` 三值，"
-        "初始全为 `待启动`，由施工时逐条推进。\n\n",
+        sec5(),
+        sec6(),
     ]
-    for i, m in enumerate(MODS, 1):
-        parts.append(f"### 6.{i} {m['id']} {m['name']}（{len(m['wps'])} WP / {m['loc']:,} 行 / {m['nt']} 任务）\n\n")
-        parts.append(t_tasks(m["id"]))
-        parts.append("\n")
 
     parts += [
         "## 7. 逐日排程总表\n\n"
@@ -633,6 +707,62 @@ def ledger_of(text):
     return rows
 
 
+TID = re.compile(r"^([A-Z][A-Z0-9]*-\d+)-\d{2,3}$")
+
+
+def cells_of(line):
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def card_states(text):
+    """§6.1~6.8 的 (任务号, 状态) 序列。"""
+    body = text.split("### 6.1~6.8", 1)[1].split("## 7. ", 1)[0]
+    out = []
+    for line in body.splitlines():
+        if not line.startswith("| "):
+            continue
+        cs = cells_of(line)
+        if len(cs) == 9 and TID.match(cs[0]):
+            out.append((cs[0], cs[-1]))
+    return out
+
+
+def adj_states(text):
+    """§6.0 邻接表的 (WP, 推进状态) 序列。"""
+    body = text.split("### 6.0", 1)[1].split("### 6.1~6.8", 1)[0]
+    out = []
+    for line in body.splitlines():
+        cs = cells_of(line)
+        if len(cs) == 7 and cs[0] in BYID:
+            out.append((cs[0], cs[-1]))
+    return out
+
+
+def status_probs(text):
+    """§6 状态与种子声明的一致性；返回 (问题列表, 已验收数, 顺延数)。"""
+    probs, ok, df = [], 0, 0
+    if "### 6.0" not in text or "### 6.1~6.8" not in text:
+        return ["§6 结构缺失：找不到 6.0 或 6.1~6.8"], 0, 0
+    cards = card_states(text)
+    if len(cards) != TTASK:
+        probs.append(f"任务卡 {len(cards)} 张，应为 {TTASK}")
+    for tid, st in cards:
+        k = TID.match(tid).group(1)
+        if st != WP_STATE[k][0]:
+            probs.append(f"{tid}: {st} != {WP_STATE[k][0]}")
+        if st == ST_OK:
+            ok += 1
+        else:
+            df += 1
+    adj = adj_states(text)
+    if len(adj) != len(WPS):
+        probs.append(f"§6.0 行数 {len(adj)}，应为 {len(WPS)}")
+    for k, cell in adj:
+        if cell != st_cell(k):
+            probs.append(f"§6.0 {k}: 状态列与声明不一致")
+    return probs, ok, df
+
+
 def check_mode(text):
     """只核对数字账：正文含现场补录，逐字节比对已不适用。"""
     if not os.path.exists(OUT):
@@ -650,6 +780,14 @@ def check_mode(text):
         return 1
     print(f"§0 数字账一致（{len(mine)} 行）；正文含人工补录，不做逐字节比对")
     print(f"§11 债号 {len(DEBT)} 条，集合与顺序等于种子")
+    probs, ok, df = status_probs(old)
+    if probs:
+        print("§6 状态与种子声明不一致：")
+        for p in probs[:20]:
+            print(f"  {p}")
+        return 1
+    print(f"§6 状态一致：{len(WPS)} WP（已验收 {len(WPS) - len(DEFER)} / 顺延 {len(DEFER)}）；"
+          f"任务卡 {TTASK} 张（已验收 {ok} / 顺延 {df}）")
     return 0
 
 
@@ -659,11 +797,13 @@ def main(argv):
     verify_ids(text)
     if argv == ["--check"]:
         sys.exit(check_mode(text))
+    if argv == ["--apply-status"]:
+        sys.exit(apply_status())
     if argv == ["--force"]:
         write(text)
         return
     if argv:
-        print("用法: bp_004_gen.py [--check | --force]", file=sys.stderr)
+        print("用法: bp_004_gen.py [--check | --apply-status | --force]", file=sys.stderr)
         sys.exit(5)
     if os.path.exists(OUT):
         print(f"{OUT} 正文含现场补录（§14.4、§16.4.12~§16.4.17 等），"

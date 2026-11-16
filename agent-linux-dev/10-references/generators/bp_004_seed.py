@@ -354,3 +354,77 @@ ASSETS = [
     ("dnf 容器缓存（L0）", "`c335647`", "L-43 在其上做 L1，不重做 L0"),
     ("xserver 判据初版（HW-06 部分）", "`c786fca` / `3ce4bf0`", "I-26 升级为「KMS 有可枚举模式且 EDID 非空」"),
 ]
+
+# ---------------------------------------------------------------- WP 推进状态
+#
+# 全版 56 个 WP 的推进状态与证据锚，只有两类：
+#   已验收        产物与验收证据在位，锚指向本图纸内可复算的位置或门禁脚本；
+#   顺延（§2.3）  图纸 §2.3 已授权顺延，锚写明承接版本与不做的边界。
+# 任务卡的状态由本表逐 WP 派生，不在 §6 逐卡手写：同一事实只留一个事实源，
+# 改状态改这里，重跑 bp_004_gen.py --apply-status 回填 §5/§6。
+WP_STATE = {
+    # L 流水线与交付链
+    "L-40": ("已验收", "QG-06 内联块 0（`ci/check-workflows.py`）；build 21 装配 run 43792763141"),
+    "L-41": ("已验收", "`uses:` 全钉 40 位 SHA；治理规则与 `check-workflows.py` 逐条对应"),
+    "L-42": ("已验收", "`build-manifest.txt` 记四架构时刻与耗时；QG-08 预算可复算"),
+    "L-43": ("已验收", "QG-09 候选池 x86_64/arm64 命中（build 21 装配）"),
+    "L-44": ("已验收", "预热作业定时绿跑；产物按 digest 拉取（`image-build` 预热）"),
+    "L-46": ("已验收", "构建器语义改名后调用点全部更新；`ci/ci.sh` 全绿"),
+    "L-51": ("已验收", "BR-01：ISO 解包 openEuler 字样白名单外命中 0（§14.4 第 3 项）"),
+    "L-45": ("已验收", "§14.4 第 3/4 项：59 件资产 have==want；tag 树即产出树"),
+    "L-47": ("已验收", "`ci/lib/timing.sh` 分段计时（280585e）；稀疏 checkout 经核不采用（§17）"),
+    "L-48": ("已验收", "来源证明可查：§14.4 第 1 项 attestation 回读"),
+    "L-49": ("已验收", "新环境一条命令拉起（`dev-up`），`ci/ci.sh` 绿"),
+    "L-50": ("已验收", "`coupling-scan.sh` 60 declared / 60 found / delta 0；`baseline-coupling.md` §10"),
+    # T 烧录系统
+    "T-01": ("已验收", "`airy-flash` 子命令与 `--json` 齐备；`tools/airy-flash/tests` 99 项全绿"),
+    "T-02": ("顺延（§2.3）", "承接 0.1.x；本版只交整包引导盘，不做 ≤1 GB 分层"),
+    "T-03": ("顺延（§2.3）", "承接 0.1.x；install- 载荷通道与 digest 钉住不在本版"),
+    "T-04": ("已验收", "§14.4 第 6 项：plan/write/verify 全量回读 3 474 849 792 字节一致"),
+    # M 发行版工程与磁盘管理
+    "M-30": ("已验收", "§14.7 `airy-disk status` 三拓扑；设备类别过滤（rom/RM/TRAN）"),
+    "M-31": ("已验收", "§14.7 `layout` 与 `health` rc=0；破坏性操作二次确认"),
+    "M-32": ("已验收", "§14.7 `%pre` 选盘与 `lsblk` 逐字段一致（verdict=match）"),
+    "M-36": ("已验收", "§14.4 第 8 项：`/`=nvme0n1p3、`/data`=nvme0n1p5 独立 ext4"),
+    "M-33": ("已验收", "`ukui-delta.md` 仓库实测 NVRA；`ukui-424-feasibility.md` 成册"),
+    "M-34": ("已验收", "`os-release` NAME/PRETTY_NAME 品牌化；默认用户与组在 %pre 建"),
+    "M-35": ("已验收", "§14.10 ⑧：五段 baseurl 为 SP3；`base-eol.sh` 断言 EOL 晚于收口日"),
+    # R1 UKUI 追新与桌面适配
+    "R1-10": ("已验收", "`ukui-delta.md` 逐组件 NVRA 与 lockfile 逐字一致"),
+    "R1-11": ("已验收", "`ci/session-baseline.txt` 21 组件 / 23 进程；`run-smoke.sh` T1 逐项常在"),
+    "R1-12": ("已验收", "§14.4 第 10 项：会话冒烟 30/30，锁屏三条根因关闭"),
+    "R1-13": ("已验收", "comps 可解析；`dnf repoquery` 依赖闭包无缺项"),
+    "R1-14": ("已验收", "§14.10 ⑨：磁盘/网络/模型三项状态桌面可见（build 22 重装复验）"),
+    "R1-15": ("已验收", "`wallpaper-set.sh` 三张壁纸 digest 与清单逐字一致"),
+    # I 硬件使能与固件闭包
+    "I-20": ("已验收", "`fw-manifest.txt` 与 comps 一一对应；缺项构建期即红"),
+    "I-21": ("已验收", "§14.5：`cgroup_disable=files` 入 stale；`test_grub_args.py` 49 项"),
+    "I-22": ("已验收", "§14.6 显示按能力求交，无硬编码机型分支"),
+    "I-23": ("已验收", "§14.5：`grub_args.sh` 的 sync_brand/sync_env/sync_font 三收敛点"),
+    "I-24": ("已验收", "运行期探针读固件版本与加载状态（`fw-probe`）"),
+    "I-25": ("已验收", "§14.6 背光 `n/a no-screen-backlight` 如实降级；`test_hw_matrix.sh` 绿（fa7acb2）"),
+    "I-26": ("已验收", "§14.6 Xorg 判据：KMS 模式可枚举且 EDID 非空，285H 判 no-kms"),
+    "I-27": ("已验收", "回归器与例外清单成册；内核侧受理面按 §2.3 顺延 0.0.5"),
+    "I-28": ("已验收", "RTC 长停偏差阈值告警；超阈用例覆盖"),
+    "I-29": ("已验收", "§14.9 `net-online.sh --live` 联机成立（src=dhcp）；机内 T31 补 src 判据"),
+    # K 系统服务
+    "K-20": ("已验收", "§14.8.1 断网 `airy-model selftest` 八段全 ok"),
+    "K-21": ("已验收", "资产通道门禁纳入账户与权限声明（3c33da2）"),
+    "K-22": ("已验收", "§14.8.1 `state=degraded backend=cpu reason=no-accel`（rc=10 既定码）"),
+    "K-23": ("已验收", "§14.8.1 断网推理实跑 `/v1/completions` 正常"),
+    "K-24": ("已验收", "§14.7 `health=ok`；`/data` 可独立扩容"),
+    # X AirymaxRT
+    "X-01": ("已验收", "§14.9 `cpu.rt_runtime_us` 读出 `runtime=950000` 非 0"),
+    "X-02": ("已验收", "§14.9 root 下 `airy-probe status --json` readable=10/10"),
+    "X-03": ("已验收", "§14.9 `airy-rt-cap matrix --json` grade=soft、budget=yes"),
+    "X-04": ("已验收", "§14.9 基线 358 us、判负线 430 us；`baseline.py record` 重放 rc=0"),
+    "X-05": ("已验收", "桌面与 RT 按 slice 限额共存，降级显式并留证"),
+    # V 验证与验收
+    "V-10": ("已验收", "§14.6 五类矩阵 pass=3 na=1 fail=1，无静默跳过（QG-10）"),
+    "V-11": ("已验收", "`run-smoke.sh` TAP 1..31 判负集分层，逐项可复算"),
+    "V-12": ("已验收", "`session-closure.sh` 八步；§14.4 第 10 项冒烟 30/30"),
+    "V-13": ("已验收", "§14.4 第 2 项：ISO 内核 NEVRA 0.0.4-13 与页面资产同源"),
+    "V-14": ("已验收", "升级通道可下载/校验/回滚；装机 `dnf makecache` 四段成功"),
+    "V-15": ("已验收", "§14.10 ⑩：`systemctl --failed` 0、包闭包差 0；缺口登记成册"),
+    "V-16": ("已验收", "§14.4 第 9 项：tainted=0；全量 `.ko` 带 `.module_sig`"),
+}
