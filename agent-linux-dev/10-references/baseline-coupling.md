@@ -61,7 +61,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | BC-002 | 客户端 repo 五段 × 三根 baseurl | `distro/repo/airymax-os.repo:28` | E1 | `baseurl=https://repo.openeuler.org/openEuler-24.03-LTS-SP3…` | `grep -n 'openEuler-24.03-LTS-SP3' distro/repo/airymax-os.repo` | 15 条 baseurl（5 段 × 3 根）全改；段名 OS/update/EPOL 也随基底变 |
 | BC-003 | `%check` 硬断言 5/5/5 条 baseurl | `distro/specs/airymaxos-release.spec:398` | E1 | `test "$(grep -cF "baseurl=https://repo.openeuler.org/…` | `grep -n 'grep -cF "baseurl=https://repo.openeuler.org' distro/specs/airymaxos-release.spec` | 断言值与 `%global oe_base` 必须同步，否则 build 期即失败 |
 | BC-004 | 锁文件输入的五段仓库定义 | `distro/lockfile/rpms.in.yaml:21` | E1 | `baseurl: …/openEuler-24.03-LTS-SP3/OS/$basearch/` | `grep -n 'openEuler-24.03-LTS-SP3' distro/lockfile/rpms.in.yaml` | 五段改写；`rpms.lock.yaml` 需重新求解 |
-| BC-005 | 安装期 anaconda 源指向 SP3 | `distro/kickstart/airymaxos-workstation.ks:37` | E1 | `url --url=…/openEuler-24.03-LTS-SP3/OS/$basearch/` | `grep -n 'url --url' distro/kickstart/airymaxos-workstation.ks` | 装机源改写；离线载荷仓库名也要对齐 |
+| BC-005 | 安装期 anaconda 源指向 SP3 | `distro/kickstart/airymaxos-workstation.ks:37` | E1 | `url --url=…/openEuler-24.03-LTS-SP3/OS/$basearch/` | `grep -nE '^(url --url|repo .*--baseurl=https)' distro/kickstart/airymaxos-workstation.ks` | 装机源改写；离线载荷仓库名也要对齐 |
 | BC-006 | 基底选型校验器只认三类主机 | `distro/lockfile/base_check.py:34` | E1 | `HOSTS = ("repo.openeuler.org", "mirrors.tuna.tsinghua…` | `grep -n 'HOSTS = (' distro/lockfile/base_check.py` | 主机白名单、`FIRST` 前缀与 SP 正则全部重写 |
 | BC-007 | 镜像探针依赖 repodata 索引格式 | `distro/tools/mirror_probe.py:44` | E1 | `HREF = re.compile(r'href="([^"]*primary\.xml\.(?:gz…` | `grep -n 'HREF = re.compile' distro/tools/mirror_probe.py` | 新基底若用别的索引名/压缩格式，探针全线 0 KiB/s |
 | BC-008 | 载荷种子以清单文件为唯一输入 | `ci/gates/payload-seed.sh:78` | E2 | `readonly MIRRORS="${ROOT}/distro/repo/mirrors.list"` | `grep -n 'readonly MIRRORS=' ci/gates/payload-seed.sh` | 清单格式可复用，但内容需整份替换 |
@@ -97,7 +97,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 编号 | 耦合点 | 位置（路径:行号） | 证据级别 | 原文片段 | 复算命令 | 替换影响 |
 |---|---|---|---|---|---|---|
-| BC-021 | 底座 ISO 名称与摘要写死在 workflow | `.github/workflows/image-build.yml:89` | E1 | `OE_ISO_NAME: openEuler-24.03-LTS-SP3-netinst-x86_64-dvd.iso` | `grep -n 'OE_ISO_NAME' .github/workflows/image-build.yml` | 名称、摘要、介质类型（netinst/dvd）全部换 |
+| BC-021 | 底座 ISO/IMG 名称与摘要写死在 workflow | `.github/workflows/image-build.yml:89` | E1 | `OE_ISO_NAME: openEuler-24.03-LTS-SP3-netinst-x86_64-dvd.iso` | `grep -nE 'OE_(ISO|IMG)_NAME' .github/workflows/image-build.yml` | 名称、摘要、介质类型（netinst/dvd）全部换 |
 | BC-022 | ISO 以底座介质为母本改写 | `distro/scripts/build-iso.sh:256` | E2 | `if ! mkksiso "${args[@]}" "${WORK}/ks.cfg" "$ISO" "$PART" \` | `grep -n 'mkksiso "' distro/scripts/build-iso.sh` | 新基底若不用 lorax/mkksiso 结构，整段组装重写 |
 | BC-023 | 品牌器按 openEuler 菜单形状匹配 | `distro/tools/cfg_brand.py:82` | E1 | `BASE_NAME = re.compile(r"openeuler", re.IGNORECASE)` | `grep -n 'BASE_NAME = ' distro/tools/cfg_brand.py` | 三种标题规则、LEAK/ALLOW 全部随底座品牌改 |
 | BC-024 | 安装介质五个品牌面写死 | `distro/scripts/lib/iso_post.sh:196` | E1 | `for cfg in EFI/BOOT/grub.cfg isolinux/isolinux.cfg …` | `grep -n 'for cfg in EFI/BOOT/grub.cfg' distro/scripts/lib/iso_post.sh` | 新介质若无 isolinux/.discinfo/boot.msg，需按实际面重写 |
@@ -247,11 +247,11 @@ while IFS='|' read -r id path pat; do
   hits=$((hits + ${n:-0}))
   printf '%-7s %2s  %s\n' "$id" "${n:-0}" "$path"
 done <<'EOF'
-BC-001|distro/repo/mirrors.list|^https://repo.openeuler.org/openEuler-24.03-LTS-SP3
+BC-001|distro/repo/mirrors.list|^https://.*openEuler-24\.03-LTS-SP3
 BC-002|distro/repo/airymax-os.repo|openEuler-24.03-LTS-SP3
 BC-003|distro/specs/airymaxos-release.spec|baseurl=https://repo.openeuler.org
 BC-004|distro/lockfile/rpms.in.yaml|openEuler-24.03-LTS-SP3
-BC-005|distro/kickstart/airymaxos-workstation.ks|url --url=
+BC-005|distro/kickstart/airymaxos-workstation.ks|(url --url|repo .*--baseurl=https)
 BC-006|distro/lockfile/base_check.py|HOSTS = \(
 BC-007|distro/tools/mirror_probe.py|HREF = re.compile
 BC-008|ci/gates/payload-seed.sh|readonly MIRRORS=
@@ -267,7 +267,7 @@ BC-017|distro/tools/comps_lint.py|^UPSTREAM =
 BC-018|distro/tools/ks_lint.py|^UPSTREAM_EXCLUDES
 BC-019|distro/comps/airymaxos-comps.xml|>ibus<
 BC-020|distro/comps/airymaxos-comps.xml|基础仓库：openEuler
-BC-021|.github/workflows/image-build.yml|OE_ISO_NAME: openEuler
+BC-021|.github/workflows/image-build.yml|OE_(ISO|IMG)_NAME: openEuler
 BC-022|distro/scripts/build-iso.sh|mkksiso "
 BC-023|distro/tools/cfg_brand.py|BASE_NAME = 
 BC-024|distro/scripts/lib/iso_post.sh|for cfg in EFI/BOOT/grub.cfg
@@ -319,6 +319,25 @@ fi
 自检口径：`rows` 必须等于主表条数 60；`miss` 必须为 0。`hits` 是行数总和，
 允许大于 60（例如 BC-002、BC-032 在多个文件/多个架构行命中），不作为一致性
 判据。
+
+### 10.1 仓库侧门禁
+
+`ci/gates/coupling-scan.sh` 以本节主表为唯一事实源做两向对账：
+
+- 主表每行必须在实物中命中，否则报 `coupling/missing BC-NNN`；
+- 下列实物面里的基底声明行必须被主表正则覆盖，否则报
+  `coupling/undeclared 路径:行号`（文件有主表行时只认同一路径的正则；文件
+  没有主表行时按耦合形态匹配，覆盖同一耦合点落在多份配方的情形）：
+  `distro/repo/*.repo` 与 `mirrors.list`、
+  `distro/lockfile/{base,ukui-components,rpms.in}.yaml`、
+  `distro/kickstart/*.ks`、`distro/specs/**/*.spec` 里的
+  `Requires`/`BuildRequires`/`Obsoletes` 基底包、
+  `ci/container/Containerfile.agent-base`、`image-build.yml` 的介质名与
+  runner；注释行不计；
+- 主表条数必须等于 §9.1 的「耦合点总数」，删行不改总量同样判负。
+
+`--json` 输出 `{"declared","found","delta","total","missing","undeclared"}`。
+退出码 0 通过、1 对账失败、5 参数不满足。脚本只读，不写仓库内任何文件。
 
 
 
