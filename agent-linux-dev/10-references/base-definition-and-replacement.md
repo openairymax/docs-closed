@@ -67,6 +67,32 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 BuildRequires 递归展开，规模落在 **500–900 个源码包**。这个闭包才是 0.0.10–0.0.30 的真实标的。
 超出闭包的部分（尺度 A 的其余包）不进入替换计划。
 
+**逐域实物清点（2026-11-17 复算，回答「基底具体有哪些」）**：113 条 `packagereq` 按
+5 组分布——airymax-core 66、desktop-core 27、desktop 17、desktop-extras 3（复算命令：
+`grep -c '<packagereq' distro/comps/airymaxos-comps.xml` 与逐组 sed 计数）。按域归属与
+替换窗口如下：
+
+| 域 | 包数 | 代表包 | 目标自持 | 替换窗口 |
+|---|---|---|---|---|
+| 仓库面（W1） | 15 条 URL | `mirrors.list` 3 根 × 5 段 | S3 | 0.0.8–0.0.9 |
+| 构建宿主面（W5） | 94 行 | gcc、make、createrepo_c | S3 | 0.0.10–0.0.12 |
+| 包管理 | 4 | rpm、dnf、dnf-plugins-core、yum | S2 | 0.0.16–0.0.19 |
+| 存储工具 | 5 | e2fsprogs、xfsprogs、parted、lsscsi、sg3_utils | S1 | 0.0.16–0.0.19 |
+| 运行时底座 | 24 | glibc、systemd、util-linux、coreutils、bash、shadow、tuned | S1 | 0.0.20–0.0.23 |
+| 网络栈 | 12 | NetworkManager、wpa_supplicant、iproute、firewalld、curl | S1 | 0.0.20–0.0.23 |
+| 时间与日志 | 2 | chrony、rsyslog | S1 | 0.0.20–0.0.23 |
+| 内核与引导 | 9 | grub2-tools、grubby、kexec-tools、dracut-config-rescue、linux-firmware、irqbalance | S1/S0（firmware S0） | 0.0.24–0.0.26 |
+| 安装器链（W3） | — | anaconda、lorax、kickstart、plymouth | S2 | 0.0.24–0.0.26 |
+| 安全与身份 | 10 | selinux-policy-targeted、audit、sssd、openssh、sudo、authselect | S1/S2 | 0.0.27–0.0.29 |
+| UKUI 桌面 | 47 | ukui-kwin、ukui-panel、peony、qt5-ukui-platformtheme | S2 | 0.0.27–0.0.29 |
+| 桌面应用与输入 | 6 | ibus、ibus-libpinyin、mate-terminal、firefox | S0/S1 | 0.0.27–0.0.29 |
+
+清点口径：core 66 项逐包归类为上表第 2–8 行（运行时底座 24 + 包管理 4 + 网络 12 +
+存储 5 + 安全身份 10 + 时间日志 2 + 内核引导与硬件取证 9 = 66，其中 usbutils、lshw
+归入内核引导域的硬件取证位）；desktop-core 27 + desktop 17 + extras 3 = 47 归入
+UKUI 桌面与桌面应用两行。该表是 0.0.16 起各窗口立项时「先语料后代码」的语料清单底册，
+任何窗口开工前先在此表对应行登记差分语料的位置，再动代码。
+
 ### 2.3 尺度 C：耦合点（60 条，扩至 70 条）
 
 `baseline-coupling.md` 按「换基底是否必须改这一行」清点出 60 条，证据级别 E1 37 / E2 15 / E3 7 / E4 1。
