@@ -1,11 +1,11 @@
 Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
-# 基底耦合点清单（0.0.4）
+# 基底耦合点清单（0.0.4 起清点，0.0.5 起扩至 70 条）
 
-> **文档定位**: 清点 AirymaxOS 当前绑死在 openEuler 24.03 LTS-SP3 上的每一处可改动点，作为 0.1.x「自有基底替换（B-02）」的输入与验收基线
-> **版本**: 1.0.0
-> **最后更新**: 2026-11-04
-> **主要读者**: 0.1.x 基底替换负责人
+> **文档定位**: 清点 AirymaxOS 当前绑死在 openEuler 24.03 LTS-SP3 上的每一处可改动点，作为 0.0.10–0.0.30「自有基底替换（B-02）」的输入与验收基线
+> **版本**: 1.1.0
+> **最后更新**: 2026-11-17
+> **主要读者**: 0.0.10–0.0.30 基底替换负责人
 > **证据级别**: E1–E4（见 §1.2），逐条标注
 > **边界**: 本册只清点、不决策；0.0.4 不替换基底
 
@@ -186,22 +186,45 @@ UKUI 闭包间接带入。此结论为 E4：验证方法为
 
 ---
 
-## 9. 统计
+## 9. 语言与供应链耦合（2026-11-17 增补）
 
-### 9.1 总量与证据级别
+这一面回答：**自有代码用 Rust 之后，基底还在哪些地方限制它。** 与 §6 的区别是：
+§6 问「能不能打出 RPM」，本章问「打出的是不是 Rust 产物、能不能复现、输入法/语音资产归谁」。
+
+| 编号 | 耦合点 | 位置（路径:行号） | 证据级别 | 原文片段 | 复算命令 | 替换影响 |
+|---|---|---|---|---|---|---|
+| BC-061 | 宿主机依赖清单无 Rust 工具链 | `ci/container/build-packages.txt:94` | E1 | `libkylin-chkname-devel`（末行；全文无 rust/cargo） | `grep -in 'rust\|cargo' ci/container/build-packages.txt`（0 命中） | 任何 Rust 组件无法在构建容器内产出 |
+| BC-062 | 仓库无 Rust 工具链钉版 | `distro/lockfile/lang-policy.yaml:24` | E1 | 政策已要求 `rust-toolchain.toml`，实物 0 个 | `grep -n 'rust-toolchain' distro/lockfile/lang-policy.yaml`；`find . -name 'rust-toolchain*' -not -path './.git/*'`（0 命中） | 工具链随基底漂移，产物不可复现 |
+| BC-063 | 无依赖锁与离线 crate 源 | `distro/lockfile/lang-policy.yaml:25` | E1 | 政策已要求 `Cargo.lock` 与 `vendor`，实物均无 | `grep -n 'Cargo.lock\|vendor' distro/lockfile/lang-policy.yaml`；`find . -name Cargo.lock -not -path './.git/*'`（0 命中） | 断网构建不可行，锁文件无法审计 |
+| BC-064 | 镜像根只覆盖 openEuler 段 | `distro/repo/mirrors.list` | E1 | 仅 openEuler 三段根 | `grep -n 'openeuler' distro/repo/mirrors.list` | crates 源需自建或 vendor，不能假设可达 |
+| BC-065 | GUI 输入法闭包只有 IBus | `distro/comps/airymaxos-comps.xml:256` | E1 | `<packagereq type="default">ibus</packagereq>` | `grep -n '>ibus<' distro/comps/airymaxos-comps.xml` | IBus 依赖 GUI 会话与 D-Bus，boot TUI 不可复用 |
+| BC-066 | comps 无 rime/librime 闭包 | `distro/lockfile/lang-policy.yaml:42` | E1 | 自有 `boot-ime` 已立项，comps 无 rime 相关 packagereq | `grep -n 'boot-ime' distro/lockfile/lang-policy.yaml`；`grep -in 'rime' distro/comps/airymaxos-comps.xml`（0 命中） | TUI 中文输入需自带 IME 或新增包 |
+| BC-067 | comps 无语音/ASR 资产包 | `distro/lockfile/lang-policy.yaml:49` | E1 | 自有 `asr-gateway` 已立项，comps 无 asr/sensevoice 包 | `grep -n 'asr-gateway' distro/lockfile/lang-policy.yaml`；`grep -in 'asr\|sensevoice' distro/comps/airymaxos-comps.xml`（0 命中） | 模型与运行时无包归属，digest 无台账 |
+| BC-068 | 安装路径由 RPM 宏决定 | `distro/specs/airymaxos-release.spec` | E2 | `%{_bindir}` / `%{_libdir}` | `grep -n '%{_libdir}\|%{_bindir}' distro/specs/*.spec` | Rust 产物安装路径必须跟随宏，不能写死 |
+| BC-069 | console 中文字形无独立声明 | `distro/comps/airymaxos-comps.xml` | E4 | 字体经 UKUI 闭包间接带入 | 待验证：无 GUI 镜像内 `fc-list :lang=zh` | 缺字则 TUI 中文显方块，需显式字体包 |
+| BC-070 | CI 无 Rust 单元测试步骤 | `.github/workflows/image-build.yml:369` | E2 | 现只有 `run: ci/ci.sh lang-lock --source . --allow-pending` | `grep -n 'cargo test' .github/workflows/*.yml`（0 命中） | Rust 组件落地后测试不进门禁，等同不做 |
+
+BC-061–BC-067 是 0.0.5 的硬前置：不解决则「全 Rust TUI」无法在 CI 复现。
+BC-068–BC-070 可随组件落地同步收口。
+
+---
+
+## 10. 统计
+
+### 10.1 总量与证据级别
 
 | 维度 | 数量 |
 |---|---|
-| 耦合点总数 | 60 |
-| E1（硬编码） | 37 |
-| E2（构建/打包隐含依赖） | 15 |
+| 耦合点总数 | 70 |
+| E1（硬编码） | 44 |
+| E2（构建/打包隐含依赖） | 17 |
 | E3（文档约定） | 7 |
-| E4（推断，待验证） | 1 |
+| E4（推断，待验证） | 2 |
 
-E1 占比 61.7%，说明当前基底不是「一层可替换的适配」，而是已经渗进配置、
+E1 占比 62.9%，说明当前基底不是「一层可替换的适配」，而是已经渗进配置、
 校验器、打包与 CI 判据。
 
-### 9.2 按耦合面
+### 10.2 按耦合面
 
 | 章 | 耦合面 | 条目数 | 编号区间 |
 |---|---|---|---|
@@ -212,26 +235,27 @@ E1 占比 61.7%，说明当前基底不是「一层可替换的适配」，而�
 | 6 | 构建工具链与宿主机依赖 | 9 | BC-039–BC-047 |
 | 7 | CI 工作流里的基底假设 | 5 | BC-048–BC-052 |
 | 8 | 运行时约定 | 8 | BC-053–BC-060 |
+| 9 | 语言与供应链 | 10 | BC-061–BC-070 |
 
-### 9.3 按替换阻塞度
+### 10.3 按替换阻塞度
 
-**必须改（41 条）**：换基底当轮不改就构建不出、装不上或起不来。
+**必须改（48 条）**：换基底当轮不改就构建不出、装不上或起不来。
 BC-001–007、BC-009–013、BC-016–018、BC-021–026、BC-028–029、
-BC-031–035、BC-038、BC-040–042、BC-045–050、BC-053–055。
+BC-031–035、BC-038、BC-040–042、BC-045–050、BC-053–055、BC-061–067。
 
-**可延后（16 条）**：当轮可先用旧值跑通，等新基底稳定后再收口。
+**可延后（19 条）**：当轮可先用旧值跑通，等新基底稳定后再收口。
 BC-008、BC-015、BC-019、BC-027、BC-030、BC-037、BC-039、BC-043–044、
-BC-051–052、BC-056–060。
+BC-051–052、BC-056–060、BC-068–070。
 
 **仅文档约定（3 条）**：无机器判据，只改注释/说明即可。
 BC-014、BC-020、BC-036。
 
-E4 的 BC-058 归入「可延后」，但 0.1.x 立项前必须先按表内方法验证，否则
-cgroup 补偿可能从「可延后」变成「必须改」。
+E4 的 BC-058 与 BC-069 归入「可延后」，但 0.0.10 立项前必须先按表内方法验证，
+否则 cgroup 补偿或字体闭包可能从「可延后」变成「必须改」。
 
 ---
 
-## 10. 复算入口
+## 11. 复算入口
 
 在仓库根 `agent-linux/` 下直接粘贴执行。命令只读，不写任何文件。
 逐条打印命中行数；零命中会显式标 `MISS`。
@@ -307,17 +331,27 @@ BC-057|distro/specs/airymaxos-release.spec|不预建 /var/log/journal
 BC-058|distro/presets/boot-set|cgroup v1 上 systemd
 BC-059|distro/specs/airymaxos-release.spec|openEuler 的 00_header
 BC-060|distro/specs/airymaxos-release.spec|tribar/tribar.plymouth
+BC-061|ci/container/build-packages.txt|^libkylin-chkname-devel$
+BC-062|distro/lockfile/lang-policy.yaml|rust-toolchain\.toml
+BC-063|distro/lockfile/lang-policy.yaml|Cargo\.lock
+BC-064|distro/repo/mirrors.list|repo\.openeuler\.org
+BC-065|distro/comps/airymaxos-comps.xml|type="default">ibus<
+BC-066|distro/lockfile/lang-policy.yaml|boot-ime
+BC-067|distro/lockfile/lang-policy.yaml|asr-gateway
+BC-068|distro/specs/airymaxos-release.spec|%\{_bindir\}
+BC-069|distro/comps/airymaxos-comps.xml|wqy-
+BC-070|.github/workflows/image-build.yml|ci/ci\.sh lang-lock
 EOF
-echo "主表条数=60 实测条目=$rows 命中行=$hits 零命中=$miss"
-if [ "$rows" -eq 60 ] && [ "$miss" -eq 0 ]; then
+echo "主表条数=70 实测条目=$rows 命中行=$hits 零命中=$miss"
+if [ "$rows" -eq 70 ] && [ "$miss" -eq 0 ]; then
   echo "自检通过：主表条数与实际命中条目一致，且无空命中"
 else
   echo "自检失败：条数或命中存在问题，按上方 MISS 行逐条修正"
 fi
 ```
 
-自检口径：`rows` 必须等于主表条数 60；`miss` 必须为 0。`hits` 是行数总和，
-允许大于 60（例如 BC-002、BC-032 在多个文件/多个架构行命中），不作为一致性
+自检口径：`rows` 必须等于主表条数 70；`miss` 必须为 0。`hits` 是行数总和，
+允许大于 70（例如 BC-002、BC-032 在多个文件/多个架构行命中），不作为一致性
 判据。
 
 ### 10.1 仓库侧门禁
