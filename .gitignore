@@ -4,6 +4,7 @@
 *
 # 仓必要文件（白名单）
 !.gitignore
+!.mailmap
 !README_zh.md
 !README.md
 # 文档资产目录（全部须入库）
