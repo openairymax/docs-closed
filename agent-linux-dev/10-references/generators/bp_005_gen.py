@@ -20,6 +20,8 @@ import bp_005_seed as S  # noqa: E402
 
 DOC = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    "..", "..", "0.0.5-极境OS任务方案.md"))
+AGENT_LINUX = os.path.abspath(os.path.join(os.path.dirname(DOC),
+                                            "..", "..", "..", "agent-linux"))
 DAY_LOC = 150          # 每泳道每施工日净新增行数
 TASK_LOC = 50          # 单任务净新增行数
 START = datetime.date(2027, 9, 20)   # 0.0.4 纸面收口 2027-09-17（周五）后的第一个工作日
@@ -72,6 +74,37 @@ def assert_seed():
         seen.add(i)
     for i in ids:
         walk(i)
+    assert_gates()
+
+
+def assert_gates():
+    """门禁脚本的三条硬约束（缺一即 rc=2）：
+
+    1. 归属 WP 必须存在；
+    2. 有归属的脚本必须出现在该 WP 的交付物列里（否则账本与门禁脱节）；
+    3. 声明「既有只消费」（owner=None）的脚本必须真实存在于磁盘。
+    另外：正文中出现的每个 ci/gates/*.sh 都必须在 GATES 登记（第 4 条），
+    这条在文档侧执行，见 check_cited_gates()。
+    """
+    byid = {w["id"]: w for w in S.WPS}
+    for path, owner, _ in S.GATES:
+        if owner is None:
+            if not os.path.isfile(os.path.join(AGENT_LINUX, path)):
+                die("门禁 %s 声明为既有只消费，但磁盘上不存在" % path)
+            continue
+        if owner not in byid:
+            die("门禁 %s 的归属 WP %s 不存在" % (path, owner))
+        if path not in byid[owner]["art"]:
+            die("门禁 %s 的归属 WP %s 的交付物列未登记它" % (path, owner))
+
+
+def check_cited_gates(text):
+    """正文（附录 A 之前的部分）引用的每个 ci/**.sh 与 ci/**.py 都必须已登记。"""
+    body = text.split("## 附录 A：")[0]
+    known = {g[0] for g in S.GATES}
+    for m in re.finditer(r"ci/[A-Za-z0-9._/-]+\.(?:sh|py)\b", body):
+        if m.group(0) not in known:
+            die("正文引用了未登记的门禁脚本：%s" % m.group(0))
 
 
 def schedule():
@@ -291,6 +324,26 @@ def blocks():
         idx += 1
     B["cards"] = "\n".join(cards).rstrip()
 
+    # ---- §9.1 门禁脚本登记（存在性由磁盘实测，归属由种子声明）
+    lines = ["| 脚本 | 归属 WP | 现状（磁盘实测） | 判据要点 |", "|---|---|---|---|"]
+    n_exist = n_new = n_consume = 0
+    for path, owner, why in S.GATES:
+        exists = os.path.isfile(os.path.join(AGENT_LINUX, path))
+        if owner is None:
+            state = "已存在·只消费"
+            n_consume += 1
+        elif exists:
+            state = "已存在·本版扩展"
+            n_exist += 1
+        else:
+            state = "**本版新建**"
+            n_new += 1
+        lines.append("| `%s` | %s | %s | %s |"
+                     % (path, owner or "—（0.0.4 既有）", state, why))
+    lines.append("| **合计** | %d 个有归属 / %d 个只消费 | **已存在 %d 个·本版新建 %d 个** | — |"
+                 % (len(S.GATES) - n_consume, n_consume, n_exist + n_consume, n_new))
+    B["gates"] = "\n".join(lines)
+
     # ---- §7 逐日排程（当日产能 = 150 行 × 在办 WP 数，累计必须回到总 LOC）
     lines = ["| 施工日 | 日历日 | 在办 WP（每包 150 行/日） | 当日行数 | 累计行数 | 备注 |",
              "|---|---|---|---|---|---|"]
@@ -361,6 +414,7 @@ def render(path, bl):
 def main():
     bl = blocks()
     old = open(DOC, encoding="utf-8").read()
+    check_cited_gates(old)
     new = render(DOC, bl)
     if "--check" in sys.argv:
         if old != new:

@@ -27,6 +27,40 @@ MODULES = [
 
 MODULE_ORDER = ["U", "N", "A", "S", "K", "R", "Q", "V"]
 
+# ---------------------------------------------------------------- 门禁脚本登记
+# (脚本相对 agent-linux/ 的路径, 归属 WP 或 None=0.0.4 既有只消费, 判据要点)
+# 引擎规则：正文中出现的每个 ci/**.sh 与 ci/**.py 都必须在此登记，否则 rc=2；
+# 声明「既有只消费」的脚本若磁盘上不存在，rc=2；归属 WP 必须存在。
+GATES = [
+    ("ci/ci.sh", None, "0.0.4 既有，流水线总入口，本版只消费"),
+    ("ci/lint.sh", None, "0.0.4 既有，仓库级 CI 层自检（11 项），本版只消费"),
+    ("ci/gates/abi-snapshot.py", "K-03", "UAPI 头字节级快照与 ABI 回归"),
+    ("ci/gates/completeness.sh", "Q-01", "36 条缺口与三态登记册逐条对账"),
+    ("ci/gates/contract-conform.sh", "Q-02", "契约册与实现双向一致，双通路共用同一 schema"),
+    ("ci/gates/coupling-scan.sh", None, "0.0.4 既有，QG-03 耦合判负直接复用"),
+    ("ci/gates/dead-code.sh", "V-06", "死代码扫描（未引用函数与不可达分支）"),
+    ("ci/gates/doc-contract.sh", "Q-03", "文档↔代码字段常量表一致性"),
+    ("ci/gates/ime-corpus.sh", "V-03", "中文输入语料回归（首选字准确率）"),
+    ("ci/gates/input-matrix.sh", "V-01", "四通道成功与失败各一路"),
+    ("ci/gates/lang-lock.sh", "R-03", "语言政策一致性（既有脚本，本版随 Rust 组件落地后收紧）"),
+    ("ci/gates/lib/three-state.sh", "Q-04", "三态协议公共库（被各门禁脚本引用）"),
+    ("ci/gates/module-signature.sh", None, "0.0.4 既有，模块签名校验复用"),
+    ("ci/gates/no-stub.sh", "V-06", "零桩扫描（todo!/unimplemented!/恒 Ok）"),
+    ("ci/gates/release-005.sh", "V-05", "0.0.5 发版自证与证据归档"),
+    ("ci/gates/release-config.sh", None, "0.0.4 既有，发布配置复用"),
+    ("ci/gates/rust-sbom.sh", "R-04", "SBOM 与供应链来源证明"),
+    ("ci/gates/rust-vendor.sh", "R-02", "vendor 离线源与锁文件校验"),
+    ("ci/gates/tri-state.sh", "Q-04", "门禁三态协议自检（0/1/3 三态）"),
+    ("ci/gates/tui-dock-isolation.sh", "Q-04", "双通路依赖图无交叉边"),
+    ("ci/gates/tui-e2e.sh", "V-02", "tty1 冷启动端到端与回落 agetty"),
+    ("ci/gates/tui-frame.sh", "U-08", "帧预算与单帧分配上限"),
+    ("ci/gates/width-unify.sh", "U-02", "东亚宽度静态扫描（按字节计宽即判负）"),
+    ("ci/gates/wp-scope.sh", "Q-04", "按提交信息里的 WP 号反查 §6.0"),
+    ("ci/name_lint.py", "R-03", "函数名 ≤15 字节（既有只覆盖 shell 与 python，本版加 Rust）"),
+    ("ci/quality_metrics.py", "R-03", "重复率与圈复杂度（既有只量 shell 与 python、CC≤10，本版加 Rust 且新函数按 CC≤2.5）"),
+    ("ci/tests/test_doc_contract.sh", "Q-03", "门禁分支回归用例"),
+]
+
 # 模块 ↔ docs-linux 方案锚点（路径相对 docs/ 目录）。
 # 锚点为空或文件不存在则该模块不得开工（引擎在 check() 里判，判负退出码 3）。
 MODULE_DOCREF = {
@@ -78,7 +112,7 @@ WPS = [
          name="boot-tui 骨架与渲染循环", art="tui/crates/boot-tui/src/{main,loop,screen}.rs、tui/Cargo.toml",
          debt=["TUI-01"]),
     dict(id="U-02", mod="U", lane="U1", loc=2400, deps=["U-01"],
-         name="主题、布局与东亚宽度排版", art="tui/crates/boot-tui/src/{theme,layout,wcwidth}.rs、tui/themes/*.toml",
+         name="主题、布局与东亚宽度排版", art="tui/crates/boot-tui/src/{theme,layout,wcwidth}.rs、tui/themes/*.toml、ci/gates/width-unify.sh",
          debt=["TUI-02"]),
     dict(id="U-03", mod="U", lane="U2", loc=3000, deps=["U-01"],
          name="对话框与会话视图", art="tui/crates/boot-tui/src/{dialog,session,scrollback}.rs",
@@ -174,8 +208,9 @@ WPS = [
     dict(id="R-02", mod="R", lane="R1", loc=1200, deps=["R-01"],
          name="vendor 离线源与三件套", art="tui/vendor/、tui/Cargo.lock、ci/gates/rust-vendor.sh",
          debt=["RS-02"]),
-    dict(id="R-03", mod="R", lane="R1", loc=1200, deps=["R-02"],
-         name="crate 工作区与 CI 接线", art="tui/Cargo.toml、.github/workflows/tui.yml、ci/gates/lang-lock.sh",
+    dict(id="R-03", mod="R", lane="R1", loc=2100, deps=["R-02"],
+         name="crate 工作区与 CI 接线（含 Rust 度量扩展）",
+         art="tui/Cargo.toml、.github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py",
          debt=["RS-03"]),
     dict(id="R-04", mod="R", lane="R1", loc=600, deps=["R-03"],
          name="供应链证明与 SBOM", art="ci/gates/rust-sbom.sh、tui/deny.toml",
@@ -186,10 +221,13 @@ WPS = [
          name="三态登记册与 36 条缺口对账", art="10-references/completeness-audit.md、ci/gates/completeness.sh",
          debt=["DC-01"]),
     dict(id="Q-02", mod="Q", lane="Q1", loc=900, deps=["Q-01"],
-         name="契约册：airy.intent/1 与四通道", art="docs/contracts/{intent,input,audit}.md",
+         name="契约册：airy.intent/1 与四通道", art="docs/contracts/{intent,input,audit}.md、ci/gates/contract-conform.sh",
          debt=["DC-02"]),
     dict(id="Q-03", mod="Q", lane="Q1", loc=900, deps=["Q-02"],
          name="文档↔代码一致性门禁", art="ci/gates/doc-contract.sh、ci/tests/test_doc_contract.sh",
+         debt=["DC-03"]),
+    dict(id="Q-04", mod="Q", lane="Q1", loc=1500, deps=["Q-03"],
+         name="门禁框架与三态协议", art="ci/gates/tri-state.sh、ci/gates/wp-scope.sh、ci/gates/tui-dock-isolation.sh、ci/gates/lib/three-state.sh",
          debt=["DC-03"]),
 
     # ---------------- V 验证与取证 ----------------
