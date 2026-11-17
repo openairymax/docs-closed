@@ -107,7 +107,7 @@ WPS = [
          name="键盘与终端输入规范化", art="tui/crates/boot-tui/src/input/{key,term,escape}.rs",
          debt=["IN-02"]),
     dict(id="N-03", mod="N", lane="N2", loc=3000, deps=["N-01"],
-         name="AIRYIME1 词典与 boot-ime 进程", art="tui/crates/boot-ime/src/{dict,lookup,rank}.rs、tui/crates/boot-ime/src/ipc.rs",
+         name="AIRYIME1 词典与 boot-ime 进程", art="tui/crates/boot-ime/src/{dict,lookup,rank}.rs、tui/crates/boot-ime/src/ipc.rs、tui/crates/boot-ime/SPEC.md、tui/crates/boot-ime/src/bin/dict-build.rs",
          debt=["IME-01", "IME-02"]),
     dict(id="N-04", mod="N", lane="N3", loc=2400, deps=["N-01"],
          name="离线语音 ASR 网关", art="tui/crates/asr-gateway/src/{capture,asr,ipc}.rs",
