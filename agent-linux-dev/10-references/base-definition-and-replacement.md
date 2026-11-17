@@ -278,6 +278,49 @@ UKUI 桌面与桌面应用两行。该表是 0.0.16 起各窗口立项时「先�
 永久双基底**不设退出条件**。0.1.1 只切换「默认发布形态」为自有基底，上游基底形态保留为
 追新与回退通道。删除任一形态需要新的决策件，不在本册授权范围内。
 
+### 6.5 「只在装配层」的代码级含义
+
+「装配层」不是比喻，是**四个允许两形态不同的输入变量**。四个之外，任何差异都是缺陷。
+
+| 变量 | 唯一来源（今日位置） | 消费点 | 上游形态 | 自有形态 |
+|---|---|---|---|---|
+| `airy_profile` | 构建命令行 `--define 'airy_profile …'` | 全部生成器与门禁 | `upstream` | `self` |
+| `airy_oe_base` | `distro/repo/mirrors.list:12-18` 的首根 | `airymax-os.repo`、kickstart、`scripts/lib/closure.sh` | 上游 SP 路径 | 自有仓库路径 |
+| `airy_sign_key` | 新增 `distro/sign/keys.yaml` | rpm 签名、`sign-file`、`sbsign` | 上游密钥 | 自有 MOK 密钥 |
+| `airy_variant_id` | 由 profile 派生 | `/etc/os-release` | `upstream-base` | `self-base` |
+
+四个变量之外**必须逐字相同**：113 条包名集合、`%dist`（当前为空）、glibc soname、
+`PRETTY_NAME` 格式、内核 NEVRA 命名规则、`airy-*` 行为语料结果。
+
+生成链是单向的，生成物不进 git：
+
+```
+distro/profiles/{upstream,self}.yaml
+        │  distro/tools/profile_expand.py（唯一展开器）
+        ▼
+--define 'airy_profile …' / 'airy_oe_base …' / 'airy_sign_key …'
+        ├── distro/repo/airymax-os.repo.in  → /etc/yum.repos.d/airymaxos.repo
+        ├── distro/kickstart/*.ks.in        → .ks（anaconda 只认一个源）
+        └── distro/specs/airymaxos-release.spec → rpmbuild
+```
+
+改造步骤（六步，每步一个提交，每步单独绿跑）：
+
+1. 新增两份 profile（`schema: 1`），只写上述四个变量与闭包来源，不写任何包清单。
+2. `distro/specs/airymaxos-release.spec:80` 的
+   `%global oe_base openEuler-24.03-LTS-SP3` 改为 `%global oe_base %{?airy_oe_base}`；
+   沿用该文件第 82 行既有约定——未传入即 `%{error:}` 硬失败，**不允许静默回落到某个形态**。
+3. `distro/repo/airymax-os.repo` 改为 `.repo.in`，baseurl 用 `@AIRY_REPO_ROOT@` 占位；
+   `%check`（第 398 / 549 / 550 行）的字面断言改为对展开值断言，条数仍是 5 / 5 / 5。
+4. kickstart 第 37 行 `url --url=…` 由同一变量渲染；上游形态取 `mirrors.list` 首根。
+5. `ci/gates/assemble.sh:118` 的 `closure-24.03-${ARCH}.lock` 改为
+   `closure-${airy_profile}-${ARCH}.lock`：两形态各持一份锁，一份锁不能服务两种仓库。
+6. 新增 `ci/gates/base-parity.sh`，判据即 §8 的 A-8。
+
+**为什么不用条件编译**：源码层 `#ifdef` 会让两份产物共享一份二进制却行为不同，
+差分语料只能覆盖编译期选中的那一支，死代码与「只测了一种形态」同时发生。
+装配层分叉则两份产物各自完整，可分别跑全量语料。
+
 ---
 
 ## 7. 版本账本（0.0.5–0.1.1）
@@ -295,7 +338,7 @@ UKUI 桌面与桌面应用两行。该表是 0.0.16 起各窗口立项时「先�
 | 0.0.20–23 | 运行时族 | init 边界、IPC、策略、会话 | 关键路径不依赖上游私有行为 |
 | 0.0.24–26 | 内核与交付 | 内核包、initramfs、安装链 + 签名与安装器二选一决策登记 | 自有源码 + 自有签名可装；A-7 决策已登记 |
 | 0.0.27–29 | 桌面与身份 | UKUI 适配、登录、os-release/身份 | 会话与输入可用；身份不冒充上游 |
-| 0.0.30 | 双基底成形 | 两种形态同源装配 | 七条验收全绿（§8） |
+| 0.0.30 | 双基底成形 | 两种形态同源装配 | 九条验收全绿（§8） |
 | 0.0.31 | 只收口 | 缺陷修复、文档、缺口清单 | 不新增功能 |
 | 0.1.0 | 过渡 | 默认形态切换预演 | 回退路径可用 |
 | 0.1.1 | 稳定 | 默认发布形态 = 自有基底 | 双形态同源断言通过 |
@@ -308,7 +351,7 @@ UKUI 桌面与桌面应用两行。该表是 0.0.16 起各窗口立项时「先�
 
 ---
 
-## 8. 0.0.30 七条验收
+## 8. 0.0.30 九条验收
 
 | # | 判据 | 复算方式 |
 |---|---|---|
@@ -318,9 +361,11 @@ UKUI 桌面与桌面应用两行。该表是 0.0.16 起各窗口立项时「先�
 | A-4 | 两种形态的 `airy-*` 行为语料结果一致 | 差分语料差异为 0 或已登记 |
 | A-5 | 仓库内不存在双实现与死代码 | `#if 0` 0 命中、旧符号 0 命中 |
 | A-6 | 内核 ABI 未变 | `uname -r` 线不变、syscall 号段不变、UAPI diff 为空 |
-| A-7 | 签名链与 dist tag 可断言 | 两形态各自给出 shim 来源（上游沿用或 MOK 自有，二选一登记）；`%dist` 与 glibc soname 逐字一致 |
+| A-7 | 签名链与 dist tag 可断言 | 两形态各自给出 shim 来源（上游沿用或 MOK 自有，二选一登记）；`%dist` 与 glibc soname 逐字一致；签名验收 S-1–S-6（§11.5）全绿 |
+| A-8 | 装配层同源可复算 | `ci/gates/base-parity.sh` 退出 0：`#ifdef AIRY*` 0 命中、两形态 `os-release` 仅 `VARIANT_ID` 不同、包名集合差集仅限自有前缀与 Obsoletes 顶替 |
+| A-9 | ABI 混装矩阵通过 | 四种组合（全上游 / 全自有 / 自有核心+上游桌面 / 上游核心+自有工具）装配全绿；`abi_snapshot.py --check` 无未登记差异；`rpm -Va` 无未登记输出；原地 `dnf upgrade` 与 `dnf downgrade` 各一次成功 |
 
-七条全绿才算「自有基底完成」；任一条未过，0.0.30 不得发布，0.1.0 不得开工。
+九条全绿才算「自有基底完成」；任一条未过，0.0.30 不得发布，0.1.0 不得开工。
 
 ---
 
@@ -417,3 +462,83 @@ docs-linux 实测 **21 个目录、190 份文档**。「全部功能基本实现
 主体七册内**每份文档**在 0.0.5 收口时登记三态之一：已消费 / 缺口已登记 /
 不适用（注明归属版本）。该三态登记就是无桩判据的分母——缺登记即判负，
 而不是「实现了大多数」即通过。
+
+### 11.5 签名切换：改造步骤与验收
+
+**今日事实**：上游包与 repodata 均无 PGP 签名，`distro/repo/airymax-os.repo` 的
+`gpgcheck=0` / `repo_gpgcheck=0` 被 `airymaxos-release.spec` 的 `%check`（第 547–550 行）
+写成 5 + 5 条字面断言；Secure Boot 链由 `distro/boot/efi_brand.sh` 整目录搬
+`shimx64.efi` / `shimx64.hash` / `grubx64.efi` / `mmx64.efi`，shim 来自上游 `shim-x64`；
+内核模块由 `CONFIG_MODULE_SIG_ALL=y` + `scripts/sign-file` 签
+（`distro/specs/kernel/` 内 `%check` 已有「签名追加在文件尾、不是 ELF 段」的判据）。
+
+**关键推论**：shim 只信任编译进它的证书与 MokList。因此「自签内核 + 上游 shim」不会自动成立，
+必须把自有证书放进 MokList，否则开启 Secure Boot 的机器拒载。这就是二选一的技术实质：
+
+| 选项 | 做法 | 装机交互 | 适用 |
+|---|---|---|---|
+| S-A 沿用上游 shim + MOK | shim 不变；自有 `kernel-sign` 证书首启经 `mokutil --import` 入 MokList | 一次人工确认（MokManager） | 开发机、内部试用 |
+| S-B 自建 shim | 自有密钥签 shim，提交 Microsoft UEFI CA 签名 | 零交互 | 量产；周期以月计，0.1.1 前不保证 |
+
+0.0.24–26 必须登记选择，未登记则 A-7 判负。
+
+改造步骤（以 S-A 为例；S-B 只替换第 2、4 步的签名主体）：
+
+1. 新增密钥台账 `distro/sign/keys.yaml`：三类密钥 `rpm-sign` / `module-sign` / `kernel-sign`，
+   每条记 `id`、算法（RSA-4096 + SHA-256）、`not_after`、存储（离线 / HSM）、轮换策略。
+   私钥不入库，CI 只拿 key id 与公钥。
+2. RPM 签名：`%_gpg_name` 指向 `rpm-sign`；`rpmsign --addsign` 在 `assemble.sh` 收口前执行；
+   `airymax-os.repo` 的 `gpgcheck` / `repo_gpgcheck` 由 0 改 1，`%check` 第 549–550 行的
+   `-eq 5` 断言同步改为 1，并把仍存在的上游段排除在断言外。
+3. 模块签名：内核 spec 的 `CONFIG_MODULE_SIG_KEY` 指向 `module-sign`；保留现有尾部签名判据，
+   不改用 `readelf -S`。
+4. 内核 PE 签名：`sbsign --key … --cert … --output vmlinuz.signed vmlinuz`，在 `%install`
+   之后、打包之前执行。
+5. 装机链：S-A 下 shim 不变；`mokutil --import airy-kernel.der` 于首次进系统时执行；
+   未导入时状态栏报 `sb=unsigned`，不静默。
+6. 新增 `ci/gates/signature-chain.sh`，判据即下表。
+
+| # | 判据 | 复算 |
+|---|---|---|
+| S-1 | 全部 RPM 验签通过 | `rpm -K` 对闭包逐包 `digests signatures OK` |
+| S-2 | 全部 `.ko` 由自有 key 签 | `modinfo -F signer` 全为 key id；开机 taint 不含 8192 |
+| S-3 | 内核 PE 签名可上溯 | `pesign -S -i vmlinuz` 证书链末端 ∈ MokList |
+| S-4 | 两种固件模式均可启动 | Secure Boot on / off 各一次装机 |
+| S-5 | 轮换可回退 | 旧 key 签的包在换新 key 后仍可 `dnf install`（旧公钥保留一个版本周期） |
+| S-6 | 门禁可判负 | 篡改任一包 / 模块 / 内核后对应命令必须失败（三个反例各一次） |
+
+### 11.6 ABI 共存：改造步骤与验收
+
+**今日事实**：`Release: %{airy_release}%{?dist}`，`%dist` 当前未定义、实际为空；
+glibc / openssl 等 soname 全部来自上游二进制；自有包仅 4 份 spec 与 10 个 `airy-*` 入口。
+
+**裁定**：0.0.30 前 `%dist` 保持为空、glibc soname 不变。自有身份靠包名前缀，
+不靠 dist tag——dist tag 一旦分叉，dnf 会把两种形态当成不同代际，双基底立刻变成两个产品。
+
+改造步骤：
+
+1. ABI 基线快照 `distro/lockfile/abi-baseline.json`：字段 `nevra`、`provides_soname`、
+   `requires_soname`，由 `distro/tools/abi_snapshot.py` 对 113 包生成，进锁文件；
+   每次 S1→S2 切换后更新，差异必须登记。
+2. 禁止 dist 分叉：CI 断言 `rpm --eval '%{?dist}'` 两形态一致，`git grep -n '^%define dist'`
+   0 命中。
+3. S1 包：同版本同 soname 重建，`rpm -q --provides` 与基线逐行相等（build-id 相关字段除外）。
+4. S2 包：只允许两类——不提供 soname 的 CLI / daemon，或提供同名同 soname 的兼容实现。
+   接管时写 `Provides: <上游名> = <上游EVR>`、`Obsoletes: <上游名> < <上游EVR>`；
+   不得提高 epoch，不得改 soname。
+5. 混装矩阵：`ci/gates/abi-coexist.sh` 跑四种组合（全上游 / 全自有 / 自有核心+上游桌面 /
+   上游核心+自有工具），每种做全量 `dnf install` 求解、`ldconfig -p` 比对、`rpm -Va`。
+6. 例外登记：任何有意 ABI 变更写 `distro/lockfile/abi-exceptions.yaml`，带 `path` / `reason` /
+   `owner` / `expires`；无 `expires` 判负，与 `lang-policy.yaml` 的例外通道同构。
+
+| # | 判据 | 复算 |
+|---|---|---|
+| B-1 | 四组合均可求解装配 | 四种组合 `dnf install` 全绿 |
+| B-2 | soname 集合未变 | `abi_snapshot.py --check` 与基线 diff 为空或已登记 |
+| B-3 | 文件级无冲突 | 四组合 `rpm -Va` 无非登记输出 |
+| B-4 | dist tag 未分叉 | 两形态 `%{?dist}` 逐字相同 |
+| B-5 | 旧包可被顶替 | 从上游形态原地 `dnf upgrade` 到自有形态，无需 `--allowerasing` |
+| B-6 | 回退可逆 | 自有形态 `dnf downgrade` 回上游包成功 |
+
+B-5 是真正的硬判据：它同时验证 `Obsoletes` 写法、epoch 未抬、依赖可解三件事；
+B-1 到 B-4 都可能绿而 B-5 红。
