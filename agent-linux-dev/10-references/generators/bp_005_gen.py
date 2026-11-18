@@ -78,6 +78,7 @@ def assert_seed():
     assert_gates()
     assert_docrefs()
     assert_owners()
+    assert_debts()
 
 
 def assert_owners():
@@ -119,6 +120,21 @@ def assert_owners():
                 a, b = ws[i], ws[j]
                 if not reach(a, b) and not reach(b, a):
                     die("%s 被 %s 与 %s 同时主张且无依赖边" % (f, a, b))
+
+
+def assert_debts():
+    """§11「一条债一个承接方」的机器判据（§13.5 C7）。
+
+    同一条债被两个 WP 承接时，两边都会以为对方在收口；
+    去重后的条数还会让 §0 的 39 与账面对不上（F-60 的形状）。
+    """
+    owner = {}
+    for w in S.WPS:
+        for d in w["debt"]:
+            owner.setdefault(d, []).append(w["id"])
+    for d, ws in sorted(owner.items()):
+        if len(ws) > 1:
+            die("债 %s 被多个 WP 承接：%s" % (d, "、".join(ws)))
 
 
 def assert_docrefs():
