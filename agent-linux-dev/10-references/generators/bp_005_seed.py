@@ -206,8 +206,8 @@ WPS = [
 
     # ---------------- K 内核侧两条（抬基线） ----------------
     dict(id="K-01", mod="K", lane="K1", loc=1500, deps=[],
-         name="KRN-01 四阶段调用点与既有通道写 fops",
-         art="kernel/kernel/syscalls/airy_syscalls.c（四阶段 trace 调用点）、kernel/kernel/corekern/airy/airy_trace.c（实例生命周期：get_by_name→create_systems）、kernel/kernel/corekern/sched/stc_stats.c（计数递增路径）、kernel/security/airy/airy_cap_sysctl.c（cap_used 可逆核对）、kernel/security/airy/airy_policy.c（policy 增 write fops 与 rule 解析）",
+         name="KRN-01 控制面事件发射点与既有通道写 fops",
+         art="kernel/kernel/syscalls/airy_syscalls.c（548 已鉴权请求的 airy_ipc_send 发射点）、kernel/kernel/corekern/ipc/airy_ipc_trace.c（IPC 事件发射器）、kernel/kernel/corekern/airy/airy_trace.c（实例生命周期）、kernel/kernel/corekern/sched/stc_dispatch.c（计数写入点，0.0.5 记降级）、kernel/security/airy/airy_cap_sysctl.c（cap_used 可逆核对）、kernel/security/airy/airy_policy.c（policy 增 write fops 与 rule 解析）",
          debt=["KRN-01"]),
     dict(id="K-02", mod="K", lane="K1", loc=1200, deps=["K-01"],
          name="I-27 W^X 受理面（扩展 file_mprotect + DSL 字段 + 白名单表）",

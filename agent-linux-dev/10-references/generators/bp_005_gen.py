@@ -452,7 +452,7 @@ def blocks():
         % workday_to_date(1).isoformat(),
         "| M1 用户态全量落地可内测 | D%d | %s | U/N/A/S/R/Q 六个模块全部收口；V 模块 %d/%d 通过 |"
         % (m1, workday_to_date(m1).isoformat(), v_done, v_all),
-        "| M1.5 内核两条实机转绿 | D%d | %s | K-01：`instances/agent_trace/events/airy` 四阶段事件 `entries-written > 0` 且逐事件 ≥1，`cap_used` 可逆，`policy` 可写而 `agentrt` 只读；K-02：未授权 W→X 返回 `EACCES`、白名单放行 |"
+        "| M1.5 内核两条实机转绿 | D%d | %s | K-01：`instances/agent_trace/events/airy` `entries-written > 0` 且 548 往返产生 `airy_ipc_send` ≥1（状态转换／调度两事件按 F-66 显式降级），`cap_used` 可逆，`policy` 可写且 deny 规则驱动 `policy_decision` 而 `agentrt` 只读；K-02：未授权 W→X 返回 `EACCES`、白名单放行 |"
         % (m15, workday_to_date(m15).isoformat()),
         "| M2 全绿发版 | D%d | %s | §15 的 AC-A、AC-S、AC-B、AC-V 四组判据全部 PASS |"
         % (m2, workday_to_date(m2).isoformat()),
