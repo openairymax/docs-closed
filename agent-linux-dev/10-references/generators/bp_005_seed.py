@@ -110,8 +110,8 @@ LANES = [
 #   art ：任务卡「产出物」列的主干；「(首片)」「(中片 i/N)」「(末片)」由生成器追加
 WPS = [
     # ---------------- U TUI 内核与渲染 ----------------
-    dict(id="U-01", mod="U", lane="U1", loc=2700, deps=[],
-         name="boot-tui 骨架与渲染循环", art="tui/crates/boot-tui/src/{main,loop,screen}.rs、tui/Cargo.toml",
+    dict(id="U-01", mod="U", lane="U1", loc=2700, deps=["R-01"],
+         name="boot-tui 骨架与渲染循环", art="tui/crates/boot-tui/src/{main,loop,screen}.rs",
          debt=["TUI-01"]),
     dict(id="U-02", mod="U", lane="U1", loc=2400, deps=["U-01"],
          name="主题、布局与东亚宽度排版", art="tui/crates/boot-tui/src/{theme,layout,wcwidth}.rs、tui/themes/*.toml、ci/gates/width-unify.sh",
@@ -136,7 +136,7 @@ WPS = [
          debt=["TUI-06"]),
 
     # ---------------- N 输入抽象与 IME ----------------
-    dict(id="N-01", mod="N", lane="N1", loc=2400, deps=[],
+    dict(id="N-01", mod="N", lane="N1", loc=2400, deps=["R-01"],
          name="RawEvent 与 InputSource 抽象", art="tui/crates/boot-tui/src/input/{event,source,arbiter}.rs",
          debt=["IN-01"]),
     dict(id="N-02", mod="N", lane="N1", loc=1800, deps=["N-01"],
@@ -207,14 +207,15 @@ WPS = [
 
     # ---------------- R Rust 供应链与构建 ----------------
     dict(id="R-01", mod="R", lane="R1", loc=1500, deps=[],
-         name="工具链钉版与容器清单", art="tui/rust-toolchain.toml、ci/container/build-packages.txt",
+         name="工具链钉版、容器清单与工作区骨架",
+         art="tui/rust-toolchain.toml、ci/container/build-packages.txt、tui/Cargo.toml（workspace 根清单，members=crates/*）、tui/crates/{boot-tui,boot-ime,asr-gateway,intent,airy-tui-exec,airy-adapters}/Cargo.toml（六 crate 清单）",
          debt=["RS-01"]),
     dict(id="R-02", mod="R", lane="R1", loc=1200, deps=["R-01"],
          name="vendor 离线源与三件套", art="tui/vendor/、tui/Cargo.lock、ci/gates/rust-vendor.sh",
          debt=["RS-02"]),
     dict(id="R-03", mod="R", lane="R1", loc=2100, deps=["R-02"],
-         name="crate 工作区与 CI 接线（含 Rust 度量扩展）",
-         art="tui/Cargo.toml、.github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py",
+         name="CI 接线与 Rust 度量扩展",
+         art=".github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py",
          debt=["RS-03"]),
     dict(id="R-04", mod="R", lane="R1", loc=600, deps=["R-03"],
          name="供应链证明与 SBOM", art="ci/gates/rust-sbom.sh、tui/deny.toml",
