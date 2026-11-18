@@ -200,7 +200,7 @@ WPS = [
     # ---------------- K 内核侧两条（抬基线） ----------------
     dict(id="K-01", mod="K", lane="K1", loc=1500, deps=[],
          name="KRN-01 四阶段调用点与既有通道写 fops",
-         art="kernel/syscalls/airy_syscalls.c（四阶段 trace 调用点）、kernel/corekern/sched/stc_stats.c（计数递增路径）、kernel/security/airy/airy_cap_sysctl.c（cap_used 可逆核对）、kernel/security/airy/airy_policy.c（policy 增 write fops 与 rule 解析）",
+         art="kernel/syscalls/airy_syscalls.c（四阶段 trace 调用点）、kernel/kernel/corekern/airy/airy_trace.c（实例生命周期：get_by_name→create_systems）、kernel/corekern/sched/stc_stats.c（计数递增路径）、kernel/security/airy/airy_cap_sysctl.c（cap_used 可逆核对）、kernel/security/airy/airy_policy.c（policy 增 write fops 与 rule 解析）",
          debt=["KRN-01"]),
     dict(id="K-02", mod="K", lane="K1", loc=1200, deps=["K-01"],
          name="I-27 W^X 受理面（扩展 file_mprotect + DSL 字段 + 白名单表）",
@@ -219,7 +219,7 @@ WPS = [
          name="vendor 离线源与三件套", art="tui/vendor/、tui/Cargo.lock、ci/gates/rust-vendor.sh",
          debt=["RS-02"]),
     dict(id="R-03", mod="R", lane="R1", loc=2100, deps=["R-02"],
-         name="CI 接线与 Rust 度量扩展",
+         name="CI 接线与 Rust 度量扩展（lang-policy 路径对齐、四组件转 present）",
          art=".github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py、distro/lockfile/lang-policy.yaml",
          debt=["RS-03"]),
     dict(id="R-04", mod="R", lane="R1", loc=600, deps=["R-03"],
