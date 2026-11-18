@@ -33,7 +33,9 @@ MODULE_ORDER = ["U", "N", "A", "S", "K", "R", "Q", "V"]
 # 声明「既有只消费」的脚本若磁盘上不存在，rc=2；归属 WP 必须存在。
 GATES = [
     ("ci/ci.sh", None, "0.0.4 既有，流水线总入口，本版只消费"),
+    ("ci/gates/wx-policy.sh", None, "0.0.4 I-27 已验收，W^X 回归门禁，K-02 接新受理面复跑"),
     ("ci/lint.sh", None, "0.0.4 既有，仓库级 CI 层自检（11 项），本版只消费"),
+    ("ci/tools/execstack_regress.py", None, "0.0.4 I-27 已验收，可执行栈回归器，K-02 只消费不重写"),
     ("ci/gates/abi-snapshot.py", "K-03", "UAPI 头字节级快照与 ABI 回归"),
     ("ci/gates/completeness.sh", "Q-01", "36 条缺口与三态登记册逐条对账"),
     ("ci/gates/contract-conform.sh", "Q-02", "契约册与实现双向一致，双通路共用同一 schema"),
@@ -192,14 +194,16 @@ WPS = [
 
     # ---------------- K 内核侧两条（抬基线） ----------------
     dict(id="K-01", mod="K", lane="K1", loc=1500, deps=[],
-         name="KRN-01 注入通道与单调计数", art="kernel/fs/airy/inject.c、kernel/include/uapi/linux/airymax/inject.h",
+         name="KRN-01 既有记账点补计数",
+         art="kernel/security/airy/airy_cap_check.c、kernel/security/airy/airy_cap_derive.c、kernel/security/airy/airy_cap_array.c、kernel/security/airy/airy_superv_lsm.c（均为既有文件，补计数不新增 UAPI）",
          debt=["KRN-01"]),
     dict(id="K-02", mod="K", lane="K1", loc=1200, deps=["K-01"],
-         name="I-27 W^X 受理面与策略表", art="kernel/security/airy/wx_policy.c、distro/policy/wx_policy.toml",
+         name="I-27 W^X 受理面（file_mprotect 钩子 + DSL 字段 + policy 可写）",
+         art="kernel/security/airy/airy_superv_lsm.c（注册 file_mprotect）、kernel/security/airy/airy_policy.c（policy 接口 0400→可写受理）、distro/policy/wx-exceptions.toml（例外清单数据）",
          debt=["I-27"]),
     dict(id="K-03", mod="K", lane="K1", loc=300, deps=["K-01", "K-02"],
          name="UAPI 快照与 ABI 回归", art="ci/gates/abi-snapshot.py、10-references/abi-snapshot/",
-         debt=["KRN-02"]),
+         debt=[]),
 
     # ---------------- R Rust 供应链与构建 ----------------
     dict(id="R-01", mod="R", lane="R1", loc=1500, deps=[],
