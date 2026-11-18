@@ -64,14 +64,14 @@ GATES = [
 ]
 
 # 模块 ↔ docs-linux 方案锚点（路径相对 docs/ 目录）。
-# 锚点为空或文件不存在则该模块不得开工（引擎在 check() 里判，判负退出码 3）。
+# 锚点为空或文件不存在则该模块不得开工（引擎在 assert_docrefs() 里实测存在性，判负退出码 2）。
 MODULE_DOCREF = {
     "U": ["docs-linux/30-interfaces/11-input-ingress.md",
-          "docs-linux/20-modules/06-agent.md"],
+          "docs-linux/180-i18n/04-cjk-support.md"],
     "N": ["docs-linux/30-interfaces/11-input-ingress.md",
           "docs-linux/140-application-development/06-agent-deployment.md"],
     "A": ["docs-linux/40-dataflows/04-scheduling-flow.md",
-          "docs-linux/20-modules/06-agent.md"],
+          "docs-linux/110-security/03-capability-model.md"],
     "S": ["docs-linux/100-operations/03-monitoring.md",
           "docs-linux/20-modules/07-system.md"],
     "K": ["docs-linux/10-architecture/08-threat-model.md",

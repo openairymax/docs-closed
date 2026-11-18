@@ -22,6 +22,7 @@ DOC = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    "..", "..", "0.0.5-极境OS任务方案.md"))
 AGENT_LINUX = os.path.abspath(os.path.join(os.path.dirname(DOC),
                                             "..", "..", "..", "agent-linux"))
+DOCS_ROOT = os.path.abspath(os.path.join(os.path.dirname(DOC), "..", ".."))
 DAY_LOC = 150          # 每泳道每施工日净新增行数
 TASK_LOC = 50          # 单任务净新增行数
 START = datetime.date(2027, 9, 20)   # 0.0.4 纸面收口 2027-09-17（周五）后的第一个工作日
@@ -75,6 +76,61 @@ def assert_seed():
     for i in ids:
         walk(i)
     assert_gates()
+    assert_docrefs()
+    assert_owners()
+
+
+def assert_owners():
+    """§4.3「同一文件归属第一个创建它的 WP」的机器判据。
+
+    两个 WP 的交付物出现同一文件时，必须存在依赖边（直接或传递），
+    否则两者会并行改同一文件——这正是 F-22 的形状。
+    """
+    owner, expanded = {}, {}
+    for w in S.WPS:
+        files = set()
+        for part in w["art"].split("、"):
+            part = re.sub(r"（[^）]*）", "", part).strip()
+            if not part:
+                continue
+            m = re.match(r"^(.*)\{([^}]*)\}(.*)$", part)
+            if m:
+                files |= {m.group(1) + a.strip() + m.group(3)
+                          for a in m.group(2).split(",")}
+            else:
+                files.add(part)
+        expanded[w["id"]] = files
+        for f in files:
+            owner.setdefault(f, []).append(w["id"])
+    deps = {w["id"]: set(w["deps"]) for w in S.WPS}
+
+    def reach(a, b, seen=None):
+        if a == b:
+            return True
+        for d in deps[a]:
+            if d not in (seen or set()):
+                if reach(d, b, (seen or set()) | {d}):
+                    return True
+        return False
+
+    for f, ws in owner.items():
+        for i in range(len(ws)):
+            for j in range(i + 1, len(ws)):
+                a, b = ws[i], ws[j]
+                if not reach(a, b) and not reach(b, a):
+                    die("%s 被 %s 与 %s 同时主张且无依赖边" % (f, a, b))
+
+
+def assert_docrefs():
+    """每个模块的 docs-linux 锚点必须在 docs/ 下真实存在（缺一即 rc=2）。
+
+    §8 的 M0 判据②要求「锚点文件实际存在」，这条必须由脚本判，
+    否则路径写错时图纸照样「通过」，而开工第一天就找不到设计依据。
+    """
+    for mod in S.MODULE_ORDER:
+        for rel in S.MODULE_DOCREF.get(mod, []):
+            if not os.path.isfile(os.path.join(DOCS_ROOT, rel)):
+                die("模块 %s 的 docs-linux 锚点不存在：%s" % (mod, rel))
 
 
 def assert_gates():
@@ -376,7 +432,7 @@ def blocks():
     v_all = sum(1 for w in S.WPS if w["mod"] == "V")
     B["milestones"] = "\n".join([
         "| 里程碑 | 施工日 | 日历日 | 判据 |", "|---|---|---|---|",
-        "| M0 开工 | D1 | %s | §6.0 全部 WP 有前驱与后继；`bp_005_gen.py --check` 为 0 |"
+        "| M0 开工 | D1 | %s | 无「非末位 WP 后继为空」；三个入口 WP（R-01／K-01／Q-01）前驱为空属设计；8 模块锚点实测存在；`bp_005_gen.py --check` 为 0 |"
         % workday_to_date(1).isoformat(),
         "| M1 用户态全量落地可内测 | D%d | %s | U/N/A/S/R/Q 六个模块全部收口；V 模块 %d/%d 通过 |"
         % (m1, workday_to_date(m1).isoformat(), v_done, v_all),
