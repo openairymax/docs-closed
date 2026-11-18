@@ -61,6 +61,7 @@ GATES = [
     ("ci/name_lint.py", "R-03", "函数名 ≤15 字节（既有只覆盖 shell 与 python，本版加 Rust）"),
     ("ci/quality_metrics.py", "R-03", "重复率与圈复杂度（既有只量 shell 与 python、CC≤10，本版加 Rust 且新函数按 CC≤2.5）"),
     ("ci/tests/test_doc_contract.sh", "Q-03", "门禁分支回归用例"),
+    ("ci/tools/wx-table-gen.py", "K-02", "由 wx-exceptions.toml 生成内核只读白名单表"),
 ]
 
 # 模块 ↔ docs-linux 方案锚点（路径相对 docs/ 目录）。
@@ -122,6 +123,10 @@ WPS = [
     dict(id="U-04", mod="U", lane="U2", loc=2100, deps=["U-03"],
          name="命令面板与键盘导航", art="tui/crates/boot-tui/src/{palette,nav,keymap}.rs",
          debt=[]),
+    dict(id="U-09", mod="U", lane="U3", loc=300, deps=["R-01"],
+         name="引导期会话选择与回落",
+         art="tui/crates/boot-tui/src/bin/airy-session-pick.rs、system/units/airy-session-choice.service、system/units/airy-desktop-ready.service、distro/desktop/airy-session.conf、distro/presets/boot-set",
+         debt=[]),
     dict(id="U-06", mod="U", lane="U3", loc=1500, deps=["U-01"],
          name="降级路径：无 GPU、非 tty、极小终端", art="tui/crates/boot-tui/src/degrade.rs、tests/degrade/",
          debt=["TUI-05"]),
@@ -132,7 +137,7 @@ WPS = [
          name="会话持久化与崩溃恢复", art="tui/crates/boot-tui/src/{session_store,recover}.rs",
          debt=[]),
     dict(id="U-08", mod="U", lane="U1", loc=1500, deps=["U-03"],
-         name="帧预算与渲染性能门禁", art="tui/crates/boot-tui/benches/frame.rs、ci/gates/tui-frame.sh",
+         name="帧预算与渲染性能门禁", art="tui/crates/boot-tui/benches/frame.rs、tui/crates/boot-tui/tests/frame_budget.rs、ci/gates/tui-frame.sh",
          debt=["TUI-06"]),
 
     # ---------------- N 输入抽象与 IME ----------------
@@ -194,12 +199,12 @@ WPS = [
 
     # ---------------- K 内核侧两条（抬基线） ----------------
     dict(id="K-01", mod="K", lane="K1", loc=1500, deps=[],
-         name="KRN-01 既有记账点补计数",
-         art="kernel/security/airy/airy_cap_check.c、kernel/security/airy/airy_cap_derive.c、kernel/security/airy/airy_cap_array.c、kernel/security/airy/airy_superv_lsm.c（均为既有文件，补计数不新增 UAPI）",
+         name="KRN-01 四阶段调用点与既有通道写 fops",
+         art="kernel/syscalls/airy_syscalls.c（四阶段 trace 调用点）、kernel/corekern/sched/stc_stats.c（计数递增路径）、kernel/security/airy/airy_cap_sysctl.c（cap_used 可逆核对）、kernel/security/airy/airy_policy.c（policy 增 write fops 与 rule 解析）",
          debt=["KRN-01"]),
     dict(id="K-02", mod="K", lane="K1", loc=1200, deps=["K-01"],
-         name="I-27 W^X 受理面（file_mprotect 钩子 + DSL 字段 + policy 可写）",
-         art="kernel/security/airy/airy_superv_lsm.c（注册 file_mprotect）、kernel/security/airy/airy_policy.c（policy 接口 0400→可写受理）、distro/policy/wx-exceptions.toml（例外清单数据）",
+         name="I-27 W^X 受理面（扩展 file_mprotect + DSL 字段 + 白名单表）",
+         art="kernel/security/airy/airy_superv_lsm.c（扩展已注册的 file_mprotect）、kernel/include/airymax/airy_policy.h（新增 file_mprotect 钩子与字段）、kernel/security/airy/airy_wx_table.c（由 TOML 生成）、ci/tools/wx-table-gen.py、distro/policy/wx-exceptions.toml（例外清单数据）",
          debt=["I-27"]),
     dict(id="K-03", mod="K", lane="K1", loc=300, deps=["K-01", "K-02"],
          name="UAPI 快照与 ABI 回归", art="ci/gates/abi-snapshot.py、10-references/abi-snapshot/",
@@ -215,7 +220,7 @@ WPS = [
          debt=["RS-02"]),
     dict(id="R-03", mod="R", lane="R1", loc=2100, deps=["R-02"],
          name="CI 接线与 Rust 度量扩展",
-         art=".github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py",
+         art=".github/workflows/tui.yml、ci/gates/lang-lock.sh、ci/name_lint.py、ci/quality_metrics.py、distro/lockfile/lang-policy.yaml",
          debt=["RS-03"]),
     dict(id="R-04", mod="R", lane="R1", loc=600, deps=["R-03"],
          name="供应链证明与 SBOM", art="ci/gates/rust-sbom.sh、tui/deny.toml",
@@ -239,7 +244,7 @@ WPS = [
     dict(id="V-01", mod="V", lane="V1", loc=1800, deps=["A-06", "N-06"],
          name="四通道矩阵（成功 + 失败各一路）", art="tui/tests/matrix/、ci/gates/input-matrix.sh",
          debt=["VF-01"]),
-    dict(id="V-02", mod="V", lane="V2", loc=2100, deps=["U-04", "U-06"],
+    dict(id="V-02", mod="V", lane="V2", loc=2100, deps=["U-04", "U-06", "U-09"],
          name="tty1 冷启动端到端", art="tui/tests/e2e/、ci/gates/tui-e2e.sh",
          debt=["VF-02"]),
     dict(id="V-03", mod="V", lane="V1", loc=1500, deps=["N-03"],
