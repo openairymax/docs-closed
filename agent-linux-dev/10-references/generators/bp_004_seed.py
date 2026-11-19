@@ -375,11 +375,11 @@ WP_STATE = {
     "L-47": ("已验收", "`ci/lib/timing.sh` 分段计时（280585e）；稀疏 checkout 经核不采用（§17）"),
     "L-48": ("已验收", "来源证明可查：§14.4 第 1 项 attestation 回读"),
     "L-49": ("已验收", "新环境一条命令拉起（`dev-up`），`ci/ci.sh` 绿"),
-    "L-50": ("已验收", "`coupling-scan.sh` 60 declared / 60 found / delta 0；`baseline-coupling.md` §10"),
+    "L-50": ("已验收", "`coupling-scan.sh` 0.0.4 时 60 declared / 60 found / delta 0；0.0.5 起扩至 70（BC-061–070，语言与供应链），复算 70 declared / 70 found / delta 0；`baseline-coupling.md` §10"),
     # T 烧录系统
     "T-01": ("已验收", "`airy-flash` 子命令与 `--json` 齐备；`tools/airy-flash/tests` 99 项全绿"),
-    "T-02": ("顺延（§2.3）", "承接 0.1.x；本版只交整包引导盘，不做 ≤1 GB 分层"),
-    "T-03": ("顺延（§2.3）", "承接 0.1.x；install- 载荷通道与 digest 钉住不在本版"),
+    "T-02": ("顺延（§2.3）", "承接 0.0.8；本版只交整包引导盘，不做 ≤1 GB 分层"),
+    "T-03": ("顺延（§2.3）", "承接 0.0.8；install- 载荷通道与 digest 钉住不在本版"),
     "T-04": ("已验收", "§14.4 第 6 项：plan/write/verify 全量回读 3 474 849 792 字节一致"),
     # M 发行版工程与磁盘管理
     "M-30": ("已验收", "§14.7 `airy-disk status` 三拓扑；设备类别过滤（rom/RM/TRAN）"),
