@@ -65,7 +65,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | BC-006 | 基底选型校验器只认三类主机 | `distro/lockfile/base_check.py:34` | E1 | `HOSTS = ("repo.openeuler.org", "mirrors.tuna.tsinghua…` | `grep -n 'HOSTS = (' distro/lockfile/base_check.py` | 主机白名单、`FIRST` 前缀与 SP 正则全部重写 |
 | BC-007 | 镜像探针依赖 repodata 索引格式 | `distro/tools/mirror_probe.py:44` | E1 | `HREF = re.compile(r'href="([^"]*primary\.xml\.(?:gz…` | `grep -n 'HREF = re.compile' distro/tools/mirror_probe.py` | 新基底若用别的索引名/压缩格式，探针全线 0 KiB/s |
 | BC-008 | 载荷种子以清单文件为唯一输入 | `ci/gates/payload-seed.sh:78` | E2 | `readonly MIRRORS="${ROOT}/distro/repo/mirrors.list"` | `grep -n 'readonly MIRRORS=' ci/gates/payload-seed.sh` | 清单格式可复用，但内容需整份替换 |
-| BC-009 | 闭包池镜像 tag 含 24.03 | `ci/gates/pool-seed.sh:53` | E1 | `readonly REF_DEFAULT="ghcr.io/openairymax/…` | `grep -n 'REF_DEFAULT=' ci/gates/pool-seed.sh` | tag 与池内容均需换代，旧池不可复用 |
+| BC-009 | 闭包池镜像 tag 含 24.03 | `ci/gates/pool-seed.sh:57` | E1 | `readonly REF_BASE="ghcr.io/openairymax/…` | `grep -n 'REF_BASE=' ci/gates/pool-seed.sh` | tag 与池内容均需换代，旧池不可复用 |
 | BC-010 | 闭包锁文件名含 24.03 | `ci/gates/assemble.sh:118` | E1 | `lock_name="closure-24.03-${ARCH}.lock"` | `grep -n 'lock_name=' ci/gates/assemble.sh` | 锁文件改名或改内容；缓存池键同步 |
 
 ---
@@ -97,7 +97,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 编号 | 耦合点 | 位置（路径:行号） | 证据级别 | 原文片段 | 复算命令 | 替换影响 |
 |---|---|---|---|---|---|---|
-| BC-021 | 底座 ISO/IMG 名称与摘要写死在 workflow | `.github/workflows/image-build.yml:89` | E1 | `OE_ISO_NAME: openEuler-24.03-LTS-SP3-netinst-x86_64-dvd.iso` | `grep -nE 'OE_(ISO|IMG)_NAME' .github/workflows/image-build.yml` | 名称、摘要、介质类型（netinst/dvd）全部换 |
+| BC-021 | 底座 ISO/IMG 名称与摘要写死在 workflow | `.github/workflows/image-build.yml:123` | E1 | `iso_name: openEuler-24.03-LTS-SP3-netinst-x86_64-dvd.iso` | `grep -nE '(iso|img)_(name|sha256):' .github/workflows/image-build.yml` | 名称、摘要、介质类型（netinst/dvd）全部换 |
 | BC-022 | ISO 以底座介质为母本改写 | `distro/scripts/build-iso.sh:256` | E2 | `if ! mkksiso "${args[@]}" "${WORK}/ks.cfg" "$ISO" "$PART" \` | `grep -n 'mkksiso "' distro/scripts/build-iso.sh` | 新基底若不用 lorax/mkksiso 结构，整段组装重写 |
 | BC-023 | 品牌器按 openEuler 菜单形状匹配 | `distro/tools/cfg_brand.py:82` | E1 | `BASE_NAME = re.compile(r"openeuler", re.IGNORECASE)` | `grep -n 'BASE_NAME = ' distro/tools/cfg_brand.py` | 三种标题规则、LEAK/ALLOW 全部随底座品牌改 |
 | BC-024 | 安装介质五个品牌面写死 | `distro/scripts/lib/iso_post.sh:196` | E1 | `for cfg in EFI/BOOT/grub.cfg isolinux/isolinux.cfg …` | `grep -n 'for cfg in EFI/BOOT/grub.cfg' distro/scripts/lib/iso_post.sh` | 新介质若无 isolinux/.discinfo/boot.msg，需按实际面重写 |
@@ -155,7 +155,7 @@ CI 不是在 openEuler 上跑，而是在 Ubuntu 上开一个 openEuler 容器�
 
 | 编号 | 耦合点 | 位置（路径:行号） | 证据级别 | 原文片段 | 复算命令 | 替换影响 |
 |---|---|---|---|---|---|---|
-| BC-048 | 组装 job 钉在 Ubuntu 24.04 | `.github/workflows/image-build.yml:102` | E1 | `runs-on: ubuntu-24.04` | `grep -n 'runs-on: ubuntu-24.04' .github/workflows/image-build.yml` | 宿主换代影响 release-deps 的 apt 包名 |
+| BC-048 | 组装 job 钉在 Ubuntu 24.04 | `.github/workflows/image-build.yml:122` | E1 | `runner: ubuntu-24.04` | `grep -nE '(runs-on|runner):' .github/workflows/image-build.yml` | 宿主换代影响 release-deps 的 apt 包名 |
 | BC-049 | 介质按名称与 sha256 固定 | `.github/workflows/image-build.yml:170` | E1 | `run: ci/ci.sh media-fetch --dir "$RUNNER_TEMP/media"…` | `grep -n 'Fetch fixed openEuler media' .github/workflows/image-build.yml` | 新基底需换 ISO/IMG 名与两枚摘要 |
 | BC-050 | 工具链缓存键绑定包清单 | `.github/workflows/image-build.yml:187` | E1 | `key: dnf-${{ hashFiles('ci/container/build-packages.txt') }}` | `grep -n 'key: dnf-' .github/workflows/image-build.yml` | 清单换则缓存自然失效，无需改键 |
 | BC-051 | EOL 门禁按 openEuler SP 节奏 | `ci/gates/base-eol.sh:4` | E2 | `# ci/gates/base-eol.sh — openEuler 基底选型同源门禁…` | `grep -n 'openEuler 基底选型同源门禁' ci/gates/base-eol.sh` | 换基底后该门禁的 SP 小/大节奏模型作废 |
@@ -279,7 +279,7 @@ BC-005|distro/kickstart/airymaxos-workstation.ks|(url --url|repo .*--baseurl=htt
 BC-006|distro/lockfile/base_check.py|HOSTS = \(
 BC-007|distro/tools/mirror_probe.py|HREF = re.compile
 BC-008|ci/gates/payload-seed.sh|readonly MIRRORS=
-BC-009|ci/gates/pool-seed.sh|REF_DEFAULT=
+BC-009|ci/gates/pool-seed.sh|REF_BASE=
 BC-010|ci/gates/assemble.sh|lock_name=
 BC-011|distro/lockfile/base.yaml|^selected:
 BC-012|distro/lockfile/base.yaml|^kernel_line:
@@ -291,7 +291,7 @@ BC-017|distro/tools/comps_lint.py|^UPSTREAM =
 BC-018|distro/tools/ks_lint.py|^UPSTREAM_EXCLUDES
 BC-019|distro/comps/airymaxos-comps.xml|>ibus<
 BC-020|distro/comps/airymaxos-comps.xml|基础仓库：openEuler
-BC-021|.github/workflows/image-build.yml|OE_(ISO|IMG)_NAME: openEuler
+BC-021|.github/workflows/image-build.yml|^[[:space:]]*(iso_name|iso_sha256|img_name|img_sha256):
 BC-022|distro/scripts/build-iso.sh|mkksiso "
 BC-023|distro/tools/cfg_brand.py|BASE_NAME = 
 BC-024|distro/scripts/lib/iso_post.sh|for cfg in EFI/BOOT/grub.cfg
@@ -318,7 +318,7 @@ BC-044|ci/gates/kernel-deps.sh|例如现场的 openEuler
 BC-045|distro/scripts/build-rpms.sh|rpmbuild -bb
 BC-046|distro/scripts/lib/guard.sh|rpmbuild -bb --quiet
 BC-047|distro/scripts/lib/closure.sh|createrepo_c
-BC-048|.github/workflows/image-build.yml|runs-on: ubuntu-24.04
+BC-048|.github/workflows/image-build.yml|^[[:space:]]*(runs-on|runner):
 BC-049|.github/workflows/image-build.yml|Fetch fixed openEuler media
 BC-050|.github/workflows/image-build.yml|key: dnf-
 BC-051|ci/gates/base-eol.sh|openEuler 基底选型同源门禁
