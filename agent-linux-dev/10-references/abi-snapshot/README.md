@@ -1,7 +1,7 @@
 # [SC] UAPI 字节级快照（K-03）
 
 > 施工图纸：`0.0.5-极境OS任务方案.md` §6.5 K-03、§13.4 F-04。
-> 证据等级：E2（仓库实测，`python3 ci/gates/abi-snapshot.py --check`）。
+> 证据等级：E2（仓库实测，`bash ci/ci.sh kernel-uapi --check`）。
 
 ## 1. 这份快照回答什么
 
@@ -34,7 +34,7 @@
 |---|---|---|
 | 编号面 | `tools/abi-check` | syscall 编号、预留槽与派生契约快照是否与 SSoT 一致 |
 | 布局面 | `tools/sc-tri-compile` | 结构体偏移在 3+2 条编译路径上是否一致 |
-| 字节面 | `ci/gates/abi-snapshot.py` | 用户态看到的头文件有没有任何字节变化 |
+| 字节面 | `ci/checks/abi_snapshot.py`（门禁 `kernel-uapi`） | 用户态看到的头文件有没有任何字节变化 |
 
 三层都通过，才谈得上「头文件既没改坏、也没改 unnoticed」。
 
@@ -53,7 +53,7 @@ syscall_gen.h      syscalls.h         uapi_compat.h
 
 ## 5. 刷新手续
 
-1. 在源码仓根执行 `python3 ci/gates/abi-snapshot.py --update`。
+1. 在源码仓根执行 `bash ci/ci.sh kernel-uapi --update`。
 2. 逐条审阅输出中的「新增 / 缺失 / 变更」，为每一条写下结论：兼容、还是破坏性，
    破坏性是否已按 MAJOR 规则处置。
 3. 头文件与快照放进同一个提交；提交信息点名 UAPI 变更，不要夹带无关改动。
@@ -68,11 +68,12 @@ syscall_gen.h      syscalls.h         uapi_compat.h
 | 项 | 值 |
 |---|---|
 | 门禁编号 | `OS-BUILD-UAPI-SNAPSHOT` |
+| 门禁入口 | `ci/gates/kernel-uapi.sh`（`ci/ci.sh kernel-uapi`，kernel-verify 在 consistency 之后跑） |
 | 注册表 | `agent-linux/tools/os-chk/gates.yaml`（v1.11.0 起） |
-| 执行器 | `python3 ci/gates/abi-snapshot.py --check` |
-| CI 入口 | `ci/ci.sh python-verify --kind oschk`（os-chk-verify） |
+| 执行器 | `python3 ci/checks/abi_snapshot.py --check` |
+| CI 入口 | `ci/ci.sh python-verify --kind oschk`（os-chk-verify）与 `ci/ci.sh kernel-uapi`（kernel-verify） |
 | 触发面 | `kernel` gitlink 指针变化、`ci/**`、`tools/**`、`.github/workflows/**` |
-| 回归 | `bash ci/tests/test_abi_snapshot.sh`（17 条断言） |
+| 回归 | `bash ci/tests/test_kernel_uapi.sh`（20 条断言） |
 
 `kernel` 是子模块指针，UAPI 改动只会在源码仓提升指针时进入 diff，这与「头文件
 与快照同批提交」的手续天然对齐。
@@ -82,3 +83,4 @@ syscall_gen.h      syscalls.h         uapi_compat.h
 | 日期 | 变更 | 理由 |
 |---|---|---|
 | 2026-11-20 | 建立基线，登记 15 份 | K-03 首片；此后每次 UAPI 改动必须在此留一行 |
+| 2026-11-21 | 判定本体迁入 `ci/checks/abi_snapshot.py`，门禁入口统一为 `kernel-uapi` 并接入 kernel-verify | 门禁目录只放薄壳，判定实现归 `checks/`；判据此前只在 os-chk 侧执行 |

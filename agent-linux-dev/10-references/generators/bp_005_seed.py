@@ -36,7 +36,7 @@ GATES = [
     ("ci/gates/wx-policy.sh", None, "0.0.4 I-27 已验收，W^X 回归门禁，K-02 接新受理面复跑"),
     ("ci/lint.sh", None, "0.0.4 既有，仓库级 CI 层自检（11 项），本版只消费"),
     ("ci/tools/execstack_regress.py", None, "0.0.4 I-27 已验收，可执行栈回归器，K-02 只消费不重写"),
-    ("ci/gates/abi-snapshot.py", "K-03", "UAPI 头字节级快照与 ABI 回归"),
+    ("ci/gates/kernel-uapi.sh（ci/checks/abi_snapshot.py）", "K-03", "UAPI 头字节级快照与 ABI 回归"),
     ("ci/gates/completeness.sh", "Q-01", "36 条缺口与三态登记册逐条对账"),
     ("ci/gates/contract-conform.sh", "Q-02", "契约册与实现双向一致，双通路共用同一 schema"),
     ("ci/gates/coupling-scan.sh", None, "0.0.4 既有，QG-03 耦合判负直接复用"),
@@ -214,7 +214,7 @@ WPS = [
          art="kernel/security/airy/airy_superv_lsm.c（扩展已注册的 file_mprotect）、kernel/include/airymax/airy_policy.h（新增 file_mprotect 钩子与字段）、kernel/security/airy/airy_wx_table.c（由 TOML 生成）、ci/tools/wx-table-gen.py、distro/lockfile/wx-exceptions.toml（构建期输入，不随包安装）",
          debt=["I-27"]),
     dict(id="K-03", mod="K", lane="K1", loc=300, deps=["K-01", "K-02"],
-         name="UAPI 快照与 ABI 回归", art="ci/gates/abi-snapshot.py、10-references/abi-snapshot/",
+         name="UAPI 快照与 ABI 回归", art="ci/gates/kernel-uapi.sh、ci/checks/abi_snapshot.py、10-references/abi-snapshot/",
          debt=[]),
 
     # ---------------- R Rust 供应链与构建 ----------------
