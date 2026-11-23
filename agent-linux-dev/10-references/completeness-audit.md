@@ -73,7 +73,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-025 | 载荷通道（seed/publish/取件） | `190-distribution/02-dnf-repo-design.md` | 已实现 | `ci/gates/payload-seed.sh`、`ci/gates/payload-publish.sh`、`ci/gates/channel-fetch.sh`、`ci/gates/media-fetch.sh` |
 | CA-026 | 安装器与两档 kickstart profile | `190-distribution/03-installer-design.md` | 已实现 | `distro/kickstart/airymaxos-{minimal,workstation}.ks`；`ci/gates/disk-layout.sh`、`ci/gates/qemu-setup.sh`、`ci/gates/accept.sh` |
 | CA-027 | 装机后桌面就绪与 UKUI 会话 | `190-distribution/03-installer-design.md` | 已实现 | `distro/desktop/airy_observe.sh`、`distro/desktop/xinitrc.d/70-airymax-im.sh`；`ci/gates/session-closure.sh`、`ci/gates/desktop-capability.sh`、`ci/gates/ukui-lock.sh` |
-| CA-028 | 桌面会话独立方案文档 | `190-distribution/03-installer-design.md` | 0.0.5 | §2.3 已登记：`docs-linux` 无独立桌面方案，R1 以 installer 与 `20-modules/07-system.md` 为锚点 |
+| CA-028 | 桌面会话独立方案文档 | `190-distribution/07-session-entry.md` | 已实现 | 文档成文：状态面（`desired`/`mode`/`switch-reason` 三文件与写者闭包）、引导期 120 秒选择、运行期双向切换（顺序、就绪判据、90/15 秒超时与回滚）、注销回退、失败形态、打包归属与 AC-A3/AC-A10 验收 |
 | CA-029 | 升级检查 / 状态 / 会话提醒 | `190-distribution/04-update-mechanism.md` | 已实现 | `system/services/airyupdate/`、`system/bin/airy-update`、`system/units/airymax-update-check.{service,timer}` |
 | CA-030 | ostree / 分层 rootfs 切换 | `190-distribution/04-update-mechanism.md` | 移出（0.1.x） | `distro/ostree/` 仅 README 与 `airymaxos-workstation.treefile`，无产物链；两处口径冲突按施工方案 §2.4 裁为移出，0.1.x 重新取口径 |
 | CA-031 | 可重现构建与来源证明 | `190-distribution/05-reproducible-build.md` | 已实现 | `ci/gates/build-provenance.sh`、`ci/gates/build-drift.sh`、`ci/gates/attest.sh`、`ci/gates/release-source.sh` |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 56 |
-| 0.0.5 | 25 |
+| 已实现 | 57 |
+| 0.0.5 | 24 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」25 条里，14 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、028、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」24 条里，13 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
@@ -190,7 +190,7 @@ airy-observe system --json
 
 - **移出 2 条**：CA-030（ostree，按 §2.4 裁为 0.1.x 重新取口径）、
   CA-089（MemoryRovol CSI，依赖的 CA-008 已随内核窗口移出）。
-- **留在账上 25 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
+- **留在账上 24 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
   已实现或移出（承接版本），由 `ci/ci.sh completeness --release` 强制。
 
 | 设计锚点 | 留在账上的缺口 |
@@ -208,7 +208,6 @@ airy-observe system --json
 | `150-cloudnative/02-containerd-shim.md` | CA-086 |
 | `150-cloudnative/03-cni-network-policy.md` | CA-087 |
 | `150-cloudnative/04-supernode-os.md` | CA-088 |
-| `190-distribution/03-installer-design.md` | CA-028 |
 | `20-modules/05-cognition.md` | CA-010 |
 | `20-modules/06-cloudnative.md` | CA-012 |
 | `40-dataflows/01-cognition-flow.md` | CA-056 |
