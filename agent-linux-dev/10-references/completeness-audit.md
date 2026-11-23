@@ -113,7 +113,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | 无 BPF 程序与加载链；探针现走 tracefs（`system/services/airymax_probe/`） |
 | CA-066 | perf 性能分析 | `90-observability/03-perf-analysis.md` | 0.0.5 | 无 airy perf 集成；仅 `system/bin/airy-rt-lat.c` 单点延迟测量 |
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
-| CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | 无 airy sysfs 节点；现用 securityfs 与 sysctl |
+| CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性与清单一致性；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
 | CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | 无 airy debugfs 节点 |
 | CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 未使用 user_events；需内核 config 与用户态注册链 |
