@@ -115,7 +115,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性与清单一致性；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
-| CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | 无 airy debugfs 节点 |
+| CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
 | CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 未使用 user_events；需内核 config 与用户态注册链 |
 | CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 0.0.5 | 无 token 计量实现（`airyllm` 只做运行环境与状态） |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
