@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.0 ｜ **最后更新** 2026-11-18 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.1 ｜ **最后更新** 2026-11-23 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -61,12 +61,12 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-013 | 系统服务集（磁盘/观测/电源/RT/模型/亮度/升级） | `20-modules/07-system.md` | 已实现 | `system/services/{airydisk,airymax_observe,airymax_power,airymax_rt,airyllm,airybright,airyupdate}/` |
 | CA-014 | 系统软件包定义与版本宏 | `20-modules/07-system.md` | 已实现 | `distro/specs/airymaxos-system.spec`、`distro/specs/macros.airymax`；`ci/gates/release-rpms.sh` |
 | CA-015 | 内核 KUnit/kselftest 执行面 | `20-modules/08-tests-linux.md` | 已实现 | `kernel/kernel/syscalls/{airy_clt,airy_invoke,airy_rovol,airy_sched,airy_sysabi}_test.c`、`kernel/kernel/superv/airy_superv_{ring,fault,wdog,adjud,exec,proto}_test.c`；`ci/gates/kernel-kunit.sh`、`ci/gates/kernel-kselftest.sh` |
-| CA-016 | 用户态单元测试套件 | `20-modules/08-tests-linux.md` | 0.0.5 | `tests-linux/unit/` 仅 `test_ipc_magic.c` 一例，未套件化 |
+| CA-016 | 用户态单元测试套件 | `20-modules/08-tests-linux.md` | 已实现 | `tests-linux/unit/` 四例契约单测（`test_{ipc_magic,error_codes,log_ring_uapi,superv_uapi}.c`）在 CTest 下全跑；`ci/gates/tests-linux.sh` 断言导出头硬前提、出树构建、全绿与套件形态（≥4 例、`unit` 标签）；`c-verify.yml` 的 `tests-linux build & ctest` 作业承接 |
 | CA-017 | Micro-Supervisor 内核模块 | `20-modules/09-kernel-agent-supervisor.md` | 已实现 | `kernel/kernel/superv/`（ring/fault/wdog/adjud/exec/proto，6 组测试） |
 | CA-018 | Macro-Supervisor 守护进程源码 | `20-modules/10-user-supervisor-daemon.md` | 已实现 | `services/daemons/macro_d/macro_d.c` + `CMakeLists.txt` |
-| CA-019 | Macro-Supervisor 入镜像 | `20-modules/10-user-supervisor-daemon.md` | 0.0.5 | `airymaxos-system.spec` 只装 `agentrt-macro-superv.service`，未构建/安装 `macro_d` |
-| CA-020 | A-UCS 统一配置守护进程 | `20-modules/11-unified-config.md` | 0.0.5 | 仅 `system/units/agentrt-config.service`；无 `config_d` 源码、无配置 schema |
-| CA-021 | A-ULP Logger Daemon 模块 | `20-modules/12-logger-daemon-module.md` | 0.0.5 | 仅 `system/units/agentrt-logger.service`；无 `logger_d` 源码与二进制 |
+| CA-019 | Macro-Supervisor 入镜像 | `20-modules/10-user-supervisor-daemon.md` | 已实现 | `distro/specs/airymaxos-system.spec` 以 `--target config_d logger_d macro_d` 出树构建并安装 `%{_sbindir}/macro_d`、`macro-superv.conf` 与 unit；`ci/gates/c-verify.sh` 的 services 腿跑守护进程单测 |
+| CA-020 | A-UCS 统一配置守护进程 | `20-modules/11-unified-config.md` | 已实现 | `services/daemons/config_d/`（`cfg_core`/`cfg_ini`/`cfg_sys` 分层 + `tests/` + `etc/config.conf`）；spec 构建并安装 `config_d`、`agentrt.conf`；热加载与非法版本拒绝已在 285H 实机验收 |
+| CA-021 | A-ULP Logger Daemon 模块 | `20-modules/12-logger-daemon-module.md` | 已实现 | `services/daemons/logger_d/`（`logd_ring`/`logd_file`/`logd_cfg` + `tests/` + `etc/logger.conf`）；spec 构建并安装 `logger_d` 与 `logger.conf` |
 | CA-022 | printk 桥接 | `20-modules/13-printk-bridge.md` | 移出（0.0.24–0.0.26） | `kernel/kernel/printk/` 无 airy 改动；桥接需内核侧新增 |
 | CA-023 | RPM 打包规范与三包定义 | `190-distribution/01-rpm-packaging.md` | 已实现 | `distro/specs/{airymaxos-system,airymaxos-release,airymaxos-firmware}.spec`；`ci/gates/release-rpms.sh` |
 | CA-024 | dnf 仓库、lockfile 与 comps | `190-distribution/02-dnf-repo-design.md` | 已实现 | `distro/repo/`、`distro/lockfile/`、`distro/comps/`、`tools/repo-scaffold/`；`ci/gates/release-deps.sh` |
@@ -92,7 +92,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-044 | CI/CD 管道与门禁体系 | `70-build-system/03-ci-cd-pipeline.md` | 已实现 | `ci/ci.sh`（77 个 gate）、`.github/workflows/`、`ci/workflow-budgets.txt`；`ci/gates/ssot-verify.sh` |
 | CA-045 | 部署体系（ISO / QEMU / 裸机） | `100-operations/01-deployment.md` | 已实现 | `ci/gates/iso-publish.sh`、`ci/gates/iso-checksum.sh`、`ci/gates/image-verify.sh`、`ci/gates/qemu-setup.sh`、`ci/gates/accept.sh` |
 | CA-046 | 配置管理（preset / firstboot / 交付清单） | `100-operations/02-configuration.md` | 已实现 | `distro/presets/`、`system/scripts/firstboot.sh`；`ci/gates/system-inventory.sh` 断言 `/etc/airymaxos-packages` |
-| CA-047 | A-UCS 配置总线运行时 | `100-operations/02-configuration.md` | 0.0.5 | 同 CA-020：无 `config_d`，配置只有文件与 preset 两层 |
+| CA-047 | A-UCS 配置总线运行时 | `100-operations/02-configuration.md` | 已实现 | `services/daemons/config_d/`：启动装载、合法修改热重载、非法版本拒绝保留旧值、`SIGHUP` 重载、不可热改项冻结、主配置缺失降级只读；实机八项验收通过 |
 | CA-048 | 监控体系 | `100-operations/03-monitoring.md` | 已实现 | `system/services/airymax_observe/`（hw/fw/sys）、`system/units/agentrt-health-check.service`；`ci/gates/system-inventory.sh` |
 | CA-049 | 告警体系 | `100-operations/04-alerting.md` | 0.0.5 | 仅 `system/services/airymax_power/notify.py` 会话级提醒；无告警路由、抑制、升级链路 |
 | CA-050 | 事件响应 | `100-operations/05-incident-response.md` | 0.0.5 | `airy-incident@.service` 只有单元接口；`/usr/sbin/airyctl` 与 `airy` 账户属 agentrt 载荷，未入本版镜像 |
@@ -107,7 +107,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-059 | IPC 消息流（128 字节固定头） | `40-dataflows/03-ipc-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_invoke.h`（128 字节头 + 编译期断言）、`kernel/security/airy/airy_ipc_freeze.c` |
 | CA-060 | 调度数据流（EEVDF + RT 带宽） | `40-dataflows/04-scheduling-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_sched.c`、`airy_sched_test.c`、`system/services/airymax_rt/` |
 | CA-061 | 零拷贝 Ring Buffer 日志数据流 | `40-dataflows/05-ring-buffer-logging.md` | 0.0.5 | `kernel/kernel/superv/airy_superv_ring.c` 是 IPC 环冻结状态机，非日志环；缺日志环与消费者 |
-| CA-062 | Logger Daemon 详细设计 | `40-dataflows/06-logger-daemon-design.md` | 0.0.5 | 同 CA-021：无 `logger_d` |
+| CA-062 | Logger Daemon 详细设计 | `40-dataflows/06-logger-daemon-design.md` | 已实现 | `services/daemons/logger_d/`：`logd_ring`（环形缓冲）、`logd_file`（落盘与轮转）、`logd_cfg`（配置解析），`tests/` 覆盖三者 |
 | CA-063 | Panic 生存路径 | `40-dataflows/07-panic-survival-path.md` | 移出（0.0.24–0.0.26） | 无 airy `panic_notifier` 与崩溃落盘钩子 |
 | CA-064 | ftrace 框架与 airy tracepoint | `90-observability/01-ftrace-framework.md` | 已实现 | `kernel/include/trace/events/airy.h`（11 个 TRACE_EVENT）、`system/bin/airy-probe` |
 | CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | 无 BPF 程序与加载链；探针现走 tracefs（`system/services/airymax_probe/`） |
@@ -138,7 +138,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-090 | Locale 设计与生成 | `180-i18n/01-locale-design.md` | 已实现 | `system/services/airylocale/`（矩阵 8 条 + `list/show/gen/check`）、`system/bin/airy-locale`；`ci/gates/locale-matrix.sh`；两个剖面语言包与装机段 `airy-locale check --require-generated` |
 | CA-091 | UTF-8 严格编码原语 | `180-i18n/02-encoding-spec.md` | 已实现 | `kernel/include/airymax/airy_utf8.h`、`kernel/kernel/corekern/charset/airy_utf8_test.c` |
 | CA-092 | 编码设置与转换面 | `180-i18n/02-encoding-spec.md` | 已实现 | `system/services/airycharset/`（`scan`/`conf`/`cli` 三层 + 默认 `charset.conf`）、共用的 `system/services/airylib/`、`system/bin/airy-charset`、`system/tests/services/`、`ci/gates/charset.sh`；spec 以源包装入 `%{_sysconfdir}/agentrt/charset.conf` 与站点包，workstation 装机段判负 |
-| CA-093 | 错误消息国际化 | `180-i18n/03-error-message-i18n.md` | 0.0.5 | 无 gettext 域与消息目录 |
+| CA-093 | 错误消息国际化 | `180-i18n/03-error-message-i18n.md` | 已实现 | gettext 域 `airymaxos`：`services/tools/error-msg/error_msg.py` 由 [SC] 错误码契约生成映射表与 `po/airymaxos.pot`，`po/zh_CN.po` 全量覆盖；运行期 `services/common/error_msg.c` 经 `dgettext` 查目录并回退；`ci/gates/i18n.sh` 重生成比对并断言无空译文 |
 | CA-094 | CJK 输入法与字体落位 | `180-i18n/04-cjk-support.md` | 已实现 | `distro/desktop/xinitrc.d/70-airymax-im.sh`；`distro/specs/airymaxos-release.spec` 断言 `ibus-daemon` 与 `unicode.pf2` |
 | CA-095 | 文档国际化 | `180-i18n/05-doc-i18n.md` | 已实现 | 各子模块 `README.md` / `README_zh.md` 成对；`ci/gates/docs-links.sh` 校验链接 |
 
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 49 |
-| 0.0.5 | 32 |
+| 已实现 | 56 |
+| 0.0.5 | 25 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」32 条里，19 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、019、020、021、028、047、049、050、053、054、055、061、062、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」25 条里，14 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、028、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
@@ -190,12 +190,11 @@ airy-observe system --json
 
 - **移出 2 条**：CA-030（ostree，按 §2.4 裁为 0.1.x 重新取口径）、
   CA-089（MemoryRovol CSI，依赖的 CA-008 已随内核窗口移出）。
-- **留在账上 32 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
+- **留在账上 25 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
   已实现或移出（承接版本），由 `ci/ci.sh completeness --release` 强制。
 
 | 设计锚点 | 留在账上的缺口 |
 |---|---|
-| `100-operations/02-configuration.md` | CA-047 |
 | `100-operations/04-alerting.md` | CA-049 |
 | `100-operations/05-incident-response.md` | CA-050 |
 | `100-operations/06-backup-recovery.md` | CA-051 |
@@ -209,17 +208,11 @@ airy-observe system --json
 | `150-cloudnative/02-containerd-shim.md` | CA-086 |
 | `150-cloudnative/03-cni-network-policy.md` | CA-087 |
 | `150-cloudnative/04-supernode-os.md` | CA-088 |
-| `180-i18n/03-error-message-i18n.md` | CA-093 |
 | `190-distribution/03-installer-design.md` | CA-028 |
 | `20-modules/05-cognition.md` | CA-010 |
 | `20-modules/06-cloudnative.md` | CA-012 |
-| `20-modules/08-tests-linux.md` | CA-016 |
-| `20-modules/10-user-supervisor-daemon.md` | CA-019 |
-| `20-modules/11-unified-config.md` | CA-020 |
-| `20-modules/12-logger-daemon-module.md` | CA-021 |
 | `40-dataflows/01-cognition-flow.md` | CA-056 |
 | `40-dataflows/05-ring-buffer-logging.md` | CA-061 |
-| `40-dataflows/06-logger-daemon-design.md` | CA-062 |
 | `90-observability/02-ebpf-probes.md` | CA-065 |
 | `90-observability/03-perf-analysis.md` | CA-066 |
 | `90-observability/04-sysfs-procfs.md` | CA-068 |
