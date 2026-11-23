@@ -38,7 +38,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 3. 抽查「已实现」行是否真能执行：门禁跑得通，或装机后命令有输出。
 4. 抽查「0.0.5 / 移出」行是否确实缺件：备注里点名的二进制、目录或门禁在仓库内不存在。
 
-2026-11-23 范围裁定：仍标 `0.0.5` 的 34 条平台功能面**全部在本版实现**，
+2026-11-23 范围裁定：当时仍标 `0.0.5` 的 34 条平台功能面**全部在本版实现**，
 任务卡见同目录 `0.0.5-平台功能面范围.md` 的 P-01–P-31；发版口径不变，
 `completeness --release` 仍以「账上无 0.0.5」判负。
 
@@ -135,7 +135,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-087 | CNI 网络策略 | `150-cloudnative/03-cni-network-policy.md` | 0.0.5 | 无 CNI 插件与 NetworkPolicy 实现 |
 | CA-088 | 超节点 OS | `150-cloudnative/04-supernode-os.md` | 0.0.5 | 无实现 |
 | CA-089 | MemoryRovol CSI | `150-cloudnative/05-memoryrovol-csi.md` | 移出（0.0.24–0.0.26） | 依赖 L2–L4（CA-008，已随内核窗口移出），且无 CSI 驱动 |
-| CA-090 | Locale 设计与生成 | `180-i18n/01-locale-design.md` | 0.0.5 | 无 locale 配置、生成脚本与门禁 |
+| CA-090 | Locale 设计与生成 | `180-i18n/01-locale-design.md` | 已实现 | `system/services/airylocale/`（矩阵 8 条 + `list/show/gen/check`）、`system/bin/airy-locale`；`ci/gates/locale-matrix.sh`；两个剖面语言包与装机段 `airy-locale check --require-generated` |
 | CA-091 | UTF-8 严格编码原语 | `180-i18n/02-encoding-spec.md` | 已实现 | `kernel/include/airymax/airy_utf8.h`、`kernel/kernel/corekern/charset/airy_utf8_test.c` |
 | CA-092 | 编码设置与转换面 | `180-i18n/02-encoding-spec.md` | 0.0.5 | 仅内核原语；无用户态 charset 配置与转换工具 |
 | CA-093 | 错误消息国际化 | `180-i18n/03-error-message-i18n.md` | 0.0.5 | 无 gettext 域与消息目录 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 47 |
-| 0.0.5 | 34 |
+| 已实现 | 48 |
+| 0.0.5 | 33 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」34 条里，19 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、019、020、021、028、047、049、050、053、054、055、061、062、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」33 条里，19 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、019、020、021、028、047、049、050、053、054、055、061、062、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
@@ -190,7 +190,7 @@ airy-observe system --json
 
 - **移出 2 条**：CA-030（ostree，按 §2.4 裁为 0.1.x 重新取口径）、
   CA-089（MemoryRovol CSI，依赖的 CA-008 已随内核窗口移出）。
-- **留在账上 34 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
+- **留在账上 33 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
   已实现或移出（承接版本），由 `ci/ci.sh completeness --release` 强制。
 
 | 设计锚点 | 留在账上的缺口 |
@@ -209,7 +209,6 @@ airy-observe system --json
 | `150-cloudnative/02-containerd-shim.md` | CA-086 |
 | `150-cloudnative/03-cni-network-policy.md` | CA-087 |
 | `150-cloudnative/04-supernode-os.md` | CA-088 |
-| `180-i18n/01-locale-design.md` | CA-090 |
 | `180-i18n/02-encoding-spec.md` | CA-092 |
 | `180-i18n/03-error-message-i18n.md` | CA-093 |
 | `190-distribution/03-installer-design.md` | CA-028 |
