@@ -106,17 +106,17 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-058 | L1→L4 递进与 CXL/PMEM 数据流 | `40-dataflows/02-memory-flow.md` | 移出（0.0.24–0.0.26） | 需 DAX/CXL 内核能力，见 CA-008 |
 | CA-059 | IPC 消息流（128 字节固定头） | `40-dataflows/03-ipc-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_invoke.h`（128 字节头 + 编译期断言）、`kernel/security/airy/airy_ipc_freeze.c` |
 | CA-060 | 调度数据流（EEVDF + RT 带宽） | `40-dataflows/04-scheduling-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_sched.c`、`airy_sched_test.c`、`system/services/airymax_rt/` |
-| CA-061 | 零拷贝 Ring Buffer 日志数据流 | `40-dataflows/05-ring-buffer-logging.md` | 0.0.5 | `kernel/kernel/superv/airy_superv_ring.c` 是 IPC 环冻结状态机，非日志环；缺日志环与消费者 |
+| CA-061 | 零拷贝 Ring Buffer 日志数据流 | `40-dataflows/05-ring-buffer-logging.md` | 0.0.5 | `kernel/kernel/log/`：`airy_log_ring` 固定记录环、`airy_log_dev`／`airy_log_persist`／`airy_log_console` 消费侧与 `airy_log_ring_test.c`（容量、越界、裁剪、冻结）；`ci/gates/kernel-obs.sh` 固化 `/sys/airy/log` 计数一致性，`ci/gates/tests-linux.sh` 固化 UAPI 布局；285H 环满与唤醒读数待现场 |
 | CA-062 | Logger Daemon 详细设计 | `40-dataflows/06-logger-daemon-design.md` | 已实现 | `services/daemons/logger_d/`：`logd_ring`（环形缓冲）、`logd_file`（落盘与轮转）、`logd_cfg`（配置解析），`tests/` 覆盖三者 |
 | CA-063 | Panic 生存路径 | `40-dataflows/07-panic-survival-path.md` | 移出（0.0.24–0.0.26） | 无 airy `panic_notifier` 与崩溃落盘钩子 |
 | CA-064 | ftrace 框架与 airy tracepoint | `90-observability/01-ftrace-framework.md` | 已实现 | `kernel/include/trace/events/airy.h`（11 个 TRACE_EVENT）、`system/bin/airy-probe` |
-| CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | 无 BPF 程序与加载链；探针现走 tracefs（`system/services/airymax_probe/`） |
+| CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | `system/obs/ebpf/`：两对 kprobe／kretprobe（`airy_cap_check`）与两个 tracepoint 探针、加载器与 ringbuf 消费；`ci/gates/ebpf-probe.sh` 固化上下文顺序、map 尺寸、资源释放与 `-target bpf` 出树构建；285H 加载读数待现场 |
 | CA-066 | perf 性能分析 | `90-observability/03-perf-analysis.md` | 0.0.5 | 无 airy perf 集成；仅 `system/bin/airy-rt-lat.c` 单点延迟测量 |
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性与清单一致性；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
 | CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
-| CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 未使用 user_events；需内核 config 与用户态注册链 |
+| CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 内核侧契约表已发布：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`；`ci/gates/kernel-uevent.sh` 固化契约。缺口是守护进程侧的注册与上报链（`DIAG_IOCSREG`）尚未接入 |
 | CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 0.0.5 | 无 token 计量实现（`airyllm` 只做运行环境与状态） |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
 | CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 0.0.5 | 无记忆卷监控模块 |
