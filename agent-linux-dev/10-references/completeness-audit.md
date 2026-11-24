@@ -117,7 +117,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
 | CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
 | CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 内核侧契约表已发布：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`；`ci/gates/kernel-uevent.sh` 固化契约。缺口是守护进程侧的注册与上报链（`DIAG_IOCSREG`）尚未接入 |
-| CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 0.0.5 | 无 token 计量实现（`airyllm` 只做运行环境与状态） |
+| CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_token.c` 按 Agent 累计四类计数，维护 60 秒观测窗口与 1 小时预算窗口，比例统一 ppm，`/proc/airy/agents/<id>/token_stats` 只读快照与 `/dev/airy_token` 三条 ioctl 并存，上报校验调用者身份与 SEND、预算改写校验 SUPERVISE；`include/uapi/linux/airymax/token.h` 带三处布局断言，`airy_token_test.c` 覆盖进位、窗口回绕与档位边界；`system/obs/token/` 的 `airy-token` 提供 show/top/budget/report 且只透传不重算；`ci/gates/token-obs.sh` 固化口径、字段面双向对齐与出树构建，`obs-verify.yml` 的 `token-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
 | CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 0.0.5 | 无记忆卷监控模块 |
 | CA-075 | LSM 框架接入 | `110-security/01-lsm-framework.md` | 已实现 | `kernel/security/airy/airy_lsm.c`、`airy_superv_lsm.c`；`ci/gates/kernel-airy.sh` |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 58 |
-| 0.0.5 | 23 |
+| 已实现 | 59 |
+| 0.0.5 | 22 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
