@@ -119,7 +119,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 内核侧契约表已发布：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`；`ci/gates/kernel-uevent.sh` 固化契约。缺口是守护进程侧的注册与上报链（`DIAG_IOCSREG`）尚未接入 |
 | CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_token.c` 按 Agent 累计四类计数，维护 60 秒观测窗口与 1 小时预算窗口，比例统一 ppm，`/proc/airy/agents/<id>/token_stats` 只读快照与 `/dev/airy_token` 三条 ioctl 并存，上报校验调用者身份与 SEND、预算改写校验 SUPERVISE；`include/uapi/linux/airymax/token.h` 带三处布局断言，`airy_token_test.c` 覆盖进位、窗口回绕与档位边界；`system/obs/token/` 的 `airy-token` 提供 show/top/budget/report 且只透传不重算；`ci/gates/token-obs.sh` 固化口径、字段面双向对齐与出树构建，`obs-verify.yml` 的 `token-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
-| CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 0.0.5 | 无记忆卷监控模块 |
+| CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_mem.c` 按 Agent 维护 L1–L4 四层的访问、命中、延迟、淘汰、页与字节吞吐、模式条数与占用，比例统一 ppm，配额 0 表示未设限，档位（NORMAL/SOFT/DEGRADE/EXCEED）只供读者判断，处置留给 macro_d；`/proc/airy/agents/<id>/memory_stats` 只读快照与 `/dev/airy_mem` 四条 ioctl 并存，上报与占用校验调用者身份与 SEND、配额改写校验 SUPERVISE；`include/uapi/linux/airymax/mem.h` 带四处布局断言，`airy_mem_test.c` 覆盖档位边界、窗口滚动与占用绝对覆盖；`system/obs/mem/` 的 `airy-mem` 提供 show/top/quota/gauge/report 且只透传不重算；`ci/gates/mem-obs.sh` 固化四层字段面、鉴权位置与出树构建，`obs-verify.yml` 的 `mem-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-075 | LSM 框架接入 | `110-security/01-lsm-framework.md` | 已实现 | `kernel/security/airy/airy_lsm.c`、`airy_superv_lsm.c`；`ci/gates/kernel-airy.sh` |
 | CA-076 | Landlock 用户态沙箱 | `110-security/02-landlock-sandbox.md` | 0.0.5 | 无 Landlock 规则集与沙箱封装 |
 | CA-077 | Capability 安全模型 | `110-security/03-capability-model.md` | 已实现 | `kernel/security/airy/airy_cap_{array,derive,rotate,check,sysctl}.c` 及测试 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 59 |
-| 0.0.5 | 22 |
+| 已实现 | 60 |
+| 0.0.5 | 21 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」23 条里，13 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」21 条里，13 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
