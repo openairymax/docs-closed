@@ -96,7 +96,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-048 | 监控体系 | `100-operations/03-monitoring.md` | 已实现 | `system/services/airymax_observe/`（hw/fw/sys）、`system/units/agentrt-health-check.service`；`ci/gates/system-inventory.sh` |
 | CA-049 | 告警体系 | `100-operations/04-alerting.md` | 已实现 | `system/services/daemons/alert_d/`（模型/规则/引擎/持久化/守护/CLI 六层）、`system/bin/airy-alert{,d}`、默认规则随包安装到 `share/airymax/alert/rules.d`、独立单元 `airy-alert.service`；`ci/gates/alert-d.sh` 覆盖布局、出厂规则、五个包单测、守护与 CLI 的真实进程对跑及三条失败路径，`ops-verify.yml` 的 `alert-verify` 承接；285H 三架构触发验收待现场 |
 | CA-050 | 事件响应 | `100-operations/05-incident-response.md` | 已实现 | `system/ops/incident/`（模型/台账/告警取样/复盘/命令行五层）、`system/bin/airy-incident`、内置运行手册安装到 `share/airymax/incident/runbooks`；状态机单一边表、台账编号与保留归档（常规 90 天、安全 365 天）、按告警编号幂等取样、检测到复盘闭环；`ci/gates/incident.sh` 覆盖布局、单测、三条失败路径与报告结构，`ops-verify.yml` 的 `incident-verify` 承接；与载荷 `airy-incident@.service` 分工见文档 §13.4；285H 三架构演练待现场 |
-| CA-051 | 备份恢复 | `100-operations/06-backup-recovery.md` | 0.0.5 | 仓库无备份/快照实现与对应门禁 |
+| CA-051 | 备份恢复 | `100-operations/06-backup-recovery.md` | 已实现 | `system/ops/backup/`（模型/归档/仓库/命令行四层）、`system/bin/airy-backup`、`airymax-backup.service` 与小时定时器；全量与增量按日编号、旁挂 `.sha256`/`.sig`、单件清单与全局索引、深核验、全量确认门、单 Agent 回放、篡改在解包前以 4 退出、保留期删旧留新且永远保留最新全量；`ci/gates/backup.sh` 覆盖布局、33 项单测、三条失败路径与保留期，`ops-verify.yml` 的 `backup-verify` 承接；285H 三架构恢复演练待现场 |
 | CA-052 | systemd 集成 | `100-operations/07-systemd-integration.md` | 已实现 | `system/units/`、`system/tools/units_lint.py`、`system/tests/units/`；`ci/gates/mgmt-files.sh`、`ci/gates/mgmt-leaves.sh` |
 | CA-053 | Agent 运维 | `100-operations/08-agent-operations.md` | 0.0.5 | 无 agent 生命周期 CLI 与运维面；`macro_d` 仅源码未入包 |
 | CA-054 | 记忆运维 | `100-operations/09-memory-operations.md` | 0.0.5 | 无记忆卷运维工具；内核侧仅 L1 |
