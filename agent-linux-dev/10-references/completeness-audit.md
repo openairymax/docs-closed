@@ -95,7 +95,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-047 | A-UCS 配置总线运行时 | `100-operations/02-configuration.md` | 已实现 | `services/daemons/config_d/`：启动装载、合法修改热重载、非法版本拒绝保留旧值、`SIGHUP` 重载、不可热改项冻结、主配置缺失降级只读；实机八项验收通过 |
 | CA-048 | 监控体系 | `100-operations/03-monitoring.md` | 已实现 | `system/services/airymax_observe/`（hw/fw/sys）、`system/units/agentrt-health-check.service`；`ci/gates/system-inventory.sh` |
 | CA-049 | 告警体系 | `100-operations/04-alerting.md` | 已实现 | `system/services/daemons/alert_d/`（模型/规则/引擎/持久化/守护/CLI 六层）、`system/bin/airy-alert{,d}`、默认规则随包安装到 `share/airymax/alert/rules.d`、独立单元 `airy-alert.service`；`ci/gates/alert-d.sh` 覆盖布局、出厂规则、五个包单测、守护与 CLI 的真实进程对跑及三条失败路径，`ops-verify.yml` 的 `alert-verify` 承接；285H 三架构触发验收待现场 |
-| CA-050 | 事件响应 | `100-operations/05-incident-response.md` | 0.0.5 | `airy-incident@.service` 只有单元接口；`/usr/sbin/airyctl` 与 `airy` 账户属 agentrt 载荷，未入本版镜像 |
+| CA-050 | 事件响应 | `100-operations/05-incident-response.md` | 已实现 | `system/ops/incident/`（模型/台账/告警取样/复盘/命令行五层）、`system/bin/airy-incident`、内置运行手册安装到 `share/airymax/incident/runbooks`；状态机单一边表、台账编号与保留归档（常规 90 天、安全 365 天）、按告警编号幂等取样、检测到复盘闭环；`ci/gates/incident.sh` 覆盖布局、单测、三条失败路径与报告结构，`ops-verify.yml` 的 `incident-verify` 承接；与载荷 `airy-incident@.service` 分工见文档 §13.4；285H 三架构演练待现场 |
 | CA-051 | 备份恢复 | `100-operations/06-backup-recovery.md` | 0.0.5 | 仓库无备份/快照实现与对应门禁 |
 | CA-052 | systemd 集成 | `100-operations/07-systemd-integration.md` | 已实现 | `system/units/`、`system/tools/units_lint.py`、`system/tests/units/`；`ci/gates/mgmt-files.sh`、`ci/gates/mgmt-leaves.sh` |
 | CA-053 | Agent 运维 | `100-operations/08-agent-operations.md` | 0.0.5 | 无 agent 生命周期 CLI 与运维面；`macro_d` 仅源码未入包 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 61 |
-| 0.0.5 | 20 |
+| 已实现 | 62 |
+| 0.0.5 | 19 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」20 条里，12 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」19 条里，11 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
