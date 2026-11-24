@@ -111,7 +111,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-063 | Panic 生存路径 | `40-dataflows/07-panic-survival-path.md` | 移出（0.0.24–0.0.26） | 无 airy `panic_notifier` 与崩溃落盘钩子 |
 | CA-064 | ftrace 框架与 airy tracepoint | `90-observability/01-ftrace-framework.md` | 已实现 | `kernel/include/trace/events/airy.h`（11 个 TRACE_EVENT）、`system/bin/airy-probe` |
 | CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | `system/obs/ebpf/`：两对 kprobe／kretprobe（`airy_cap_check`）与两个 tracepoint 探针、加载器与 ringbuf 消费；`ci/gates/ebpf-probe.sh` 固化上下文顺序、map 尺寸、资源释放与 `-target bpf` 出树构建；285H 加载读数待现场 |
-| CA-066 | perf 性能分析 | `90-observability/03-perf-analysis.md` | 0.0.5 | 无 airy perf 集成；仅 `system/bin/airy-rt-lat.c` 单点延迟测量 |
+| CA-066 | perf 性能分析 | `90-observability/03-perf-analysis.md` | 已实现 | `system/obs/perf/`：`airy-perf` 只编排上游 perf——stat 落 CSV（六大硬件计数器，`-x,`）、record 以 99Hz+DWARF 采样、report 取前 20 项热点出 JSON、bench 把三段产物与 irq_balancing 读值归入同一目录；`ci/gates/perf-hooks.sh` 固化统计口径、只读边界、出树构建与三条入口失败路径；`obs-verify.yml` 的 `perf-verify` 作业承接；285H 采样读数待现场 |
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性与清单一致性；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 57 |
-| 0.0.5 | 24 |
+| 已实现 | 58 |
+| 0.0.5 | 23 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -156,7 +156,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」24 条里，13 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」23 条里，13 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、049、050、053、054、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
