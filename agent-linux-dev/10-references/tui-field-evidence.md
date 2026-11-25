@@ -63,9 +63,19 @@ AIRYMAX-TUI-FIELD-END
 
 ## 3. 必测格局
 
-降级矩阵的七格加中文显示一项，共八格；发版要求 `x86_64` 与 `aarch64`
-各有一份 `pass` 的实机记录（16 格）。`riscv64` 记入报告但不要求：本版
-riscv64 用户态移出范围。
+降级矩阵的七格加中文显示一项，共八格。覆盖要求按出厂能力面分版：
+
+- **0.0.5 口径（八格中的四格）**：`probe-stale`、`render-slow`、`tty-small`、
+  `display-zh`，`x86_64` 与 `aarch64` 各一份 `pass` 实机记录（8 格）。本版
+  出厂 TUI 只随包 `boot-tui`、`airy-session-pick`、`airy-session-mode` 三个
+  可执行文件，输入面为键盘单通道；四格全部可在该能力面上触发。
+- **N2/N3 起（其余四格）**：`ime-recover`、`ime-no-dict`、`asr-unavailable`、
+  `inject-unknown` 依赖 `boot-ime` 常驻进程与 `asr-gateway` 通道（施工图纸
+  §14.1、N2 泳道 D27 起）。在对应能力随包之前，这四格在实机上**不可触发**，
+  采集器记 `result=unavailable` 并写明依据；`unavailable` 不计入覆盖，也不
+  冒充通过。
+
+`riscv64` 记入报告但不要求：本版 riscv64 用户态移出范围。
 
 | 用例 | 触发条件 | 期望的可观测事实 |
 |---|---|---|
@@ -101,9 +111,11 @@ ci/tools/tui_field_collect.sh --out ~/field --case ime-recover \
 
 ```sh
 ci/ci.sh tui-field                    # 格式自检 + 仓库夹具
-ci/ci.sh tui-field --input ~/field    # 发版口径：16 格实机覆盖
+ci/ci.sh tui-field --input ~/field    # 发版口径：实机覆盖（0.0.5 为 8 格）
 ```
 
 不带 `--input` 时只证明「格式不会被误读」；带 `--input` 时，缺格、
-`result=fail`、或把夹具混进实机都会判负。参数契约与采集器拒绝路径由
+`result=fail`、或把夹具混进实机都会判负。覆盖集由校验器里的 `RELEASE_CASES`
+给出，与 `DEFERRED` 合起来恰好等于八格矩阵；通道随包时在同一提交里把名字
+从 `DEFERRED` 移入 `RELEASE_CASES`。参数契约与采集器拒绝路径由
 `ci/tests/test_tui_field.sh` 覆盖，随 lint 流水线执行。
