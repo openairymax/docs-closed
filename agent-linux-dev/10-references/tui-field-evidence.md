@@ -4,7 +4,7 @@
 >
 > 本文定义 V-04 的取证记录格式、必测格局与门禁用法。格式的判定实现在
 > `system/tui/crates/boot-tui/tests/field/main.rs`，采集器在
-> `ci/tools/tui-field-collect.sh`。三处改动必须同批：键集、用例名、判定词
+> `ci/tools/tui_field_collect.sh`。三处改动必须同批：键集、用例名、判定词
 > 任何一处单独变动，都会让记录「看起来有数据、统计时全落空」。
 
 ## 1. 为什么要把夹具与实机分开
@@ -83,7 +83,7 @@ riscv64 用户态移出范围。
 在目标机上（TTY 内）执行：
 
 ```sh
-ci/tools/tui-field-collect.sh --out ~/field --case ime-recover \
+ci/tools/tui_field_collect.sh --out ~/field --case ime-recover \
     --observed "ime=recovering;candidates=listed" --screenshot ~/shot.png
 ```
 
