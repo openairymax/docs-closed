@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.3 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.4 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -100,7 +100,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-052 | systemd 集成 | `100-operations/07-systemd-integration.md` | 已实现 | `system/units/`、`system/tools/units_lint.py`、`system/tests/units/`；`ci/gates/mgmt-files.sh`、`ci/gates/mgmt-leaves.sh` |
 | CA-053 | Agent 运维 | `100-operations/08-agent-operations.md` | 已实现 | `system/ops/agent/`（模型/存储/健康/调优/日志/命令行六层）、`system/bin/airy-agent`；8 态单一边表、六因素健康分按可得数据重归一化并给出覆盖度、调度与内存整组校验后才落盘、令牌预算与手动重置、元数据加锁原子写与终止归档、日志读取与保留归档受 log 组约束，跨节点迁移与滚动升级按单节点边界显式报错；`ci/gates/agent-ops.sh` 覆盖布局、36 项单测、三条失败路径、生命周期、日志权限、配置覆盖、迁移边界与打包接线，`ops-verify.yml` 的 `agent-verify` 承接；285H 三架构编排待现场 |
 | CA-054 | 记忆运维 | `100-operations/09-memory-operations.md` | 已实现 | `system/ops/memory/`（模型/存储/统计/整理/迁移/擦除/审计/配置/命令行十二模块）、`system/bin/airy-memory`；数据块带魔数与版本，索引与实际项双向一致，全部变更在仓库同一把文件锁下完成，整理走暂存重建再原子替换并真实回收碎片，克隆保留源、移动移除源、敏感项与跨属主边界显式拒绝，覆写擦除按 quick/overwrite/secure 真实落盘并留审计，加密擦除在落盘前显式报不可用而不冒充完成；`ci/gates/memory-ops.sh` 覆盖布局、87 项单测、三条失败路径、碎片整理前后读数、擦除证据、配置覆盖与打包接线，`agent-verify.yml` 的 `memory-verify` 承接；285H 三架构观测待现场 |
-| CA-055 | DevStation | `100-operations/10-devstation.md` | 0.0.5 | 无工作站镜像/profile 与工具链闭包定义 |
+| CA-055 | DevStation | `100-operations/10-devstation.md` | 已实现 | `system/ops/devstation/`（模型/采集/面板/渲染/终端/权限/审计/配置/解析/命令行十二模块）、`system/bin/airy-station`、出厂配置 `default.conf`：八类面板经既有 Agent、记忆、告警、事件、备份的公开接口取数，采集层按根目录参数化，缺源标为不可用并指明缺失路径而不出占位数；八项配置逐项校验，未知键与越界值退出 3；权限三级共用一张排序表，拒绝先写审计再退出 4，admin 动作需显式确认；Web 与远程传输属下一小版本，显式拒绝而不静默接受；出厂配置随包落成并在升级时保留，`%check` 与门禁逐项比对内建默认值；`Requires: ncurses-libs` 声明终端闭包，工作站配方已含 `airymaxos-system` 与 `airymaxos-kernel-devel`；`ci/gates/station-ops.sh` 覆盖布局、55 项单测、八面板读数、空源降级、权限与审计、坏配置、帧尺寸与镜像闭包，`station-verify.yml` 的 `station-verify` 承接；285H 起栈待现场 |
 | CA-056 | 认知循环数据流 | `40-dataflows/01-cognition-flow.md` | 0.0.5 | 仅有 clt 单循环 syscall 与骨架，无 System1/2 分支与流编排 |
 | CA-057 | 记忆卷载 L1 数据流 | `40-dataflows/02-memory-flow.md` | 已实现 | `memory/memoryrovol/mr_l1.c`、`kernel/kernel/syscalls/airy_rovol.c` |
 | CA-058 | L1→L4 递进与 CXL/PMEM 数据流 | `40-dataflows/02-memory-flow.md` | 移出（0.0.24–0.0.26） | 需 DAX/CXL 内核能力，见 CA-008 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 65 |
-| 0.0.5 | 16 |
+| 已实现 | 66 |
+| 0.0.5 | 15 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +159,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」16 条里，9 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、055、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」15 条里，8 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
