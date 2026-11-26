@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.7 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.8 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -89,7 +89,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-041 | Kbuild 递归构建 | `70-build-system/01-kbuild-system.md` | 已实现 | `ci/gates/kernel-build.sh`、`ci/gates/kernel-refbuild.sh`、`ci/gates/build-budget.sh` |
 | CA-042 | Kconfig 与 defconfig 矩阵 | `70-build-system/02-kconfig-system.md` | 已实现 | `tools/defconfig-matrix/`、`tools/kbuild-version/`；`ci/gates/kernel-deps.sh`、`ci/gates/kernel-consistency.sh` |
 | CA-043 | BTF 与类型导出 | `70-build-system/02-kconfig-system.md` | 已实现 | `tools/btf-integration/`；`ci/gates/kernel-analyze.sh` |
-| CA-044 | CI/CD 管道与门禁体系 | `70-build-system/03-ci-cd-pipeline.md` | 已实现 | `ci/ci.sh`（77 个 gate）、`.github/workflows/`、`ci/workflow-budgets.txt`；`ci/gates/ssot-verify.sh` |
+| CA-044 | CI/CD 管道与门禁体系 | `70-build-system/03-ci-cd-pipeline.md` | 已实现 | `ci/ci.sh`（127 个 gate）、`.github/workflows/`、`ci/baseline/workflow-budgets.txt`；`ci/gates/ssot-verify.sh` |
 | CA-045 | 部署体系（ISO / QEMU / 裸机） | `100-operations/01-deployment.md` | 已实现 | `ci/gates/iso-publish.sh`、`ci/gates/iso-checksum.sh`、`ci/gates/image-verify.sh`、`ci/gates/qemu-setup.sh`、`ci/gates/accept.sh` |
 | CA-046 | 配置管理（preset / firstboot / 交付清单） | `100-operations/02-configuration.md` | 已实现 | `distro/presets/`、`system/scripts/firstboot.sh`；`ci/gates/system-inventory.sh` 断言 `/etc/airymaxos-packages` |
 | CA-047 | A-UCS 配置总线运行时 | `100-operations/02-configuration.md` | 已实现 | `services/daemons/config_d/`：启动装载、合法修改热重载、非法版本拒绝保留旧值、`SIGHUP` 重载、不可热改项冻结、主配置缺失降级只读；实机八项验收通过 |
@@ -121,7 +121,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
 | CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_mem.c` 按 Agent 维护 L1–L4 四层的访问、命中、延迟、淘汰、页与字节吞吐、模式条数与占用，比例统一 ppm，配额 0 表示未设限，档位（NORMAL/SOFT/DEGRADE/EXCEED）只供读者判断，处置留给 macro_d；`/proc/airy/agents/<id>/memory_stats` 只读快照与 `/dev/airy_mem` 四条 ioctl 并存，上报与占用校验调用者身份与 SEND、配额改写校验 SUPERVISE；`include/uapi/linux/airymax/mem.h` 带四处布局断言，`airy_mem_test.c` 覆盖档位边界、窗口滚动与占用绝对覆盖；`system/obs/mem/` 的 `airy-mem` 提供 show/top/quota/gauge/report 且只透传不重算；`ci/gates/mem-obs.sh` 固化四层字段面、鉴权位置与出树构建，`obs-verify.yml` 的 `mem-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-075 | LSM 框架接入 | `110-security/01-lsm-framework.md` | 已实现 | `kernel/security/airy/airy_lsm.c`、`airy_superv_lsm.c`；`ci/gates/kernel-airy.sh` |
-| CA-076 | Landlock 用户态沙箱 | `110-security/02-landlock-sandbox.md` | 0.0.5 | 无 Landlock 规则集与沙箱封装 |
+| CA-076 | Landlock 用户态沙箱 | `110-security/02-landlock-sandbox.md` | 已实现 | `security/landlock/`（策略解析、规则集构建、`airy-landlock` CLI、出厂策略与单测：解析拒绝边、`handled` 裁剪、运行期允许与拒绝路径）；`ci/gates/landlock-sandbox.sh`、`security-verify.yml`；`distro/specs/airymaxos-system.spec` 以 `Source107` 出树构建并安装二进制与策略；285H 拒绝路径待现场 |
 | CA-077 | Capability 安全模型 | `110-security/03-capability-model.md` | 已实现 | `kernel/security/airy/airy_cap_{array,derive,rotate,check,sysctl}.c` 及测试 |
 | CA-078 | IPC 数据面自治三原则 | `110-security/04-ipc-data-plane-autonomy.md` | 已实现 | `kernel/security/airy/airy_ipc_freeze.c`、`airy_eventfd.c`、`airy_contract_check.c` |
 | CA-079 | IPC 控制面 Reconciliation | `110-security/05-ipc-control-plane-reconciliation.md` | 0.0.5 | 只有 policy 评估与 superv 裁决，无期望态比对与 reconcile 循环 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 70 |
-| 0.0.5 | 11 |
+| 已实现 | 71 |
+| 0.0.5 | 10 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +159,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」11 条里，5 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」10 条里，5 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
