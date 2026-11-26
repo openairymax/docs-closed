@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.8 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.9 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -124,7 +124,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-076 | Landlock 用户态沙箱 | `110-security/02-landlock-sandbox.md` | 已实现 | `security/landlock/`（策略解析、规则集构建、`airy-landlock` CLI、出厂策略与单测：解析拒绝边、`handled` 裁剪、运行期允许与拒绝路径）；`ci/gates/landlock-sandbox.sh`、`security-verify.yml`；`distro/specs/airymaxos-system.spec` 以 `Source107` 出树构建并安装二进制与策略；285H 拒绝路径待现场 |
 | CA-077 | Capability 安全模型 | `110-security/03-capability-model.md` | 已实现 | `kernel/security/airy/airy_cap_{array,derive,rotate,check,sysctl}.c` 及测试 |
 | CA-078 | IPC 数据面自治三原则 | `110-security/04-ipc-data-plane-autonomy.md` | 已实现 | `kernel/security/airy/airy_ipc_freeze.c`、`airy_eventfd.c`、`airy_contract_check.c` |
-| CA-079 | IPC 控制面 Reconciliation | `110-security/05-ipc-control-plane-reconciliation.md` | 0.0.5 | 只有 policy 评估与 superv 裁决，无期望态比对与 reconcile 循环 |
+| CA-079 | IPC 控制面 Reconciliation | `110-security/05-ipc-control-plane-reconciliation.md` | 已实现 | `security/ipc/`（`rc_api.h`/`rc_diff.c`/`rc_plan.c`/`rc_loop.c`/`rc_main.c` + `tests/rc_test.c` 53 条 TAP）；`ci/gates/ipc-reconcile.sh`；spec 从 `security` 源码束出树构建并安装 `%{_sbindir}/airy-reconcile` |
 | CA-080 | io_uring 加固 | `110-security/06-io-uring-hardening.md` | 移出（0.0.24–0.0.26） | 同 CA-006 |
 | CA-081 | 纯 C LSM 模块实现 | `110-security/07-airy-lsm-design.md` | 已实现 | `kernel/security/airy/`（32 个文件，含 10 个 KUnit 测试源） |
 | CA-082 | Lockdown 阶梯 | `110-security/09-lockdown.md` | 已实现 | `kernel/security/airy/airy_lockdown.c`、securityfs `airy/lockdown`、`airy_lockdown_test.c` |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 71 |
-| 0.0.5 | 10 |
+| 已实现 | 72 |
+| 0.0.5 | 9 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +159,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」10 条里，5 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」9 条里，4 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
@@ -186,26 +186,15 @@ journalctl -p err -b --no-pager | wc -l
 airy-observe system --json
 ```
 
-## 5. 36 条缺口的对账
+## 5. 缺口对账
 
-0.0.5 的进度口径是 19 个功能模块的端到端覆盖（施工方案 §2.5），36 条缺口
-是其中的明细登记，不单独计进度。本版开工时的对账结果：
-
-- **移出 2 条**：CA-030（ostree，按 §2.4 裁为 0.1.x 重新取口径）、
-  CA-089（MemoryRovol CSI，依赖的 CA-008 已随内核窗口移出）。
-- **留在账上 24 条**：按 docs-linux 设计锚点分布如下。发布前每条必须落成
-  已实现或移出（承接版本），由 `ci/ci.sh completeness --release` 强制。
+0.0.5 的进度口径是 19 个功能模块的端到端覆盖（施工方案 §2.5），缺口明细登记
+在此，不单独计进度。开工时登记 36 条，其中 CA-030 与 CA-089 按 §2.4 裁为
+移出，其余逐条落地。当前仍在账上的 9 条按设计锚点分布如下，发布前每条必须
+落成已实现或移出（承接版本），由 `ci/ci.sh completeness --release` 强制。
 
 | 设计锚点 | 留在账上的缺口 |
 |---|---|
-| `100-operations/04-alerting.md` | CA-049 |
-| `100-operations/05-incident-response.md` | CA-050 |
-| `100-operations/06-backup-recovery.md` | CA-051 |
-| `100-operations/08-agent-operations.md` | CA-053 |
-| `100-operations/09-memory-operations.md` | CA-054 |
-| `100-operations/10-devstation.md` | CA-055 |
-| `110-security/02-landlock-sandbox.md` | CA-076 |
-| `110-security/05-ipc-control-plane-reconciliation.md` | CA-079 |
 | `110-security/10-policy-compiler.md` | CA-084 |
 | `150-cloudnative/01-k8s-crd-design.md` | CA-085 |
 | `150-cloudnative/02-containerd-shim.md` | CA-086 |
@@ -214,11 +203,4 @@ airy-observe system --json
 | `20-modules/05-cognition.md` | CA-010 |
 | `20-modules/06-cloudnative.md` | CA-012 |
 | `40-dataflows/01-cognition-flow.md` | CA-056 |
-| `40-dataflows/05-ring-buffer-logging.md` | CA-061 |
-| `90-observability/02-ebpf-probes.md` | CA-065 |
-| `90-observability/03-perf-analysis.md` | CA-066 |
-| `90-observability/04-sysfs-procfs.md` | CA-068 |
-| `90-observability/05-debugfs-tracefs.md` | CA-070 |
 | `90-observability/06-user-events.md` | CA-071 |
-| `90-observability/07-token-efficiency.md` | CA-072 |
-| `90-observability/09-memory-monitoring.md` | CA-074 |
