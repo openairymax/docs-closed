@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.6 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.7 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -110,7 +110,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-062 | Logger Daemon 详细设计 | `40-dataflows/06-logger-daemon-design.md` | 已实现 | `services/daemons/logger_d/`：`logd_ring`（环形缓冲）、`logd_file`（落盘与轮转）、`logd_cfg`（配置解析），`tests/` 覆盖三者 |
 | CA-063 | Panic 生存路径 | `40-dataflows/07-panic-survival-path.md` | 移出（0.0.24–0.0.26） | 无 airy `panic_notifier` 与崩溃落盘钩子 |
 | CA-064 | ftrace 框架与 airy tracepoint | `90-observability/01-ftrace-framework.md` | 已实现 | `kernel/include/trace/events/airy.h`（11 个 TRACE_EVENT）、`system/bin/airy-probe` |
-| CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 0.0.5 | `system/obs/ebpf/`：两对 kprobe／kretprobe（`airy_cap_check`）与两个 tracepoint 探针、加载器与 ringbuf 消费；`ci/gates/ebpf-probe.sh` 固化上下文顺序、map 尺寸、资源释放与 `-target bpf` 出树构建；285H 加载读数待现场 |
+| CA-065 | eBPF 可编程探针 | `90-observability/02-ebpf-probes.md` | 已实现 | `system/obs/ebpf/`：四个内核边界（`airy_cap_check`、`airy_clt_serve`、`airy_sched_ctl`、`airy_invoke_dispatch`）各一对 kprobe／kretprobe，加 `airy_policy_decision`／`airy_superv_enforce` 两个 tracepoint，共十个程序；加载器按规格表挂十条 link、失败按程序名报错，ringbuf 事件逐条输出 JSON 行；`ci/gates/ebpf-probe.sh` 固化四架构 defconfig 装载项、四符号非 static 且无 `notrace`／`__always_inline`、上下文顺序、map 尺寸、资源释放与 `-target bpf` 出树构建；285H 加载读数待现场 |
 | CA-066 | perf 性能分析 | `90-observability/03-perf-analysis.md` | 已实现 | `system/obs/perf/`：`airy-perf` 只编排上游 perf——stat 落 CSV（六大硬件计数器，`-x,`）、record 以 99Hz+DWARF 采样、report 取前 20 项热点出 JSON、bench 把三段产物与 irq_balancing 读值归入同一目录；`ci/gates/perf-hooks.sh` 固化统计口径、只读边界、出树构建与三条入口失败路径；`obs-verify.yml` 的 `perf-verify` 作业承接；285H 采样读数待现场 |
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；能力面 `/sys/airy/ipc/capabilities` 按 `AIRY_CAP_PERM_*` 位名逐 Agent 成行（`airy_obs_cap_perms`，超页给 `truncated: shown of total`）；预算面由 superv 发布 `superv/budgets/` 目录、token 按 Agent 建立只读文件并与 `token_stats` 同源，`superv/macro/budget_alerts` 输出开机以来档位上升次数（`tok_note` 只在档位上升时计数）；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性、清单一致性与上述三处节点；285H 读值待现场 |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 69 |
-| 0.0.5 | 12 |
+| 已实现 | 70 |
+| 0.0.5 | 11 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +159,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」12 条里，6 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、065、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」11 条里，5 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 
