@@ -4,7 +4,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 > **文档定位**：V-15 判据③的交付物。把 `docs-linux` 中每一块功能面逐条钉到「已实现」「0.0.5」「移出（承接版本 X）」三态之一。0.0.5 版把施工方案 §2.4 的裁撤落账：12 条内核侧条目与 CA-030、CA-089 改判移出，承接版本写进归属列。本册只登记事实，不提出新方案。
 >
-> **版本** 2.0.4 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
+> **版本** 2.0.5 ｜ **最后更新** 2026-11-27 ｜ **密级**：内部机密（docs-closed）
 >
 > **主要读者**：0.0.5 执行人、发布评审、交付链维护者。
 
@@ -106,7 +106,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-058 | L1→L4 递进与 CXL/PMEM 数据流 | `40-dataflows/02-memory-flow.md` | 移出（0.0.24–0.0.26） | 需 DAX/CXL 内核能力，见 CA-008 |
 | CA-059 | IPC 消息流（128 字节固定头） | `40-dataflows/03-ipc-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_invoke.h`（128 字节头 + 编译期断言）、`kernel/security/airy/airy_ipc_freeze.c` |
 | CA-060 | 调度数据流（EEVDF + RT 带宽） | `40-dataflows/04-scheduling-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_sched.c`、`airy_sched_test.c`、`system/services/airymax_rt/` |
-| CA-061 | 零拷贝 Ring Buffer 日志数据流 | `40-dataflows/05-ring-buffer-logging.md` | 0.0.5 | `kernel/kernel/log/`：`airy_log_ring` 固定记录环、`airy_log_dev`／`airy_log_persist`／`airy_log_console` 消费侧与 `airy_log_ring_test.c`（容量、越界、裁剪、冻结）；`ci/gates/kernel-obs.sh` 固化 `/sys/airy/log` 计数一致性，`ci/gates/tests-linux.sh` 固化 UAPI 布局；285H 环满与唤醒读数待现场 |
+| CA-061 | 零拷贝 Ring Buffer 日志数据流 | `40-dataflows/05-ring-buffer-logging.md` | 已实现 | `kernel/kernel/log/`：`airy_log_ring` 固定 128B 记录环（reserve/commit 两阶段发布、覆盖写时 tail 前移、eventfd 唤醒、freeze、40B 头与 mmap 区），`airy_log_console` 以只写环的控制台把 printk 逐条送入并在注册时回放启动日志，`airy_log_dev` 经 `/dev/airy_log` 暴露 mmap 区与三条 ioctl，`logger_d` 的 `logd_ring` 按 mmap 只读消费、`logd_file` 是唯一落盘方（`/var/log/agentrt/airy.log`，按量/按时轮转）；`airy_log_ring_test.c` 九例覆盖容量、越界、裁剪、冻结、预留提交、条目守卫与释放；`ci/gates/kernel-obs.sh` 固化 `/sys/airy/log` 计数一致性，`ci/gates/tests-linux.sh` 固化 UAPI 布局；285H 环满与唤醒读数待现场 |
 | CA-062 | Logger Daemon 详细设计 | `40-dataflows/06-logger-daemon-design.md` | 已实现 | `services/daemons/logger_d/`：`logd_ring`（环形缓冲）、`logd_file`（落盘与轮转）、`logd_cfg`（配置解析），`tests/` 覆盖三者 |
 | CA-063 | Panic 生存路径 | `40-dataflows/07-panic-survival-path.md` | 移出（0.0.24–0.0.26） | 无 airy `panic_notifier` 与崩溃落盘钩子 |
 | CA-064 | ftrace 框架与 airy tracepoint | `90-observability/01-ftrace-framework.md` | 已实现 | `kernel/include/trace/events/airy.h`（11 个 TRACE_EVENT）、`system/bin/airy-probe` |
@@ -115,7 +115,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-067 | sysctl 控制面 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/security/airy/airy_cap_sysctl.c`（`/proc/sys/agentrt`） |
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 0.0.5 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性与清单一致性；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
-| CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 0.0.5 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
+| CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签，设计文档明确本版只发布三个有真实数据源的节点；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
 | CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 内核侧契约表已发布：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`；`ci/gates/kernel-uevent.sh` 固化契约。缺口是守护进程侧的注册与上报链（`DIAG_IOCSREG`）尚未接入 |
 | CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_token.c` 按 Agent 累计四类计数，维护 60 秒观测窗口与 1 小时预算窗口，比例统一 ppm，`/proc/airy/agents/<id>/token_stats` 只读快照与 `/dev/airy_token` 三条 ioctl 并存，上报校验调用者身份与 SEND、预算改写校验 SUPERVISE；`include/uapi/linux/airymax/token.h` 带三处布局断言，`airy_token_test.c` 覆盖进位、窗口回绕与档位边界；`system/obs/token/` 的 `airy-token` 提供 show/top/budget/report 且只透传不重算；`ci/gates/token-obs.sh` 固化口径、字段面双向对齐与出树构建，`obs-verify.yml` 的 `token-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
@@ -146,8 +146,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 66 |
-| 0.0.5 | 15 |
+| 已实现 | 68 |
+| 0.0.5 | 13 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +159,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」15 条里，8 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、061、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」13 条里，7 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、065、068、071、079、084、085），接口已经摆好，缺的是承载实现。
 
 ## 4. 复核入口
 

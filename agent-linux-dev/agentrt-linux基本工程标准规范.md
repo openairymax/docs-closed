@@ -1414,7 +1414,7 @@ agent-linux 的 SSoT 权威源体系由五大权威源构成：规则编号 SSoT
 | N14 | airy_eventfd.c 单全局 ctx，多 Macro-Supervisor 无法区分 | P2 | 🕐 待 M3-M5 | airy_eventfd.c L1-144 |
 | N15 | airy_ipc_zero_copy.c 注册表全局链表+单 spinlock | P2 | 🕐 待 M3-M5 | airy_ipc_zero_copy.c L1-168 |
 | N16 | airy_mem_tier_shift 静态表无 sysfs 暴露 | P2 | 🕐 待 M3-M5 | airy_mem_tier.c |
-| N17 | airy_log_persist.c 同步 kernel_write，无异步刷盘线程 | P2 | 🕐 待 M3-M5 | airy_log_persist.c L1-102 |
+| N17 | 内核侧日志文件持久化与 `logger_d` 双写 | P2 | 📄 已收敛（归属 `logger_d`） | 内核不再保留独立持久化后端 |
 | N18 | airy_cap_rotate.c 单行委托可内联到 airy_cap.h | P2 | 📄 已完成（内联） | airy_cap_rotate.c L1-38 |
 | N19 | airy_log_kern.c 8→5 级别映射丢失 ALERT/CRIT/NOTICE 粒度 | P2 | 📄 粒度损失已文档化 | airy_log_kern.c L1-103 |
 | N20 | airy_superv_lsm.c mmap_addr 未对接 cap_array 地址白名单 | P2 | 🕐 待 M3-M5 | airy_superv_lsm.c |
