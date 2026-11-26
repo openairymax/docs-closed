@@ -171,8 +171,14 @@ def assert_gates():
 
 
 def check_cited_gates(text):
-    """正文（附录 A 之前的部分）引用的每个 ci/**.sh 与 ci/**.py 都必须已登记。"""
+    """正文（附录 A 之前、且不含生成区块）引用的每个 ci/**.sh 与 ci/**.py 都必须已登记。
+
+    生成区块里的脚本名由 GATES 直接渲染，天然一致；若连区块一起扫，
+    种子改了路径而文档区块尚未刷新时，本函数会拿旧区块的旧路径把
+    重新生成这一步挡在门外（先有鸡还是先有蛋）。因此先剥掉生成区块。
+    """
     body = text.split("## 附录 A：")[0]
+    body = re.sub(r"<!--GEN:[A-Za-z0-9_]+-->.*?<!--/GEN:[A-Za-z0-9_]+-->", "", body, flags=re.S)
     known = {g[0] for g in S.GATES}
     for m in re.finditer(r"ci/[A-Za-z0-9._/-]+\.(?:sh|py)\b", body):
         if m.group(0) not in known:
