@@ -42,6 +42,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 任务卡见同目录 `0.0.5-平台功能面范围.md` 的 P-01–P-31；发版口径不变，
 `completeness --release` 仍以「账上无 0.0.5」判负。
 
+2026-11-27 复核：上述条目已全部落成「已实现」或「移出（承接版本）」，
+`0.0.5` 清零；余下未实现项均为内核侧能力补丁或后续版本承接。
+
 ## 2. 功能归属主表
 
 | 编号 | 功能面 | docs-linux 锚点 | 归属 | 证据 / 缺口说明 |
@@ -55,9 +58,9 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-007 | MemoryRovol L1 卷载 | `20-modules/04-memory.md` | 已实现 | `memory/memoryrovol/mr_l1.c`、`kernel/kernel/syscalls/airy_rovol.c` |
 | CA-008 | 记忆 L2–L4 递进层与 CXL/PMEM | `20-modules/04-memory.md` | 移出（0.0.24–0.0.26） | 仅 L1 存在；L2–L4 依赖 DAX/CXL 内核能力 |
 | CA-009 | CoreLoopThree 主循环骨架 | `20-modules/05-cognition.md` | 已实现 | `cognition/coreloopthree/clt_main.c`、`kernel/kernel/syscalls/airy_clt.c` |
-| CA-010 | 双系统思考与 thinkdual 分支 | `20-modules/05-cognition.md` | 0.0.5 | 仓库内无 thinkdual/System1-2 实现，仅有单循环 syscall |
+| CA-010 | 双系统思考与 thinkdual 分支 | `20-modules/05-cognition.md` | 已实现 | `cognition/thinkdual/`（`td_score.c` 复杂度评分、`td_policy.c` 模式策略与热更新、`td_state.c`、`td_main.c` CLI）；`ci/gates/cognition-thinkdual.sh`，`cognition-verify.yml` 的 thinkdual 作业；spec 安装 `airy-thinkdual` |
 | CA-011 | agentctl 云原生入口 | `20-modules/06-cloudnative.md` | 已实现 | `cloudnative/agentctl/agentctl.c`（CMake 目标 `agentctl`） |
-| CA-012 | CRD/CRI 与 K8s 侧交付 | `20-modules/06-cloudnative.md` | 0.0.5 | 仅 `cloudnative/Documentation/{crd,agentctl}.md`，无 CRD manifest 与控制器 |
+| CA-012 | CRD/CRI 与 K8s 侧交付 | `20-modules/06-cloudnative.md` | 已实现 | `cloudnative/crd/manifests/`（4 个 CRD）、`cloudnative/crd/crd_main.c`、`cloudnative/crd/crd_plan.c`、`cloudnative/crd/crd_schema.c`、`cloudnative/shim/` 运行时；`ci/gates/{crd-schema,shim-runtime}.sh`；spec 安装 `airy-crdctl`、`airy-shim` |
 | CA-013 | 系统服务集（磁盘/观测/电源/RT/模型/亮度/升级） | `20-modules/07-system.md` | 已实现 | `system/services/{airydisk,airymax_observe,airymax_power,airymax_rt,airyllm,airybright,airyupdate}/` |
 | CA-014 | 系统软件包定义与版本宏 | `20-modules/07-system.md` | 已实现 | `distro/specs/airymaxos-system.spec`、`distro/specs/macros.airymax`；`ci/gates/release-rpms.sh` |
 | CA-015 | 内核 KUnit/kselftest 执行面 | `20-modules/08-tests-linux.md` | 已实现 | `kernel/kernel/syscalls/{airy_clt,airy_invoke,airy_rovol,airy_sched,airy_sysabi}_test.c`、`kernel/kernel/superv/airy_superv_{ring,fault,wdog,adjud,exec,proto}_test.c`；`ci/gates/kernel-kunit.sh`、`ci/gates/kernel-kselftest.sh` |
@@ -101,7 +104,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-053 | Agent 运维 | `100-operations/08-agent-operations.md` | 已实现 | `system/ops/agent/`（模型/存储/健康/调优/日志/命令行六层）、`system/bin/airy-agent`；8 态单一边表、六因素健康分按可得数据重归一化并给出覆盖度、调度与内存整组校验后才落盘、令牌预算与手动重置、元数据加锁原子写与终止归档、日志读取与保留归档受 log 组约束，跨节点迁移与滚动升级按单节点边界显式报错；`ci/gates/agent-ops.sh` 覆盖布局、36 项单测、三条失败路径、生命周期、日志权限、配置覆盖、迁移边界与打包接线，`ops-verify.yml` 的 `agent-verify` 承接；285H 三架构编排待现场 |
 | CA-054 | 记忆运维 | `100-operations/09-memory-operations.md` | 已实现 | `system/ops/memory/`（模型/存储/统计/整理/迁移/擦除/审计/配置/命令行十二模块）、`system/bin/airy-memory`；数据块带魔数与版本，索引与实际项双向一致，全部变更在仓库同一把文件锁下完成，整理走暂存重建再原子替换并真实回收碎片，克隆保留源、移动移除源、敏感项与跨属主边界显式拒绝，覆写擦除按 quick/overwrite/secure 真实落盘并留审计，加密擦除在落盘前显式报不可用而不冒充完成；`ci/gates/memory-ops.sh` 覆盖布局、87 项单测、三条失败路径、碎片整理前后读数、擦除证据、配置覆盖与打包接线，`agent-verify.yml` 的 `memory-verify` 承接；285H 三架构观测待现场 |
 | CA-055 | DevStation | `100-operations/10-devstation.md` | 已实现 | `system/ops/devstation/`（模型/采集/面板/渲染/终端/权限/审计/配置/解析/命令行十二模块）、`system/bin/airy-station`、出厂配置 `default.conf`：八类面板经既有 Agent、记忆、告警、事件、备份的公开接口取数，采集层按根目录参数化，缺源标为不可用并指明缺失路径而不出占位数；八项配置逐项校验，未知键与越界值退出 3；权限三级共用一张排序表，拒绝先写审计再退出 4，admin 动作需显式确认；Web 与远程传输属下一小版本，显式拒绝而不静默接受；出厂配置随包落成并在升级时保留，`%check` 与门禁逐项比对内建默认值；`Requires: ncurses-libs` 声明终端闭包，工作站配方已含 `airymaxos-system` 与 `airymaxos-kernel-devel`；`ci/gates/station-ops.sh` 覆盖布局、55 项单测、八面板读数、空源降级、权限与审计、坏配置、帧尺寸与镜像闭包，`station-verify.yml` 的 `station-verify` 承接；285H 起栈待现场 |
-| CA-056 | 认知循环数据流 | `40-dataflows/01-cognition-flow.md` | 0.0.5 | 仅有 clt 单循环 syscall 与骨架，无 System1/2 分支与流编排 |
+| CA-056 | 认知循环数据流 | `40-dataflows/01-cognition-flow.md` | 已实现 | `cognition/flow/`（`cf_plan.c` 规划、`cf_loop.c` 三相循环、`cf_event.c` 事件账本）；`ci/gates/cognition-flow.sh`，`cognition-verify.yml` 的 cogflow 作业；spec 安装 `airy-cogflow` |
 | CA-057 | 记忆卷载 L1 数据流 | `40-dataflows/02-memory-flow.md` | 已实现 | `memory/memoryrovol/mr_l1.c`、`kernel/kernel/syscalls/airy_rovol.c` |
 | CA-058 | L1→L4 递进与 CXL/PMEM 数据流 | `40-dataflows/02-memory-flow.md` | 移出（0.0.24–0.0.26） | 需 DAX/CXL 内核能力，见 CA-008 |
 | CA-059 | IPC 消息流（128 字节固定头） | `40-dataflows/03-ipc-flow.md` | 已实现 | `kernel/kernel/syscalls/airy_invoke.h`（128 字节头 + 编译期断言）、`kernel/security/airy/airy_ipc_freeze.c` |
@@ -116,7 +119,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-068 | sysfs 设备属性节点 | `90-observability/04-sysfs-procfs.md` | 已实现 | `kernel/kernel/obs/` 发布 `/sys/airy`（version/sec/superv/daemons/log/sched/ipc）与 `/proc/airy/fault_log`，只导出各子系统自用的真实计数；能力面 `/sys/airy/ipc/capabilities` 按 `AIRY_CAP_PERM_*` 位名逐 Agent 成行（`airy_obs_cap_perms`，超页给 `truncated: shown of total`）；预算面由 superv 发布 `superv/budgets/` 目录、token 按 Agent 建立只读文件并与 `token_stats` 同源，`superv/macro/budget_alerts` 输出开机以来档位上升次数（`tok_note` 只在档位上升时计数）；`ci/gates/kernel-obs.sh` 固化注册时序、只读属性、清单一致性与上述三处节点；285H 读值待现场 |
 | CA-069 | tracefs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/security/airy/airy_probe.c`、`kernel/include/trace/events/airy.h` |
 | CA-070 | debugfs 接口 | `90-observability/05-debugfs-tracefs.md` | 已实现 | `kernel/kernel/obs/airy_obs_debugfs.c` 以 `fs_initcall` 发布 `/sys/kernel/debug/airy/{sec/cap_table,superv/last_decision,log/ring_buffer_dump}`，仅补稳定面无法提供的原始信息且不导出防伪标签，设计文档明确本版只发布三个有真实数据源的节点；`ci/gates/kernel-debugfs.sh` 固化注册时序、只读节点、机密边界与四架构调试基线；285H 读值待现场 |
-| CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 0.0.5 | 内核侧契约表已发布：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`；`ci/gates/kernel-uevent.sh` 固化契约。缺口是守护进程侧的注册与上报链（`DIAG_IOCSREG`）尚未接入 |
+| CA-071 | user_events 接口 | `90-observability/06-user-events.md` | 已实现 | 内核侧：`kernel/kernel/obs/airy_uevent.c` 经 sysfs 导出事件族，UAPI `include/uapi/linux/airymax/user_events.h` 带尺寸断言，四架构与 agent 片段开启 `CONFIG_USER_EVENTS`，`ci/gates/kernel-uevent.sh` 固化契约；守护侧：`services/common/uevent.c` 与 `<airy/uevent.h>` 经 `DIAG_IOCSREG` 注册、按「4 字节写索引 + 载荷」`writev` 上报，macro_d 启动注册 `superv_enforce` 并在每次裁决后上报，`services/common/tests/uevent_test.c` 覆盖注册、未启用不写、布局与注销，`ci/gates/uevent-daemon.sh` 固化接入 |
 | CA-072 | Token 效率监控 | `90-observability/07-token-efficiency.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_token.c` 按 Agent 累计四类计数，维护 60 秒观测窗口与 1 小时预算窗口，比例统一 ppm，`/proc/airy/agents/<id>/token_stats` 只读快照与 `/dev/airy_token` 三条 ioctl 并存，上报校验调用者身份与 SEND、预算改写校验 SUPERVISE；`include/uapi/linux/airymax/token.h` 带三处布局断言，`airy_token_test.c` 覆盖进位、窗口回绕与档位边界；`system/obs/token/` 的 `airy-token` 提供 show/top/budget/report 且只透传不重算；`ci/gates/token-obs.sh` 固化口径、字段面双向对齐与出树构建，`obs-verify.yml` 的 `token-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
 | CA-073 | Agent 行为追踪 | `90-observability/08-agent-tracing.md` | 已实现 | `airy_agent_state_change`、`airy_superv_enforce` 事件；`system/services/airymax_probe/` |
 | CA-074 | 记忆监控 | `90-observability/09-memory-monitoring.md` | 已实现 | 内核只出事实：`kernel/kernel/obs/airy_mem.c` 按 Agent 维护 L1–L4 四层的访问、命中、延迟、淘汰、页与字节吞吐、模式条数与占用，比例统一 ppm，配额 0 表示未设限，档位（NORMAL/SOFT/DEGRADE/EXCEED）只供读者判断，处置留给 macro_d；`/proc/airy/agents/<id>/memory_stats` 只读快照与 `/dev/airy_mem` 四条 ioctl 并存，上报与占用校验调用者身份与 SEND、配额改写校验 SUPERVISE；`include/uapi/linux/airymax/mem.h` 带四处布局断言，`airy_mem_test.c` 覆盖档位边界、窗口滚动与占用绝对覆盖；`system/obs/mem/` 的 `airy-mem` 提供 show/top/quota/gauge/report 且只透传不重算；`ci/gates/mem-obs.sh` 固化四层字段面、鉴权位置与出树构建，`obs-verify.yml` 的 `mem-verify` 作业承接；285H 读数与 TUI 面板接线待现场 |
@@ -129,11 +132,11 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 | CA-081 | 纯 C LSM 模块实现 | `110-security/07-airy-lsm-design.md` | 已实现 | `kernel/security/airy/`（32 个文件，含 10 个 KUnit 测试源） |
 | CA-082 | Lockdown 阶梯 | `110-security/09-lockdown.md` | 已实现 | `kernel/security/airy/airy_lockdown.c`、securityfs `airy/lockdown`、`airy_lockdown_test.c` |
 | CA-083 | 安全策略 DSL 编译器 | `110-security/10-policy-compiler.md` | 已实现 | `tools/dsl/`（lexer/parser/semantics/codegen + tests）、`tools/dsl/examples/security_policy.adl` |
-| CA-084 | 决策表内核运行时接入 | `110-security/10-policy-compiler.md` | 0.0.5 | 生成物 `security_policy_tables.h` 无任何 C 侧消费者；内核仍走 `airy_policy.c` 自带规则 |
-| CA-085 | K8s CRD | `150-cloudnative/01-k8s-crd-design.md` | 0.0.5 | 仅 `cloudnative/Documentation/crd.md`，无 CRD manifest 与 reconciler |
-| CA-086 | containerd shim | `150-cloudnative/02-containerd-shim.md` | 0.0.5 | 无 shim 实现 |
-| CA-087 | CNI 网络策略 | `150-cloudnative/03-cni-network-policy.md` | 0.0.5 | 无 CNI 插件与 NetworkPolicy 实现 |
-| CA-088 | 超节点 OS | `150-cloudnative/04-supernode-os.md` | 0.0.5 | 无实现 |
+| CA-084 | 决策表内核运行时接入 | `110-security/10-policy-compiler.md` | 已实现 | 生成物 `kernel/security/airy/security_policy_tables.h` 由 `airy_policy_tables.c` 消费并在 `airy_init` 启动期逐表 `airy_policy_register`；KUnit `policy_tables` 覆盖注册与判定，`ci/gates/kernel-policy.sh` 校验双份产物、Kbuild 与启动顺序 |
+| CA-085 | K8s CRD | `150-cloudnative/01-k8s-crd-design.md` | 已实现 | `cloudnative/crd/manifests/crd-{agent,agentworkflow,agentbudget,memoryrovolclaim}.yaml`；`crd_schema.c` 校验模式、`crd_plan.c` 生成 reconcile 计划、`crd_main.c` CLI；`ci/gates/crd-schema.sh`；spec 安装 `airy-crdctl` |
+| CA-086 | containerd shim | `150-cloudnative/02-containerd-shim.md` | 已实现 | `cloudnative/shim/`（`shm_spec.c` bundle 解析、`shm_proc.c` 进程监管、`shm_kern.c` 内核桥、`shm_main.c`）；`ci/gates/shim-runtime.sh`；spec 安装 `airy-shim` |
+| CA-087 | CNI 网络策略 | `150-cloudnative/03-cni-network-policy.md` | 已实现 | `cloudnative/cni/`（`cni_conf.c` NetConf 归一、`cni_policy.c` 判定矩阵、`cni_state.c` 注册记录、`cni_main.c` 链式入口）；`ci/gates/cni-policy.sh`；spec 安装 `airy-cni` |
+| CA-088 | 超节点 OS | `150-cloudnative/04-supernode-os.md` | 已实现 | `cloudnative/supernode/`（`sn_topology.c` 拓扑发现、`sn_pool.c` 令牌池、`sn_migrate.c` 迁移准入、`sn_snap.c` 快照、`sn_main.c`）；`ci/gates/supernode-os.sh`；spec 安装 `airy-supernode` |
 | CA-089 | MemoryRovol CSI | `150-cloudnative/05-memoryrovol-csi.md` | 移出（0.0.24–0.0.26） | 依赖 L2–L4（CA-008，已随内核窗口移出），且无 CSI 驱动 |
 | CA-090 | Locale 设计与生成 | `180-i18n/01-locale-design.md` | 已实现 | `system/services/airylocale/`（矩阵 8 条 + `list/show/gen/check`）、`system/bin/airy-locale`；`ci/gates/locale-matrix.sh`；两个剖面语言包与装机段 `airy-locale check --require-generated` |
 | CA-091 | UTF-8 严格编码原语 | `180-i18n/02-encoding-spec.md` | 已实现 | `kernel/include/airymax/airy_utf8.h`、`kernel/kernel/corekern/charset/airy_utf8_test.c` |
@@ -146,8 +149,8 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 
 | 归属 | 条目数 |
 |---|---|
-| 已实现 | 72 |
-| 0.0.5 | 9 |
+| 已实现 | 81 |
+| 0.0.5 | 0 |
 | 移出（承接版本） | 14 |
 | **合计** | **95** |
 
@@ -159,7 +162,7 @@ Copyright (c) 2025-2026 SPHARX Ltd. All Rights Reserved.
 三态分布的两个结构性结论：
 
 1. 「移出（承接版本）」14 条：12 条落在内核侧（驱动模型 6 条、io_uring 2 条、printk/panic 2 条、记忆 L2–L4 2 条），与「内核侧净新增 0 行」的边界完全重合；另外 2 条是 CA-030（ostree，按 §2.4 裁为 0.1.x）与 CA-089（MemoryRovol CSI，随 CA-008 移出）。没有一条用户态工作是单纯被版本边界挡下的。
-2. 「0.0.5」9 条里，4 条的缺口是「只有单元/文档、没有二进制或数据面」（CA-012、071、084、085），接口已经摆好，缺的是承载实现。
+2. 「0.0.5」已清零：CA-071 由守护侧的注册与上报链补齐，CA-084 由内核决策表消费补齐；CA-010/012/056/085–088 由 cognition 与 cloudnative 的二进制、清单、门禁与打包补齐。
 
 ## 4. 复核入口
 
